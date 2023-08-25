@@ -1,3 +1,4 @@
+import { DeliveryStatus } from '../../../common/constants/notifications';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'notifications' })
@@ -11,7 +12,12 @@ export class Notification {
   @Column({ type: 'json' })
   data: string;
 
-  @Column({ name: 'delivery_status', width: 1, default: 1 })
+  @Column({
+    name: 'delivery_status',
+    type: 'tinyint',
+    width: 1,
+    default: DeliveryStatus.PENDING,
+  })
   deliveryStatus: number;
 
   @Column({ type: 'json', nullable: true })

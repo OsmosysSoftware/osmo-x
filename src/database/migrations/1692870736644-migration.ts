@@ -5,7 +5,7 @@ export class Migration1692870736644 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE \`notifications\` (\`id\` int NOT NULL AUTO_INCREMENT, \`channel_type\` varchar(255) NOT NULL, \`data\` json NOT NULL, \`delivery_status\` int(1) NOT NULL DEFAULT '1', \`result\` json NULL, \`created_by\` varchar(255) NOT NULL, \`created_on\` datetime NOT NULL, \`modified_by\` varchar(255) NULL, \`modified_on\` datetime NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`notifications\` (\`id\` int NOT NULL AUTO_INCREMENT, \`channel_type\` varchar(255) NOT NULL, \`data\` json NOT NULL, \`delivery_status\` tinyint(1) NOT NULL DEFAULT '1', \`result\` json NULL, \`created_by\` varchar(255) NOT NULL, \`created_on\` datetime NOT NULL, \`modified_by\` varchar(255) NULL, \`modified_on\` datetime NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
   }
 
