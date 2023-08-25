@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
+import { DELIVERY_STATUS_PENDING } from 'src/common/constants/notifications';
 
 @Injectable()
 export class NotificationsService {
@@ -11,7 +12,11 @@ export class NotificationsService {
   ) {}
 
   async createNotification(notificationData: any) {
+    const currentDate = new Date();
+    notificationData.createdOn = currentDate.toISOString();
+    notificationData.deliveryStatus = DELIVERY_STATUS_PENDING;
     const notification = this.notificationRepository.create(notificationData);
-    await this.notificationRepository.save(notification);
+    const result = await this.notificationRepository.save(notification);
+    return result;
   }
 }
