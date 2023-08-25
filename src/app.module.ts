@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfiguration } from './config/database/configuration';
+import { NotificationsModule } from './models/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { DatabaseConfiguration } from './config/database/configuration';
       imports: [ConfigModule],
       useClass: DatabaseConfiguration,
     }),
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
