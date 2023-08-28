@@ -1,4 +1,4 @@
-import { DELIVERY_STATUS_PENDING } from 'src/common/constants/notifications';
+import { DeliveryStatus } from '../../../common/constants/notifications';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'notifications' })
@@ -14,8 +14,9 @@ export class Notification {
 
   @Column({
     name: 'delivery_status',
+    type: 'tinyint',
     width: 1,
-    default: DELIVERY_STATUS_PENDING,
+    default: DeliveryStatus.PENDING,
   })
   deliveryStatus: number;
 
