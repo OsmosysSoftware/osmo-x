@@ -4,6 +4,3 @@ export const DeliveryStatus = {
   SUCCESS: 3,
   FAILED: 4,
 };
-
-export const NOTIFICATION_CREATE_SUCCESS_MSG =
-  'Notification created successfully';
