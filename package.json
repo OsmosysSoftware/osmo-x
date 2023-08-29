@@ -28,6 +28,7 @@
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/schedule": "^3.0.3",
     "@nestjs/typeorm": "^10.0.0",
     "bull": "^4.11.3",
     "mysql2": "^3.6.0",
