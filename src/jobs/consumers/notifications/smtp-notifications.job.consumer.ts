@@ -16,7 +16,6 @@ export class SmtpNotificationConsumer {
   async processSmtpNotificationQueue(job: Job): Promise<void> {
     const notification = job.data;
     try {
-      notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
       // TODO: Send the email, update notification values
       notification.deliveryStatus = DeliveryStatus.SUCCESS;
     } catch (error) {
