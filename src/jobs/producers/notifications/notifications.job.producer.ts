@@ -5,10 +5,10 @@ import { Queue } from 'bull';
 @Injectable()
 export class NotificationQueueService {
   constructor(
-    @InjectQueue('emailNotifications') private readonly emailQueue: Queue,
+    @InjectQueue('smtpNotifications') private readonly smtpQueue: Queue,
   ) {}
 
   async addNotificationToQueue(notification: any) {
-    await this.emailQueue.add(notification);
+    await this.smtpQueue.add(notification);
   }
 }

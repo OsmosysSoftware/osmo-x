@@ -5,15 +5,15 @@ import { Repository } from 'typeorm';
 import { Notification } from 'src/models/notifications/entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 
-@Processor('emailNotifications')
-export class EmailNotificationConsumerService {
+@Processor('smtpNotifications')
+export class SmtpNotificationConsumerService {
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
   ) {}
 
   @Process()
-  async processEmailNotificationQueue(job: Job) {
+  async processSmtpNotificationQueue(job: Job) {
     const notification = job.data;
     try {
       notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;

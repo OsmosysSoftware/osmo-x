@@ -5,18 +5,18 @@ import { Notification } from './entities/notification.entity';
 import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
 import { NotificationQueueService } from 'src/jobs/producers/notifications/notifications.job.producer';
-import { EmailNotificationConsumerService } from 'src/jobs/consumers/notifications/notifications.job.consumer';
+import { SmtpNotificationConsumerService } from 'src/jobs/consumers/notifications/smtp-notifications.job.consumer';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Notification]),
     BullModule.registerQueue({
-      name: 'emailNotifications',
+      name: 'smtpNotifications',
     }),
   ],
   providers: [
     NotificationQueueService,
-    EmailNotificationConsumerService,
+    SmtpNotificationConsumerService,
     NotificationsService,
   ],
   exports: [NotificationsService],
