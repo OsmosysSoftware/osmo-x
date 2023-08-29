@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
+import { NotificationData } from 'src/common/types/NotificationData';
 
 @Injectable()
 export class NotificationsService {
@@ -13,7 +14,9 @@ export class NotificationsService {
     private readonly notificationQueueService: NotificationQueueProducer,
   ) {}
 
-  async createNotification(notificationData: any) {
+  async createNotification(
+    notificationData: NotificationData,
+  ): Promise<Notification[]> {
     const currentDate = new Date();
     notificationData.createdOn = currentDate.toISOString();
     notificationData.deliveryStatus = DeliveryStatus.PENDING;

@@ -13,7 +13,7 @@ export class SmtpNotificationConsumer {
   ) {}
 
   @Process()
-  async processSmtpNotificationQueue(job: Job) {
+  async processSmtpNotificationQueue(job: Job): Promise<void> {
     const notification = job.data;
     try {
       notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
