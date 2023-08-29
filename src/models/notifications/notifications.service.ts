@@ -3,14 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
-import { NotificationQueueService } from 'src/jobs/producers/notifications/notifications.job.producer';
+import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 
 @Injectable()
 export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
-    private readonly notificationQueueService: NotificationQueueService,
+    private readonly notificationQueueService: NotificationQueueProducer,
   ) {}
 
   async createNotification(notificationData: any) {

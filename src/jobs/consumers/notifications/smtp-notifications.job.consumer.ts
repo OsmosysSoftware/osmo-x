@@ -6,7 +6,7 @@ import { Notification } from 'src/models/notifications/entities/notification.ent
 import { DeliveryStatus } from 'src/common/constants/notifications';
 
 @Processor('smtpNotifications')
-export class SmtpNotificationConsumerService {
+export class SmtpNotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,

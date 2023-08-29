@@ -4,8 +4,8 @@ import { BullModule } from '@nestjs/bull';
 import { Notification } from './entities/notification.entity';
 import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
-import { NotificationQueueService } from 'src/jobs/producers/notifications/notifications.job.producer';
-import { SmtpNotificationConsumerService } from 'src/jobs/consumers/notifications/smtp-notifications.job.consumer';
+import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
+import { SmtpNotificationConsumer } from 'src/jobs/consumers/notifications/smtp-notifications.job.consumer';
 
 @Module({
   imports: [
@@ -15,8 +15,8 @@ import { SmtpNotificationConsumerService } from 'src/jobs/consumers/notification
     }),
   ],
   providers: [
-    NotificationQueueService,
-    SmtpNotificationConsumerService,
+    NotificationQueueProducer,
+    SmtpNotificationConsumer,
     NotificationsService,
   ],
   exports: [NotificationsService],
