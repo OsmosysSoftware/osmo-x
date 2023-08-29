@@ -8,6 +8,6 @@ export class NotificationQueueProducer {
   constructor(@InjectQueue('smtpNotifications') private readonly smtpQueue: Queue) {}
 
   async addNotificationToQueue(notification: Notification): Promise<void> {
-    await this.smtpQueue.add(notification);
+    await this.smtpQueue.add(notification.id);
   }
 }

@@ -26,6 +26,7 @@ export class NotificationsService {
     return result;
   }
 
+  // TODO: Move to its own separate file
   @Cron(CronExpression.EVERY_MINUTE)
   async addNotificationsToQueue(): Promise<void> {
     if (this.isProcessingQueue) {
