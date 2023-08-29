@@ -11,8 +11,7 @@ export class NotificationsController {
   async addNotification(
     @Body() notificationData: NotificationData,
   ): Promise<{ notification: Notification[] }> {
-    const createdNotification =
-      await this.notificationService.createNotification(notificationData);
+    const createdNotification = await this.notificationService.createNotification(notificationData);
     return {
       notification: createdNotification,
     };

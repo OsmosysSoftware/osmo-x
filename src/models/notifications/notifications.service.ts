@@ -14,9 +14,7 @@ export class NotificationsService {
     private readonly notificationQueueService: NotificationQueueProducer,
   ) {}
 
-  async createNotification(
-    notificationData: NotificationData,
-  ): Promise<Notification[]> {
+  async createNotification(notificationData: NotificationData): Promise<Notification[]> {
     const currentDate = new Date();
     notificationData.createdOn = currentDate.toISOString();
     notificationData.deliveryStatus = DeliveryStatus.PENDING;

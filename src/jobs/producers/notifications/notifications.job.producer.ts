@@ -5,9 +5,7 @@ import { Notification } from 'src/models/notifications/entities/notification.ent
 
 @Injectable()
 export class NotificationQueueProducer {
-  constructor(
-    @InjectQueue('smtpNotifications') private readonly smtpQueue: Queue,
-  ) {}
+  constructor(@InjectQueue('smtpNotifications') private readonly smtpQueue: Queue) {}
 
   async addNotificationToQueue(notification: Notification[]): Promise<void> {
     await this.smtpQueue.add(notification);

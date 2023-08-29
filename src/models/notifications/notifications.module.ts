@@ -14,11 +14,7 @@ import { SmtpNotificationConsumer } from 'src/jobs/consumers/notifications/smtp-
       name: 'smtpNotifications',
     }),
   ],
-  providers: [
-    NotificationQueueProducer,
-    SmtpNotificationConsumer,
-    NotificationsService,
-  ],
+  providers: [NotificationQueueProducer, SmtpNotificationConsumer, NotificationsService],
   exports: [NotificationsService],
   controllers: [NotificationsController],
 })
