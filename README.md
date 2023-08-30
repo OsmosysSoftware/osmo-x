@@ -27,7 +27,7 @@ Imagine having a central hub where you can create and send notifications seamles
 1. **Installation:** Clone the repository and follow our simple setup guide.
 2. **Create Notifications:** Easily create and customize notifications for different channels. Use your own API or our API to update the notification database.
 3. **Sit Back and Relax:** Let our app handle the delivery and status tracking.
-4. 
+
 ## Contributing
 
 We welcome contributions from the community! If you're interested in contributing to the Osmo Notify, please take a moment to review our [Contribution Guidelines](CONTRIBUTING.md).
