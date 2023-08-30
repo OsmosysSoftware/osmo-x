@@ -4,3 +4,7 @@ export const DeliveryStatus = {
   SUCCESS: 3,
   FAILED: 4,
 };
+
+export const ChannelType = {
+  SMTP: 1,
+};
