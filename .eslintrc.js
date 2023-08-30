@@ -25,14 +25,8 @@ module.exports = {
     'no-console': 'warn',
     'padding-line-between-statements': [
       'error',
-      { 'blankLine': 'always', 'prev': '*', 'next': 'function' },
-      { 'blankLine': 'always', 'prev': 'function', 'next': '*' },
-      { 'blankLine': 'always', 'prev': '*', 'next': 'if' },
-      { 'blankLine': 'always', 'prev': 'if', 'next': '*' },
-      { 'blankLine': 'always', 'prev': '*', 'next': 'for' },
-      { 'blankLine': 'always', 'prev': 'for', 'next': '*' },
-      { 'blankLine': 'always', 'prev': '*', 'next': 'while' },
-      { 'blankLine': 'always', 'prev': 'while', 'next': '*' }
+      { blankLine: 'always', prev: '*', next: 'block-like' },
+      { blankLine: 'always', prev: 'block-like', next: '*' },
     ]
   },
 };

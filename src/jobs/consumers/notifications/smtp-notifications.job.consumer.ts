@@ -21,6 +21,7 @@ export class SmtpNotificationConsumer {
   async processSmtpNotificationQueue(job: Job): Promise<void> {
     const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
+
     try {
       const result = await this.smtpService.sendEmail(
         notification.data as nodemailer.SendMailOptions,
@@ -33,5 +34,7 @@ export class SmtpNotificationConsumer {
     } finally {
       await this.notificationRepository.save(notification);
     }
+
+    await this.notificationRepository.save(notification);
   }
 }
