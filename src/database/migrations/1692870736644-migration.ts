@@ -1,11 +1,66 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class Migration1692870736644 implements MigrationInterface {
   name = 'Migration1692870736644';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `CREATE TABLE \`notifications\` (\`id\` int NOT NULL AUTO_INCREMENT, \`channel_type\` varchar(255) NOT NULL, \`data\` json NOT NULL, \`delivery_status\` tinyint(1) NOT NULL DEFAULT '1', \`result\` json NULL, \`created_by\` varchar(255) NOT NULL, \`created_on\` datetime NOT NULL, \`modified_by\` varchar(255) NULL, \`modified_on\` datetime NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    await queryRunner.createTable(
+      new Table({
+        name: 'notifications',
+        columns: [
+          {
+            name: 'id',
+            type: 'int',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          {
+            name: 'channel_type',
+            type: 'tinyint',
+          },
+          {
+            name: 'data',
+            type: 'json',
+          },
+          {
+            name: 'delivery_status',
+            type: 'tinyint',
+            default: 0,
+          },
+          {
+            name: 'result',
+            type: 'json',
+            isNullable: true,
+          },
+          {
+            name: 'created_on',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+          },
+          {
+            name: 'updated_on',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
+          },
+          {
+            name: 'created_by',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'updated_by',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'status',
+            type: 'tinyint',
+            default: 1,
+          },
+        ],
+      }),
     );
   }
 
