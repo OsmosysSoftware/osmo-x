@@ -18,7 +18,7 @@ export class SmtpService {
     });
   }
 
-  async sendEmail(smtpNotificationData: nodemailer.SendMailOptions): Promise<void> {
-    this.transporter.sendMail(smtpNotificationData);
+  sendEmail(smtpNotificationData: nodemailer.SendMailOptions): Promise<string> {
+    return this.transporter.sendMail(smtpNotificationData);
   }
 }
