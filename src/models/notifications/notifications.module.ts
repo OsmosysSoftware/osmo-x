@@ -6,7 +6,7 @@ import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { SmtpNotificationConsumer } from 'src/jobs/consumers/notifications/smtp-notifications.job.consumer';
-import { SmtpService } from 'src/services/email/smtp.service';
+import { SmtpService } from 'src/services/email/smtp/smtp.service';
 
 @Module({
   imports: [

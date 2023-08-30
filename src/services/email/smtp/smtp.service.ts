@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { SmtpNotificationData } from 'src/common/types/SmtpNotificationData';
 
 @Injectable()
 export class SmtpService {
@@ -19,7 +18,7 @@ export class SmtpService {
     });
   }
 
-  async sendEmail(smtpNotificationData: SmtpNotificationData): Promise<void> {
+  async sendEmail(smtpNotificationData: nodemailer.SendMailOptions): Promise<void> {
     this.transporter.sendMail(smtpNotificationData);
   }
 }
