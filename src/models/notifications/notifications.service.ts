@@ -6,6 +6,7 @@ import { Notification } from './entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { NotificationData } from 'src/common/types/NotificationData';
+import { Status } from 'src/common/constants/database';
 
 @Injectable()
 export class NotificationsService {
@@ -54,6 +55,15 @@ export class NotificationsService {
     return this.notificationRepository.find({
       where: {
         deliveryStatus: DeliveryStatus.PENDING,
+      },
+    });
+  }
+
+  getNotificationById(id: number): Promise<Notification[]> {
+    return this.notificationRepository.find({
+      where: {
+        id: id,
+        status: Status.ACTIVE,
       },
     });
   }

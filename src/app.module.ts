@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DatabaseConfiguration } from './config/database/configuration';
 import { NotificationsModule } from './models/notifications/notifications.module';
+import { SmtpService } from './services/email/smtp/smtp.service';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { NotificationsModule } from './models/notifications/notifications.module
     NotificationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, SmtpService],
 })
 export class AppModule {}
