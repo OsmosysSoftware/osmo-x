@@ -1,43 +1,59 @@
 # Production Setup
 
-This document outlines the steps required to set up your NestJS project for production. Following these steps will ensure that your application is configured properly for a production environment.
+This document outlines the steps required to set up Osmo-Notify for production. Following these steps will ensure that your application is configured properly for a production environment.
 
 ## Prerequisites
 
-Before you begin the production setup, make sure you have the following software and steps completed:
+Before setting up Osmo-Notify for production, ensure you have the following prerequisites with the specified versions:
 
-### Node.js and npm
+- **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
+- **Node.js** Node.js v18.x or higher.
+- **Git:** Git v2.x or higher.
+- **MariaDB:** MariaDB v10.x or higher.
+- **Redis:** Redis v6.x or higher
+- **PM2 (Process Manager):** PM2 v5.x or higher.
 
-Ensure that you have Node.js and npm installed on your production server. You can install them using the methods described in the [Development Setup](development-setup.md) document.
-
-### PM2 (Process Manager)
-
-Install [PM2](https://pm2.keymetrics.io/), a process manager for Node.js applications, on your production server:
-
-```sh
-npm install -g pm2
-```
+These prerequisites are essential for deploying and running Osmo-Notify in a environment.
 
 ## Server Configuration
 
-1. **Node.js and npm:** Ensure that you have Node.js and npm installed on your production server. You can install them using the methods described in the [Development Setup](development-setup.md) document.
+1. **Environment Variables:** Set the necessary environment variables on your production server. These variables include database configuration, SMTP settings, and any other variables your application requires. Ensure the `.env` file is properly configured with production values.
 
-2. **Environment Variables:** Set the necessary environment variables on your production server. These variables include database configuration, SMTP settings, and any other variables your application requires. Ensure the `.env` file is properly configured.
+```env
+# Server
+SERVER_PORT=3000
 
-3. **Database Configuration:** If you're using a separate production database server, update the database configuration in the `.env` file to point to the production database.
+# Database configuration
+DB_TYPE=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=your-password
+DB_NAME=your-database
+
+# SMTP
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USERNAME=your-smtp-username
+SMTP_PASSWORD=your-smtp-password
+```
+
+Make sure to replace `your-password`, `your-database`, `your-smtp-username`, and `your-smtp-password` with appropriate values. Server Port is `3000`, you can update it if you want to use a different port of your choice.
 
 ## Building and Preparing
 
-1. **Build the Application:** Before starting the server, build your NestJS application by running:
+1. **Build the Application:** Before starting the server, build Osmo-Notify by running:
 
    ```sh
    npm run build
    ```
-This command compiles your TypeScript code into JavaScript and generates the necessary build files.
+
+   This command compiles your TypeScript code into JavaScript and generates the necessary build files.
 
 ## Starting the Server
 
 1. **PM2 Configuration:** Create an ecosystem.config.js (or .ts) file to configure PM2. This file defines settings such as the application name, entry point, and other options. For example:
+
 ```js
 module.exports = {
   apps: [
@@ -55,24 +71,25 @@ module.exports = {
   ],
 };
 ```
+
 2. **Start the Application with PM2:** Use PM2 to start your application:
+
 ```sh
 pm2 start ecosystem.config.js
 ```
+
 To ensure your application starts on system boot:
+
 ```sh
 pm2 startup
 ```
+
 Follow instruction given by the command if any.
 
 Save pm2 config:
+
 ```sh
 pm2 save
 ```
 
 For details on using the application and making API calls, refer to our [Usage Guide](usage-guide.md).
-
-
-
-
-
