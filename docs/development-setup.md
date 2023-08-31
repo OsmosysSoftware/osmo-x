@@ -35,25 +35,24 @@ Please make sure to have these versions installed on your development server bef
 
 3. Create a .env file in the project root and add the required environment variables:
 
-```env
-# Server
-SERVER_PORT=3000
+   ```env
+   # Server
+   SERVER_PORT=3000
+  
+   # Database configuration
+   DB_TYPE=mysql
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_USERNAME=root
+   DB_PASSWORD=your-password
+   DB_NAME=your-database
 
-# Database configuration
-DB_TYPE=mysql
-DB_HOST=localhost
-DB_PORT=3306
-DB_USERNAME=root
-DB_PASSWORD=your-password
-DB_NAME=your-database
-
-# SMTP
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USERNAME=your-smtp-username
-SMTP_PASSWORD=your-smtp-password
-
-```
+   # SMTP
+   SMTP_HOST=smtp.example.com
+   SMTP_PORT=587
+   SMTP_USERNAME=your-smtp-username
+   SMTP_PASSWORD=your-smtp-password
+   ```
 
 Make sure to replace `your-password`, `your-database`, `your-smtp-username`, and `your-smtp-password` with appropriate values. Server Port is `3000`, you can update it if you want to use a different port of your choice.
 
