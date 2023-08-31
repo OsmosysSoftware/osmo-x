@@ -1,59 +1,22 @@
 # Development Setup
 
-This document outlines the steps required to set up your NestJS project for development. By following these steps, you'll be able to run your application locally with the necessary environment variables and database configuration.
+This document outlines the steps required to set up your Osmo-Notify for development. By following these steps, you'll be able to run your application locally with the necessary environment variables and database configuration.
+
+Certainly! Here's the list of prerequisites with version numbers for Osmo-Notify's development setup:
 
 ## Prerequisites
 
-Before you begin, ensure that you have the following software installed on your machine:
+Before setting up Osmo-Notify for development, ensure you have the following prerequisites with the specified versions:
 
-### Node.js and npm
-- **Node.js version 18 or higher is recommended.**
+- **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
+- **Node.js** Node.js v18.x or higher.
+- **Git:** Git v2.x or higher.
+- **MariaDB:** MariaDB v10.x or higher.
+- **Redis:** Redis v6.x or higher
 
-- **Windows:**
-  1. Download the [Node.js installer](https://nodejs.org/).
-  2. Run the installer and follow the prompts.
+These prerequisites are essential for deploying and running Osmo-Notify in a environment.
 
-- **macOS:**
-  1. Install [Homebrew](https://brew.sh/) (a package manager for macOS).
-  2. Open a terminal and run:
-     ```sh
-     brew install node
-     ```
-
-- **Linux (Ubuntu/Debian):**
-  1. Open a terminal and run:
-     ```sh
-     sudo apt update
-     sudo apt install nodejs
-     ```
-
-- **Linux (Fedora):**
-  1. Open a terminal and run:
-     ```sh
-     sudo dnf install nodejs
-     ```
-
-### Git
-
-- **Windows:**
-  Download the [Git installer](https://git-scm.com/).
-  Run the installer and follow the prompts.
-
-- **macOS:**
-  Git should be pre-installed. You can check by running `git --version` in the terminal.
-
-- **Linux (Ubuntu/Debian):**
-  Open a terminal and run:
-  ```sh
-  sudo apt update
-  sudo apt install git
-  ```
-
-- **Linux (Fedora):**
-  Open a terminal and run:
-  ```sh
-  sudo dnf install git
-  ```
+Please make sure to have these versions installed on your development server before proceeding with the setup.
 
 ## Getting Started
 
@@ -71,6 +34,7 @@ Before you begin, ensure that you have the following software installed on your 
    ```
 
 3. Create a .env file in the project root and add the required environment variables:
+
 ```env
 # Server
 SERVER_PORT=3000
@@ -90,11 +54,12 @@ SMTP_USERNAME=your-smtp-username
 SMTP_PASSWORD=your-smtp-password
 
 ```
-Make sure to replace your-password, your-database, your-smtp-username, and your-smtp-password with appropriate values. Server Port is `3000`, you can update it if you want to use a different port of your choice.
+
+Make sure to replace `your-password`, `your-database`, `your-smtp-username`, and `your-smtp-password` with appropriate values. Server Port is `3000`, you can update it if you want to use a different port of your choice.
 
 4. Set up the database:
 
-   - Ensure your database server (e.g., MySQL) is running.
+   - Ensure your database server (e.g., MariaDB) is running.
    - Run database migrations to create tables:
 
      ```sh
@@ -107,4 +72,4 @@ Make sure to replace your-password, your-database, your-smtp-username, and your-
    npm run start:dev
    ```
 
-   Your NestJS application will now be running locally at `http://localhost:3000`.
+Osmo-Notify will now be running locally at `http://localhost:3000`.
