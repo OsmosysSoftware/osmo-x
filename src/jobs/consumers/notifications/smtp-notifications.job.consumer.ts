@@ -34,7 +34,5 @@ export class SmtpNotificationConsumer {
     } finally {
       await this.notificationRepository.save(notification);
     }
-
-    await this.notificationRepository.save(notification);
   }
 }
