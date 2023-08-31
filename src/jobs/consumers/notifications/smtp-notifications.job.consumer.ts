@@ -30,7 +30,7 @@ export class SmtpNotificationConsumer {
       notification.result = { result };
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.FAILED;
-      notification.result = error;
+      notification.result = { result: error };
     } finally {
       await this.notificationRepository.save(notification);
     }
