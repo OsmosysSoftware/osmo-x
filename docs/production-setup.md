@@ -15,8 +15,10 @@ Before setting up Osmo-Notify for production, ensure you have the following prer
 
 These prerequisites are essential for deploying and running Osmo-Notify in a environment.
 
-## Server Configuration
+Make sure Redis and MariaDB server are up and running.
 
+## Server Configuration
+Make sure 
 1. **Environment Variables:** Set the necessary environment variables on your production server. These variables include database configuration, SMTP settings, and any other variables your application requires. Ensure the `.env` file is properly configured with production values.
 
   ```env
