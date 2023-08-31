@@ -31,6 +31,7 @@ Imagine having a central hub where you can create and send notifications seamles
 ## Documentation
 
 - [Development Setup](docs/development-setup.md)
+- [Production Setup](docs/production-setup.md)
 
 ## Contributing
 
