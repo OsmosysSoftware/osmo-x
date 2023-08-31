@@ -20,8 +20,7 @@ export class NotificationsService {
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
     const notification = new Notification(notificationData);
-    const data = await this.notificationRepository.save(notification);
-    return data;
+    return this.notificationRepository.save(notification);
   }
 
   // TODO: Move to its own separate file
