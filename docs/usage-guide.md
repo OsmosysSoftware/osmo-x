@@ -67,19 +67,23 @@ To use the Osmo-Notify API, follow these steps:
 
 ## 4. Tracking Notification Status
 
-Osmo-Notify updates the `deliveryStatus` and `result` columns to provide information on the notification's status. Use these columns to track the progress of your notifications.
+Osmo-Notify updates the `delivery_status` and `result` columns to provide information on the notification's status. Use these columns to track the progress of your notifications in database.
 
 ## 5. Available Channel Types
 
 Osmo-Notify supports multiple channel types, allowing you to choose the most suitable one for your notifications. Currently, the available channel types are:
 
-- **SMTP (Simple Mail Transfer Protocol):** ChannelType = 1
+|           **Channel Type**           | **Value** |       **Document**       |
+|:------------------------------------:|:---------:|:------------------------:|
+| SMTP - Simple Mail Transfer Protocol |     1     | [SMTP](channels/smtp.md) |
 
 ## 6. Delivery Status Information
 
-Osmo-Notify provides different delivery status options to reflect the state of your notifications:
+Osmo-Notify provides different delivery status options to reflect the state of your notifications:**
 
-- **PENDING:** The notification is awaiting processing. DeliveryStatus = 1
-- **IN PROGRESS:** The notification is currently being sent. DeliveryStatus = 2
-- **SUCCESS:** The notification was successfully delivered. DeliveryStatus = 3
-- **FAILED:** The notification delivery failed. DeliveryStatus = 4
+|  **Status** |                **Description**               | **Value** |
+|:-----------:|:--------------------------------------------:|:---------:|
+| PENDING     | The notification is awaiting processing.     |     1     |
+| IN PROGRESS | The notification is currently being sent.    |     2     |
+| SUCCESS     | The notification was successfully delivered. |     3     |
+| FAILED      | The notification delivery failed.            |     4     |
