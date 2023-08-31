@@ -18,6 +18,8 @@ These prerequisites are essential for deploying and running Osmo-Notify in a env
 
 Please make sure to have these versions installed on your development server before proceeding with the setup.
 
+Make sure Redis and MariaDB server are up and running.
+
 ## Getting Started
 
 1. Clone the repository to your local machine:
