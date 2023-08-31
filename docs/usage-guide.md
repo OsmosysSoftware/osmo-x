@@ -6,12 +6,12 @@ Welcome to the usage guide for Osmo-Notify, a powerful notification management s
 
 ## Table of Contents
 
-1. Overview
-2. Pushing Data to the Database
-3. Using the Osmo-Notify API
-4. Tracking Notification Status
-5. Available Channel Types
-6. Delivery Status Information
+1. [Overview](#overview)
+2. [Pushing Data to the Database](#pushing-data-to-the-database)
+3. [Using the Osmo-Notify API](#using-the-osmo-notify-api)
+4. [Tracking Notification Status](#tracking-notification-status)
+5. [Available Channel Types](#available-channel-types)
+6. [Delivery Status Information](#delivery-status-information)
 
 ## 1. Overview
 
