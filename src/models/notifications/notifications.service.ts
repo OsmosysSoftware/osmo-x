@@ -5,8 +5,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Notification } from './entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
-import { NotificationData } from 'src/common/types/NotificationData';
 import { Status } from 'src/common/constants/database';
+import { CreateNotificationDto } from './dtos/create-notification.dto';
 
 @Injectable()
 export class NotificationsService {
@@ -18,13 +18,10 @@ export class NotificationsService {
     private readonly notificationQueueService: NotificationQueueProducer,
   ) {}
 
-  async createNotification(notificationData: NotificationData): Promise<Notification[]> {
-    const currentDate = new Date();
-    notificationData.createdOn = currentDate.toISOString();
-    notificationData.deliveryStatus = DeliveryStatus.PENDING;
-    const notification = this.notificationRepository.create(notificationData);
-    const result = await this.notificationRepository.save(notification);
-    return result;
+  async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
+    const notification = new Notification(notificationData);
+    const data = await this.notificationRepository.save(notification);
+    return data;
   }
 
   // TODO: Move to its own separate file

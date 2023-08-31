@@ -27,14 +27,12 @@ export class SmtpNotificationConsumer {
         notification.data as nodemailer.SendMailOptions,
       );
       notification.deliveryStatus = DeliveryStatus.SUCCESS;
-      notification.result = result;
+      notification.result = { result };
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.FAILED;
-      notification.result = error.message;
+      notification.result = error;
     } finally {
       await this.notificationRepository.save(notification);
     }
-
-    await this.notificationRepository.save(notification);
   }
 }

@@ -26,7 +26,7 @@ export class Migration1692870736644 implements MigrationInterface {
           {
             name: 'delivery_status',
             type: 'tinyint',
-            default: 0,
+            default: 1,
           },
           {
             name: 'result',

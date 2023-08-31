@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { IsEnum, IsOptional, IsJSON } from 'class-validator';
+import { IsEnum, IsOptional, IsObject } from 'class-validator';
 import { Status } from 'src/common/constants/database';
 import { ChannelType, DeliveryStatus } from 'src/common/constants/notifications';
 
@@ -19,8 +19,8 @@ export class Notification {
   channelType: number;
 
   @Column({ type: 'json' })
-  @IsJSON()
-  data: string;
+  @IsObject()
+  data: Record<string, unknown>;
 
   @Column({
     name: 'delivery_status',
@@ -32,9 +32,9 @@ export class Notification {
   deliveryStatus: number;
 
   @Column({ type: 'json', nullable: true })
-  @IsJSON()
+  @IsObject()
   @IsOptional()
-  result: string;
+  result: Record<string, unknown>;
 
   @CreateDateColumn({ name: 'created_on' })
   createdOn: Date;
@@ -55,4 +55,8 @@ export class Notification {
   })
   @IsEnum(Status)
   status: number;
+
+  constructor(notification: Partial<Notification>) {
+    Object.assign(this, notification);
+  }
 }
