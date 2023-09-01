@@ -42,10 +42,10 @@ export class Notification {
   @UpdateDateColumn({ name: 'updated_on' })
   updatedOn: Date;
 
-  @Column({ name: 'created_by', nullable: true })
+  @Column({ name: 'created_by' })
   createdBy: string;
 
-  @Column({ name: 'updated_by', nullable: true })
+  @Column({ name: 'updated_by' })
   updatedBy: string;
 
   @Column({

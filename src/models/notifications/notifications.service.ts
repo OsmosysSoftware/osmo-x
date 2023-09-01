@@ -7,6 +7,7 @@ import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NotificationsService {
@@ -16,10 +17,13 @@ export class NotificationsService {
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
     private readonly notificationQueueService: NotificationQueueProducer,
+    private readonly configService: ConfigService,
   ) {}
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
     const notification = new Notification(notificationData);
+    notification.createdBy = this.configService.getOrThrow<string>('CREATED_BY') || 'osmo_notify';
+    notification.updatedBy = this.configService.getOrThrow<string>('CREATED_BY') || 'osmo_notify';
     return this.notificationRepository.save(notification);
   }
 
