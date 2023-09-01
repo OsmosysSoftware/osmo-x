@@ -55,6 +55,7 @@ export class NotificationsService {
     return this.notificationRepository.find({
       where: {
         deliveryStatus: DeliveryStatus.PENDING,
+        status: Status.ACTIVE,
       },
     });
   }
