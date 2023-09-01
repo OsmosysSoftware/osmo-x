@@ -1,7 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import { NotificationData } from 'src/common/types/NotificationData';
 import { Notification } from './entities/notification.entity';
+import { CreateNotificationDto } from './dtos/create-notification.dto';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -9,8 +9,8 @@ export class NotificationsController {
 
   @Post()
   async addNotification(
-    @Body() notificationData: NotificationData,
-  ): Promise<{ notification: Notification[] }> {
+    @Body() notificationData: CreateNotificationDto,
+  ): Promise<{ notification: Notification }> {
     const createdNotification = await this.notificationService.createNotification(notificationData);
     return {
       notification: createdNotification,
