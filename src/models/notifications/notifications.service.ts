@@ -22,8 +22,8 @@ export class NotificationsService {
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
     const notification = new Notification(notificationData);
-    notification.createdBy = this.configService.getOrThrow<string>('CREATED_BY') || 'osmo_notify';
-    notification.updatedBy = this.configService.getOrThrow<string>('CREATED_BY') || 'osmo_notify';
+    notification.createdBy = this.configService.getOrThrow<string>('APP_NAME') || 'osmo_notify';
+    notification.updatedBy = this.configService.getOrThrow<string>('APP_NAME') || 'osmo_notify';
     return this.notificationRepository.save(notification);
   }
 
