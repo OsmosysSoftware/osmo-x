@@ -11,7 +11,7 @@ import { NotificationsService } from 'src/models/notifications/notifications.ser
 
 @Processor('smtpNotifications')
 export class SmtpNotificationConsumer {
-  private readonly logger = new Logger(NotificationsService.name);
+  private readonly logger = new Logger(SmtpNotificationConsumer.name);
 
   constructor(
     @InjectRepository(Notification)
