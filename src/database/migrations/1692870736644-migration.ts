@@ -47,12 +47,10 @@ export class Migration1692870736644 implements MigrationInterface {
           {
             name: 'created_by',
             type: 'varchar',
-            isNullable: true,
           },
           {
             name: 'updated_by',
             type: 'varchar',
-            isNullable: true,
           },
           {
             name: 'status',
