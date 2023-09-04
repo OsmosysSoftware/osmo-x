@@ -8,14 +8,10 @@ import { NotificationQueueProducer } from 'src/jobs/producers/notifications/noti
 import { SmtpNotificationConsumer } from 'src/jobs/consumers/notifications/smtp-notifications.job.consumer';
 import { SmtpService } from 'src/services/email/smtp/smtp.service';
 import { ConfigService } from '@nestjs/config';
+import { smtpQueueConfig } from './queues/smtp.queue';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Notification]),
-    BullModule.registerQueue({
-      name: 'smtpNotifications',
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([Notification]), BullModule.registerQueue(smtpQueueConfig)],
   providers: [
     NotificationQueueProducer,
     SmtpNotificationConsumer,
