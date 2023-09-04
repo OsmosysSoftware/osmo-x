@@ -7,6 +7,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { SmtpService } from './services/email/smtp/smtp.service';
 import { BullModule } from '@nestjs/bull';
 import { DatabaseModule } from './database/database.module';
+import { MailgunService } from './services/email/mailgun/mailgun.service';
 
 @Module({
   imports: [
@@ -26,6 +27,6 @@ import { DatabaseModule } from './database/database.module';
     NotificationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, SmtpService],
+  providers: [AppService, SmtpService, MailgunService],
 })
 export class AppModule {}
