@@ -2,17 +2,17 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
-import { DatabaseConfiguration } from './config/database/configuration';
 import { NotificationsModule } from './models/notifications/notifications.module';
 import { SmtpService } from './services/email/smtp/smtp.service';
 import { BullModule } from '@nestjs/bull';
+import { DatabaseModule } from './database/database.module';
 
 const configService = new ConfigService();
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    DatabaseModule,
     BullModule.forRoot({
       redis: {
         host: configService.getOrThrow<string>('REDIS_HOST'),
@@ -20,10 +20,6 @@ const configService = new ConfigService();
       },
     }),
     ScheduleModule.forRoot(),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useClass: DatabaseConfiguration,
-    }),
     NotificationsModule,
   ],
   controllers: [AppController],
