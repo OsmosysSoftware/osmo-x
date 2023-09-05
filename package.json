@@ -34,6 +34,7 @@
     "bull": "^4.11.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "mailgun.js": "^9.2.1",
     "mysql2": "^3.6.0",
     "nest-winston": "^1.9.4",
     "nodemailer": "^6.9.4",
