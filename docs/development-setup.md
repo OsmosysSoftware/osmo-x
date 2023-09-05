@@ -40,7 +40,7 @@ Make sure Redis and MariaDB server are up and running.
    ```env
    # Server
    SERVER_PORT=3000
-  
+
    # Database configuration
    DB_TYPE=mysql
    DB_HOST=localhost
@@ -64,7 +64,7 @@ Make sure to replace `your-password`, `your-database`, `your-smtp-username`, and
    - Run database migrations to create tables:
 
      ```sh
-     npm run typeorm:migrate
+     npm run typeorm:run-migration
      ```
 
 5. Start the development server:
