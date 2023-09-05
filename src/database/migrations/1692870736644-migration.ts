@@ -21,7 +21,7 @@ export class Migration1692870736644 implements MigrationInterface {
           },
           {
             name: 'data',
-            type: 'json',
+            type: 'text',
           },
           {
             name: 'delivery_status',
@@ -30,7 +30,7 @@ export class Migration1692870736644 implements MigrationInterface {
           },
           {
             name: 'result',
-            type: 'json',
+            type: 'text',
             isNullable: true,
           },
           {
