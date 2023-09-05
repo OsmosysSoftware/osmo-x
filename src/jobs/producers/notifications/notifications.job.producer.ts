@@ -18,10 +18,6 @@ export class NotificationQueueProducer {
       this.logger.error('Redis connection error:');
       this.logger.error(JSON.stringify(error, ['message', 'stack', 2]));
     });
-    this.mailgunQueue.client.on('error', (error) => {
-      this.logger.error('Redis connection error:');
-      this.logger.error(JSON.stringify(error, ['message', 'stack', 2]));
-    });
   }
   async addNotificationToQueue(notification: Notification): Promise<void> {
     switch (notification.channelType) {

@@ -22,7 +22,7 @@ export class MailgunNotificationConsumer {
   ) {}
 
   @Process()
-  async processMailgunNotificationQueue(job: Job): Promise<void> {
+  async processMailgunNotificationQueue(job: Job<number>): Promise<void> {
     const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
 

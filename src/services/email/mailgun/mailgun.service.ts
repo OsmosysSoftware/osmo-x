@@ -8,6 +8,7 @@ export class MailgunService {
   private configService: ConfigService = new ConfigService();
   private mailgun: Mailgun = new Mailgun(FormData);
   private mailgunClient;
+  private mailgunDomain: string;
 
   constructor() {
     this.mailgunClient = this.mailgun.client({
@@ -15,12 +16,10 @@ export class MailgunService {
       key: this.configService.getOrThrow<string>('MAILGUN_API_KEY'),
       host: this.configService.getOrThrow<string>('MAILGUN_HOST'),
     } as MailgunClientOptions);
+    this.mailgunDomain = this.configService.getOrThrow<string>('MAILGUN_DOMAIN');
   }
 
   sendEmail(mailgunNotificationData: MailgunMessageData): Promise<MessagesSendResult> {
-    return this.mailgunClient.messages.create(
-      this.configService.getOrThrow<string>('MAILGUN_DOMAIN'),
-      mailgunNotificationData,
-    );
+    return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
   }
 }
