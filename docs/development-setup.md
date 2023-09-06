@@ -76,7 +76,7 @@ Make sure to replace the above example values with appropriate values as per you
    - Run database migrations to create tables:
 
      ```sh
-     npm run typeorm:migrate
+     npm run typeorm:run-migration
      ```
 
 5. Start the development server:
