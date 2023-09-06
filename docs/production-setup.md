@@ -18,7 +18,7 @@ These prerequisites are essential for deploying and running Osmo-Notify in a env
 Make sure Redis and MariaDB server are up and running.
 
 ## Server Configuration
-Make sure 
+
 1. **Environment Variables:** Set the necessary environment variables on your production server. These variables include database configuration, SMTP settings, and any other variables your application requires. Ensure the `.env` file is properly configured with production values.
 
   ```env
@@ -33,14 +33,26 @@ Make sure
   DB_PASSWORD=your-password
   DB_NAME=your-database
 
+  # Redis configuration
+  REDIS_HOST=127.0.0.1
+  REDIS_PORT=6379
+
   # SMTP
   SMTP_HOST=smtp.example.com
   SMTP_PORT=587
   SMTP_USERNAME=your-smtp-username
   SMTP_PASSWORD=your-smtp-password
+
+  # Mailgun
+  MAILGUN_API_KEY=your-mailgun-api-key
+  MAILGUN_HOST=api.mailgun.net
+  MAILGUN_DOMAIN=your.mailgun.domain
+
+  # TEMP
+  APP_NAME=osmo_notify
   ```
 
-Make sure to replace `your-password`, `your-database`, `your-smtp-username`, and `your-smtp-password` with appropriate values. Server Port is `3000`, you can update it if you want to use a different port of your choice.
+Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
 
 ## Building and Preparing
 

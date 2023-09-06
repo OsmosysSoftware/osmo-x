@@ -73,9 +73,10 @@ Osmo-Notify updates the `delivery_status` and `result` columns to provide inform
 
 Osmo-Notify supports multiple channel types, allowing you to choose the most suitable one for your notifications. Currently, the available channel types are:
 
-|           **Channel Type**           | **Value** |       **Document**       |
-|:------------------------------------:|:---------:|:------------------------:|
-| SMTP - Simple Mail Transfer Protocol |     1     | [SMTP](channels/smtp.md) |
+|           **Channel Type**           | **Value** |          **Document**          |
+|:------------------------------------:|:---------:|:------------------------------:|
+| SMTP - Simple Mail Transfer Protocol |     1     | [SMTP](channels/smtp.md)       |
+| Mailgun                              |     2     | [Mailgun](channels/mailgun.md) |
 
 ## 6. Delivery Status Information
 
