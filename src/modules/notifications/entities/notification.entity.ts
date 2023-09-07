@@ -8,6 +8,7 @@ import {
 import { IsEnum, IsOptional, IsObject } from 'class-validator';
 import { Status } from 'src/common/constants/database';
 import { ChannelType, DeliveryStatus } from 'src/common/constants/notifications';
+import { CreateNotificationDataDto } from '../dtos/create-notification-data.dto';
 
 @Entity({ name: 'notify_notifications' })
 export class Notification {
@@ -20,7 +21,7 @@ export class Notification {
 
   @Column({ type: 'json' })
   @IsObject()
-  data: Record<string, unknown>;
+  data: CreateNotificationDataDto;
 
   @Column({
     name: 'delivery_status',
