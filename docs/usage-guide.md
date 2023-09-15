@@ -45,22 +45,26 @@ To use the Osmo-Notify API, follow these steps:
 **Response:**
 ```json
 {
-  "notification": {
-    "channelType": "smtp-server",
-    "data": {
-      "from": "sender@example.com",
-      "to": "recipient@example.com",
-      "subject": "Test subject",
-      "text": "This is a test notification",
-      "html": "<b>This is a test notification</b>"
-    },
-    "deliveryStatus": 1,
-    "createdBy": "osmo-notify",
-    "createdOn": "2023-08-25T10:55:36.794Z",
-    "result": null,
-    "modifiedBy": null,
-    "modifiedOn": null,
-    "id": 1
+  "status": "success",
+  "data": {
+    "notification": {
+      "channelType": 1,
+      "data": {
+        "from": "sender@example.com",
+        "to": "recipient@example.com",
+        "subject": "Test subject",
+        "text": "This is a test notification",
+        "html": "<b>This is a test notification</b>"
+      },
+      "createdBy": "osmo_notify",
+      "updatedBy": "osmo_notify",
+      "result": null,
+      "id": 36,
+      "deliveryStatus": 1,
+      "createdOn": "2023-09-08T13:11:52.000Z",
+      "updatedOn": "2023-09-08T13:11:52.000Z",
+      "status": 1
+    }
   }
 }
 ```
@@ -80,7 +84,7 @@ Osmo-Notify supports multiple channel types, allowing you to choose the most sui
 
 ## 6. Delivery Status Information
 
-Osmo-Notify provides different delivery status options to reflect the state of your notifications:**
+Osmo-Notify provides different delivery status options to reflect the state of your notifications:
 
 |  **Status** |                **Description**               | **Value** |
 |:-----------:|:--------------------------------------------:|:---------:|
