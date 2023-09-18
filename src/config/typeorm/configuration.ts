@@ -15,5 +15,6 @@ export default new DataSource({
   database: configService.getOrThrow<string>('DB_NAME'),
   entities: [],
   migrations: ['src/database/migrations/**'],
+  migrationsTableName: 'notify_migrations',
   synchronize: false,
 } as DataSourceOptions);
