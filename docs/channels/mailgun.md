@@ -23,14 +23,14 @@ Here's a sample request body:
 {
   "channelType": 2,
   "data": {
-    "from": "sender@example.com",                   # Sender's email address
-    "to": "recipient@example.com",                  # Recipient's email address
-    "cc": "cc@example.com",                         # CC email address (optional)
-    "bcc": "bcc@example.com",                       # BCC email address (optional)
-    "subject": "Test subject",                      # Email subject
-    "text": "This is a test notification",          # Plain text version of the email
-    "html": "<b>This is a test notification</b>",   # HTML version of the email
-    "attachment": [                                 # Attachments (optional)
+    "from": "sender@example.com",                   // Sender's email address
+    "to": "recipient@example.com",                  // Recipient's email address
+    "cc": "cc@example.com",                         // CC email address (optional)
+    "bcc": "bcc@example.com",                       // BCC email address (optional)
+    "subject": "Test subject",                      // Email subject
+    "text": "This is a test notification",          // Plain text version of the email
+    "html": "<b>This is a test notification</b>",   // HTML version of the email
+    "attachment": [                                 // Attachments (optional)
       {
         "filename": "names.txt",
         "data": "John Doe\nJane Doe",
