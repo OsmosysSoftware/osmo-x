@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Logger } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { Notification } from './entities/notification.entity';
@@ -12,6 +12,7 @@ import { smtpQueueConfig } from './queues/smtp.queue';
 import { MailgunService } from 'src/services/email/mailgun/mailgun.service';
 import { mailgunQueueConfig } from './queues/mailgun.queue';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
+import { JsendFormatter } from 'src/common/jsend-formatter';
 
 @Module({
   imports: [
@@ -26,6 +27,8 @@ import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/ma
     SmtpService,
     MailgunService,
     ConfigService,
+    JsendFormatter,
+    Logger,
   ],
   exports: [NotificationsService],
   controllers: [NotificationsController],
