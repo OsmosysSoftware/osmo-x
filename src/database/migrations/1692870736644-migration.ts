@@ -63,6 +63,6 @@ export class Migration1692870736644 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE \`notifications\``);
+    await queryRunner.query(`DROP TABLE \`notify_notifications\``);
   }
 }
