@@ -1,4 +1,6 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
+import { CreateNotificationAttachmentDto } from './create-notification-attachment.dto';
 
 export class CreateNotificationDataDto {
   @IsNotEmpty()
@@ -24,4 +26,9 @@ export class CreateNotificationDataDto {
   @IsNotEmpty()
   @IsString()
   html: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateNotificationAttachmentDto)
+  attachments: CreateNotificationAttachmentDto[];
 }

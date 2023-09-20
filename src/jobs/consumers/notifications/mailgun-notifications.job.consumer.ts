@@ -28,7 +28,12 @@ export class MailgunNotificationConsumer {
 
     try {
       this.logger.log(`Sending notification with id: ${id}`);
-      const result = await this.mailgunService.sendEmail(notification.data as MailgunMessageData);
+      const formattedNotificationData = this.mailgunService.formatNotificationData(
+        notification.data,
+      );
+      const result = await this.mailgunService.sendEmail(
+        formattedNotificationData as MailgunMessageData,
+      );
       notification.deliveryStatus = DeliveryStatus.SUCCESS;
       notification.result = { result };
     } catch (error) {
