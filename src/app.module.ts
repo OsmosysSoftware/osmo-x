@@ -8,6 +8,8 @@ import { SmtpService } from './services/email/smtp/smtp.service';
 import { BullModule } from '@nestjs/bull';
 import { DatabaseModule } from './database/database.module';
 import { MailgunService } from './services/email/mailgun/mailgun.service';
+import { Wa360dialogService } from './services/whatsapp/wa360dialog/wa360dialog.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -25,8 +27,9 @@ import { MailgunService } from './services/email/mailgun/mailgun.service';
     }),
     ScheduleModule.forRoot(),
     NotificationsModule,
+    HttpModule,
   ],
   controllers: [AppController],
-  providers: [AppService, SmtpService, MailgunService],
+  providers: [AppService, SmtpService, MailgunService, Wa360dialogService],
 })
 export class AppModule {}

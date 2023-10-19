@@ -8,9 +8,6 @@ import { NotificationQueueProducer } from 'src/jobs/producers/notifications/noti
 import { Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { ConfigService } from '@nestjs/config';
-import { validateOrReject } from 'class-validator';
-import { plainToClass } from 'class-transformer';
-import { CreateNotificationDataDto } from './dtos/create-notification-data.dto';
 
 @Injectable()
 export class NotificationsService {
@@ -49,9 +46,6 @@ export class NotificationsService {
     for (const notification of pendingNotifications) {
       try {
         notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
-        await validateOrReject(plainToClass(CreateNotificationDataDto, notification.data), {
-          validationError: { target: false },
-        });
         await this.notificationQueueService.addNotificationToQueue(notification);
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.PENDING;
