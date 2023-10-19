@@ -47,6 +47,10 @@ Make sure Redis and MariaDB server are up and running.
   MAILGUN_API_KEY=your-mailgun-api-key
   MAILGUN_HOST=api.mailgun.net
   MAILGUN_DOMAIN=your.mailgun.domain
+  
+  # WhatsApp 360Dialog
+  WA_360_DIALOG_URL=https://waba.360dialog.io/v1/messages
+  WA_360_DIALOG_API_KEY=
 
   # TEMP
   APP_NAME=osmo_notify
