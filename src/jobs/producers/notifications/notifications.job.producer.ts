@@ -5,12 +5,14 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { SMTP_QUEUE } from 'src/modules/notifications/queues/smtp.queue';
 import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
 import { ChannelType } from 'src/common/constants/notifications';
+import { WA360DIALOG_QUEUE } from 'src/modules/notifications/queues/wa360dialog.queue';
 
 @Injectable()
 export class NotificationQueueProducer {
   constructor(
     @InjectQueue(SMTP_QUEUE) private readonly smtpQueue: Queue,
     @InjectQueue(MAILGUN_QUEUE) private readonly mailgunQueue: Queue,
+    @InjectQueue(WA360DIALOG_QUEUE) private readonly wa360DialogQueueConfig: Queue,
   ) {}
   private readonly logger = new Logger(NotificationQueueProducer.name);
   async onModuleInit(): Promise<void> {
@@ -26,6 +28,9 @@ export class NotificationQueueProducer {
         break;
       case ChannelType.MAILGUN:
         await this.mailgunQueue.add(notification.id);
+        break;
+      case ChannelType.WA_360_DAILOG:
+        await this.wa360DialogQueueConfig.add(notification.id);
         break;
     }
   }

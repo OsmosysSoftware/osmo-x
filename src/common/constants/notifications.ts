@@ -8,4 +8,5 @@ export const DeliveryStatus = {
 export const ChannelType = {
   SMTP: 1,
   MAILGUN: 2,
+  WA_360_DAILOG: 3,
 };

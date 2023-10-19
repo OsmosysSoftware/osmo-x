@@ -13,19 +13,26 @@ import { MailgunService } from 'src/services/email/mailgun/mailgun.service';
 import { mailgunQueueConfig } from './queues/mailgun.queue';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
 import { JsendFormatter } from 'src/common/jsend-formatter';
+import { wa360DialogQueueConfig } from './queues/wa360dialog.queue';
+import { Wa360dialogService } from 'src/services/whatsapp/wa360dialog/wa360dialog.service';
+import { Wa360dialogNotificationsConsumer } from 'src/jobs/consumers/notifications/wa360dialog-notifications.job.consumer';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Notification]),
-    BullModule.registerQueue(smtpQueueConfig, mailgunQueueConfig),
+    BullModule.registerQueue(smtpQueueConfig, mailgunQueueConfig, wa360DialogQueueConfig),
+    HttpModule,
   ],
   providers: [
     NotificationQueueProducer,
     SmtpNotificationConsumer,
     MailgunNotificationConsumer,
+    Wa360dialogNotificationsConsumer,
     NotificationsService,
     SmtpService,
     MailgunService,
+    Wa360dialogService,
     ConfigService,
     JsendFormatter,
     Logger,
