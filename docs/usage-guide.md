@@ -84,7 +84,7 @@ Osmo-Notify supports multiple channel types, allowing you to choose the most sui
 |:------------------------------------:|:---------:|:------------------------------:|
 | SMTP - Simple Mail Transfer Protocol |     1     | [SMTP](channels/smtp.md)       |
 | Mailgun                              |     2     | [Mailgun](channels/mailgun.md) |
-| WhatsApp - 360Dialog                 |     2     | [360Dialog](channels/360Dialog.md) |
+| WhatsApp - 360Dialog                 |     3     | [360Dialog](channels/360Dialog.md) |
 
 ## 6. Delivery Status Information
 
