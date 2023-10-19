@@ -6,12 +6,15 @@ Welcome to the usage guide for Osmo-Notify, a powerful notification management s
 
 ## Table of Contents
 
-1. [Overview](#1-overview)
-2. [Pushing Data to the Database](#2-pushing-data-to-the-database)
-3. [Using the Osmo-Notify API](#3-using-the-osmo-notify-api)
-4. [Tracking Notification Status](4-#tracking-notification-status)
-5. [Available Channel Types](#5-available-channel-types)
-6. [Delivery Status Information](#6-delivery-status-information)
+- [Usage Guide for Osmo-Notify](#usage-guide-for-osmo-notify)
+  - [Introduction](#introduction)
+  - [Table of Contents](#table-of-contents)
+  - [1. Overview](#1-overview)
+  - [2. Pushing Data to the Database](#2-pushing-data-to-the-database)
+  - [3. Using the Osmo-Notify API](#3-using-the-osmo-notify-api)
+  - [4. Tracking Notification Status](#4-tracking-notification-status)
+  - [5. Available Channel Types](#5-available-channel-types)
+  - [6. Delivery Status Information](#6-delivery-status-information)
 
 ## 1. Overview
 
@@ -81,6 +84,7 @@ Osmo-Notify supports multiple channel types, allowing you to choose the most sui
 |:------------------------------------:|:---------:|:------------------------------:|
 | SMTP - Simple Mail Transfer Protocol |     1     | [SMTP](channels/smtp.md)       |
 | Mailgun                              |     2     | [Mailgun](channels/mailgun.md) |
+| WhatsApp - 360Dialog                 |     3     | [360Dialog](channels/360Dialog.md) |
 
 ## 6. Delivery Status Information
 
