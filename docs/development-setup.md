@@ -52,19 +52,22 @@ Make sure Redis and MariaDB server are up and running.
    # Redis configuration
    REDIS_HOST=127.0.0.1
    REDIS_PORT=6379
-
+   
    # SMTP
-   SMTP_HOST=smtp.example.com
-   SMTP_PORT=587
-   SMTP_USERNAME=your-smtp-username
-   SMTP_PASSWORD=your-smtp-password
+   ENABLE_SMTP=true
+   SMTP_HOST=
+   SMTP_PORT=
+   SMTP_USERNAME=
+   SMTP_PASSWORD=
 
    # Mailgun
-   MAILGUN_API_KEY=your-mailgun-api-key
-   MAILGUN_HOST=api.mailgun.net
-   MAILGUN_DOMAIN=your.mailgun.domain
+   ENABLE_MAILGUN=true
+   MAILGUN_API_KEY=
+   MAILGUN_HOST=  # api.mailgun.net for US, api.eu.mailgun.net for EU
+   MAILGUN_DOMAIN=
 
    # WhatsApp 360Dialog
+   ENABLE_WA360DIALOG=true
    WA_360_DIALOG_URL=https://waba.360dialog.io/v1/messages
    WA_360_DIALOG_API_KEY=
 

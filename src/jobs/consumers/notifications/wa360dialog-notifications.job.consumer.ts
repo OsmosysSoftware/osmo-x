@@ -10,7 +10,7 @@ import { WA360DIALOG_QUEUE } from 'src/modules/notifications/queues/wa360dialog.
 import {
   Wa360DialogData,
   Wa360dialogService,
-} from 'src/services/whatsapp/wa360dialog/wa360dialog.service';
+} from 'src/modules/providers/wa360dialog/wa360dialog.service';
 
 @Processor(WA360DIALOG_QUEUE)
 export class Wa360dialogNotificationsConsumer {

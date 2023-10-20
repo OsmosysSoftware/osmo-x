@@ -8,6 +8,7 @@ When using Mailgun to send emails via their API, you need to provide certain env
 
 ```sh
 # Mailgun
+ENABLE_MAILGUN=true
 MAILGUN_API_KEY=your-api-key         # Your Mailgun API key
 MAILGUN_HOST=api.mailgun.net         # Mailgun host; api.mailgun.net for US, api.eu.mailgun.net for EU
 MAILGUN_DOMAIN=your.mailgun.domain   # Your Mailgun domain name

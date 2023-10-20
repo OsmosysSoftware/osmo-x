@@ -5,10 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
-import { SmtpService } from 'src/services/email/smtp/smtp.service';
 import * as nodemailer from 'nodemailer';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { SMTP_QUEUE } from 'src/modules/notifications/queues/smtp.queue';
+import { SmtpService } from 'src/modules/providers/smtp/smtp.service';
 
 @Processor(SMTP_QUEUE)
 export class SmtpNotificationConsumer {

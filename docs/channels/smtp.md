@@ -8,6 +8,7 @@ When using Nodemailer to send emails via SMTP, you need to provide certain envir
 
 ```sh
 # SMTP Configuration
+ENABLE_SMTP=true
 SMTP_HOST=smtp.example.com         # SMTP server hostname
 SMTP_PORT=587                      # Port number for SMTP (587 for TLS, 465 for SSL)
 SMTP_USERNAME=your-smtp-username   # Your SMTP username for authentication
