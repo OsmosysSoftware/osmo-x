@@ -44,22 +44,25 @@ interface Parameter {
 
 @Injectable()
 export class Wa360dialogService {
+  private apiUrl: string;
+  private apiKey: string;
+
   constructor(
     private httpService: HttpService,
     private configService: ConfigService,
-  ) {}
+  ) {
+    this.apiUrl = this.configService.getOrThrow<string>('WA_360_DIALOG_URL');
+    this.apiKey = this.configService.getOrThrow<string>('WA_360_DIALOG_API_KEY');
+  }
 
   async sendMessage(body: Wa360DialogData): Promise<Wa360DialogResponse> {
     try {
-      const apiUrl = this.configService.getOrThrow<string>('WA_360_DIALOG_URL');
-      const apiKey = this.configService.getOrThrow<string>('WA_360_DIALOG_API_KEY');
-
       const headers = {
-        'D360-API-KEY': apiKey,
+        'D360-API-KEY': this.apiKey,
         'Content-Type': 'application/json',
       };
 
-      const response = await this.httpService.post(apiUrl, body, { headers }).toPromise();
+      const response = await this.httpService.post(this.apiUrl, body, { headers }).toPromise();
 
       return response.data;
     } catch (error) {

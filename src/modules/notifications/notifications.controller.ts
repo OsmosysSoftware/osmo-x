@@ -20,6 +20,7 @@ export class NotificationsController {
     try {
       const createdNotification =
         await this.notificationService.createNotification(notificationData);
+      this.logger.log('Notification created successfully.');
       return this.jsend.success({ notification: createdNotification });
     } catch (error) {
       this.logger.error('Error while creating notification');

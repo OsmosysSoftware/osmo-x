@@ -8,6 +8,7 @@ When using 360Dialog to send whatsApp messages via their API, you need to provid
 
 ```sh
 # WhatsApp 360Dialog
+ENABLE_WA360DIALOG=true
 WA_360_DIALOG_URL=api-url # which is https://waba.360dialog.io/v1/messages
 WA_360_DIALOG_API_KEY=your-api-key
 ```

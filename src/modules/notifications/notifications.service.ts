@@ -22,7 +22,7 @@ export class NotificationsService {
   ) {}
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
-    this.logger.log('Creating notification');
+    this.logger.log('Creating notification...');
     const notification = new Notification(notificationData);
     notification.createdBy = this.configService.getOrThrow<string>('APP_NAME') || 'osmo_notify';
     notification.updatedBy = this.configService.getOrThrow<string>('APP_NAME') || 'osmo_notify';
