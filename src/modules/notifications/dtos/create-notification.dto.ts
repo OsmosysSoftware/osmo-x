@@ -1,11 +1,12 @@
 import { IsEnum, IsObject } from 'class-validator';
 import { ChannelType } from 'src/common/constants/notifications';
+import { IsDataValid } from 'src/common/decorators/is-data-valid.decorator';
 
 export class CreateNotificationDto {
   @IsEnum(ChannelType)
   channelType: number;
 
   @IsObject()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: Record<string, any>;
+  @IsDataValid()
+  data: Record<string, unknown>;
 }
