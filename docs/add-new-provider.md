@@ -131,11 +131,7 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
       break;
     ```
 
-9. **Update `notifications.module.ts` file**
-
-    Update the `src/modules/notifications/notifications.module.ts` file by importing your new service, queue config and consumer from respective files. Register the new queue in `BullModule` by using the imported queue config. Add the new service and consumer in `providers` array.
-
-10. **Update and add documentation**
+9. **Update and add documentation**
 
     Add a new document `<channel_name>.md` in the `docs/channels` folder describing environment variables to be set and how to use the new provider channel with sample request body and any additional information. Update the `usage-guide.md` file to add and link the new channel document under [5. Available Channel Types](usage-guide.md#5-available-channel-types).
 
