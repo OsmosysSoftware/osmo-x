@@ -123,7 +123,7 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
 
 8. **Update `notifications.job.producer.ts` file**
 
-    Update the `src/jobs/producers/notifications/notifications.job.producer.ts` file by adding a new switch case to add notification ID to your new queue if its channel type matches with your new provider channel.
+    Update the `src/jobs/producers/notifications/notifications.job.producer.ts` file by adding a new switch case to `addNotificationToQueue()` to your new queue if its channel type matches with your new provider channel.
 
     ```ts
     case ChannelType.CHANNEL_NAME:
