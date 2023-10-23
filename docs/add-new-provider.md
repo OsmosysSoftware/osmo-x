@@ -19,7 +19,7 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
 2. **Update `.env` and `.env.example`**
 
     If your new provider requires configuration values that will be set via the `.env` file, make sure to also update the `.env.example` file so that new users are up to date with needed environment variables and values.
-    You need to have a env value to determine whether or not to enable the changes.
+    You need to have a env value to determine whether or not to enable the provider.
 
     ```sh
     ENABLE_MY_NEW_SERVICE=true
