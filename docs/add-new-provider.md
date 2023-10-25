@@ -19,6 +19,11 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
 2. **Update `.env` and `.env.example`**
 
     If your new provider requires configuration values that will be set via the `.env` file, make sure to also update the `.env.example` file so that new users are up to date with needed environment variables and values.
+    You need to have a env value to determine whether or not to enable the provider.
+
+    ```sh
+    ENABLE_MY_NEW_SERVICE=true
+    ```
 
 3. **Update `src/common/constants/notifications.ts`**
 
@@ -30,6 +35,7 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
     export const ChannelType = {
       SMTP: 1,
       MAILGUN: 2,
+      WA_360_DAILOG: 3,
       <CHANNEL_NAME>: <number>,
     };
     ```
@@ -48,24 +54,59 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
     };
     ```
 
-5. **Generate new service file**
 
-    The new provider will require a service file. For this, run the following command to generate it using `nest`:
+5. **Generate a new module for the provider**
+
+    Create a new module for the provider, run the following command to generate it using `nest`:
 
     ```sh
-    nest generate service services/<type>/<channel_name>
+     nest generate module modules/providers/<channel_name>
     ```
 
     Here, the `<type>` value will depend on the kind of provider being added. For example, it can be `email`, `sms`, and so on.
 
     The `app.module.ts` file will automatically update to import this new service and add it in the `providers` array.
 
+    Remove the new added module from `app.module.ts` and add it in notifications module register logic.
+    Ex: 
+
+    ```js
+    if (configService.get<string>('ENABLE_MAILGUN') === 'true') {
+      modulesToLoad.push(MailgunModule);
+      queuesToLoad.push(mailgunQueueConfig);
+      consumersToLoad.push(MailgunNotificationConsumer);
+    }
+    ```
+
+5. **Generate new service file**
+
+    The new provider will require a service file. For this, run the following command to generate it using `nest`:
+
+    ```sh
+    nest generate service modules/providers/<channel_name>/<channel_name>
+    ```
+
+    The `app.module.ts` file will automatically update to import this new service and add it in the `providers` array.
+
+    Remove it from `app.module.ts` and add it to the earlier created channel specific module.
+    
+    Ex
+    ```js
+    import { Module } from '@nestjs/common';
+    import { MailgunService } from './mailgun.service';
+    import { ConfigModule } from '@nestjs/config';
+
+    @Module({ imports: [ConfigModule], providers: [MailgunService], exports: [MailgunService] })
+    export class MailgunModule {}
+    ```
+    Make sure to import ConfigModule too as service file will most probably be using related env variables.
+
 6. **Add logic in `.service.ts` file**
 
     Add the required logic in the `.service.ts` file, referring already added service files. A few points that can help in adding the logic are as follows:
 
     - Import needed modules from the newly added dependencies
-    - Create a constructor for initializing and configuring the object as needed. Also initialize and use any environment variables as needed
+    - Create a constructor for initializing and configuring the object as needed. Also initialize and use any environment variables as needed. Importing env in constructor with getOrThrow will let us know if something is missing in env file.
     - Create a `send` method named after `<type>` (`sendEmail`, `sendSms`, etc) which accepts the notification data and add code logic for sending it. Return the response received.
 
 7. **Create `.job.consumer.ts` file**
@@ -82,7 +123,7 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
 
 8. **Update `notifications.job.producer.ts` file**
 
-    Update the `src/jobs/producers/notifications/notifications.job.producer.ts` file by adding a new switch case to add notification ID to your new queue if its channel type matches with your new provider channel.
+    Update the `src/jobs/producers/notifications/notifications.job.producer.ts` file by adding a new switch case to `addNotificationToQueue()` to your new queue if its channel type matches with your new provider channel.
 
     ```ts
     case ChannelType.CHANNEL_NAME:
@@ -90,11 +131,7 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
       break;
     ```
 
-9. **Update `notifications.module.ts` file**
-
-    Update the `src/modules/notifications/notifications.module.ts` file by importing your new service, queue config and consumer from respective files. Register the new queue in `BullModule` by using the imported queue config. Add the new service and consumer in `providers` array.
-
-10. **Update and add documentation**
+9. **Update and add documentation**
 
     Add a new document `<channel_name>.md` in the `docs/channels` folder describing environment variables to be set and how to use the new provider channel with sample request body and any additional information. Update the `usage-guide.md` file to add and link the new channel document under [5. Available Channel Types](usage-guide.md#5-available-channel-types).
 
