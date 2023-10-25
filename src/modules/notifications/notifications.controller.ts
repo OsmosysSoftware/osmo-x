@@ -1,8 +1,7 @@
-import { Controller, Post, Body, Logger, UseFilters } from '@nestjs/common';
+import { Controller, Post, Body, Logger } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { JsendFormatter } from 'src/common/jsend-formatter';
-import { HttpExceptionFilter } from 'src/common/http-exception.filter';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -13,7 +12,6 @@ export class NotificationsController {
   ) {}
 
   @Post()
-  @UseFilters(HttpExceptionFilter)
   async addNotification(
     @Body() notificationData: CreateNotificationDto,
   ): Promise<Record<string, unknown>> {

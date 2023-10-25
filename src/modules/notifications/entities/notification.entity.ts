@@ -20,8 +20,7 @@ export class Notification {
 
   @Column({ type: 'json' })
   @IsObject()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 
   @Column({
     name: 'delivery_status',

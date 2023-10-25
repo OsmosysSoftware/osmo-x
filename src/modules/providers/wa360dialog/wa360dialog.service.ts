@@ -56,17 +56,11 @@ export class Wa360dialogService {
   }
 
   async sendMessage(body: Wa360DialogData): Promise<Wa360DialogResponse> {
-    try {
-      const headers = {
-        'D360-API-KEY': this.apiKey,
-        'Content-Type': 'application/json',
-      };
-
-      const response = await this.httpService.post(this.apiUrl, body, { headers }).toPromise();
-
-      return response.data;
-    } catch (error) {
-      throw new Error(`Failed to send POST request: ${error.message}`);
-    }
+    const headers = {
+      'D360-API-KEY': this.apiKey,
+      'Content-Type': 'application/json',
+    };
+    const response = await this.httpService.post(this.apiUrl, body, { headers }).toPromise();
+    return response.data;
   }
 }

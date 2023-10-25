@@ -37,7 +37,7 @@ export class Wa360dialogNotificationsConsumer {
       notification.result = { result };
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.FAILED;
-      notification.result = { result: error };
+      notification.result = { result: error.response ? error.response : error };
       this.logger.error(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {

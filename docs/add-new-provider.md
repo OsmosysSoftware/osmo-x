@@ -109,7 +109,11 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
     - Create a constructor for initializing and configuring the object as needed. Also initialize and use any environment variables as needed. Importing env in constructor with getOrThrow will let us know if something is missing in env file.
     - Create a `send` method named after `<type>` (`sendEmail`, `sendSms`, etc) which accepts the notification data and add code logic for sending it. Return the response received.
 
-7. **Create `.job.consumer.ts` file**
+7. **Add dto for validation**
+    Add dto for `data` field validation at the location `src/modules/notifications/dtos/providers/<channel_type>-data.dto.ts`
+    Update the file `src/common/decorators/is-data-valid.decorator.ts` and add condition for the newly added dto.
+
+8. **Create `.job.consumer.ts` file**
 
     Create a consumer file with path `src/jobs/consumers/notifications/<channel_name>.job.consumer.ts`. Add the required logic in it by referring other consumer files, following these key points:
 
@@ -121,7 +125,7 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
     - Exception handling should be done, and status should be updated accordingly as per success or failure in the database
     - Ensure logs are added for error logging
 
-8. **Update `notifications.job.producer.ts` file**
+9. **Update `notifications.job.producer.ts` file**
 
     Update the `src/jobs/producers/notifications/notifications.job.producer.ts` file by adding a new switch case to `addNotificationToQueue()` to your new queue if its channel type matches with your new provider channel.
 
@@ -131,7 +135,7 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
       break;
     ```
 
-9. **Update and add documentation**
+10. **Update and add documentation**
 
     Add a new document `<channel_name>.md` in the `docs/channels` folder describing environment variables to be set and how to use the new provider channel with sample request body and any additional information. Update the `usage-guide.md` file to add and link the new channel document under [5. Available Channel Types](usage-guide.md#5-available-channel-types).
 

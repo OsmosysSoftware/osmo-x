@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
-export class CreateNotificationDataDto {
+export class MailgunDataDto {
   @IsNotEmpty()
   from: string | string[];
 
