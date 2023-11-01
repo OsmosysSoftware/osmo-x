@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Centralized multi-channel notification management component for streamlined communication across email, SMS, WhatsApp, and push notifications.",
   "author": "Osmosys Software Solutions Private Limited",
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "engines": {
+    "node": "20.x"
+  },  
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
