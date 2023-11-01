@@ -9,7 +9,7 @@ Certainly! Here's the list of prerequisites with version numbers for Osmo-Notify
 Before setting up Osmo-Notify for development, ensure you have the following prerequisites with the specified versions:
 
 - **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
-- **Node.js** Node.js v18.x or higher.
+- **Node.js** Node.js v20.x or higher.
 - **Git:** Git v2.x or higher.
 - **MariaDB:** MariaDB v10.x or higher.
 - **Redis:** Redis v6.x or higher

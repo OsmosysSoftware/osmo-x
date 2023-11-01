@@ -143,7 +143,7 @@ from the main (upstream) repository:
 
 ## <a name="development"></a> Development Setup
 
-You will need [Node.js](https://nodejs.org) version >= 18.16.0.
+You will need [Node.js](https://nodejs.org) version >= 20.x.
 
 1. After cloning the repo, run:
 
