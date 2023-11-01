@@ -1,0 +1,38 @@
+version: '3'
+services:
+  osmo-notify-api:
+    container_name: osmo-notify-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '${SERVER_PORT}:${SERVER_PORT}'
+    depends_on:
+      - mariadb
+      - redis
+    environment:
+      NODE_ENV: production
+
+  mariadb:
+    container_name: osmo-notify-mariadb
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - '3307:3306'
+    volumes:
+      - osmo-notify-db:/var/lib/mysql
+
+  redis:
+    container_name: osmo-notify-redis
+    image: redis:latest
+    restart: always
+    ports:
+      - '6397:6379'
+
+volumes:
+  osmo-notify-db: ~
