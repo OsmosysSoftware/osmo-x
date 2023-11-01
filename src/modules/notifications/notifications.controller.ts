@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Logger } from '@nestjs/common';
+import { Controller, Post, Body, Logger, HttpException } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { JsendFormatter } from 'src/common/jsend-formatter';
@@ -21,6 +21,10 @@ export class NotificationsController {
       this.logger.log('Notification created successfully.');
       return this.jsend.success({ notification: createdNotification });
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
       this.logger.error('Error while creating notification');
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       return this.jsend.error(error.message);
