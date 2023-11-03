@@ -16,6 +16,7 @@ import { Wa360dialogNotificationsConsumer } from 'src/jobs/consumers/notificatio
 import { MailgunModule } from '../providers/mailgun/mailgun.module';
 import { SmtpModule } from '../providers/smtp/smtp.module';
 import { Wa360dialogModule } from '../providers/wa360dialog/wa360dialog.module';
+import { ScheduleService } from './schedule/schedule.service';
 
 @Module({})
 export class NotificationsModule {
@@ -63,6 +64,7 @@ export class NotificationsModule {
         NotificationQueueProducer,
         ...consumersToLoad,
         NotificationsService,
+        ScheduleService,
         ConfigService,
         JsendFormatter,
         Logger,
