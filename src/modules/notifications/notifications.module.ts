@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Logger, DynamicModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { Notification } from './entities/notification.entity';
@@ -6,28 +6,69 @@ import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { SmtpNotificationConsumer } from 'src/jobs/consumers/notifications/smtp-notifications.job.consumer';
-import { SmtpService } from 'src/services/email/smtp/smtp.service';
 import { ConfigService } from '@nestjs/config';
 import { smtpQueueConfig } from './queues/smtp.queue';
-import { MailgunService } from 'src/services/email/mailgun/mailgun.service';
 import { mailgunQueueConfig } from './queues/mailgun.queue';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
+import { JsendFormatter } from 'src/common/jsend-formatter';
+import { wa360DialogQueueConfig } from './queues/wa360dialog.queue';
+import { Wa360dialogNotificationsConsumer } from 'src/jobs/consumers/notifications/wa360dialog-notifications.job.consumer';
+import { MailgunModule } from '../providers/mailgun/mailgun.module';
+import { SmtpModule } from '../providers/smtp/smtp.module';
+import { Wa360dialogModule } from '../providers/wa360dialog/wa360dialog.module';
 
-@Module({
-  imports: [
-    TypeOrmModule.forFeature([Notification]),
-    BullModule.registerQueue(smtpQueueConfig, mailgunQueueConfig),
-  ],
-  providers: [
-    NotificationQueueProducer,
-    SmtpNotificationConsumer,
-    MailgunNotificationConsumer,
-    NotificationsService,
-    SmtpService,
-    MailgunService,
-    ConfigService,
-  ],
-  exports: [NotificationsService],
-  controllers: [NotificationsController],
-})
-export class NotificationsModule {}
+@Module({})
+export class NotificationsModule {
+  static register(): DynamicModule {
+    const configService = new ConfigService();
+    const logger = new Logger(NotificationsModule.name);
+    const modulesToLoad = [];
+    const queuesToLoad = [];
+    const consumersToLoad = [];
+
+    if (configService.get<string>('ENABLE_SMTP') === 'true') {
+      modulesToLoad.push(SmtpModule);
+      queuesToLoad.push(smtpQueueConfig);
+      consumersToLoad.push(SmtpNotificationConsumer);
+    }
+
+    if (configService.get<string>('ENABLE_MAILGUN') === 'true') {
+      modulesToLoad.push(MailgunModule);
+      queuesToLoad.push(mailgunQueueConfig);
+      consumersToLoad.push(MailgunNotificationConsumer);
+    }
+
+    if (configService.get<string>('ENABLE_WA360DIALOG') === 'true') {
+      modulesToLoad.push(Wa360dialogModule);
+      queuesToLoad.push(wa360DialogQueueConfig);
+      consumersToLoad.push(Wa360dialogNotificationsConsumer);
+    }
+
+    const serviceProviderModules: DynamicModule[] = modulesToLoad;
+
+    if (serviceProviderModules.length === 0) {
+      logger.error('At least one service provider should be enabled.');
+      process.exit(1);
+    }
+
+    logger.log('Services Enabled: ' + serviceProviderModules.map((a) => a['name']).join(', '));
+    return {
+      module: NotificationsModule,
+      imports: [
+        TypeOrmModule.forFeature([Notification]),
+        BullModule.registerQueue(...queuesToLoad),
+        ...serviceProviderModules,
+      ],
+      providers: [
+        NotificationQueueProducer,
+        ...consumersToLoad,
+        NotificationsService,
+        ConfigService,
+        JsendFormatter,
+        Logger,
+      ],
+      exports: [NotificationsService],
+      controllers: [NotificationsController],
+    };
+  }
+}

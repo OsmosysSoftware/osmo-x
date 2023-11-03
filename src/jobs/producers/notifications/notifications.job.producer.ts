@@ -1,31 +1,57 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { SMTP_QUEUE } from 'src/modules/notifications/queues/smtp.queue';
-import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
 import { ChannelType } from 'src/common/constants/notifications';
+import { WA360DIALOG_QUEUE } from 'src/modules/notifications/queues/wa360dialog.queue';
+import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
 
 @Injectable()
 export class NotificationQueueProducer {
-  constructor(
-    @InjectQueue(SMTP_QUEUE) private readonly smtpQueue: Queue,
-    @InjectQueue(MAILGUN_QUEUE) private readonly mailgunQueue: Queue,
-  ) {}
   private readonly logger = new Logger(NotificationQueueProducer.name);
-  async onModuleInit(): Promise<void> {
-    this.smtpQueue.client.on('error', (error) => {
-      this.logger.error('Redis connection error:');
-      this.logger.error(JSON.stringify(error, ['message', 'stack', 2]));
-    });
+
+  constructor(
+    @Optional() @InjectQueue(SMTP_QUEUE) private readonly smtpQueue: Queue,
+    @Optional() @InjectQueue(MAILGUN_QUEUE) private readonly mailgunQueue: Queue,
+    @Optional() @InjectQueue(WA360DIALOG_QUEUE) private readonly wa360DialogQueueConfig: Queue,
+  ) {}
+
+  private listenForError(queue: Queue[]): void {
+    if (queue) {
+      queue[0].client.on('error', (error) => {
+        this.logger.error('Redis connection error:');
+        this.logger.error(JSON.stringify(error, ['message', 'stack', 2]));
+      });
+    }
   }
+
+  async onModuleInit(): Promise<void> {
+    const queues = [this.smtpQueue, this.mailgunQueue, this.wa360DialogQueueConfig].filter(
+      (q) => q,
+    );
+    this.listenForError(queues);
+  }
+
   async addNotificationToQueue(notification: Notification): Promise<void> {
     switch (notification.channelType) {
       case ChannelType.SMTP:
-        await this.smtpQueue.add(notification.id);
+        if (this.smtpQueue) {
+          await this.smtpQueue.add(notification.id);
+        }
+
         break;
       case ChannelType.MAILGUN:
-        await this.mailgunQueue.add(notification.id);
+        if (this.mailgunQueue) {
+          await this.mailgunQueue.add(notification.id);
+        }
+
+        break;
+      case ChannelType.WA_360_DAILOG:
+        if (this.wa360DialogQueueConfig) {
+          await this.wa360DialogQueueConfig.add(notification.id);
+        }
+
         break;
     }
   }

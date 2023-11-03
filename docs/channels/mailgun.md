@@ -8,6 +8,7 @@ When using Mailgun to send emails via their API, you need to provide certain env
 
 ```sh
 # Mailgun
+ENABLE_MAILGUN=true
 MAILGUN_API_KEY=your-api-key         # Your Mailgun API key
 MAILGUN_HOST=api.mailgun.net         # Mailgun host; api.mailgun.net for US, api.eu.mailgun.net for EU
 MAILGUN_DOMAIN=your.mailgun.domain   # Your Mailgun domain name
@@ -23,14 +24,14 @@ Here's a sample request body:
 {
   "channelType": 2,
   "data": {
-    "from": "sender@example.com",                   # Sender's email address
-    "to": "recipient@example.com",                  # Recipient's email address
-    "cc": "cc@example.com",                         # CC email address (optional)
-    "bcc": "bcc@example.com",                       # BCC email address (optional)
-    "subject": "Test subject",                      # Email subject
-    "text": "This is a test notification",          # Plain text version of the email
-    "html": "<b>This is a test notification</b>",   # HTML version of the email
-    "attachment": [                                 # Attachments (optional)
+    "from": "sender@example.com",                   // Sender's email address
+    "to": "recipient@example.com",                  // Recipient's email address
+    "cc": "cc@example.com",                         // CC email address (optional)
+    "bcc": "bcc@example.com",                       // BCC email address (optional)
+    "subject": "Test subject",                      // Email subject
+    "text": "This is a test notification",          // Plain text version of the email
+    "html": "<b>This is a test notification</b>",   // HTML version of the email
+    "attachment": [                                 // Attachments (optional)
       {
         "filename": "names.txt",
         "data": "John Doe\nJane Doe",

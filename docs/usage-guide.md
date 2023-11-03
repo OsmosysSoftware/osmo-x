@@ -6,12 +6,15 @@ Welcome to the usage guide for Osmo-Notify, a powerful notification management s
 
 ## Table of Contents
 
-1. [Overview](#1-overview)
-2. [Pushing Data to the Database](#2-pushing-data-to-the-database)
-3. [Using the Osmo-Notify API](#3-using-the-osmo-notify-api)
-4. [Tracking Notification Status](4-#tracking-notification-status)
-5. [Available Channel Types](#5-available-channel-types)
-6. [Delivery Status Information](#6-delivery-status-information)
+- [Usage Guide for Osmo-Notify](#usage-guide-for-osmo-notify)
+  - [Introduction](#introduction)
+  - [Table of Contents](#table-of-contents)
+  - [1. Overview](#1-overview)
+  - [2. Pushing Data to the Database](#2-pushing-data-to-the-database)
+  - [3. Using the Osmo-Notify API](#3-using-the-osmo-notify-api)
+  - [4. Tracking Notification Status](#4-tracking-notification-status)
+  - [5. Available Channel Types](#5-available-channel-types)
+  - [6. Delivery Status Information](#6-delivery-status-information)
 
 ## 1. Overview
 
@@ -45,22 +48,26 @@ To use the Osmo-Notify API, follow these steps:
 **Response:**
 ```json
 {
-  "notification": {
-    "channelType": "smtp-server",
-    "data": {
-      "from": "sender@example.com",
-      "to": "recipient@example.com",
-      "subject": "Test subject",
-      "text": "This is a test notification",
-      "html": "<b>This is a test notification</b>"
-    },
-    "deliveryStatus": 1,
-    "createdBy": "osmo-notify",
-    "createdOn": "2023-08-25T10:55:36.794Z",
-    "result": null,
-    "modifiedBy": null,
-    "modifiedOn": null,
-    "id": 1
+  "status": "success",
+  "data": {
+    "notification": {
+      "channelType": 1,
+      "data": {
+        "from": "sender@example.com",
+        "to": "recipient@example.com",
+        "subject": "Test subject",
+        "text": "This is a test notification",
+        "html": "<b>This is a test notification</b>"
+      },
+      "createdBy": "osmo_notify",
+      "updatedBy": "osmo_notify",
+      "result": null,
+      "id": 36,
+      "deliveryStatus": 1,
+      "createdOn": "2023-09-08T13:11:52.000Z",
+      "updatedOn": "2023-09-08T13:11:52.000Z",
+      "status": 1
+    }
   }
 }
 ```
@@ -77,10 +84,11 @@ Osmo-Notify supports multiple channel types, allowing you to choose the most sui
 |:------------------------------------:|:---------:|:------------------------------:|
 | SMTP - Simple Mail Transfer Protocol |     1     | [SMTP](channels/smtp.md)       |
 | Mailgun                              |     2     | [Mailgun](channels/mailgun.md) |
+| WhatsApp - 360Dialog                 |     3     | [360Dialog](channels/360Dialog.md) |
 
 ## 6. Delivery Status Information
 
-Osmo-Notify provides different delivery status options to reflect the state of your notifications:**
+Osmo-Notify provides different delivery status options to reflect the state of your notifications:
 
 |  **Status** |                **Description**               | **Value** |
 |:-----------:|:--------------------------------------------:|:---------:|

@@ -7,7 +7,7 @@ This document outlines the steps required to set up Osmo-Notify for production. 
 Before setting up Osmo-Notify for production, ensure you have the following prerequisites with the specified versions:
 
 - **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
-- **Node.js** Node.js v18.x or higher.
+- **Node.js** Node.js v20.x or higher.
 - **Git:** Git v2.x or higher.
 - **MariaDB:** MariaDB v10.x or higher.
 - **Redis:** Redis v6.x or higher
@@ -38,15 +38,22 @@ Make sure Redis and MariaDB server are up and running.
   REDIS_PORT=6379
 
   # SMTP
+  ENABLE_SMTP=true
   SMTP_HOST=smtp.example.com
   SMTP_PORT=587
   SMTP_USERNAME=your-smtp-username
   SMTP_PASSWORD=your-smtp-password
 
   # Mailgun
+  ENABLE_MAILGUN=true
   MAILGUN_API_KEY=your-mailgun-api-key
   MAILGUN_HOST=api.mailgun.net
   MAILGUN_DOMAIN=your.mailgun.domain
+  
+  # WhatsApp 360Dialog
+  ENABLE_WA360DIALOG=true
+  WA_360_DIALOG_URL=https://waba.360dialog.io/v1/messages
+  WA_360_DIALOG_API_KEY=
 
   # TEMP
   APP_NAME=osmo_notify

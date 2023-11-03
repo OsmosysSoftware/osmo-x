@@ -5,37 +5,39 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
-import * as nodemailer from 'nodemailer';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
-import { SMTP_QUEUE } from 'src/modules/notifications/queues/smtp.queue';
-import { SmtpService } from 'src/modules/providers/smtp/smtp.service';
+import { WA360DIALOG_QUEUE } from 'src/modules/notifications/queues/wa360dialog.queue';
+import {
+  Wa360DialogData,
+  Wa360dialogService,
+} from 'src/modules/providers/wa360dialog/wa360dialog.service';
 
-@Processor(SMTP_QUEUE)
-export class SmtpNotificationConsumer {
-  private readonly logger = new Logger(SmtpNotificationConsumer.name);
+@Processor(WA360DIALOG_QUEUE)
+export class Wa360dialogNotificationsConsumer {
+  private readonly logger = new Logger(Wa360dialogNotificationsConsumer.name);
 
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
-    private readonly smtpService: SmtpService,
+    private readonly wa360dialogService: Wa360dialogService,
     private readonly notificationsService: NotificationsService,
   ) {}
 
   @Process()
-  async processSmtpNotificationQueue(job: Job<number>): Promise<void> {
+  async processWa360dialogNotificationQueue(job: Job<number>): Promise<void> {
     const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
 
     try {
       this.logger.log(`Sending notification with id: ${id}`);
-      const result = await this.smtpService.sendEmail(
-        notification.data as nodemailer.SendMailOptions,
+      const result = await this.wa360dialogService.sendMessage(
+        notification.data as unknown as Wa360DialogData,
       );
       notification.deliveryStatus = DeliveryStatus.SUCCESS;
       notification.result = { result };
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.FAILED;
-      notification.result = { result: error };
+      notification.result = { result: error.response ? error.response : error };
       this.logger.error(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {

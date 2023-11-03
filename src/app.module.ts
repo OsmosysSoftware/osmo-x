@@ -4,10 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsModule } from './modules/notifications/notifications.module';
-import { SmtpService } from './services/email/smtp/smtp.service';
 import { BullModule } from '@nestjs/bull';
 import { DatabaseModule } from './database/database.module';
-import { MailgunService } from './services/email/mailgun/mailgun.service';
 
 @Module({
   imports: [
@@ -24,9 +22,9 @@ import { MailgunService } from './services/email/mailgun/mailgun.service';
       inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
-    NotificationsModule,
+    NotificationsModule.register(),
   ],
   controllers: [AppController],
-  providers: [AppService, SmtpService, MailgunService],
+  providers: [AppService],
 })
 export class AppModule {}

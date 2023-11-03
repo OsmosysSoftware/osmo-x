@@ -9,7 +9,7 @@ Certainly! Here's the list of prerequisites with version numbers for Osmo-Notify
 Before setting up Osmo-Notify for development, ensure you have the following prerequisites with the specified versions:
 
 - **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
-- **Node.js** Node.js v18.x or higher.
+- **Node.js** Node.js v20.x or higher.
 - **Git:** Git v2.x or higher.
 - **MariaDB:** MariaDB v10.x or higher.
 - **Redis:** Redis v6.x or higher
@@ -52,17 +52,24 @@ Make sure Redis and MariaDB server are up and running.
    # Redis configuration
    REDIS_HOST=127.0.0.1
    REDIS_PORT=6379
-
+   
    # SMTP
-   SMTP_HOST=smtp.example.com
-   SMTP_PORT=587
-   SMTP_USERNAME=your-smtp-username
-   SMTP_PASSWORD=your-smtp-password
+   ENABLE_SMTP=true
+   SMTP_HOST=
+   SMTP_PORT=
+   SMTP_USERNAME=
+   SMTP_PASSWORD=
 
    # Mailgun
-   MAILGUN_API_KEY=your-mailgun-api-key
-   MAILGUN_HOST=api.mailgun.net
-   MAILGUN_DOMAIN=your.mailgun.domain
+   ENABLE_MAILGUN=true
+   MAILGUN_API_KEY=
+   MAILGUN_HOST=  # api.mailgun.net for US, api.eu.mailgun.net for EU
+   MAILGUN_DOMAIN=
+
+   # WhatsApp 360Dialog
+   ENABLE_WA360DIALOG=true
+   WA_360_DIALOG_URL=https://waba.360dialog.io/v1/messages
+   WA_360_DIALOG_API_KEY=
 
    # TEMP
    APP_NAME=osmo_notify

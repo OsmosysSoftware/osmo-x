@@ -1,9 +1,12 @@
 {
   "name": "osmo-notify",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Centralized multi-channel notification management component for streamlined communication across email, SMS, WhatsApp, and push notifications.",
   "author": "Osmosys Software Solutions Private Limited",
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "engines": {
+    "node": "20.x"
+  },  
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -25,6 +28,7 @@
     "database:reset": "ts-node src/database/database-reset.ts && npm run typeorm:run-migration"
   },
   "dependencies": {
+    "@nestjs/axios": "^3.0.0",
     "@nestjs/bull": "^10.0.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.0.0",
@@ -32,6 +36,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^3.0.3",
     "@nestjs/typeorm": "^10.0.0",
+    "axios": "^1.5.1",
     "bull": "^4.11.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",

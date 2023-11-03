@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
-import { MailgunService } from 'src/services/email/mailgun/mailgun.service';
+import { MailgunService } from 'src/modules/providers/mailgun/mailgun.service';
 import { MailgunMessageData } from 'mailgun.js';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
