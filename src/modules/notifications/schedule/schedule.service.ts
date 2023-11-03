@@ -4,8 +4,7 @@ import { NotificationsService } from '../notifications.service';
 
 @Injectable()
 export class ScheduleService {
-  constructor(private readonly notificationsService: NotificationsService) {
-  }
+  constructor(private readonly notificationsService: NotificationsService) {}
 
   @Cron(CronExpression.EVERY_SECOND)
   async addNotificationsToQueue(): Promise<void> {
