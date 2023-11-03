@@ -134,7 +134,7 @@ To start your application within Docker containers, run the following command:
 docker-compose up -d
 ```
 
-**Step 3: Database Migrations (First-Time Setup)**
+**Step 4: Database Migrations (First-Time Setup)**
 
 For the first-time setup, you need to run database migrations to create the required database tables. Execute the following command:
 
@@ -142,7 +142,7 @@ For the first-time setup, you need to run database migrations to create the requ
 docker exec -it osmo-notify-api npm run typeorm:run-migration
 ```
 
-**Step 4: Update Environment Variables**
+**Step 5: Update Environment Variables**
 
 If you need to update any environment variable values:
 
