@@ -31,6 +31,16 @@ To use the Osmo-Notify API, follow these steps:
 - **Method:** POST
 - **Endpoint:** `/notifications`
 
+### Authorization Header
+
+To add a bearer token to the Authorization header, use the following format:
+
+```plaintext
+Authorization: Bearer SERVER_API_KEY_VALUE
+```
+
+Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include in the header.
+
 **Sample Request Body:**
 ```json
 {

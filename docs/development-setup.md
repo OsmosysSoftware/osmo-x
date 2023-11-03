@@ -40,6 +40,7 @@ Make sure Redis and MariaDB server are up and running.
    ```env
    # Server
    SERVER_PORT=3000
+   SERVER_API_KEY=osmo-notify-test-key
 
    # Database configuration
    DB_TYPE=mysql

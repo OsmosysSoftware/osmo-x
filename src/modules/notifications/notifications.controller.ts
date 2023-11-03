@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Logger, HttpException } from '@nestjs/common';
+import { Controller, Post, Body, Logger, HttpException, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { JsendFormatter } from 'src/common/jsend-formatter';
+import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -12,6 +13,7 @@ export class NotificationsController {
   ) {}
 
   @Post()
+  @UseGuards(ApiKeyGuard)
   async addNotification(
     @Body() notificationData: CreateNotificationDto,
   ): Promise<Record<string, unknown>> {
