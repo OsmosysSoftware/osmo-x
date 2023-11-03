@@ -43,15 +43,17 @@ Make sure Redis and MariaDB server are up and running.
 
    # Database configuration
    DB_TYPE=mysql
-   DB_HOST=localhost
+   DB_HOST=localhost # use value as osmo-notify-mariadb in docker
    DB_PORT=3306
    DB_USERNAME=root
    DB_PASSWORD=your-password
    DB_NAME=your-database
+   MARIADB_DOCKER_PORT=3307 # (required only if using docker)
 
    # Redis configuration
-   REDIS_HOST=127.0.0.1
+   REDIS_HOST=127.0.0.1 # use value as osmo-notify-redis in docker
    REDIS_PORT=6379
+   REDIS_DOCKER_PORT=6397 # (required only if using docker)
    
    # SMTP
    ENABLE_SMTP=true

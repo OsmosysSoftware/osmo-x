@@ -11,7 +11,7 @@ export function generateEnabledChannelEnum(configService: ConfigService): Record
     enabledChannels['MAILGUN'] = ChannelType.MAILGUN;
   }
 
-  if (configService.get('ENABLE_WA_360_DAILOG') === 'true') {
+  if (configService.get('ENABLE_WA360DIALOG') === 'true') {
     enabledChannels['WA_360_DAILOG'] = ChannelType.WA_360_DAILOG;
   }
 

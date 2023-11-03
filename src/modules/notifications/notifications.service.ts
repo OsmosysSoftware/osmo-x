@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { Notification } from './entities/notification.entity';
 import { DeliveryStatus, generateEnabledChannelEnum } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
@@ -36,8 +35,6 @@ export class NotificationsService {
     return this.notificationRepository.save(notification);
   }
 
-  // TODO: Move to its own separate file
-  @Cron(CronExpression.EVERY_MINUTE)
   async addNotificationsToQueue(): Promise<void> {
     this.logger.log('Starting CRON job to add pending notifications to queue');
 
@@ -47,7 +44,17 @@ export class NotificationsService {
     }
 
     this.isProcessingQueue = true;
-    const allPendingNotifications = await this.getPendingNotifications();
+    let allPendingNotifications = [];
+
+    try {
+      allPendingNotifications = await this.getPendingNotifications();
+    } catch (error) {
+      this.isProcessingQueue = false;
+      this.logger.error('Error fetching pending notifications');
+      this.logger.error(JSON.stringify(error, null, 2));
+      return;
+    }
+
     const enabledChannels = generateEnabledChannelEnum(this.configService);
     const pendingNotifications = allPendingNotifications.filter((notification) =>
       Object.values(enabledChannels).includes(notification.channelType),

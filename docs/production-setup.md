@@ -27,15 +27,17 @@ Make sure Redis and MariaDB server are up and running.
 
   # Database configuration
   DB_TYPE=mysql
-  DB_HOST=localhost
+  DB_HOST=localhost # use value as osmo-notify-mariadb in docker
   DB_PORT=3306
   DB_USERNAME=root
   DB_PASSWORD=your-password
   DB_NAME=your-database
+   MARIADB_DOCKER_PORT=3307 # (required only if using docker)
 
   # Redis configuration
-  REDIS_HOST=127.0.0.1
+  REDIS_HOST=127.0.0.1 # use value as osmo-notify-redis in docker
   REDIS_PORT=6379
+  REDIS_DOCKER_PORT=6397 # (required only if using docker)
 
   # SMTP
   ENABLE_SMTP=true
@@ -72,7 +74,7 @@ Make sure to replace the above example values with appropriate values as per you
   This command compiles your TypeScript code into JavaScript and generates the necessary build files.
 
 ## Starting the Server
-
+### Using PM2
 1. **PM2 Configuration:** Create an ecosystem.config.js (or .ts) file to configure PM2. This file defines settings such as the application name, entry point, and other options. For example:
 
   ```js
@@ -112,5 +114,58 @@ Save pm2 config:
   ```sh
   pm2 save
   ```
+### Using Docker
+
+**Step 1: Update Environment Variables**
+
+Before using Docker, ensure you've configured the environment variables in your `.env` file correctly. Update values such as `MARIADB_DOCKER_PORT`, `REDIS_DOCKER_PORT`, `REDIS_HOST`, and `DB_HOST` as required for your Docker setup.
+
+**Step 2: Build your docker container**
+
+```bash
+docker-compose build
+```
+
+**Step 3: Start the Docker Containers**
+
+To start your application within Docker containers, run the following command:
+
+```bash
+docker-compose up -d
+```
+
+**Step 4: Database Migrations (First-Time Setup)**
+
+For the first-time setup, you need to run database migrations to create the required database tables. Execute the following command:
+
+```bash
+docker exec -it osmo-notify-api npm run typeorm:run-migration
+```
+
+**Step 5: Update Environment Variables**
+
+If you need to update any environment variable values:
+
+1. Update the values in your `.env` file.
+
+2. Stop the running containers:
+
+   ```bash
+   docker-compose down
+   ```
+
+3. Rebuild the Docker containers with the updated environment variables:
+
+   ```bash
+   docker-compose build
+   ```
+
+4. Start the Docker containers again:
+
+   ```bash
+   docker-compose up -d
+   ```
+
+With these steps, your application should be up and running in Docker with the updated environment variables.
 
 For details on using the application and making API calls, refer to our [Usage Guide](usage-guide.md).
