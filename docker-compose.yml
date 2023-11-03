@@ -8,12 +8,12 @@ services:
     ports:
       - '${SERVER_PORT}:${SERVER_PORT}'
     depends_on:
-      - osmo-notify-mariadb
-      - osmo-notify-redis
+      - mariadb
+      - redis
     environment:
       NODE_ENV: production
 
-  osmo-notify-mariadb:
+  mariadb:
     container_name: osmo-notify-mariadb
     image: mariadb:latest
     restart: always
@@ -27,7 +27,7 @@ services:
     volumes:
       - osmo-notify-db:/var/lib/mysql
 
-  osmo-notify-redis:
+  redis:
     container_name: osmo-notify-redis
     image: redis:latest
     restart: always
