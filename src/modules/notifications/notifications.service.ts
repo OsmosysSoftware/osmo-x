@@ -47,7 +47,17 @@ export class NotificationsService {
     }
 
     this.isProcessingQueue = true;
-    const allPendingNotifications = await this.getPendingNotifications();
+    let allPendingNotifications = [];
+
+    try {
+      allPendingNotifications = await this.getPendingNotifications();
+    } catch (error) {
+      this.isProcessingQueue = false;
+      this.logger.error('Error fetching pending notifications');
+      this.logger.error(JSON.stringify(error, null, 2));
+      return;
+    }
+
     const enabledChannels = generateEnabledChannelEnum(this.configService);
     const pendingNotifications = allPendingNotifications.filter((notification) =>
       Object.values(enabledChannels).includes(notification.channelType),
