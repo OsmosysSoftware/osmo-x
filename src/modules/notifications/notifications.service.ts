@@ -36,8 +36,6 @@ export class NotificationsService {
     return this.notificationRepository.save(notification);
   }
 
-  // TODO: Move to its own separate file
-  @Cron(CronExpression.EVERY_MINUTE)
   async addNotificationsToQueue(): Promise<void> {
     this.logger.log('Starting CRON job to add pending notifications to queue');
 
