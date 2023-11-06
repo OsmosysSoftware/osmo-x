@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsAttachmentDataValid } from 'src/common/decorators/is-attachment-data-valid.decorator';
 
 export class SMTPDataDto {
   @IsNotEmpty()
@@ -24,4 +25,8 @@ export class SMTPDataDto {
   @IsNotEmpty()
   @IsString()
   html: string;
+
+  @IsOptional()
+  @IsAttachmentDataValid()
+  attachments: Record<string, unknown>[];
 }
