@@ -28,7 +28,7 @@ export class MailgunNotificationConsumer {
 
     try {
       this.logger.log(`Sending notification with id: ${id}`);
-      const formattedNotificationData = this.mailgunService.formatNotificationData(
+      const formattedNotificationData = await this.mailgunService.formatNotificationData(
         notification.data,
       );
       const result = await this.mailgunService.sendEmail(

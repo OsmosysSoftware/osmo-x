@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as FormData from 'form-data';
 import Mailgun, { MailgunClientOptions, MailgunMessageData, MessagesSendResult } from 'mailgun.js';
+import * as path from 'path';
+import * as fs from 'node:fs/promises';
 import { CreateNotificationAttachmentDto } from 'src/modules/notifications/dtos/create-notification-attachment.dto';
 
 @Injectable()
@@ -24,22 +26,29 @@ export class MailgunService {
     return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
   }
 
-  formatNotificationData(notificationData: Record<string, unknown>): object {
+  async formatNotificationData(notificationData: Record<string, unknown>): Promise<object> {
     const formattedNotificationData = notificationData;
-    formattedNotificationData.attachment = this.formatAttachments(
+    formattedNotificationData.attachment = await this.formatAttachments(
       notificationData.attachments as CreateNotificationAttachmentDto[],
     );
     delete formattedNotificationData.attachments;
     return formattedNotificationData;
   }
 
-  formatAttachments(attachments: CreateNotificationAttachmentDto[]): object[] {
+  async formatAttachments(attachments: CreateNotificationAttachmentDto[]): Promise<object[]> {
     const formattedAttachments = [];
 
     for (const attachment of attachments) {
+      let data = attachment.content;
+
+      if (attachment.path) {
+        const filepath = path.resolve(attachment.path);
+        data = await fs.readFile(filepath);
+      }
+
       formattedAttachments.push({
         filename: attachment.filename,
-        data: attachment.content,
+        data,
       });
     }
 
