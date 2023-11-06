@@ -48,7 +48,6 @@ class TemplateDto {
 }
 
 export class Wa360DialogDataDto {
-  
   @IsNotEmpty()
   to: string;
 
