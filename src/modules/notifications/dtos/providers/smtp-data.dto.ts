@@ -1,5 +1,6 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
-import { IsAttachmentDataValid } from 'src/common/decorators/is-attachment-data-valid.decorator';
+import { IsString, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
+import { CreateNotificationAttachmentDto } from '../create-notification-attachment.dto';
+import { Type } from 'class-transformer';
 
 export class SMTPDataDto {
   @IsNotEmpty()
@@ -27,6 +28,7 @@ export class SMTPDataDto {
   html: string;
 
   @IsOptional()
-  @IsAttachmentDataValid()
-  attachments: Record<string, unknown>[];
+  @ValidateNested({ each: true })
+  @Type(() => CreateNotificationAttachmentDto)
+  attachments: CreateNotificationAttachmentDto[];
 }
