@@ -1,5 +1,8 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
-import { AttachmentValidation, CreateNotificationAttachmentDto } from '../create-notification-attachment.dto';
+import {
+  AttachmentValidation,
+  CreateNotificationAttachmentDto,
+} from '../create-notification-attachment.dto';
 import { Type } from 'class-transformer';
 
 export class MailgunDataDto {
