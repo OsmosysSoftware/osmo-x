@@ -1,5 +1,8 @@
-import { IsString, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
-import { CreateNotificationAttachmentDto } from '../create-notification-attachment.dto';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  AttachmentValidation,
+  CreateNotificationAttachmentDto,
+} from '../create-notification-attachment.dto';
 import { Type } from 'class-transformer';
 
 export class SMTPDataDto {
@@ -28,7 +31,7 @@ export class SMTPDataDto {
   html: string;
 
   @IsOptional()
-  @ValidateNested({ each: true })
   @Type(() => CreateNotificationAttachmentDto)
+  @AttachmentValidation()
   attachments: CreateNotificationAttachmentDto[];
 }
