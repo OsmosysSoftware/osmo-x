@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { DeliveryStatus, generateEnabledChannelEnum } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
@@ -93,6 +93,16 @@ export class NotificationsService {
     return this.notificationRepository.find({
       where: {
         id: id,
+        status: Status.ACTIVE,
+      },
+    });
+  }
+
+  getNotificationsByIds(ids: number[]): Promise<Notification[]> {
+    this.logger.log(`Getting notifications with ids: ${ids.join(', ')}`);
+    return this.notificationRepository.find({
+      where: {
+        id: In(ids),
         status: Status.ACTIVE,
       },
     });

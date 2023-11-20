@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Logger, HttpException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Logger,
+  HttpException,
+  UseGuards,
+  Get,
+  Param,
+} from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { JsendFormatter } from 'src/common/jsend-formatter';
@@ -28,6 +37,20 @@ export class NotificationsController {
       }
 
       this.logger.error('Error while creating notification');
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+      return this.jsend.error(error.message);
+    }
+  }
+
+  @Get(':ids')
+  @UseGuards(ApiKeyGuard)
+  async getNotificationsByIds(@Param('ids') ids: string): Promise<Record<string, unknown>> {
+    try {
+      const idArray = ids.split(',').map((id) => +id);
+      const notifications = await this.notificationService.getNotificationsByIds(idArray);
+      return this.jsend.success(notifications);
+    } catch (error) {
+      this.logger.error(`Error while retrieving notification with IDs ${ids}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       return this.jsend.error(error.message);
     }
