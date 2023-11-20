@@ -7,6 +7,7 @@ import {
   UseGuards,
   Get,
   Param,
+  NotFoundException,
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
@@ -42,15 +43,20 @@ export class NotificationsController {
     }
   }
 
-  @Get(':ids')
+  @Get(':id(\\d+)')
   @UseGuards(ApiKeyGuard)
-  async getNotificationsByIds(@Param('ids') ids: string): Promise<Record<string, unknown>> {
+  async getNotificationById(@Param('id') id: number): Promise<Record<string, unknown>> {
     try {
-      const idArray = ids.split(',').map((id) => +id);
-      const notifications = await this.notificationService.getNotificationsByIds(idArray);
-      return this.jsend.success(notifications);
+      const notification = await this.notificationService.getNotificationById(+id);
+
+      if (!notification || notification.length === 0) {
+        this.logger.error(`Notification with id ${id} not found`);
+        throw new NotFoundException(`Notification with id ${id} not found`);
+      }
+
+      return this.jsend.success({ notification: notification[0] });
     } catch (error) {
-      this.logger.error(`Error while retrieving notification with IDs ${ids}`);
+      this.logger.error(`Error while retrieving notification with ID ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       return this.jsend.error(error.message);
     }
