@@ -21,8 +21,8 @@ jobs:
       - name: Change to backend directory and install dependencies
         run: cd backend && npm install
 
-      - name: Lint code
-        run: npm run lint
+      - name: Change to backend directory and Lint code
+        run: cd backend && npm run lint
 
   build:
     needs: lint
@@ -40,5 +40,5 @@ jobs:
       - name: Change to backend directory and install dependencies
         run: cd backend && npm install
 
-      - name: Build Nest.js app
-        run: npm run build
+      - name: Change to backend directory and Build Nest.js app
+        run: cd backend && npm run build
