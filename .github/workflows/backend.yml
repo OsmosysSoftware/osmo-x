@@ -16,7 +16,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' 
+          node-version: '20'
+
+      - name: Change to backend directory
+        run: cd backend
 
       - name: Install dependencies
         run: npm install
@@ -35,7 +38,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' 
+          node-version: '20'
+
+      - name: Change to backend directory
+        run: cd backend
 
       - name: Install dependencies
         run: npm install
