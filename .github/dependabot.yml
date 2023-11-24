@@ -11,6 +11,6 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "npm"
-    directory: "apps/portal"
+    directory: "/apps/portal"
     schedule:
       interval: "weekly"
