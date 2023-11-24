@@ -41,4 +41,5 @@ For each supported notification channel type, a separate queue is maintained to 
 Notifications are processed one-by-one from the different queues and details are passed on to their respective services for performing the required actions for sending the notification. The services hold the business logic for sending the notification. Upon sending the notification, the response is sent back to update the notification details in the database.
 
 ## Conclusion
+
 This block diagram serves as a valuable resource for understanding the architecture of our software application. It highlights the core components, their interactions, and the flow of data within the application.
