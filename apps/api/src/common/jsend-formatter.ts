@@ -1,8 +1,7 @@
 import { HttpExceptionBodyMessage } from '@nestjs/common';
-import { Notification } from 'src/modules/notifications/entities/notification.entity';
 
 export class JsendFormatter {
-  public success(data: { notification: Notification }): Record<string, unknown> {
+  public success(data: unknown): Record<string, unknown> {
     return {
       status: 'success',
       data: data,
