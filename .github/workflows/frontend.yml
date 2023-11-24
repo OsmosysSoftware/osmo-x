@@ -18,10 +18,10 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: cd frontend/osmo-notify-frontend && npm install
+        run: cd apps/portal && npm install
 
       - name: Run linting
-        run: cd frontend/osmo-notify-frontend && npm run lint
+        run: cd apps/portal && npm run lint
 
   build:
     name: Build
@@ -37,7 +37,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: cd frontend/osmo-notify-frontend && npm install
+        run: cd apps/portal && npm install
 
       - name: Build app
-        run: cd frontend/osmo-notify-frontend && npm run build:prod
+        run: cd apps/portal && npm run build:prod

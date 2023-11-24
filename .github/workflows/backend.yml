@@ -19,10 +19,10 @@ jobs:
           node-version: '20'
 
       - name: Change to backend directory and install dependencies
-        run: cd backend && npm install
+        run: cd apps/api && npm install
 
       - name: Change to backend directory and Lint code
-        run: cd backend && npm run lint
+        run: cd apps/api && npm run lint
 
   build:
     needs: lint
@@ -38,7 +38,7 @@ jobs:
           node-version: '20'
 
       - name: Change to backend directory and install dependencies
-        run: cd backend && npm install
+        run: cd apps/api && npm install
 
       - name: Change to backend directory and Build Nest.js app
-        run: cd backend && npm run build
+        run: cd apps/api && npm run build

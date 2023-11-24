@@ -6,11 +6,11 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/backend"
+    directory: "/apps/api"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "npm"
-    directory: "/frontend/osmo-notify-frontend"
+    directory: "apps/portal"
     schedule:
       interval: "weekly"

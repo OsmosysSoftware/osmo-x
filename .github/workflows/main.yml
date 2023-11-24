@@ -12,24 +12,24 @@ jobs:
       frontend: ${{ steps.set_frontend.outputs.frontend }}
       backend: ${{ steps.set_backend.outputs.backend }}
     steps:
-      - name: Set up
+      - name: Set up Frontend
         id: set_frontend
         run: echo "::set-output name=frontend::false"
-      - name: Set up
+      - name: Set up Backend
         id: set_backend
         run: echo "::set-output name=backend::false"
       - name: Check for frontend changes
         id: check_frontend_changes
         run: |
           # Check if there are changes in the frontend folder
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -qE '^frontend/'; then
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -qE '^apps/portal'; then
             echo "::set-output name=frontend::true"
           fi
       - name: Check for backend changes
         id: check_backend_changes
         run: |
           # Check if there are changes in the backend folder
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -qE '^backend/'; then
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -qE '^apps/api'; then
             echo "::set-output name=backend::true"
           fi
 
