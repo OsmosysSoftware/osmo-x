@@ -1,4 +1,4 @@
-import { IsString, IsOptional, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, ValidateNested, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class ComponentDto {
@@ -48,10 +48,10 @@ class TemplateDto {
 }
 
 export class Wa360DialogDataDto {
-  @IsString()
+  @IsNotEmpty()
   to: string;
 
-  @IsString()
+  @IsNotEmpty()
   type: string;
 
   @ValidateNested()
