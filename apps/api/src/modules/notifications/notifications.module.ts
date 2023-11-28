@@ -69,7 +69,7 @@ export class NotificationsModule {
         ConfigService,
         JsendFormatter,
         Logger,
-        NotificationsResolver
+        NotificationsResolver,
       ],
       exports: [NotificationsService],
       controllers: [NotificationsController],

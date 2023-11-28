@@ -9,7 +9,7 @@ import { IsEnum, IsOptional, IsObject } from 'class-validator';
 import { Status } from 'src/common/constants/database';
 import { ChannelType, DeliveryStatus } from 'src/common/constants/notifications';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { GraphQLJSONObject } from 'graphql-type-json'; 
+import { GraphQLJSONObject } from 'graphql-type-json';
 
 @Entity({ name: 'notify_notifications' })
 @ObjectType()
