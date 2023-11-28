@@ -97,4 +97,9 @@ export class NotificationsService {
       },
     });
   }
+
+  getAllNotifications(): Promise<Notification[]> {
+    this.logger.log('Getting all active notifications');
+    return this.notificationRepository.find();
+  }
 }
