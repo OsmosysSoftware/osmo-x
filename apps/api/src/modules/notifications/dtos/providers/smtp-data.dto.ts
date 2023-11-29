@@ -1,4 +1,9 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  AttachmentValidation,
+  CreateNotificationAttachmentDto,
+} from '../create-notification-attachment.dto';
+import { Type } from 'class-transformer';
 
 export class SMTPDataDto {
   @IsNotEmpty()
@@ -24,4 +29,9 @@ export class SMTPDataDto {
   @IsNotEmpty()
   @IsString()
   html: string;
+
+  @IsOptional()
+  @Type(() => CreateNotificationAttachmentDto)
+  @AttachmentValidation()
+  attachments: CreateNotificationAttachmentDto[];
 }
