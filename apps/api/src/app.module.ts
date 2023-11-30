@@ -6,7 +6,11 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { BullModule } from '@nestjs/bull';
 import { DatabaseModule } from './database/database.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
+const configService = new ConfigService();
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -23,6 +27,12 @@ import { DatabaseModule } from './database/database.module';
     }),
     ScheduleModule.forRoot(),
     NotificationsModule.register(),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gpl'),
+      sortSchema: true,
+      playground: configService.getOrThrow('NODE_ENV') === 'development',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
