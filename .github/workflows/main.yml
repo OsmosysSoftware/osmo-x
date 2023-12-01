@@ -1,4 +1,4 @@
-name: Standard Nest.js App Flow
+name: Main Workflow
 
 on:
   pull_request:
@@ -6,39 +6,43 @@ on:
       - main
 
 jobs:
-  lint:
+  choose-workflow:
     runs-on: ubuntu-latest
-    
+    outputs:
+      frontend: ${{ steps.set_frontend.outputs.frontend }}
+      backend: ${{ steps.set_backend.outputs.backend }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Set up Frontend
+        id: set_frontend
+        run: echo "::set-output name=frontend::false"
+      - name: Set up Backend
+        id: set_backend
+        run: echo "::set-output name=backend::false"
+      - name: Check for frontend changes
+        id: check_frontend_changes
+        run: |
+          # Check if there are changes in the frontend folder
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -qE '^apps/portal'; then
+            echo "::set-output name=frontend::true"
+          fi
+      - name: Check for backend changes
+        id: check_backend_changes
+        run: |
+          # Check if there are changes in the backend folder
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -qE '^apps/api'; then
+            echo "::set-output name=backend::true"
+          fi
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20' 
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Lint code
-        run: npm run lint
-
-  build:
-    needs: lint
+  run-workflows:
+    needs: choose-workflow
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Run Frontend Workflow
+        if: needs.choose-workflow.outputs.frontend == 'true'
+        run: echo "Run Frontend Workflow"
+        # You can replace the echo command with the actual command to trigger the frontend workflow
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18' 
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Nest.js app
-        run: npm run build
+      - name: Run Backend Workflow
+        if: needs.choose-workflow.outputs.backend == 'true'
+        run: echo "Run Backend Workflow"
+        # You can replace the echo command with the actual command to trigger the backend workflow
