@@ -48,11 +48,3 @@ Before you get started, please familiarize yourself with our guidelines to ensur
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
-
-## 👏 Big Thanks to Our Contributors
-
-<a href="https://github.com/OsmosysSoftware/osmo-notify/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=OsmosysSoftware/osmo-notify" alt="Contributors" />
-</a>
-
-We appreciate the time and effort put in by all contributors to make this project better!
