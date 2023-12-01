@@ -49,6 +49,7 @@ export class Notification {
   createdOn: Date;
 
   @UpdateDateColumn({ name: 'updated_on' })
+  @Field()
   updatedOn: Date;
 
   @Column({ name: 'created_by' })
