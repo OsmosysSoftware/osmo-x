@@ -5,7 +5,7 @@ import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
 import { UseGuards } from '@nestjs/common';
 
 @Resolver(() => Notification)
-@UseGuards(ApiKeyGuard)
+// @UseGuards(ApiKeyGuard)
 export class NotificationsResolver {
   constructor(private readonly notificationsService: NotificationsService) {}
 
