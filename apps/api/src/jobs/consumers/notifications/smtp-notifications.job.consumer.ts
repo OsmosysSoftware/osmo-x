@@ -7,10 +7,10 @@ import { NotificationsService } from 'src/modules/notifications/notifications.se
 import { SMTP_QUEUE } from 'src/modules/notifications/queues/smtp.queue';
 import { SmtpService } from 'src/modules/providers/smtp/smtp.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
-import { BaseNotificationConsumer } from './base-notification.consumer';
+import { NotificationConsumer } from './notification.consumer';
 
 @Processor(SMTP_QUEUE)
-export class SmtpNotificationConsumer extends BaseNotificationConsumer {
+export class SmtpNotificationConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,

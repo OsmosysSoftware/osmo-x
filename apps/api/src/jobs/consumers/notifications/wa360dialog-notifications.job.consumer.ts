@@ -9,10 +9,10 @@ import {
   Wa360dialogService,
 } from 'src/modules/providers/wa360dialog/wa360dialog.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
-import { BaseNotificationConsumer } from './base-notification.consumer';
+import { NotificationConsumer } from './notification.consumer';
 
 @Processor(WA360DIALOG_QUEUE)
-export class Wa360dialogNotificationsConsumer extends BaseNotificationConsumer {
+export class Wa360dialogNotificationsConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,

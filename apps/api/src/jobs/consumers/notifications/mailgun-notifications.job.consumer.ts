@@ -7,10 +7,10 @@ import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
 import { MailgunService } from 'src/modules/providers/mailgun/mailgun.service';
 import { MailgunMessageData } from 'mailgun.js';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
-import { BaseNotificationConsumer } from './base-notification.consumer';
+import { NotificationConsumer } from './notification.consumer';
 
 @Processor(MAILGUN_QUEUE)
-export class MailgunNotificationConsumer extends BaseNotificationConsumer {
+export class MailgunNotificationConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,

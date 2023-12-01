@@ -6,7 +6,7 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 
-export abstract class BaseNotificationConsumer {
+export abstract class NotificationConsumer {
   private readonly logger = new Logger(this.constructor.name);
 
   constructor(
@@ -17,14 +17,14 @@ export abstract class BaseNotificationConsumer {
 
   async processNotificationQueue(
     job: Job<number>,
-    sendNotificationFn: () => Promise<unknown>,
+    sendNotification: () => Promise<unknown>,
   ): Promise<void> {
     const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
 
     try {
       this.logger.log(`Sending notification with id: ${id}`);
-      const result = await sendNotificationFn();
+      const result = await sendNotification();
       notification.deliveryStatus = DeliveryStatus.SUCCESS;
       notification.result = { result };
     } catch (error) {
