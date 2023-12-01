@@ -1,7 +1,9 @@
 import { Query, Resolver } from '@nestjs/graphql';
 import { NotificationsService } from './notifications.service';
 import { Notification } from './entities/notification.entity';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { UseGuards } from '@nestjs/common';
 
 @Resolver(() => Notification)
