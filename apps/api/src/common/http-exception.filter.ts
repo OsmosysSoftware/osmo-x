@@ -17,6 +17,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
     const data = exception.getResponse() as HttpExceptionBody;
-    response.status(status).json(this.jsend.fail(data.message));
+
+    try {
+      response.status(status).json(this.jsend.fail(data.message));
+    } catch (error) {
+      // throw the original exception incase response.status doesn't workout
+      throw exception;
+    }
   }
 }
