@@ -14,7 +14,7 @@ export class NotificationQueueProducer {
   constructor(
     @Optional() @InjectQueue(SMTP_QUEUE) private readonly smtpQueue: Queue,
     @Optional() @InjectQueue(MAILGUN_QUEUE) private readonly mailgunQueue: Queue,
-    @Optional() @InjectQueue(WA360DIALOG_QUEUE) private readonly wa360DialogQueueConfig: Queue,
+    @Optional() @InjectQueue(WA360DIALOG_QUEUE) private readonly wa360DialogQueue: Queue,
   ) {}
 
   private listenForError(queue: Queue[]): void {
@@ -27,9 +27,7 @@ export class NotificationQueueProducer {
   }
 
   async onModuleInit(): Promise<void> {
-    const queues = [this.smtpQueue, this.mailgunQueue, this.wa360DialogQueueConfig].filter(
-      (q) => q,
-    );
+    const queues = [this.smtpQueue, this.mailgunQueue, this.wa360DialogQueue].filter((q) => q);
     this.listenForError(queues);
   }
 
@@ -48,8 +46,8 @@ export class NotificationQueueProducer {
 
         break;
       case ChannelType.WA_360_DAILOG:
-        if (this.wa360DialogQueueConfig) {
-          await this.wa360DialogQueueConfig.add(notification.id);
+        if (this.wa360DialogQueue) {
+          await this.wa360DialogQueue.add(notification.id);
         }
 
         break;
