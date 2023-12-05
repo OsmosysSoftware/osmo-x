@@ -1,48 +1,34 @@
-import { Logger } from '@nestjs/common';
-import { Processor, Process } from '@nestjs/bull';
+import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Notification } from 'src/modules/notifications/entities/notification.entity';
-import { DeliveryStatus } from 'src/common/constants/notifications';
-import { MailgunService } from 'src/modules/providers/mailgun/mailgun.service';
-import { MailgunMessageData } from 'mailgun.js';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
+import { MailgunService } from 'src/modules/providers/mailgun/mailgun.service';
+import { MailgunMessageData } from 'mailgun.js';
+import { Notification } from 'src/modules/notifications/entities/notification.entity';
+import { NotificationConsumer } from './notification.consumer';
 
 @Processor(MAILGUN_QUEUE)
-export class MailgunNotificationConsumer {
-  private readonly logger = new Logger(MailgunNotificationConsumer.name);
-
+export class MailgunNotificationConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
-    private readonly notificationRepository: Repository<Notification>,
+    protected readonly notificationRepository: Repository<Notification>,
     private readonly mailgunService: MailgunService,
-    private readonly notificationsService: NotificationsService,
-  ) {}
+    notificationsService: NotificationsService,
+  ) {
+    super(notificationRepository, notificationsService);
+  }
 
   @Process()
   async processMailgunNotificationQueue(job: Job<number>): Promise<void> {
-    const id = job.data;
-    const notification = (await this.notificationsService.getNotificationById(id))[0];
-
-    try {
-      this.logger.log(`Sending notification with id: ${id}`);
+    return super.processNotificationQueue(job, async () => {
+      const id = job.data;
+      const notification = (await this.notificationsService.getNotificationById(id))[0];
       const formattedNotificationData = await this.mailgunService.formatNotificationData(
         notification.data,
       );
-      const result = await this.mailgunService.sendEmail(
-        formattedNotificationData as MailgunMessageData,
-      );
-      notification.deliveryStatus = DeliveryStatus.SUCCESS;
-      notification.result = { result };
-    } catch (error) {
-      notification.deliveryStatus = DeliveryStatus.FAILED;
-      notification.result = { result: error };
-      this.logger.error(`Error sending notification with id: ${id}`);
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-    } finally {
-      await this.notificationRepository.save(notification);
-    }
+      return this.mailgunService.sendEmail(formattedNotificationData as MailgunMessageData);
+    });
   }
 }
