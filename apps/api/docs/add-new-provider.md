@@ -40,6 +40,14 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
     };
     ```
 
+    Additionally, update the `generateEnabledChannelEnum` function for checking and enabling your new channel:
+
+    ```ts
+    if (configService.get('ENABLE_CHANNEL_NAME') === 'true') {
+      enabledChannels[<CHANNEL_NAME>] = ChannelType.<CHANNEL_NAME>;
+    }
+    ```
+
 4. **Create `.queue.ts` file**
 
     All providers will be using a queue specific to them for queuing notifications that have to be sent. The required values for this queue for a provider is specified in the `src/modules/notifications/queues` folder.
@@ -63,12 +71,10 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
      nest generate module modules/providers/<channel_name>
     ```
 
-    Here, the `<type>` value will depend on the kind of provider being added. For example, it can be `email`, `sms`, and so on.
-
     The `app.module.ts` file will automatically update to import this new service and add it in the `providers` array.
 
     Remove the new added module from `app.module.ts` and add it in notifications module register logic.
-    Ex: 
+    Ex:
 
     ```js
     if (configService.get<string>('ENABLE_MAILGUN') === 'true') {
@@ -89,7 +95,7 @@ Before working on adding a new provider, ensure that you have set up the Osmo-No
     The `app.module.ts` file will automatically update to import this new service and add it in the `providers` array.
 
     Remove it from `app.module.ts` and add it to the earlier created channel specific module.
-    
+
     Ex
     ```js
     import { Module } from '@nestjs/common';

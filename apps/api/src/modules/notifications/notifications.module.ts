@@ -17,6 +17,7 @@ import { MailgunModule } from '../providers/mailgun/mailgun.module';
 import { SmtpModule } from '../providers/smtp/smtp.module';
 import { Wa360dialogModule } from '../providers/wa360dialog/wa360dialog.module';
 import { ScheduleService } from './schedule/schedule.service';
+import { NotificationsResolver } from './notifications.resolver';
 
 @Module({})
 export class NotificationsModule {
@@ -68,6 +69,7 @@ export class NotificationsModule {
         ConfigService,
         JsendFormatter,
         Logger,
+        NotificationsResolver,
       ],
       exports: [NotificationsService],
       controllers: [NotificationsController],
