@@ -27,12 +27,18 @@ export class MailgunService {
   }
 
   async formatNotificationData(notificationData: Record<string, unknown>): Promise<object> {
-    const formattedNotificationData = notificationData;
-    formattedNotificationData.attachment = await this.formatAttachments(
-      notificationData.attachments as CreateNotificationAttachmentDto[],
-    );
-    delete formattedNotificationData.attachments;
-    return formattedNotificationData;
+    if (notificationData.attachments) {
+      const formattedNotificationData = notificationData;
+
+      formattedNotificationData.attachment = await this.formatAttachments(
+        notificationData.attachments as CreateNotificationAttachmentDto[],
+      );
+      delete formattedNotificationData.attachments;
+
+      return formattedNotificationData;
+    }
+
+    return notificationData;
   }
 
   async formatAttachments(attachments: CreateNotificationAttachmentDto[]): Promise<object[]> {
