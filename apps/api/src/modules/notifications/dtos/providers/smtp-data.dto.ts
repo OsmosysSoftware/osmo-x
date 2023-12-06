@@ -1,4 +1,9 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
+import {
+  AttachmentValidation,
+  CreateNotificationAttachmentDto,
+} from '../create-notification-attachment.dto';
+import { Type } from 'class-transformer';
 
 export class SMTPDataDto {
   @IsNotEmpty()
@@ -17,11 +22,16 @@ export class SMTPDataDto {
   @IsString()
   subject: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'HTML or text must be provided' })
+  @ValidateIf((obj) => !obj.html, { message: 'HTML or text must be provided' })
   text: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'HTML or text must be provided' })
+  @ValidateIf((obj) => !obj.text, { message: 'HTML or text must be provided' })
   html: string;
+
+  @IsOptional()
+  @Type(() => CreateNotificationAttachmentDto)
+  @AttachmentValidation()
+  attachments: CreateNotificationAttachmentDto[];
 }
