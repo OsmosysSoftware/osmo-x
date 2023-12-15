@@ -1,0 +1,78 @@
+<div class="p-grid p-justify-center container">
+  <h2 class="p-col-12">Notifications</h2>
+
+  <div class="p-grid">
+    <div class="p-col-12 p-md-3">
+      <p-dropdown
+        [options]="channelTypes"
+        [(ngModel)]="selectedChannelType"
+        placeholder="Select a channel Type"
+        class="grid-dropdown"
+      ></p-dropdown>
+      <p-dropdown
+        [options]="deliveryStatuses"
+        [(ngModel)]="selectedDeliveryStatus"
+        placeholder="Select a Delivery Status Type"
+        class="grid-dropdown"
+      ></p-dropdown>
+    </div>
+  </div>
+
+  <div class="p-grid table-container">
+    <div class="p-col-12">
+      <p-table
+        [value]="displayedNotifications"
+        [rows]="pageSize"
+        [paginator]="true"
+        [totalRecords]="totalRecords"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Notification ID</th>
+            <th>Channel Type</th>
+            <th>Created By</th>
+            <th>Created On</th>
+            <th>Updated By</th>
+            <th>Updated On</th>
+            <th>Delivery Status</th>
+            <th>Data</th>
+            <th>Result</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-notification>
+          <tr>
+            <td>{{ notification.id }}</td>
+            <td>{{ notification.channelType }}</td>
+            <td>{{ notification.createdBy }}</td>
+            <td>{{ notification.createdOn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td>{{ notification.updatedBy }}</td>
+            <td>{{ notification.updatedOn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td>{{ notification.deliveryStatus }}</td>
+            <td>
+              <button class="view-button" (click)="showJsonObject(notification.data)">
+                View Data
+              </button>
+            </td>
+            <td>
+              <button
+                *ngIf="notification.result"
+                class="view-button"
+                (click)="showJsonObject(notification.result)"
+              >
+                View Result
+              </button>
+              <span *ngIf="!notification.result">No Result</span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <app-json-dialog
+        *ngIf="jsonDialogData"
+        [jsonData]="jsonDialogData"
+        [visible]="jsonDialogVisible"
+        (closeDialog)="closeJsonDialog()"
+      ></app-json-dialog>
+    </div>
+  </div>
+</div>
