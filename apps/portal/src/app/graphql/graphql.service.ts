@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { environment } from 'src/environments/environment';
 
-const { serverApiKey } = environment;
+const serverApiKey = environment.serverApiKey ?? '';
 
 @Injectable({
   providedIn: 'root',
