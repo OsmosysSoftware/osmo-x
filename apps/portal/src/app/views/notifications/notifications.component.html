@@ -1,26 +1,25 @@
-<div class="container">
-  <h2>Notifications</h2>
+<div class="p-grid p-justify-center container">
+  <h2 class="p-col-12">Notifications</h2>
 
-  <div class="row">
-    <div class="col-md-3">
+  <div class="p-grid">
+    <div class="p-col-12 p-md-3">
       <p-dropdown
         [options]="channelTypes"
         [(ngModel)]="selectedChannelType"
         placeholder="Select a channel Type"
+        class="grid-dropdown"
       ></p-dropdown>
-    </div>
-
-    <div class="col-md-3">
       <p-dropdown
         [options]="deliveryStatuses"
         [(ngModel)]="selectedDeliveryStatus"
         placeholder="Select a Delivery Status Type"
+        class="grid-dropdown"
       ></p-dropdown>
     </div>
   </div>
 
-  <div class="row table-container">
-    <div class="col-md-12">
+  <div class="p-grid table-container">
+    <div class="p-col-12">
       <p-table
         [value]="displayedNotifications"
         [rows]="pageSize"
