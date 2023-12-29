@@ -54,7 +54,7 @@ SERVER_PORT=5000
 
 2. **Access the Portal:**
 
-   Once the containers are running, access the Portal by navigating to `http://localhost:5000` in your web browser. If you specified a different port in your `docker-compose.yml` file, adjust the port number accordingly.
+   Once the containers are running, access the Portal by navigating to `http://localhost:5000/notifications` in your web browser. If you specified a different port in your `docker-compose.yml` file, adjust the port number accordingly.
 
 3. **Stop the Containers:**
 

@@ -1,10 +1,10 @@
 version: '3'
 
 services:
-  angular-app:
+  osmo-notify-portal:
     build:
       context: .
       dockerfile: Dockerfile
-    image: angular-app
+    image: osmo-notify-portal
     ports:
       - "${SERVER_PORT}:80"
