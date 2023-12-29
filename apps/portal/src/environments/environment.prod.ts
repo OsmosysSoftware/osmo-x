@@ -2,5 +2,5 @@ import { Environment } from './environment.interface';
 
 export const environment: Environment = {
   production: true,
-  graphqlEndpoint: 'http://localhost:3000/graphql',
+  graphqlEndpoint: 'https://notify.osmosys.co/graphql',
 };

@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  osmo-notify-portal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: osmo-notify-portal
+    ports:
+      - "${SERVER_PORT}:80"
