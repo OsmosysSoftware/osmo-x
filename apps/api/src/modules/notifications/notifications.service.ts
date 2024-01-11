@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { Equal, FindManyOptions, LessThan, Like, MoreThan, Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import {
   DeliveryStatus,
@@ -106,22 +106,60 @@ export class NotificationsService {
 
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
     this.logger.log('Getting all active notifications with options');
+
+    const whereConditions = { status: Status.ACTIVE };
+
+    options.filters?.forEach((filter) => {
+      const field = filter.field;
+      const value = filter.value;
+
+      switch (filter.operator) {
+        case 'eq':
+          whereConditions[field] = Equal(value);
+          break;
+        case 'contains':
+          if (typeof value === 'string') {
+            whereConditions[field] = Like(`%${value}%`);
+          }
+
+          break;
+        case 'gt':
+          if (this.isDateField(field)) {
+            whereConditions[field] = MoreThan(new Date(value));
+          } else {
+            whereConditions[field] = MoreThan(value);
+          }
+
+          break;
+        case 'lt':
+          if (this.isDateField(field)) {
+            whereConditions[field] = LessThan(new Date(value));
+          } else {
+            whereConditions[field] = LessThan(value);
+          }
+
+          break;
+      }
+    });
+
     const queryOptions: FindManyOptions<Notification> = {
-      where: {
-        status: Status.ACTIVE,
-      },
+      where: whereConditions,
       skip: options.offset,
       take: options.limit,
+      order: options.sortBy
+        ? { [options.sortBy]: options.sortOrder === SortOrder.ASC ? 'ASC' : 'DESC' }
+        : undefined,
     };
-
-    if (options.sortBy) {
-      queryOptions.order = {
-        [options.sortBy]: options.sortOrder === SortOrder.ASC ? SortOrder.ASC : SortOrder.DESC,
-      };
-    }
 
     const [notifications, total] = await this.notificationRepository.findAndCount(queryOptions);
 
     return { notifications, total, offset: options.offset, limit: options.limit };
+  }
+
+  // Helper method to check if a field is a date field
+  private isDateField(field: string): boolean {
+    // List all date fields from your Notification entity
+    const dateFields = ['createdOn', 'updatedOn'];
+    return dateFields.includes(field);
   }
 }
