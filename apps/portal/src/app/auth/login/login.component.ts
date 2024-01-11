@@ -77,6 +77,7 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['notifications']);
           }
         }
+
         this.loading = false;
       },
       error: (error) => {
