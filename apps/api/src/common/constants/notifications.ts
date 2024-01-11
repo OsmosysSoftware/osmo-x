@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import { registerEnumType } from '@nestjs/graphql';
 
 export function generateEnabledChannelEnum(configService: ConfigService): Record<string, number> {
   const enabledChannels: Record<string, number> = {};
@@ -30,3 +31,12 @@ export const ChannelType = {
   MAILGUN: 2,
   WA_360_DAILOG: 3,
 };
+
+export enum SortOrder {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+registerEnumType(SortOrder, {
+  name: 'SortOrder',
+});
