@@ -38,6 +38,19 @@ export class NotificationsComponent implements OnInit {
 
   jsonDialogVisible: Boolean = false;
 
+  deliveryStatusMap = {
+    [DeliveryStatus.PENDING]: 'Pending',
+    [DeliveryStatus.IN_PROGRESS]: 'In Progress',
+    [DeliveryStatus.SUCCESS]: 'Success',
+    [DeliveryStatus.FAILED]: 'Failed',
+  };
+
+  channelTypeMap = {
+    [ChannelType.SMTP]: 'SMTP',
+    [ChannelType.MAILGUN]: 'Mailgun',
+    [ChannelType.WA_360_DAILOG]: 'WhatsApp 360 Dialog',
+  };
+
   constructor(private notificationService: NotificationsService) {}
 
   ngOnInit(): void {
