@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, FindManyOptions, LessThan, Like, MoreThan, Repository } from 'typeorm';
+import { Equal, FindManyOptions, LessThan, Like, MoreThan, Not, Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import {
   DeliveryStatus,
@@ -116,6 +116,9 @@ export class NotificationsService {
       switch (filter.operator) {
         case 'eq':
           whereConditions[field] = Equal(value);
+          break;
+        case 'ne':
+          whereConditions[field] = Not(Equal(value));
           break;
         case 'contains':
           if (typeof value === 'string') {
