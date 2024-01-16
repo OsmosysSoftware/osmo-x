@@ -157,6 +157,9 @@ export class NotificationsService {
             [paramName]: this.isDateField(filter.field) ? new Date(String(value)) : value,
           });
           break;
+        case 'ne':
+          queryBuilder.andWhere(`${condition} != :${paramName}`, { [paramName]: value });
+          break;
       }
 
       filterIndex++;
