@@ -30,4 +30,9 @@ export class QueryOptionsDto {
   @Field(() => [UniversalFilter], { nullable: true })
   @IsOptional()
   filters?: UniversalFilter[];
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
