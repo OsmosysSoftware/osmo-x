@@ -16,3 +16,12 @@ export const GetNotifcations = gql`
     }
   }
 `;
+
+export const LoginUser = gql`
+  mutation LoginUser($username: String!, $password: String!) {
+    login(loginUserInput: { username: $username, password: $password }) {
+      token
+      user
+    }
+  }
+`;
