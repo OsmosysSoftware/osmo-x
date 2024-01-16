@@ -39,10 +39,10 @@ export class NotificationsComponent implements OnInit {
   jsonDialogVisible: Boolean = false;
 
   deliveryStatusMap = {
-    [DeliveryStatus.PENDING]: 'Pending',
-    [DeliveryStatus.IN_PROGRESS]: 'In Progress',
-    [DeliveryStatus.SUCCESS]: 'Success',
-    [DeliveryStatus.FAILED]: 'Failed',
+    [DeliveryStatus.PENDING]: { value: 'Pending', style: 'pending' },
+    [DeliveryStatus.IN_PROGRESS]: { value: 'In Progress', style: 'in-progress' },
+    [DeliveryStatus.SUCCESS]: { value: 'Success', style: 'success' },
+    [DeliveryStatus.FAILED]: { value: 'Failed', style: 'failed' },
   };
 
   channelTypeMap = {
