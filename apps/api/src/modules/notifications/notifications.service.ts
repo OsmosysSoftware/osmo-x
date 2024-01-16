@@ -150,7 +150,7 @@ export class NotificationsService {
       skip: options.offset,
       take: options.limit,
       order: options.sortBy
-        ? { [options.sortBy]: options.sortOrder === SortOrder.ASC ? 'ASC' : 'DESC' }
+        ? { [options.sortBy]: options.sortOrder === SortOrder.ASC ? SortOrder.ASC : SortOrder.DESC }
         : undefined,
     };
 
