@@ -43,12 +43,18 @@
         <ng-template pTemplate="body" let-notification>
           <tr>
             <td>{{ notification.id }}</td>
-            <td>{{ notification.channelType }}</td>
+            <td>{{ channelTypeMap[notification.channelType] }}</td>
             <td>{{ notification.createdBy }}</td>
             <td>{{ notification.createdOn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
             <td>{{ notification.updatedBy }}</td>
             <td>{{ notification.updatedOn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
-            <td>{{ notification.deliveryStatus }}</td>
+            <td>
+              <span
+                [class]="'badge status-' + deliveryStatusMap[notification.deliveryStatus].style"
+              >
+                {{ deliveryStatusMap[notification.deliveryStatus].value }}
+              </span>
+            </td>
             <td>
               <button class="view-button" (click)="showJsonObject(notification.data)">
                 View Data

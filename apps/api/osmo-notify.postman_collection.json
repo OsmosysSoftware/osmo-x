@@ -226,6 +226,225 @@
 			]
 		},
 		{
+			"name": "Twilio WhatsApp Notifications",
+			"item": [
+				{
+					"name": "Send Twilio WhatsApp Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 3\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"channelType\": 5,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"channelType\": 4,\n    \"data\": {\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp Notification - Invalid channel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid 'channelType'\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"channelType\": 5,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid API key\", function () {",
+									"    pm.expect(pm.response.code).to.equal(401);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"channelType\": 4,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Mailgun Notifications",
 			"item": [
 				{
@@ -495,7 +714,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+							"raw": "{\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",

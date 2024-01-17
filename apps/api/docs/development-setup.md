@@ -74,6 +74,12 @@ Make sure Redis and MariaDB server are up and running.
    WA_360_DIALOG_URL=https://waba.360dialog.io/v1/messages
    WA_360_DIALOG_API_KEY=
 
+   # WhatsApp Twilio
+   ENABLE_WA_TWILIO=
+   TWILIO_WA_ACCOUNT_SID=
+   TWILIO_WA_AUTH_TOKEN=
+   TWILIO_WA_NUMBER=
+
    # TEMP
    APP_NAME=osmo_notify
    ```
