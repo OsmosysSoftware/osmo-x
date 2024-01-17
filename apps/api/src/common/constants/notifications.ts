@@ -15,6 +15,10 @@ export function generateEnabledChannelEnum(configService: ConfigService): Record
     enabledChannels['WA_360_DAILOG'] = ChannelType.WA_360_DAILOG;
   }
 
+  if (configService.get('ENABLE_WA_TWILIO') === 'true') {
+    enabledChannels['WA_TWILIO'] = ChannelType.WA_TWILIO;
+  }
+
   return enabledChannels as Record<string, number>;
 }
 
@@ -29,4 +33,5 @@ export const ChannelType = {
   SMTP: 1,
   MAILGUN: 2,
   WA_360_DAILOG: 3,
+  WA_TWILIO: 4,
 };

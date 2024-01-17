@@ -16,8 +16,12 @@ import { Wa360dialogNotificationsConsumer } from 'src/jobs/consumers/notificatio
 import { MailgunModule } from '../providers/mailgun/mailgun.module';
 import { SmtpModule } from '../providers/smtp/smtp.module';
 import { Wa360dialogModule } from '../providers/wa360dialog/wa360dialog.module';
+import { WaTwilioModule } from '../providers/wa-twilio/wa-twilio.module';
+
 import { ScheduleService } from './schedule/schedule.service';
 import { NotificationsResolver } from './notifications.resolver';
+import { waTwilioQueueConfig } from './queues/waTwilio.queue';
+import { WaTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilio-notifications.job.consumer';
 
 @Module({})
 export class NotificationsModule {
@@ -44,6 +48,12 @@ export class NotificationsModule {
       modulesToLoad.push(Wa360dialogModule);
       queuesToLoad.push(wa360DialogQueueConfig);
       consumersToLoad.push(Wa360dialogNotificationsConsumer);
+    }
+
+    if (configService.get<string>('ENABLE_WA_TWILIO') === 'true') {
+      modulesToLoad.push(WaTwilioModule);
+      queuesToLoad.push(waTwilioQueueConfig);
+      consumersToLoad.push(WaTwilioNotificationsConsumer);
     }
 
     const serviceProviderModules: DynamicModule[] = modulesToLoad;

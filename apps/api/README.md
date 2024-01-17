@@ -34,7 +34,8 @@ Imagine having a central hub where you can create and send notifications seamles
 - [Production Setup](docs/production-setup.md)
 - [Usage Guide](docs/usage-guide.md)
 - [Add New Provider](docs/add-new-provider.md)
-- [Block Diagram](/docs/block-diagram.md)
+- [Block Diagram](docs/block-diagram.md)
+- [API Test Cases](docs/api-test-cases.md)
 
 ## Contributing
 
