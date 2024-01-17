@@ -13,8 +13,6 @@ import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { ConfigService } from '@nestjs/config';
 import { QueryOptionsDto } from './dtos/query-options.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
-import { QueryOptionsDto } from './dtos/query-options.dto';
-import { NotificationResponse } from './dtos/notification-response.dto';
 
 @Injectable()
 export class NotificationsService {
