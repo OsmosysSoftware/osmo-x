@@ -83,3 +83,32 @@ tr:hover {
 .no-result {
   color: #757575; /* Gray text for no result */
 }
+
+.badge {
+  border-radius: 4px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.75em;
+  letter-spacing: 0.3px;
+}
+
+.badge.status-success {
+  background: #c8e6c9;
+  color: #256029;
+}
+
+.badge.status-failed {
+  background: #ffcdd2;
+  color: #c63737;
+}
+
+.badge.status-pending {
+  background: #dadada;
+  color: #424242;
+}
+
+.badge.status-in-progress {
+  background: #abcdef;
+  color: #1558be;
+}
