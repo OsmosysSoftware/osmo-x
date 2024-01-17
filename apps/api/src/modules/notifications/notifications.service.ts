@@ -1,8 +1,12 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import { DeliveryStatus, generateEnabledChannelEnum } from 'src/common/constants/notifications';
+import {
+  DeliveryStatus,
+  SortOrder,
+  generateEnabledChannelEnum,
+} from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
@@ -102,13 +106,21 @@ export class NotificationsService {
 
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
     this.logger.log('Getting all active notifications with options');
-    const [notifications, total] = await this.notificationRepository.findAndCount({
+    const queryOptions: FindManyOptions<Notification> = {
       where: {
         status: Status.ACTIVE,
       },
       skip: options.offset,
       take: options.limit,
-    });
+    };
+
+    if (options.sortBy) {
+      queryOptions.order = {
+        [options.sortBy]: options.sortOrder === SortOrder.ASC ? SortOrder.ASC : SortOrder.DESC,
+      };
+    }
+
+    const [notifications, total] = await this.notificationRepository.findAndCount(queryOptions);
 
     return { notifications, total, offset: options.offset, limit: options.limit };
   }
