@@ -26,6 +26,7 @@
     "@apollo/client": "^3.8.8",
     "apollo-angular": "^5.0.2",
     "graphql": "^16.8.1",
+    "primeflex": "^3.3.1",
     "primeng": "^16.9.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
