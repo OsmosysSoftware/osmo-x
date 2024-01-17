@@ -1,6 +1,6 @@
 {
   "name": "osmo-notify-frontend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -26,6 +26,7 @@
     "@apollo/client": "^3.8.8",
     "apollo-angular": "^5.0.2",
     "graphql": "^16.8.1",
+    "primeflex": "^3.3.1",
     "primeng": "^16.9.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -36,9 +37,9 @@
     "@angular-eslint/builder": "17.1.1",
     "@angular-eslint/eslint-plugin": "17.1.1",
     "@angular-eslint/eslint-plugin-template": "16.3.1",
-    "@angular-eslint/schematics": "16.3.1",
+    "@angular-eslint/schematics": "17.1.1",
     "@angular-eslint/template-parser": "16.3.1",
-    "@angular/cli": "^16.2.9",
+    "@angular/cli": "^17.0.7",
     "@angular/compiler-cli": "^16.2.0",
     "@types/jasmine": "~4.3.0",
     "@typescript-eslint/eslint-plugin": "6.15.0",

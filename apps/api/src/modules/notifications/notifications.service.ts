@@ -7,6 +7,8 @@ import { NotificationQueueProducer } from 'src/jobs/producers/notifications/noti
 import { Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { ConfigService } from '@nestjs/config';
+import { QueryOptionsDto } from './dtos/query-options.dto';
+import { NotificationResponse } from './dtos/notification-response.dto';
 
 @Injectable()
 export class NotificationsService {
@@ -98,12 +100,16 @@ export class NotificationsService {
     });
   }
 
-  getAllNotifications(): Promise<Notification[]> {
-    this.logger.log('Getting all active notifications');
-    return this.notificationRepository.find({
+  async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
+    this.logger.log('Getting all active notifications with options');
+    const [notifications, total] = await this.notificationRepository.findAndCount({
       where: {
         status: Status.ACTIVE,
       },
+      skip: options.offset,
+      take: options.limit,
     });
+
+    return { notifications, total, offset: options.offset, limit: options.limit };
   }
 }
