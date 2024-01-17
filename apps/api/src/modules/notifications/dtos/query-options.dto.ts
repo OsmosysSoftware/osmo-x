@@ -1,6 +1,7 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
 import { IsOptional, IsInt, Min, IsString, IsEnum } from 'class-validator';
 import { SortOrder } from 'src/common/constants/notifications';
+import { UniversalFilter } from './universal-filter.dto';
 
 @InputType()
 export class QueryOptionsDto {
@@ -25,4 +26,8 @@ export class QueryOptionsDto {
   @IsOptional()
   @IsEnum(SortOrder)
   sortOrder?: SortOrder = SortOrder.ASC;
+
+  @Field(() => [UniversalFilter], { nullable: true })
+  @IsOptional()
+  filters?: UniversalFilter[];
 }
