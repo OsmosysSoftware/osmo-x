@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, FindManyOptions, LessThan, Like, MoreThan, Not, Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import {
   DeliveryStatus,
@@ -103,58 +103,85 @@ export class NotificationsService {
       },
     });
   }
-
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
     this.logger.log('Getting all active notifications with options');
 
-    const whereConditions = { status: Status.ACTIVE };
+    const queryBuilder = this.notificationRepository.createQueryBuilder('notification');
 
+    // Base where condition
+    queryBuilder.where('notification.status = :status', { status: Status.ACTIVE });
+
+    // Search functionality using OR condition
+    if (options.search) {
+      const searchableFields = ['createdBy', 'data', 'result'];
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          searchableFields.forEach((field, index) => {
+            const condition = `notification.${field} LIKE :search`;
+
+            if (index === 0) {
+              qb.where(condition, { search: `%${options.search}%` });
+            } else {
+              qb.orWhere(condition, { search: `%${options.search}%` });
+            }
+          });
+        }),
+      );
+    }
+
+    // Applying filters
+    let filterIndex = 0;
     options.filters?.forEach((filter) => {
       const field = filter.field;
       const value = filter.value;
+      const condition = `notification.${field}`;
+      const paramName = `value${filterIndex}`; // Unique parameter name issue: https://github.com/typeorm/typeorm/issues/3428
 
       switch (filter.operator) {
         case 'eq':
-          whereConditions[field] = Equal(value);
-          break;
-        case 'ne':
-          whereConditions[field] = Not(Equal(value));
+          queryBuilder.andWhere(`${condition} = :${paramName}`, { [paramName]: value });
           break;
         case 'contains':
           if (typeof value === 'string') {
-            whereConditions[field] = Like(`%${value}%`);
+            queryBuilder.andWhere(`${condition} LIKE :${paramName}`, { [paramName]: `%${value}%` });
           }
 
           break;
         case 'gt':
-          if (this.isDateField(field)) {
-            whereConditions[field] = MoreThan(new Date(value));
-          } else {
-            whereConditions[field] = MoreThan(value);
-          }
-
+          queryBuilder.andWhere(`${condition} > :${paramName}`, {
+            [paramName]: this.isDateField(filter.field) ? new Date(String(value)) : value,
+          });
           break;
         case 'lt':
-          if (this.isDateField(field)) {
-            whereConditions[field] = LessThan(new Date(value));
-          } else {
-            whereConditions[field] = LessThan(value);
-          }
-
+          queryBuilder.andWhere(`${condition} < :${paramName}`, {
+            [paramName]: this.isDateField(filter.field) ? new Date(String(value)) : value,
+          });
+          break;
+        case 'ne':
+          queryBuilder.andWhere(`${condition} != :${paramName}`, { [paramName]: value });
           break;
       }
+
+      filterIndex++;
     });
 
-    const queryOptions: FindManyOptions<Notification> = {
-      where: whereConditions,
-      skip: options.offset,
-      take: options.limit,
-      order: options.sortBy
-        ? { [options.sortBy]: options.sortOrder === SortOrder.ASC ? SortOrder.ASC : SortOrder.DESC }
-        : undefined,
-    };
+    // Pagination and Sorting
+    if (options.offset !== undefined) {
+      queryBuilder.skip(options.offset);
+    }
 
-    const [notifications, total] = await this.notificationRepository.findAndCount(queryOptions);
+    if (options.limit !== undefined) {
+      queryBuilder.take(options.limit);
+    }
+
+    if (options.sortBy) {
+      queryBuilder.addOrderBy(
+        `notification.${options.sortBy}`,
+        options.sortOrder === SortOrder.ASC ? SortOrder.ASC : SortOrder.DESC,
+      );
+    }
+
+    const [notifications, total] = await queryBuilder.getManyAndCount();
 
     return { notifications, total, offset: options.offset, limit: options.limit };
   }
