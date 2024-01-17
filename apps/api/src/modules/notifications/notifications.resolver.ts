@@ -9,7 +9,7 @@ import { NotificationResponse } from './dtos/notification-response.dto';
 import { QueryOptionsDto } from './dtos/query-options.dto';
 
 @Resolver(() => Notification)
-// @UseGuards(ApiKeyGuard)
+@UseGuards(ApiKeyGuard)
 export class NotificationsResolver {
   constructor(private readonly notificationsService: NotificationsService) {}
 

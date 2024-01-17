@@ -9,6 +9,7 @@ import { DatabaseModule } from './database/database.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { AuthModule } from './modules/auth/auth.module';
 
 const configService = new ConfigService();
 @Module({
@@ -33,6 +34,7 @@ const configService = new ConfigService();
       sortSchema: true,
       playground: configService.getOrThrow('NODE_ENV') === 'development',
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
