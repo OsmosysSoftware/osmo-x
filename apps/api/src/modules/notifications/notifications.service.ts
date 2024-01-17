@@ -177,7 +177,7 @@ export class NotificationsService {
     if (options.sortBy) {
       queryBuilder.addOrderBy(
         `notification.${options.sortBy}`,
-        options.sortOrder === SortOrder.ASC ? 'ASC' : 'DESC',
+        options.sortOrder === SortOrder.ASC ? SortOrder.ASC : SortOrder.DESC,
       );
     }
 
