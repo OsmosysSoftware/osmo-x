@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '${SERVER_PORT}:${SERVER_PORT}'
+      - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
     depends_on:
       - mariadb
       - redis
@@ -23,7 +23,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     ports:
-      - '${MARIADB_DOCKER_PORT}:3306'
+      - '127.0.0.1:${MARIADB_DOCKER_PORT}:3306'
     volumes:
       - osmo-notify-db:/var/lib/mysql
 
@@ -32,7 +32,7 @@ services:
     image: redis:latest
     restart: always
     ports:
-      - '${REDIS_DOCKER_PORT}:6379'
+      - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
 
 volumes:
   osmo-notify-db: ~
