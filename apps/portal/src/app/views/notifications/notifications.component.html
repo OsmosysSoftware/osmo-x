@@ -8,12 +8,14 @@
         [(ngModel)]="selectedChannelType"
         placeholder="Select a channel Type"
         class="grid-dropdown"
+        [showClear]="true"
       ></p-dropdown>
       <p-dropdown
         [options]="deliveryStatuses"
         [(ngModel)]="selectedDeliveryStatus"
         placeholder="Select a Delivery Status Type"
         class="grid-dropdown"
+        [showClear]="true"
       ></p-dropdown>
     </div>
   </div>
