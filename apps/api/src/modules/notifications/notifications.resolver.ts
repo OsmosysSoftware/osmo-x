@@ -22,7 +22,7 @@ export class NotificationsResolver {
   }
   @Query(() => Notification, { name: 'notificationById' })
   async getNotificationByIdForGraphQL(
-    @Args('id') id: any,
+    @Args('id') id: string, // or number, if IDs are numeric
   ): Promise<Notification> {
     return this.notificationsService.getNotificationById(id);
   }
