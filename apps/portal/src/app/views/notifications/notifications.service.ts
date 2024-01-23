@@ -5,8 +5,10 @@ import { GetNotifcations } from 'src/app/graphql/graphql.queries';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Notification } from './notification.model';
 
-interface GetNoticationsResponse {
-  notifications?: Notification[];
+interface GetNotificationsResponse {
+  notifications: {
+    notifications?: Notification[];
+  };
 }
 @Injectable({
   providedIn: 'root',
@@ -16,13 +18,13 @@ export class NotificationsService {
 
   getNotifications(): Observable<Notification[]> {
     return this.graphqlService.query(GetNotifcations).pipe(
-      map((response: ApolloQueryResult<GetNoticationsResponse>) => {
+      map((response: ApolloQueryResult<GetNotificationsResponse>) => {
         if (response.error) {
           const errorMessage: string = response.error.message;
           throw new Error(errorMessage);
         } else {
-          const notifcations = response.data?.notifications;
-          return JSON.parse(JSON.stringify(notifcations));
+          const notifications = response.data?.notifications.notifications;
+          return JSON.parse(JSON.stringify(notifications));
         }
       }),
     );
