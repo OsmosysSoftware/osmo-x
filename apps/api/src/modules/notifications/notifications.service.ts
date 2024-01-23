@@ -102,6 +102,19 @@ export class NotificationsService {
         status: Status.ACTIVE,
       },
     });
+  }  getgotificationbyidforgraphql(id: number): Promise<Notification> {
+    this.logger.log(`Getting notification with id: ${id}`);
+    let resultNotif;
+    var all_notifications = this.notificationRepository.find();
+    for (let index = 0; index < all_notifications.length; index++) {
+      const notif = all_notifications[index];
+      if(notif.id === id) {
+        if(notif.status == 1) {
+          resultNotif = notif
+        }
+      }
+    }
+    return resultNotif;
   }
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
     this.logger.log('Getting all active notifications with options');

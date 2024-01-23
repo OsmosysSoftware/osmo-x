@@ -20,4 +20,10 @@ export class NotificationsResolver {
   ): Promise<NotificationResponse> {
     return this.notificationsService.getAllNotifications(options);
   }
+  @Query(() => Notification, { name: 'notificationById' })
+  async getgotificationbyidforgraphql(
+    @Args('id') id: any,
+  ): Promise<Notification> {
+    return this.notificationsService.getNotificationById(id);
+  }
 }
