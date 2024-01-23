@@ -20,9 +20,9 @@ export class NotificationsComponent implements OnInit {
     value,
   }));
 
-  selectedChannelType = 'All';
+  selectedChannelType = null;
 
-  selectedDeliveryStatus = 'All';
+  selectedDeliveryStatus = null;
 
   pageSizeOptions: number[] = [5, 10, 25, 50];
 
