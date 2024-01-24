@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "5befd636-bdfd-49ff-b5ad-94465b3baab9",
+		"_postman_id": "085f3280-0ae4-4649-9668-67b23c15e63a",
 		"name": "osmo-notify",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29518992"
+		"_exporter_id": "24502738"
 	},
 	"item": [
 		{
@@ -875,6 +875,337 @@
 							"port": "3000",
 							"path": [
 								"notifications"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'login' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"login\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains valid 'token' and 'user' values\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.login).to.have.property(\"token\").to.be.a(\"string\");",
+									"    pm.expect(jsonData.data.login).to.have.property(\"user\").to.be.a(\"string\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    user\n    __typename\n  }\n}",
+								"operationName": "LoginUser",
+								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Invalid credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for failed login with invalid credentials\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().data).to.equal(null);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.equal(\"Invalid username or password\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    user\n    __typename\n  }\n}",
+								"operationName": "LoginUser",
+								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"abc{{adminPassword}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Missing password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for failed login with missing password\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.equal(\"Field \\\"LoginUserInput.password\\\" of required type \\\"String!\\\" was not provided.\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation LoginUser($username: String!) {\n  login(loginUserInput: {username: $username}) {\n    token\n    user\n    __typename\n  }\n}",
+								"operationName": "LoginUser",
+								"variables": "{\n  \"username\": \"{{adminUsername}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Bad request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for failed login with bad request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    users\n    __typename\n  }\n}",
+								"operationName": "LoginUser",
+								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "All Notifications",
+			"item": [
+				{
+					"name": "Fetch All Notifications - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notifications' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notifications\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notifications' array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notifications).to.have.property(\"notifications\").to.be.an(\"array\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"variables\": {},\n    \"query\": \"{\\n  notifications {\\n    notifications {\\n    channelType\\n    createdBy\\n    createdOn\\n    data\\n    deliveryStatus\\n    id\\n    result\\n    status\\n    updatedBy\\n    updatedOn\\n    __typename\\n  }\\n}\\n}\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch All Notifications - Bad request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for fetching notifications with bad request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"variables\": {},\n    \"query\": \"{\\n  notifications {\\n    notifications {\\n    channelType\\n    createdBy\\n    createdOn\\n    data\\n    deliveryStatus\\n    id\\n    results\\n    status\\n    updatedBy\\n    updatedOn\\n    __typename\\n  }\\n}\\n}\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
 							]
 						}
 					},
