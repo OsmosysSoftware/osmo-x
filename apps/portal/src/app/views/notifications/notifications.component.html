@@ -23,11 +23,14 @@
   <div class="p-grid table-container">
     <div class="p-col-12">
       <p-table
-        [value]="displayedNotifications"
+        [value]="filteredNotifications"
         [rows]="pageSize"
         [paginator]="true"
         [totalRecords]="totalRecords"
         (onPage)="onPageChange($event)"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [rowsPerPageOptions]="pageSizeOptions"
       >
         <ng-template pTemplate="header">
           <tr>

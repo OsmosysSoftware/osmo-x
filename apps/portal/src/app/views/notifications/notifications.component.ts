@@ -26,7 +26,7 @@ export class NotificationsComponent implements OnInit {
 
   pageSizeOptions: number[] = [5, 10, 25, 50];
 
-  pageSize = 20;
+  pageSize = 10;
 
   currentPage = 1;
 
