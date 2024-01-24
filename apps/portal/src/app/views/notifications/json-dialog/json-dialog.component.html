@@ -1,4 +1,10 @@
-<p-dialog header="JSON Data" [(visible)]="visible" [draggable]="false" [style]="{ width: '50vw' }">
+<p-dialog
+  header="JSON Data"
+  [(visible)]="visible"
+  [draggable]="false"
+  [style]="{ width: '50vw' }"
+  (onHide)="hideDialog()"
+>
   <pre>{{ jsonData | json }}</pre>
   <button pButton label="Close" (click)="hideDialog()" class="p-button-text"></button>
 </p-dialog>
