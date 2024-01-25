@@ -112,3 +112,23 @@ tr:hover {
   background: #abcdef;
   color: #1558be;
 }
+
+:host ::ng-deep {
+  .channel-type-email {
+    background: #d2e2ff;
+  }
+
+  .channel-type-whatsapp {
+    background: #d2f4d2;
+  }
+
+  .channel-type-text {
+    color: #242424;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  .channel-type-icon {
+    width: 1.8em;
+  }
+}

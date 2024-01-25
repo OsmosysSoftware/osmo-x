@@ -48,7 +48,35 @@
         <ng-template pTemplate="body" let-notification>
           <tr>
             <td>{{ notification.id }}</td>
-            <td>{{ channelTypeMap[notification.channelType] }}</td>
+            <td>
+              <div class="flex align-items-center gap-2">
+                <p-tag
+                  [styleClass]="'channel-type-' + channelTypeMap[notification.channelType].style"
+                  [rounded]="true"
+                >
+                  <img
+                    [alt]="channelTypeMap[notification.channelType].altText"
+                    [src]="channelTypeMap[notification.channelType].serviceIcon"
+                    class="channel-type-icon"
+                  />
+                </p-tag>
+                <p-tag
+                  [styleClass]="
+                    'channel-type-text channel-type-' +
+                    channelTypeMap[notification.channelType].style
+                  "
+                >
+                  <div class="flex align-items-center gap-2">
+                    {{ channelTypeMap[notification.channelType].providerName }}
+                    <img
+                      [alt]="channelTypeMap[notification.channelType].providerName"
+                      [src]="channelTypeMap[notification.channelType].providerIcon"
+                      class="channel-type-icon"
+                    />
+                  </div>
+                </p-tag>
+              </div>
+            </td>
             <td>{{ notification.createdBy }}</td>
             <td>{{ notification.createdOn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
             <td>{{ notification.updatedBy }}</td>
