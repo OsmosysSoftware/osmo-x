@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ChannelType, DeliveryStatus } from 'src/common/constants/notification';
+import { ChannelType, ChannelTypeMap, DeliveryStatus } from 'src/common/constants/notification';
 import { NotificationsService } from './notifications.service';
 import { Notification } from './notification.model';
 
@@ -45,36 +45,7 @@ export class NotificationsComponent implements OnInit {
     [DeliveryStatus.FAILED]: { value: 'Failed', style: 'failed' },
   };
 
-  channelTypeMap = {
-    [ChannelType.SMTP]: {
-      serviceIcon: 'assets/icons/email.svg',
-      altText: 'Email',
-      providerName: 'SMTP',
-      providerIcon: 'assets/icons/smtp.svg',
-      style: 'email',
-    },
-    [ChannelType.MAILGUN]: {
-      serviceIcon: 'assets/icons/email.svg',
-      altText: 'Email',
-      providerName: 'Mailgun',
-      providerIcon: 'assets/icons/mailgun.svg',
-      style: 'email',
-    },
-    [ChannelType.WA_360_DAILOG]: {
-      serviceIcon: 'assets/icons/whatsapp.svg',
-      altText: 'WhatsApp',
-      providerName: '360dialog',
-      providerIcon: 'assets/icons/360dialog.png',
-      style: 'whatsapp',
-    },
-    [ChannelType.WA_TWILIO]: {
-      serviceIcon: 'assets/icons/whatsapp.svg',
-      altText: 'WhatsApp',
-      providerName: 'Twilio',
-      providerIcon: 'assets/icons/twilio.svg',
-      style: 'whatsapp',
-    },
-  };
+  channelTypeMap = ChannelTypeMap;
 
   constructor(private notificationService: NotificationsService) {}
 
