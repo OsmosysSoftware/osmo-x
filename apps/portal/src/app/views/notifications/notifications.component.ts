@@ -46,9 +46,34 @@ export class NotificationsComponent implements OnInit {
   };
 
   channelTypeMap = {
-    [ChannelType.SMTP]: 'SMTP',
-    [ChannelType.MAILGUN]: 'Mailgun',
-    [ChannelType.WA_360_DAILOG]: 'WhatsApp 360 Dialog',
+    [ChannelType.SMTP]: {
+      serviceIcon: 'assets/icons/email.svg',
+      altText: 'Email',
+      providerName: 'SMTP',
+      providerIcon: 'assets/icons/smtp.svg',
+      style: 'email',
+    },
+    [ChannelType.MAILGUN]: {
+      serviceIcon: 'assets/icons/email.svg',
+      altText: 'Email',
+      providerName: 'Mailgun',
+      providerIcon: 'assets/icons/mailgun.svg',
+      style: 'email',
+    },
+    [ChannelType.WA_360_DAILOG]: {
+      serviceIcon: 'assets/icons/whatsapp.svg',
+      altText: 'WhatsApp',
+      providerName: '360dialog',
+      providerIcon: 'assets/icons/360dialog.png',
+      style: 'whatsapp',
+    },
+    [ChannelType.WA_TWILIO]: {
+      serviceIcon: 'assets/icons/whatsapp.svg',
+      altText: 'WhatsApp',
+      providerName: 'Twilio',
+      providerIcon: 'assets/icons/twilio.svg',
+      style: 'whatsapp',
+    },
   };
 
   constructor(private notificationService: NotificationsService) {}

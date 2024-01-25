@@ -8,6 +8,7 @@ import { ToastModule } from 'primeng/toast';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
+import { TagModule } from 'primeng/tag';
 
 const modules = [
   ButtonModule,
@@ -19,6 +20,7 @@ const modules = [
   PasswordModule,
   InputTextModule,
   BrowserAnimationsModule,
+  TagModule,
 ];
 
 @NgModule({
