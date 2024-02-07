@@ -1,7 +1,7 @@
 version: '3'
 services:
-  osmo-notify-api:
-    container_name: osmo-notify-api
+  osmox-api:
+    container_name: osmox-api
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,7 +14,7 @@ services:
       NODE_ENV: production
 
   mariadb:
-    container_name: osmo-notify-mariadb
+    container_name: osmox-mariadb
     image: mariadb:latest
     restart: always
     environment:
@@ -25,14 +25,14 @@ services:
     ports:
       - '127.0.0.1:${MARIADB_DOCKER_PORT}:3306'
     volumes:
-      - osmo-notify-db:/var/lib/mysql
+      - osmox-db:/var/lib/mysql
 
   redis:
-    container_name: osmo-notify-redis
+    container_name: osmox-redis
     image: redis:latest
     restart: always
     ports:
       - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
 
 volumes:
-  osmo-notify-db: ~
+  osmox-db: ~

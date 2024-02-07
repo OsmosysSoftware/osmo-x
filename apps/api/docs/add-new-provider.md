@@ -1,10 +1,10 @@
 # Add New Provider
 
-This document outlines the steps required to create a new provider for sending notifications via your preferred channel in Osmo-Notify, if it does not already exist. By following these steps, you'll be able to create a new channel type that can be used for sending notifications.
+This document outlines the steps required to create a new provider for sending notifications via your preferred channel in OsmoX, if it does not already exist. By following these steps, you'll be able to create a new channel type that can be used for sending notifications.
 
 ## Pre-requisites
 
-Before working on adding a new provider, ensure that you have set up the Osmo-Notify development environment on your system, by following [Development Setup](development-setup.md) guide.
+Before working on adding a new provider, ensure that you have set up the OsmoX development environment on your system, by following [Development Setup](development-setup.md) guide.
 
 ## Getting Started
 

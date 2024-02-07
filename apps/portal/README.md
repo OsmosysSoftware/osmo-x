@@ -1,4 +1,4 @@
-# OsmoNotifyFrontend
+# OsmoXFrontend
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.9.
 
@@ -71,7 +71,7 @@ SERVER_PORT=5000
 
 ## Contributing
 
-We welcome contributions from the community! If you're interested in contributing to the Osmo Notify, please take a moment to review our [Contribution Guidelines](../../CONTRIBUTING.md).
+We welcome contributions from the community! If you're interested in contributing to the OsmoX, please take a moment to review our [Contribution Guidelines](../../CONTRIBUTING.md).
 
 Your contributions help make our app even better. Whether you're a developer, designer, or just enthusiastic about enhancing user experiences, we'd love to have you on board.
 

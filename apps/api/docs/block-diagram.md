@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This document provides a concise block diagram illustrating the architecture of our software application, Osmo-Notify. The diagram outlines the key components and their interactions to help you better understand how the application functions.
+This document provides a concise block diagram illustrating the architecture of our software application, OsmoX. The diagram outlines the key components and their interactions to help you better understand how the application functions.
 
 ## Block Diagram Overview
 
@@ -10,13 +10,13 @@ The block diagram represents the software application's architecture in a visual
 
 ## Block Diagram
 
-![Block Diagram](./assets/osmo-notify-block-diagram.png)
+![Block Diagram](./assets/osmoX-block-diagram.png)
 
 ## Components and Functionalities
 
 ### 1. User/Application
 
-This component is responsible for making the request to the Osmo-Notify API with required details about the notification.
+This component is responsible for making the request to the OsmoX API with required details about the notification.
 
 ### 2. API
 

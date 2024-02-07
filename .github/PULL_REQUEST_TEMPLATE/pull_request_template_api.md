@@ -3,9 +3,9 @@
 ### Pre-requisites
 
 - [ ] I have gone through the Contributing guidelines for [Submitting a Pull Request (PR)](../../CONTRIBUTING.md#submitting-a-pull-request-pr) and ensured that this is not a duplicate PR.
-- [ ] I have performed preliminary testing using the [test suite](../../apps/api/osmo-notify.postman_collection.json) to ensure that any existing features are not impacted and any new features are working as expected.
+- [ ] I have performed preliminary testing using the [test suite](../../apps/api/osmoX.postman_collection.json) to ensure that any existing features are not impacted and any new features are working as expected.
 - [ ] I have updated the required [api docs](../../apps/api/docs/) as applicable.
-- [ ] I have added/updated test cases to the [test suite](../../apps/api/osmo-notify.postman_collection.json) as applicable
+- [ ] I have added/updated test cases to the [test suite](../../apps/api/osmoX.postman_collection.json) as applicable
 
 ### PR Details
 
