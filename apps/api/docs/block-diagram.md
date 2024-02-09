@@ -10,7 +10,7 @@ The block diagram represents the software application's architecture in a visual
 
 ## Block Diagram
 
-![Block Diagram](./assets/osmoX-block-diagram.png)
+![Block Diagram](./assets/OsmoX-block-diagram.png)
 
 ## Components and Functionalities
 

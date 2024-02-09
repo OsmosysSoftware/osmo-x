@@ -71,8 +71,8 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
         "text": "This is a test notification",
         "html": "<b>This is a test notification</b>"
       },
-      "createdBy": "osmoX",
-      "updatedBy": "osmoX",
+      "createdBy": "OsmoX",
+      "updatedBy": "OsmoX",
       "result": null,
       "id": 36,
       "deliveryStatus": 1,

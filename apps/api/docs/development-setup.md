@@ -40,7 +40,7 @@ Make sure Redis and MariaDB server are up and running.
    ```env
    # Server
    SERVER_PORT=3000
-   SERVER_API_KEY=osmoX-test-key
+   SERVER_API_KEY=OsmoX-test-key
 
    # Database configuration
    DB_TYPE=mysql
@@ -81,7 +81,7 @@ Make sure Redis and MariaDB server are up and running.
    TWILIO_WA_NUMBER=
 
    # TEMP
-   APP_NAME=osmoX
+   APP_NAME=OsmoX
    ```
 
 Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.

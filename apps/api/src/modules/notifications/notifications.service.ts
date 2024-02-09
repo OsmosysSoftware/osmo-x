@@ -36,8 +36,8 @@ export class NotificationsService {
       throw new BadRequestException(`Channel ${notification.channelType} is not enabled`);
     }
 
-    notification.createdBy = this.configService.getOrThrow<string>('APP_NAME') || 'osmoX';
-    notification.updatedBy = this.configService.getOrThrow<string>('APP_NAME') || 'osmoX';
+    notification.createdBy = this.configService.getOrThrow<string>('APP_NAME') || 'OsmoX';
+    notification.updatedBy = this.configService.getOrThrow<string>('APP_NAME') || 'OsmoX';
     return this.notificationRepository.save(notification);
   }
 
