@@ -14,7 +14,7 @@ Before running the test cases, make sure you have the following prerequisites in
 1. Clone the repository (if not already done):
 
    ```bash
-   git clone git@github.com:OsmosysSoftware/osmo-notify.git
+   git clone git@github.com:OsmosysSoftware/osmo-x.git
    ```
 
 2. Install Newman globally (for using Newman):

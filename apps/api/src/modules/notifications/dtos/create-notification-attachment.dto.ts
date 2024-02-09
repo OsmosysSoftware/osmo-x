@@ -21,7 +21,7 @@ export class CreateNotificationAttachmentDto {
 }
 
 // TODO: Custom Validator added for the bug
-// https://github.com/OsmosysSoftware/osmo-notify/pull/62
+// https://github.com/OsmosysSoftware/osmo-x/pull/62
 export function AttachmentValidation(validationOptions?: ValidationOptions) {
   return function (object: unknown, propertyName: string) {
     registerDecorator({

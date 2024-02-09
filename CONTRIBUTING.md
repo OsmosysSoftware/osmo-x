@@ -97,7 +97,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
    git push origin my-fix-branch
    ```
 
-1. In GitHub, send a pull request to `osmo-notify:main`.
+1. In GitHub, send a pull request to `osmo-x:main`.
 
 - If we suggest changes then:
 
@@ -268,9 +268,9 @@ reference GitHub issues that this commit **Closes**.
 **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
 
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
-[github]: https://github.com/OsmosysSoftware/osmo-notify
+[github]: https://github.com/OsmosysSoftware/osmo-x
 [stackoverflow]: https://stackoverflow.com/questions/tagged/osmox
 [js-style-guide]: https://airbnb.io/javascript/
-[new_issue]: https://github.com/OsmosysSoftware/osmo-notify/issues/new
-[gh_prs]: https://github.com/OsmosysSoftware/osmo-notify/pulls
-[commits_samples]: https://github.com/OsmosysSoftware/osmo-notify/commits/main
+[new_issue]: https://github.com/OsmosysSoftware/osmo-x/issues/new
+[gh_prs]: https://github.com/OsmosysSoftware/osmo-x/pulls
+[commits_samples]: https://github.com/OsmosysSoftware/osmo-x/commits/main

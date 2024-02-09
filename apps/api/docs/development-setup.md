@@ -25,8 +25,8 @@ Make sure Redis and MariaDB server are up and running.
 1. Clone the repository to your local machine:
 
    ```sh
-   git clone https://github.com/OsmosysSoftware/osmo-notify.git
-   cd osmo-notify
+   git clone https://github.com/OsmosysSoftware/osmo-x.git
+   cd osmo-x
    ```
 
 2. Install project dependencies:
