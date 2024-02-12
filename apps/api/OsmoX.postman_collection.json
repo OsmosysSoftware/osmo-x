@@ -1,7 +1,8 @@
 {
 	"info": {
-		"_postman_id": "085f3280-0ae4-4649-9668-67b23c15e63a",
-		"name": "osmo-notify",
+		"_postman_id": "2f7b7355-b1b0-4cf8-bc53-6049561fb418",
+		"name": "OsmoX",
+		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "24502738"
 	},
@@ -68,7 +69,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows successfully creating new notification for the 360Dialog WhatsApp channel type."
 					},
 					"response": []
 				},
@@ -118,7 +120,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -168,7 +171,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when passing invalid channel value."
 					},
 					"response": []
 				},
@@ -219,11 +223,13 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when passing invalid API key."
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to creating notifications for the 360Dialog WhatsApp channel type."
 		},
 		{
 			"name": "Twilio WhatsApp Notifications",
@@ -287,7 +293,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
 					},
 					"response": []
 				},
@@ -337,7 +344,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -387,7 +395,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid channel value."
 					},
 					"response": []
 				},
@@ -438,11 +447,13 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to creating notifications for the Twilio WhatsApp channel type."
 		},
 		{
 			"name": "Mailgun Notifications",
@@ -506,7 +517,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows successfully creating new notification for the Mailgun channel type."
 					},
 					"response": []
 				},
@@ -556,7 +568,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the Mailgun channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -606,7 +619,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid channel value."
 					},
 					"response": []
 				},
@@ -657,11 +671,13 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid API key."
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to creating notifications for the Mailgun channel type."
 		},
 		{
 			"name": "SMTP Notifications",
@@ -725,7 +741,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows successfully creating new notification for the SMTP channel type."
 					},
 					"response": []
 				},
@@ -775,7 +792,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -825,7 +843,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid channel value."
 					},
 					"response": []
 				},
@@ -876,11 +895,13 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to creating notifications for the SMTP channel type."
 		},
 		{
 			"name": "Authentication",
@@ -939,7 +960,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully logging in and obtaining the auth token from API."
 					},
 					"response": []
 				},
@@ -991,7 +1013,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure while logging in when passing invalid credentials."
 					},
 					"response": []
 				},
@@ -1042,7 +1065,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure while logging in when missing `password` value."
 					},
 					"response": []
 				},
@@ -1093,11 +1117,13 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure while logging in when using invalid/bad request."
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to authentication related requests such as login."
 		},
 		{
 			"name": "All Notifications",
@@ -1156,7 +1182,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully fetching all notifications based on the options passed."
 					},
 					"response": []
 				},
@@ -1207,11 +1234,13 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when fetching all notifications when using invalid/bad request."
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to fetching all notifications."
 		}
 	]
 }
