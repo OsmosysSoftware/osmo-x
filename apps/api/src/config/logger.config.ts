@@ -29,7 +29,7 @@ const transportsConfig = [
     format: format.combine(
       format.timestamp(),
       format.ms(),
-      nestWinstonModuleUtilities.format.nestLike('OsmoNotify'),
+      nestWinstonModuleUtilities.format.nestLike('OsmoX'),
     ),
   }),
 

@@ -1,10 +1,10 @@
 # Development Setup
 
-This document outlines the steps required to set up your Osmo-Notify for development. By following these steps, you'll be able to run your application locally with the necessary environment variables and database configuration.
+This document outlines the steps required to set up your OsmoX for development. By following these steps, you'll be able to run your application locally with the necessary environment variables and database configuration.
 
 ## Prerequisites
 
-Before setting up Osmo-Notify for development, ensure you have the following prerequisites with the specified versions:
+Before setting up OsmoX for development, ensure you have the following prerequisites with the specified versions:
 
 - **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
 - **Node.js** Node.js v20.x or higher. Can be installed via `nvm` using `nvm install 20` and used with `nvm use 20`.
@@ -12,7 +12,7 @@ Before setting up Osmo-Notify for development, ensure you have the following pre
 - **MariaDB:** MariaDB v10.x or higher.
 - **Redis:** Redis v6.x or higher
 
-These prerequisites are essential for deploying and running Osmo-Notify in an environment.
+These prerequisites are essential for deploying and running OsmoX in an environment.
 
 Please make sure to have these versions installed on your development server before proceeding with the setup.
 
@@ -43,11 +43,11 @@ sudo systemctl status mariadb
    ```env
    # Server
    SERVER_PORT=3000
-   SERVER_API_KEY=osmo-notify-test-key
+   SERVER_API_KEY=OsmoX-test-key
 
    # Database configuration
    DB_TYPE=mysql
-   DB_HOST=localhost # use value as osmo-notify-mariadb in docker
+   DB_HOST=localhost # use value as osmox-mariadb in docker
    DB_PORT=3306
    DB_USERNAME=root
    DB_PASSWORD=your-password
@@ -55,7 +55,7 @@ sudo systemctl status mariadb
    MARIADB_DOCKER_PORT=3307 # (required only if using docker)
 
    # Redis configuration
-   REDIS_HOST=127.0.0.1 # use value as osmo-notify-redis in docker
+   REDIS_HOST=127.0.0.1 # use value as osmox-redis in docker
    REDIS_PORT=6379
    REDIS_DOCKER_PORT=6397 # (required only if using docker)
 
@@ -84,7 +84,7 @@ sudo systemctl status mariadb
    TWILIO_WA_NUMBER=
 
    # TEMP
-   APP_NAME=osmo_notify
+   APP_NAME=OsmoX
    ```
 
    Alternatively, use the `.env.example` file instead.
@@ -107,4 +107,4 @@ sudo systemctl status mariadb
    npm run start:dev
    ```
 
-   Osmo-Notify will now be running locally at `http://localhost:3000`.
+   OsmoX will now be running locally at `http://localhost:3000`.

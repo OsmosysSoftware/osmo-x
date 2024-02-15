@@ -16,18 +16,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it("should have as title 'osmo-notify-frontend'", () => {
+  it("should have as title 'OsmoX'", () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('osmo-notify-frontend');
+    expect(app.title).toEqual('OsmoX');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain(
-      'osmo-notify-frontend app is running!',
-    );
+    expect(compiled.querySelector('.content span')?.textContent).toContain('OsmoX app is running!');
   });
 });

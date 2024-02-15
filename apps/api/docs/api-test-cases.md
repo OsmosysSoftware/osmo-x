@@ -14,7 +14,7 @@ Before running the test cases, make sure you have the following prerequisites in
 1. Clone the repository (if not already done):
 
    ```bash
-   git clone git@github.com:OsmosysSoftware/osmo-notify.git
+   git clone git@github.com:OsmosysSoftware/osmo-x.git
    ```
 
 2. Install Newman globally (for using Newman):
@@ -30,7 +30,7 @@ Before running the test cases, make sure you have the following prerequisites in
 
    1. Open Postman.
    2. Click on the `Import` button.
-   3. Select the `apps/api/osmo-notify.postman_collection.json` file.
+   3. Select the `apps/api/OsmoX.postman_collection.json` file.
 
 ## Running Test Cases
 
@@ -42,7 +42,7 @@ Before running the test cases, make sure you have the following prerequisites in
    Alternatively, click the three dots beside the collection name and click `Run collection`
 
 3. Select the environment on top right.
-4. Click `Run osmo-notify` to execute the test cases.
+4. Click `Run OsmoX` to execute the test cases.
 
 ### Using Newman
 
@@ -52,13 +52,13 @@ Before running the test cases, make sure you have the following prerequisites in
     1. For console output
 
        ```bash
-       newman run osmo-notify.postman_collection.json -e osmo-notify.postman_environment.json
+       newman run OsmoX.postman_collection.json -e OsmoX.postman_environment.json
        ```
 
     2. For HTML report
 
        ```bash
-       newman run osmo-notify.postman_collection.json -e osmo-notify.postman_environment.json -r html
+       newman run OsmoX.postman_collection.json -e OsmoX.postman_environment.json -r html
        ```
 
     Specify the path to the collection and environment file as required.

@@ -70,8 +70,8 @@ export class LoginComponent implements OnInit {
             detail: errorMessage,
           });
         } else {
-          localStorage.setItem('osmoNotifyUserData', JSON.stringify(resp.data.login));
-          localStorage.setItem('osmoNotifyLoggedAt', new Date().toISOString());
+          localStorage.setItem('osmoXUserData', JSON.stringify(resp.data.login));
+          localStorage.setItem('osmoXLoggedAt', new Date().toISOString());
 
           if (this.router.url !== '/notifications') {
             this.router.navigate(['notifications']);
