@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "osmo-notify-frontend": {
+    "osmox-portal": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/osmo-notify-frontend",
+            "outputPath": "dist/osmox-portal",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -68,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "osmo-notify-frontend:build:production"
+              "browserTarget": "osmox-portal:build:production"
             },
             "development": {
-              "browserTarget": "osmo-notify-frontend:build:development"
+              "browserTarget": "osmox-portal:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -79,7 +79,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "osmo-notify-frontend:build"
+            "browserTarget": "osmox-portal:build"
           }
         },
         "test": {

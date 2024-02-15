@@ -1,8 +1,8 @@
-# Osmo Notify
+# OsmoX
 
-Welcome to the Osmo Notify! 🚀
+Welcome to the OsmoX! 🚀
 
-Are you looking to simplify and streamline your notification process? Our Osmo Notify is here to help! With this user-friendly backend application, you can effortlessly send notifications to various channels like email, messaging apps, and more. It's designed to make communication with your users a breeze!
+Are you looking to simplify and streamline your notification process? Our OsmoX is here to help! With this user-friendly backend application, you can effortlessly send notifications to various channels like email, messaging apps, and more. It's designed to make communication with your users a breeze!
 
 ## What It Does
 
@@ -19,7 +19,7 @@ Imagine having a central hub where you can create and send notifications seamles
 - 🚀 **Single API for All Channels:** Send notifications to various communication channels using a unified API. No need to manage multiple APIs for different platforms.
 - 🔌 **Custom API Integration:** Seamlessly integrate your own custom APIs to push notification data to the database. Our app's cron will handle the rest!
 - 🤖 **Automated Processing:** Sit back and relax as our app processes notification data automatically. No manual intervention required.
-- 💡 **Easy Integration:** Integrate Osmo Notify seamlessly into your existing workflows. Get up and running in no time.
+- 💡 **Easy Integration:** Integrate OsmoX seamlessly into your existing workflows. Get up and running in no time.
 - 🌐 **Multi-channel Support:** Reach your audience wherever they are. Send notifications via email, messaging apps, and more.
 
 ## Get Started
@@ -40,7 +40,7 @@ Imagine having a central hub where you can create and send notifications seamles
 
 ## Contributing
 
-We welcome contributions from the community! If you're interested in contributing to the Osmo Notify, please take a moment to review our [Contribution Guidelines](../../CONTRIBUTING.md).
+We welcome contributions from the community! If you're interested in contributing to the OsmoX, please take a moment to review our [Contribution Guidelines](../../CONTRIBUTING.md).
 
 Your contributions help make our app even better. Whether you're a developer, designer, or just enthusiastic about enhancing user experiences, we'd love to have you on board.
 

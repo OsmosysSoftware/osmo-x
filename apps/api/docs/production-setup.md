@@ -1,10 +1,10 @@
 # Production Setup
 
-This document outlines the steps required to set up Osmo-Notify for production. Following these steps will ensure that your application is configured properly for a production environment.
+This document outlines the steps required to set up OsmoX for production. Following these steps will ensure that your application is configured properly for a production environment.
 
 ## Prerequisites
 
-Before setting up Osmo-Notify for production, ensure you have the following prerequisites with the specified versions:
+Before setting up OsmoX for production, ensure you have the following prerequisites with the specified versions:
 
 - **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
 - **Node.js** Node.js v20.x or higher.
@@ -13,7 +13,7 @@ Before setting up Osmo-Notify for production, ensure you have the following prer
 - **Redis:** Redis v6.x or higher
 - **PM2 (Process Manager):** PM2 v5.x or higher.
 
-These prerequisites are essential for deploying and running Osmo-Notify in a environment.
+These prerequisites are essential for deploying and running OsmoX in a environment.
 
 Make sure Redis and MariaDB server are up and running.
 
@@ -24,11 +24,11 @@ Make sure Redis and MariaDB server are up and running.
   ```env
   # Server
   SERVER_PORT=3000
-  SERVER_API_KEY=osmo-notify-test-key
+  SERVER_API_KEY=OsmoX-test-key
 
   # Database configuration
   DB_TYPE=mysql
-  DB_HOST=localhost # use value as osmo-notify-mariadb in docker
+  DB_HOST=localhost # use value as osmox-mariadb in docker
   DB_PORT=3306
   DB_USERNAME=root
   DB_PASSWORD=your-password
@@ -36,7 +36,7 @@ Make sure Redis and MariaDB server are up and running.
    MARIADB_DOCKER_PORT=3307 # (required only if using docker)
 
   # Redis configuration
-  REDIS_HOST=127.0.0.1 # use value as osmo-notify-redis in docker
+  REDIS_HOST=127.0.0.1 # use value as osmox-redis in docker
   REDIS_PORT=6379
   REDIS_DOCKER_PORT=6397 # (required only if using docker)
 
@@ -52,21 +52,21 @@ Make sure Redis and MariaDB server are up and running.
   MAILGUN_API_KEY=your-mailgun-api-key
   MAILGUN_HOST=api.mailgun.net
   MAILGUN_DOMAIN=your.mailgun.domain
-  
+
   # WhatsApp 360Dialog
   ENABLE_WA360DIALOG=true
   WA_360_DIALOG_URL=https://waba.360dialog.io/v1/messages
   WA_360_DIALOG_API_KEY=
 
   # TEMP
-  APP_NAME=osmo_notify
+  APP_NAME=OsmoX
   ```
 
 Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
 
 ## Building and Preparing
 
-1. **Build the Application:** Before starting the server, build Osmo-Notify by running:
+1. **Build the Application:** Before starting the server, build OsmoX by running:
 
    ```sh
    npm run build
@@ -82,7 +82,7 @@ Make sure to replace the above example values with appropriate values as per you
   module.exports = {
     apps: [
       {
-        name: 'osmo-notify', // Name of your application
+        name: 'OsmoX', // Name of your application
         script: 'dist/main.js', // Path to the compiled NestJS entry file
         instances: 1, // Use max to Automatically scale instances based on CPU cores
         autorestart: true, // Auto-restart if the app crashes
@@ -140,7 +140,7 @@ docker-compose up -d
 For the first-time setup, you need to run database migrations to create the required database tables. Execute the following command:
 
 ```bash
-docker exec -it osmo-notify-api npm run typeorm:run-migration
+docker exec -it osmox-api npm run typeorm:run-migration
 ```
 
 **Step 5: Update Environment Variables**
