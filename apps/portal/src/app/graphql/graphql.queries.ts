@@ -2,7 +2,7 @@ import { gql } from 'apollo-angular';
 
 export const GetNotifcations = gql`
   query {
-    notifications {
+    notifications(options: { limit: 100, sortBy: "createdOn", sortOrder: DESC }) {
       notifications {
         channelType
         createdBy
