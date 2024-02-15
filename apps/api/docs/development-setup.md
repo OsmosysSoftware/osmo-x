@@ -2,23 +2,26 @@
 
 This document outlines the steps required to set up your OsmoX for development. By following these steps, you'll be able to run your application locally with the necessary environment variables and database configuration.
 
-Certainly! Here's the list of prerequisites with version numbers for OsmoX's development setup:
-
 ## Prerequisites
 
 Before setting up OsmoX for development, ensure you have the following prerequisites with the specified versions:
 
 - **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
-- **Node.js** Node.js v20.x or higher.
+- **Node.js** Node.js v20.x or higher. Can be installed via `nvm` using `nvm install 20` and used with `nvm use 20`.
 - **Git:** Git v2.x or higher.
 - **MariaDB:** MariaDB v10.x or higher.
 - **Redis:** Redis v6.x or higher
 
-These prerequisites are essential for deploying and running OsmoX in a environment.
+These prerequisites are essential for deploying and running OsmoX in an environment.
 
 Please make sure to have these versions installed on your development server before proceeding with the setup.
 
 Make sure Redis and MariaDB server are up and running.
+
+```bash
+sudo systemctl status redis
+sudo systemctl status mariadb
+```
 
 ## Getting Started
 
@@ -26,7 +29,7 @@ Make sure Redis and MariaDB server are up and running.
 
    ```sh
    git clone https://github.com/OsmosysSoftware/osmo-x.git
-   cd osmo-x
+   cd osmo-x/apps/api
    ```
 
 2. Install project dependencies:
@@ -84,16 +87,19 @@ Make sure Redis and MariaDB server are up and running.
    APP_NAME=OsmoX
    ```
 
-Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
+   Alternatively, use the `.env.example` file instead.
+
+   Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
 
 4. Set up the database:
 
-   - Ensure your database server (e.g., MariaDB) is running.
-   - Run database migrations to create tables:
+   Ensure your database server (e.g., MariaDB) is running.
 
-     ```sh
-     npm run typeorm:run-migration
-     ```
+   Run database migrations to create tables:
+
+   ```sh
+   npm run typeorm:run-migration
+   ```
 
 5. Start the development server:
 
@@ -101,4 +107,4 @@ Make sure to replace the above example values with appropriate values as per you
    npm run start:dev
    ```
 
-OsmoX will now be running locally at `http://localhost:3000`.
+   OsmoX will now be running locally at `http://localhost:3000`.
