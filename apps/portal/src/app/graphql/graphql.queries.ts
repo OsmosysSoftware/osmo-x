@@ -1,6 +1,6 @@
 import { gql } from 'apollo-angular';
 
-export const GetNotifcations = gql`
+export const GetNotifications = gql`
   query {
     notifications {
       notifications {
