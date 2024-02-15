@@ -1,6 +1,6 @@
-# Contributing to Osmo-Notify
+# Contributing to OsmoX
 
-We would love for you to contribute to Osmo-Notify and help make it even better than it is
+We would love for you to contribute to OsmoX and help make it even better than it is
 today! As a contributor, here are the guidelines we would like you to follow:
 
 <!--* [Code of Conduct](#coc)-->
@@ -15,11 +15,11 @@ today! As a contributor, here are the guidelines we would like you to follow:
   <!-- - [Signing the CLA](#cla) -->
 
 <!-- ## <a name="coc"></a> Code of Conduct
-Help us keep Osmo-Notify open and inclusive. Please read and follow our [Code of Conduct][coc]. -->
+Help us keep OsmoX open and inclusive. Please read and follow our [Code of Conduct][coc]. -->
 
 ## <a name="question"></a> Got a Question or Problem?
 
-**Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests.** You've got much better chances of getting your question answered on [Stack Overflow][stackoverflow] where the questions should be tagged with tag `osmo-notify`.
+**Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests.** You've got much better chances of getting your question answered on [Stack Overflow][stackoverflow] where the questions should be tagged with tag `osmox`.
 
 Stack Overflow is a much better place to ask questions since:
 
@@ -56,7 +56,7 @@ Before you submit an issue, please search the issue tracker, maybe an issue for 
 
 We want to fix all the issues as soon as possible, but before fixing a bug we need to reproduce and confirm it. In order to reproduce bugs we will systematically ask you to provide a minimal reproduction scenario using a repository or [Gist](https://gist.github.com/). Having a live, reproducible scenario gives us wealth of important information without going back & forth to you with additional questions like:
 
-- version of Osmo-Notify used
+- version of OsmoX used
 - 3rd-party libraries and their versions
 - and most importantly - a use-case that fails
 
@@ -79,7 +79,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 1. Create your patch, **including appropriate test cases**.
 1. Follow our [Coding Rules](#rules).
-1. Run the full Osmo-Notify test suite (see [common scripts](#common-scripts)),
+1. Run the full OsmoX test suite (see [common scripts](#common-scripts)),
    and ensure that all tests pass.
 1. Commit your changes using a descriptive commit message that follows our
    [commit message conventions](#commit). Adherence to these conventions
@@ -97,12 +97,12 @@ Before you submit your Pull Request (PR) consider the following guidelines:
    git push origin my-fix-branch
    ```
 
-1. In GitHub, send a pull request to `osmo-notify:main`.
+1. In GitHub, send a pull request to `osmo-x:main`.
 
 - If we suggest changes then:
 
   - Make the required updates.
-  - Re-run the Osmo-Notify test suites to ensure tests are still passing.
+  - Re-run the OsmoX test suites to ensure tests are still passing.
   - Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
 
     ```shell
@@ -198,7 +198,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 
 We have very precise rules over how our git commit messages can be formatted. This leads to **more
 readable messages** that are easy to follow when looking through the **project history**. But also,
-we use the git commit messages to **generate the Osmo-Notify change log**.
+we use the git commit messages to **generate the OsmoX change log**.
 
 ### Commit Message Format
 
@@ -268,9 +268,9 @@ reference GitHub issues that this commit **Closes**.
 **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
 
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
-[github]: https://github.com/OsmosysSoftware/osmo-notify
-[stackoverflow]: https://stackoverflow.com/questions/tagged/osmo-notify
+[github]: https://github.com/OsmosysSoftware/osmo-x
+[stackoverflow]: https://stackoverflow.com/questions/tagged/osmox
 [js-style-guide]: https://airbnb.io/javascript/
-[new_issue]: https://github.com/OsmosysSoftware/osmo-notify/issues/new
-[gh_prs]: https://github.com/OsmosysSoftware/osmo-notify/pulls
-[commits_samples]: https://github.com/OsmosysSoftware/osmo-notify/commits/main
+[new_issue]: https://github.com/OsmosysSoftware/osmo-x/issues/new
+[gh_prs]: https://github.com/OsmosysSoftware/osmo-x/pulls
+[commits_samples]: https://github.com/OsmosysSoftware/osmo-x/commits/main

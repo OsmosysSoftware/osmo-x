@@ -16,13 +16,13 @@ export class AuthService {
   constructor(private graphqlService: GraphqlService) {}
 
   isLoggedIn(): boolean {
-    this.userData = JSON.parse(localStorage.getItem('osmoNotifyUserData'));
+    this.userData = JSON.parse(localStorage.getItem('osmoXUserData'));
 
     if (!this.userData) {
       return false;
     }
 
-    const loggedAt = localStorage.getItem('osmoNotifyLoggedAt');
+    const loggedAt = localStorage.getItem('osmoXLoggedAt');
 
     if (loggedAt) {
       const expirationDate = new Date(loggedAt);

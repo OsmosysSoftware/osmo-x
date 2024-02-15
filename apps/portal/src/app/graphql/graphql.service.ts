@@ -14,7 +14,7 @@ export class GraphqlService {
   constructor(private apollo: Apollo) {}
 
   query<T>(query: DocumentNode, variables?: unknown): Observable<ApolloQueryResult<T>> {
-    const token = JSON.parse(localStorage.getItem('osmoNotifyUserData'))?.token;
+    const token = JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
     let headers;
 
     if (token) {
