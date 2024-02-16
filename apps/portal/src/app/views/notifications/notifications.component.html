@@ -6,9 +6,10 @@
       <p-dropdown
         [options]="channelTypes"
         [(ngModel)]="selectedChannelType"
-        placeholder="Select a channel Type"
+        placeholder="Select a Channel Type"
         class="grid-dropdown"
         [showClear]="true"
+        (onChange)="loadNotifications()"
       ></p-dropdown>
       <p-dropdown
         [options]="deliveryStatuses"
@@ -16,6 +17,7 @@
         placeholder="Select a Delivery Status Type"
         class="grid-dropdown"
         [showClear]="true"
+        (onChange)="loadNotifications()"
       ></p-dropdown>
     </div>
   </div>
@@ -31,6 +33,7 @@
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         [rowsPerPageOptions]="pageSizeOptions"
+        #notificationsTable
       >
         <ng-template pTemplate="header">
           <tr>
