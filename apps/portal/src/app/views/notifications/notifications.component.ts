@@ -38,6 +38,8 @@ export class NotificationsComponent implements OnInit {
 
   jsonDialogVisible: Boolean = false;
 
+  loading: Boolean = true;
+
   deliveryStatusMap = {
     [DeliveryStatus.PENDING]: { value: 'Pending', style: 'pending' },
     [DeliveryStatus.IN_PROGRESS]: { value: 'In Progress', style: 'in-progress' },
@@ -54,14 +56,17 @@ export class NotificationsComponent implements OnInit {
   }
 
   loadNotifications() {
+    this.loading = true;
     this.notificationService.getNotifications().subscribe(
       (notifications: Notification[]) => {
         this.notifications = notifications;
         this.applyFilters();
+        this.loading = false;
       },
       (error) => {
         // eslint-disable-next-line no-console
         console.error('Error loading notifications:', error);
+        this.loading = false;
       },
     );
   }
