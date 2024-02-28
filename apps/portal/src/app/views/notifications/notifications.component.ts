@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ChannelType, ChannelTypeMap, DeliveryStatus } from 'src/common/constants/notification';
+import { MessageService } from 'primeng/api';
+import { catchError, of } from 'rxjs';
 import { NotificationsService } from './notifications.service';
 import { Notification } from './notification.model';
 
@@ -13,10 +15,22 @@ export class NotificationsComponent implements OnInit {
 
   filteredNotifications: Notification[] = [];
 
-  channelTypes = Object.entries(ChannelType).map(([key, value]) => ({ label: key, value }));
+  channelTypeMap = ChannelTypeMap;
 
-  deliveryStatuses = Object.entries(DeliveryStatus).map(([key, value]) => ({
-    label: key,
+  deliveryStatusMap = {
+    [DeliveryStatus.PENDING]: { value: 'Pending', style: 'pending' },
+    [DeliveryStatus.IN_PROGRESS]: { value: 'In Progress', style: 'in-progress' },
+    [DeliveryStatus.SUCCESS]: { value: 'Success', style: 'success' },
+    [DeliveryStatus.FAILED]: { value: 'Failed', style: 'failed' },
+  };
+
+  channelTypes = Object.entries(ChannelType).map(([, value]) => ({
+    label: `${this.channelTypeMap[value].altText} - ${this.channelTypeMap[value].providerName}`,
+    value,
+  }));
+
+  deliveryStatuses = Object.entries(DeliveryStatus).map(([, value]) => ({
+    label: this.deliveryStatusMap[value].value,
     value,
   }));
 
@@ -40,16 +54,10 @@ export class NotificationsComponent implements OnInit {
 
   loading: Boolean = true;
 
-  deliveryStatusMap = {
-    [DeliveryStatus.PENDING]: { value: 'Pending', style: 'pending' },
-    [DeliveryStatus.IN_PROGRESS]: { value: 'In Progress', style: 'in-progress' },
-    [DeliveryStatus.SUCCESS]: { value: 'Success', style: 'success' },
-    [DeliveryStatus.FAILED]: { value: 'Failed', style: 'failed' },
-  };
-
-  channelTypeMap = ChannelTypeMap;
-
-  constructor(private notificationService: NotificationsService) {}
+  constructor(
+    private notificationService: NotificationsService,
+    private messageService: MessageService,
+  ) {}
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -57,18 +65,42 @@ export class NotificationsComponent implements OnInit {
 
   loadNotifications() {
     this.loading = true;
-    this.notificationService.getNotifications().subscribe(
-      (notifications: Notification[]) => {
+    const variables = { filters: [] };
+
+    if (this.selectedChannelType) {
+      variables.filters.push({
+        field: 'channelType',
+        operator: 'eq',
+        value: this.selectedChannelType.toString(),
+      });
+    }
+
+    if (this.selectedDeliveryStatus) {
+      variables.filters.push({
+        field: 'deliveryStatus',
+        operator: 'eq',
+        value: this.selectedDeliveryStatus.toString(),
+      });
+    }
+
+    this.notificationService
+      .getNotifications(variables)
+      .pipe(
+        catchError((error) => {
+          this.messageService.add({
+            key: 'tst',
+            severity: 'error',
+            summary: 'Error',
+            detail: `There was an error while loading notifications. Reason: ${error.message}`,
+          });
+          return of([]);
+        }),
+      )
+      .subscribe((notifications: Notification[]) => {
         this.notifications = notifications;
         this.applyFilters();
         this.loading = false;
-      },
-      (error) => {
-        // eslint-disable-next-line no-console
-        console.error('Error loading notifications:', error);
-        this.loading = false;
-      },
-    );
+      });
   }
 
   applyFilters() {

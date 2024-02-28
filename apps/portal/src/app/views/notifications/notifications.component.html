@@ -1,14 +1,17 @@
 <div class="p-grid p-justify-center container">
   <h2 class="p-col-12">Notifications</h2>
 
+  <p-toast key="tst"></p-toast>
+
   <div class="p-grid">
     <div class="p-col-12 p-md-3">
       <p-dropdown
         [options]="channelTypes"
         [(ngModel)]="selectedChannelType"
-        placeholder="Select a channel Type"
+        placeholder="Select a Channel Type"
         class="grid-dropdown"
         [showClear]="true"
+        (onChange)="loadNotifications()"
       ></p-dropdown>
       <p-dropdown
         [options]="deliveryStatuses"
@@ -16,6 +19,7 @@
         placeholder="Select a Delivery Status Type"
         class="grid-dropdown"
         [showClear]="true"
+        (onChange)="loadNotifications()"
       ></p-dropdown>
     </div>
   </div>
