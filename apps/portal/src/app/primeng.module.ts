@@ -9,6 +9,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
+import { MessageModule } from 'primeng/message';
 
 const modules = [
   ButtonModule,
@@ -21,6 +22,7 @@ const modules = [
   InputTextModule,
   BrowserAnimationsModule,
   TagModule,
+  MessageModule,
 ];
 
 @NgModule({

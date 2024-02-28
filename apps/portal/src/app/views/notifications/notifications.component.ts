@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChannelType, ChannelTypeMap, DeliveryStatus } from 'src/common/constants/notification';
 import { Table } from 'primeng/table';
+import { MessageService } from 'primeng/api';
+import { catchError, of } from 'rxjs';
 import { NotificationsService } from './notifications.service';
 import { Notification } from './notification.model';
 
@@ -53,7 +55,10 @@ export class NotificationsComponent implements OnInit {
 
   jsonDialogVisible: Boolean = false;
 
-  constructor(private notificationService: NotificationsService) {}
+  constructor(
+    private notificationService: NotificationsService,
+    private messageService: MessageService,
+  ) {}
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -78,8 +83,20 @@ export class NotificationsComponent implements OnInit {
       });
     }
 
-    this.notificationService.getNotifications(variables).subscribe(
-      (notifications: Notification[]) => {
+    this.notificationService
+      .getNotifications(variables)
+      .pipe(
+        catchError((error) => {
+          this.messageService.add({
+            key: 'tst',
+            severity: 'error',
+            summary: 'Error',
+            detail: `There was an error while loading notifications. Reason: ${error.message}`,
+          });
+          return of([]);
+        }),
+      )
+      .subscribe((notifications: Notification[]) => {
         this.notifications = notifications;
         this.applyFilters();
         /**
@@ -87,12 +104,7 @@ export class NotificationsComponent implements OnInit {
          * issue with current page becoming greater than total pages
          */
         this.notificationsTable.first = 0;
-      },
-      (error) => {
-        // eslint-disable-next-line no-console
-        console.error('Error loading notifications:', error);
-      },
-    );
+      });
   }
 
   applyFilters() {
