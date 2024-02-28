@@ -55,6 +55,8 @@ export class NotificationsComponent implements OnInit {
 
   jsonDialogVisible: Boolean = false;
 
+  loading: Boolean = true;
+
   constructor(
     private notificationService: NotificationsService,
     private messageService: MessageService,
@@ -65,6 +67,7 @@ export class NotificationsComponent implements OnInit {
   }
 
   loadNotifications() {
+    this.loading = true;
     const variables = { filters: [] };
 
     if (this.selectedChannelType) {
@@ -99,6 +102,7 @@ export class NotificationsComponent implements OnInit {
       .subscribe((notifications: Notification[]) => {
         this.notifications = notifications;
         this.applyFilters();
+        this.loading = false;
         /**
          * Required to reset current page to 1 on applying filters to prevent
          * issue with current page becoming greater than total pages

@@ -9,6 +9,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageModule } from 'primeng/message';
 
 const modules = [
@@ -22,6 +23,7 @@ const modules = [
   InputTextModule,
   BrowserAnimationsModule,
   TagModule,
+  ProgressSpinnerModule,
   MessageModule,
 ];
 
