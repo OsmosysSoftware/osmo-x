@@ -1,6 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ChannelType, ChannelTypeMap, DeliveryStatus } from 'src/common/constants/notification';
-import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { catchError, of } from 'rxjs';
 import { NotificationsService } from './notifications.service';
@@ -12,8 +11,6 @@ import { Notification } from './notification.model';
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
-  @ViewChild('notificationsTable') notificationsTable: Table;
-
   notifications: Notification[] = [];
 
   filteredNotifications: Notification[] = [];
@@ -103,11 +100,6 @@ export class NotificationsComponent implements OnInit {
         this.notifications = notifications;
         this.applyFilters();
         this.loading = false;
-        /**
-         * Required to reset current page to 1 on applying filters to prevent
-         * issue with current page becoming greater than total pages
-         */
-        this.notificationsTable.first = 0;
       });
   }
 
