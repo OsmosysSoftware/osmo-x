@@ -14,6 +14,7 @@ import { Wa360DialogDataDto } from 'src/modules/notifications/dtos/providers/wa3
 import { BadRequestException } from '@nestjs/common';
 import { CreateNotificationDto } from 'src/modules/notifications/dtos/create-notification.dto';
 import { WaTwilioDataDto } from 'src/modules/notifications/dtos/providers/waTwilio-data.dto';
+import { SmsTwilioDataDto } from 'src/modules/notifications/dtos/providers/smsTwilio-data.dto';
 
 @ValidatorConstraint({ async: true })
 export class IsDataValidConstraint implements ValidatorConstraintInterface {
@@ -53,6 +54,12 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
         const waTwilioData = new WaTwilioDataDto();
         Object.assign(waTwilioData, value);
         await validateAndThrowError(waTwilioData);
+        return true;
+
+      case ChannelType.SMS_TWILIO:
+        const smsTwilioData = new SmsTwilioDataDto();
+        Object.assign(smsTwilioData, value);
+        await validateAndThrowError(smsTwilioData);
         return true;
 
       default:

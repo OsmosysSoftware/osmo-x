@@ -7,6 +7,7 @@ import { ChannelType } from 'src/common/constants/notifications';
 import { WA360DIALOG_QUEUE } from 'src/modules/notifications/queues/wa360dialog.queue';
 import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
 import { WA_TWILIO_QUEUE } from 'src/modules/notifications/queues/waTwilio.queue';
+import { SMS_TWILIO_QUEUE } from 'src/modules/notifications/queues/smsTwilio.queue';
 
 @Injectable()
 export class NotificationQueueProducer {
@@ -17,6 +18,7 @@ export class NotificationQueueProducer {
     @Optional() @InjectQueue(MAILGUN_QUEUE) private readonly mailgunQueue: Queue,
     @Optional() @InjectQueue(WA360DIALOG_QUEUE) private readonly wa360DialogQueue: Queue,
     @Optional() @InjectQueue(WA_TWILIO_QUEUE) private readonly waTwilioQueue: Queue,
+    @Optional() @InjectQueue(SMS_TWILIO_QUEUE) private readonly smsTwilioQueue: Queue,
   ) {}
 
   private listenForError(queue: Queue[]): void {
@@ -34,6 +36,7 @@ export class NotificationQueueProducer {
       this.mailgunQueue,
       this.wa360DialogQueue,
       this.waTwilioQueue,
+      this.smsTwilioQueue,
     ].filter((q) => q);
     this.listenForError(queues);
   }
@@ -61,6 +64,13 @@ export class NotificationQueueProducer {
       case ChannelType.WA_TWILIO:
         if (this.waTwilioQueue) {
           await this.waTwilioQueue.add(notification.id);
+        }
+
+        break;
+
+      case ChannelType.SMS_TWILIO:
+        if (this.smsTwilioQueue) {
+          await this.smsTwilioQueue.add(notification.id);
         }
 
         break;
