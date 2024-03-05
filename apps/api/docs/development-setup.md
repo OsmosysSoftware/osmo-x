@@ -83,6 +83,12 @@ sudo systemctl status mariadb
    TWILIO_WA_AUTH_TOKEN=
    TWILIO_WA_NUMBER=
 
+   # SMS Twilio
+   ENABLE_SMS_TWILIO=
+   TWILIO_SMS_ACCOUNT_SID=
+   TWILIO_SMS_AUTH_TOKEN=
+   TWILIO_SMS_NUMBER=
+
    # TEMP
    APP_NAME=OsmoX
    ```
