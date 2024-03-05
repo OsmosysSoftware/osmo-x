@@ -2,7 +2,7 @@
 
 Twilio enables sending SMS through its API, allowing developers to programmatically send and receive text messages worldwide. Users integrate Twilio's API into their applications, triggering automated SMS messages for various purposes such as notifications, alerts, and customer communications.
 
-Refer the messaging documentation to dive deeper into the features Twilio offers and understanding how it all works.
+Refer to the messaging documentation to dive deeper into the features Twilio offers and understanding how it all works.
 
 ### ENV Values to Update
 
