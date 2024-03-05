@@ -576,7 +576,7 @@
               "port": "3000",
               "path": ["notifications"]
             },
-            "description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid channel value."
+            "description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid channel value."
           },
           "response": []
         },
@@ -624,7 +624,7 @@
               "port": "3000",
               "path": ["notifications"]
             },
-            "description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
+            "description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
           },
           "response": []
         }
