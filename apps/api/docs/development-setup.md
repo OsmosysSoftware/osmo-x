@@ -46,8 +46,7 @@ sudo systemctl status mariadb
    SERVER_API_KEY=OsmoX-test-key
 
    # Node env
-   NODE_ENV= development
-
+   NODE_ENV=development
    # Database configuration
    DB_TYPE=mysql
    DB_HOST=localhost # use value as osmox-mariadb in docker
