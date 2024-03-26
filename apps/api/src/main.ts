@@ -21,8 +21,8 @@ async function bootstrap(): Promise<void> {
     logger: loggerConfig,
   });
   const config = new DocumentBuilder()
-    .setTitle('OsmosX')
-    .setDescription('The Osmos-x API description')
+    .setTitle('OsmoX')
+    .setDescription('The OsmoX API description')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
