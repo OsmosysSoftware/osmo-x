@@ -22,8 +22,10 @@ async function bootstrap(): Promise<void> {
   });
   const config = new DocumentBuilder()
     .setTitle('OsmoX')
-    .setDescription('The OsmoX API description')
-    .setVersion('1.0')
+    .setDescription(
+      'Centralized multi-channel notification management component for streamlined communication across email, SMS, WhatsApp, and push notifications.',
+    )
+    .setVersion('2.0.0')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
