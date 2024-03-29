@@ -14,4 +14,11 @@ export class NotificationResponse {
 
   @Field(() => Int)
   limit: number;
+
+  constructor(items: Notification[], total: number, offset?: number, limit?: number) {
+    this.notifications = items;
+    this.total = total;
+    this.offset = offset ?? 0;
+    this.limit = limit ?? items.length;
+  }
 }

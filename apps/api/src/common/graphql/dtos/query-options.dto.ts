@@ -1,7 +1,15 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, Int, registerEnumType } from '@nestjs/graphql';
 import { IsOptional, IsInt, Min, IsString, IsEnum } from 'class-validator';
-import { SortOrder } from 'src/common/constants/notifications';
 import { UniversalFilter } from './universal-filter.dto';
+
+export enum SortOrder {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+registerEnumType(SortOrder, {
+  name: 'SortOrder',
+});
 
 @InputType()
 export class QueryOptionsDto {
