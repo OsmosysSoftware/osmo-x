@@ -19,6 +19,10 @@ export function generateEnabledChannelEnum(configService: ConfigService): Record
     enabledChannels['WA_TWILIO'] = ChannelType.WA_TWILIO;
   }
 
+  if (configService.get('ENABLE_SMS_TWILIO') === 'true') {
+    enabledChannels['SMS_TWILIO'] = ChannelType.SMS_TWILIO;
+  }
+
   return enabledChannels as Record<string, number>;
 }
 
@@ -34,4 +38,5 @@ export const ChannelType = {
   MAILGUN: 2,
   WA_360_DAILOG: 3,
   WA_TWILIO: 4,
+  SMS_TWILIO: 5,
 };

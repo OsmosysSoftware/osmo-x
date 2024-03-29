@@ -45,6 +45,8 @@ sudo systemctl status mariadb
    SERVER_PORT=3000
    SERVER_API_KEY=OsmoX-test-key
 
+   # Node env
+   NODE_ENV=development
    # Database configuration
    DB_TYPE=mysql
    DB_HOST=localhost # use value as osmox-mariadb in docker
@@ -82,6 +84,12 @@ sudo systemctl status mariadb
    TWILIO_WA_ACCOUNT_SID=
    TWILIO_WA_AUTH_TOKEN=
    TWILIO_WA_NUMBER=
+
+   # SMS Twilio
+   ENABLE_SMS_TWILIO=
+   TWILIO_SMS_ACCOUNT_SID=
+   TWILIO_SMS_AUTH_TOKEN=
+   TWILIO_SMS_NUMBER=
 
    # TEMP
    APP_NAME=OsmoX

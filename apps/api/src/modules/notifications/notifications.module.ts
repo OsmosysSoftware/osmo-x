@@ -17,11 +17,14 @@ import { MailgunModule } from '../providers/mailgun/mailgun.module';
 import { SmtpModule } from '../providers/smtp/smtp.module';
 import { Wa360dialogModule } from '../providers/wa360dialog/wa360dialog.module';
 import { WaTwilioModule } from '../providers/wa-twilio/wa-twilio.module';
+import { SmsTwilioModule } from '../providers/sms-twilio/sms-twilio.module';
 
 import { ScheduleService } from './schedule/schedule.service';
 import { NotificationsResolver } from './notifications.resolver';
 import { waTwilioQueueConfig } from './queues/waTwilio.queue';
 import { WaTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilio-notifications.job.consumer';
+import { smsTwilioQueueConfig } from './queues/smsTwilio.queue';
+import { SmsTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/smsTwilio-notifications.job.consumer';
 
 @Module({})
 export class NotificationsModule {
@@ -54,6 +57,12 @@ export class NotificationsModule {
       modulesToLoad.push(WaTwilioModule);
       queuesToLoad.push(waTwilioQueueConfig);
       consumersToLoad.push(WaTwilioNotificationsConsumer);
+    }
+
+    if (configService.get<string>('ENABLE_SMS_TWILIO') === 'true') {
+      modulesToLoad.push(SmsTwilioModule);
+      queuesToLoad.push(smsTwilioQueueConfig);
+      consumersToLoad.push(SmsTwilioNotificationsConsumer);
     }
 
     const serviceProviderModules: DynamicModule[] = modulesToLoad;
