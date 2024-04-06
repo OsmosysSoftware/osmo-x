@@ -223,7 +223,7 @@ export class Migration2692870736644 implements MigrationInterface {
       }),
     );
 
-    // Create Foreign key for this table
+    /* Create Foreign key for this table
     await queryRunner.createForeignKey(
       'notify_notifications',
       new TableForeignKey({
@@ -233,11 +233,14 @@ export class Migration2692870736644 implements MigrationInterface {
         onDelete: 'CASCADE',
       })
     );
+    */
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    /*
     await queryRunner.dropForeignKey('notify_notifications', 'application_id');
     await queryRunner.dropColumn('notify_notifications', 'application_id');
+    */
     await queryRunner.query(`DROP TABLE \`notify_applications\``);
     await queryRunner.query(`DROP TABLE \`notify_server_api_keys\``);
     await queryRunner.query(`DROP TABLE \`notify_providers\``);

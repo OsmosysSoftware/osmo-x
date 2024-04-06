@@ -11,7 +11,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 
 @Entity({ name: 'notify_server_api_keys' })
 @ObjectType()
-export class ServerApiKey {
+export class Serverapikey {
   @PrimaryGeneratedColumn({ name: 'application_id' })
   @Field()
   applicationId: number;
@@ -37,7 +37,7 @@ export class ServerApiKey {
   @Field()
   status: number;
 
-  constructor(serverApiKey: Partial<ServerApiKey>) {
+  constructor(serverApiKey: Partial<Serverapikey>) {
     Object.assign(this, serverApiKey);
   }
 }

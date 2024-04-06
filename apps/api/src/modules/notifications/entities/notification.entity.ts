@@ -69,7 +69,7 @@ export class Notification {
   @Field()
   status: number;
 
-  @Column({ name: 'application_id' })
+  @Column({ name: 'application_id', default: 0 })
   @Field()
   application_id: number;
 
