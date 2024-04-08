@@ -69,6 +69,10 @@ export class Notification {
   @Field()
   status: number;
 
+  @Column({ name: 'application_id', default: null })
+  @Field()
+  applicationId: number;
+
   constructor(notification: Partial<Notification>) {
     Object.assign(this, notification);
   }
