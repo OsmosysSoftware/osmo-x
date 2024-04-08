@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { MigrationInterface, QueryRunner, Table, TableColumn } from 'typeorm';
 
 export class Migration2692870736644 implements MigrationInterface {
@@ -14,7 +13,6 @@ export class Migration2692870736644 implements MigrationInterface {
             name: 'application_id',
             type: 'int',
             isPrimary: true,
-            isGenerated: true,
             isUnique: true,
           },
           {
@@ -48,7 +46,6 @@ export class Migration2692870736644 implements MigrationInterface {
             name: 'application_id',
             type: 'int',
             isPrimary: true,
-            isGenerated: true,
             isUnique: true,
           },
           {
@@ -82,7 +79,6 @@ export class Migration2692870736644 implements MigrationInterface {
             name: 'provider_id',
             type: 'int',
             isPrimary: true,
-            isGenerated: true,
             isUnique: true,
           },
           {
@@ -176,9 +172,7 @@ export class Migration2692870736644 implements MigrationInterface {
             name: 'provider_id',
             type: 'int',
             isPrimary: true,
-            isGenerated: true,
             isUnique: true,
-            generationStrategy: 'increment',
           },
           {
             name: 'name',
@@ -186,9 +180,7 @@ export class Migration2692870736644 implements MigrationInterface {
           },
           {
             name: 'type',
-            type: 'enum',
-            enum: ['sms', 'email', 'whatsapp', 'others'],
-            default: "'sms'",
+            type: 'tinyint',
           },
           {
             name: 'configuration',
@@ -228,6 +220,7 @@ export class Migration2692870736644 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropColumn('notify_notifications', 'application_id');
     await queryRunner.query(`DROP TABLE \`notify_applications\``);
     await queryRunner.query(`DROP TABLE \`notify_server_api_keys\``);
     await queryRunner.query(`DROP TABLE \`notify_providers\``);
