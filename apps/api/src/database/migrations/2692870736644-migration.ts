@@ -220,6 +220,7 @@ export class Migration2692870736644 implements MigrationInterface {
       new TableColumn({
         name: 'application_id',
         type: 'int',
+        // Kept as null for now
         isNullable: true,
         default: null
       }),

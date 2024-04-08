@@ -29,8 +29,6 @@ export class NotificationsService {
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
     this.logger.log('Creating notification...');
     const notification = new Notification(notificationData);
-    // placeholder code
-    notification.applicationId = null;
     const enabledChannels = generateEnabledChannelEnum(this.configService);
     const channelEnabled = Object.values(enabledChannels).includes(notification.channelType);
 
