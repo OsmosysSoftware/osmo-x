@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableColumn } from 'typeorm';
 
 export class Migration2692870736644 implements MigrationInterface {
   name = 'Migration2692870736644';
@@ -220,27 +220,13 @@ export class Migration2692870736644 implements MigrationInterface {
       new TableColumn({
         name: 'application_id',
         type: 'int',
+        isNullable: true,
+        default: null
       }),
     );
-
-    /* Create Foreign key for this table
-    await queryRunner.createForeignKey(
-      'notify_notifications',
-      new TableForeignKey({
-        columnNames: ['application_id'],
-        referencedColumnNames: ['application_id'],
-        referencedTableName: 'notify_applications',
-        onDelete: 'CASCADE',
-      })
-    );
-    */
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    /*
-    await queryRunner.dropForeignKey('notify_notifications', 'application_id');
-    await queryRunner.dropColumn('notify_notifications', 'application_id');
-    */
     await queryRunner.query(`DROP TABLE \`notify_applications\``);
     await queryRunner.query(`DROP TABLE \`notify_server_api_keys\``);
     await queryRunner.query(`DROP TABLE \`notify_providers\``);

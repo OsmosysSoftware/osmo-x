@@ -71,7 +71,7 @@ export class Notification {
 
   @Column({ name: 'application_id', default: 0 })
   @Field()
-  application_id: number;
+  applicationId: number;
 
   constructor(notification: Partial<Notification>) {
     Object.assign(this, notification);
