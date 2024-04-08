@@ -214,7 +214,7 @@ export class Migration2692870736644 implements MigrationInterface {
         type: 'int',
         // Kept as null for now
         isNullable: true,
-        default: null
+        default: null,
       }),
     );
   }
