@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableColumn } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from 'typeorm';
 
 export class Migration2692870736644 implements MigrationInterface {
   name = 'Migration2692870736644';
@@ -43,7 +43,7 @@ export class Migration2692870736644 implements MigrationInterface {
         name: 'notify_server_api_keys',
         columns: [
           {
-            name: 'application_id',
+            name: 'api_key_id',
             type: 'int',
             isPrimary: true,
             isUnique: true,
@@ -51,6 +51,11 @@ export class Migration2692870736644 implements MigrationInterface {
           {
             name: 'api_key',
             type: 'varchar',
+            isUnique: true,
+          },
+          {
+            name: 'application_id',
+            type: 'int',
           },
           {
             name: 'created_on',
@@ -217,9 +222,21 @@ export class Migration2692870736644 implements MigrationInterface {
         default: null,
       }),
     );
+
+    // Create foreign key for notify_server_api_keys
+    await queryRunner.createForeignKey(
+      'notify_server_api_keys',
+      new TableForeignKey({
+        columnNames: ['application_id'],
+        referencedColumnNames: ['application_id'],
+        referencedTableName: 'notify_applications',
+        onDelete: 'CASCADE',
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropForeignKey('notify_server_api_keys', 'application_id');
     await queryRunner.dropColumn('notify_notifications', 'application_id');
     await queryRunner.query(`DROP TABLE \`notify_applications\``);
     await queryRunner.query(`DROP TABLE \`notify_server_api_keys\``);
