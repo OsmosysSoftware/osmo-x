@@ -47,6 +47,8 @@ export class Migration2692870736644 implements MigrationInterface {
             type: 'int',
             isPrimary: true,
             isUnique: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
           },
           {
             name: 'api_key',
@@ -129,8 +131,8 @@ export class Migration2692870736644 implements MigrationInterface {
             name: 'user_id',
             type: 'int',
             isPrimary: true,
-            isGenerated: true,
             isUnique: true,
+            isGenerated: true,
             generationStrategy: 'increment',
           },
           {
