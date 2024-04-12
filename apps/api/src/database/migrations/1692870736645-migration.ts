@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from 'typeorm';
 
-export class Migration2692870736644 implements MigrationInterface {
-  name = 'Migration2692870736644';
+export class Migration1692870736645 implements MigrationInterface {
+  name = 'Migration1692870736645';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create new tables for multi-tenant architecture
@@ -153,10 +153,6 @@ export class Migration2692870736644 implements MigrationInterface {
             default: 0,
           },
           {
-            name: 'application_id',
-            type: 'int',
-          },
-          {
             name: 'created_on',
             type: 'timestamp',
             default: 'CURRENT_TIMESTAMP',
@@ -190,7 +186,7 @@ export class Migration2692870736644 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'type',
+            name: 'provider_type',
             type: 'tinyint',
           },
           {
