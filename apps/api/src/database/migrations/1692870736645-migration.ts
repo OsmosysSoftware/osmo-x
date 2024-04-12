@@ -1,7 +1,7 @@
-import { MigrationInterface, QueryRunner, Table, TableColumn } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from 'typeorm';
 
-export class Migration2692870736644 implements MigrationInterface {
-  name = 'Migration2692870736644';
+export class Migration1692870736645 implements MigrationInterface {
+  name = 'Migration1692870736645';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create new tables for multi-tenant architecture
@@ -14,6 +14,10 @@ export class Migration2692870736644 implements MigrationInterface {
             type: 'int',
             isPrimary: true,
             isUnique: true,
+          },
+          {
+            name: 'name',
+            type: 'varchar',
           },
           {
             name: 'user_id',
@@ -43,14 +47,21 @@ export class Migration2692870736644 implements MigrationInterface {
         name: 'notify_server_api_keys',
         columns: [
           {
-            name: 'application_id',
+            name: 'api_key_id',
             type: 'int',
             isPrimary: true,
             isUnique: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
           },
           {
             name: 'api_key',
             type: 'varchar',
+            isUnique: true,
+          },
+          {
+            name: 'application_id',
+            type: 'int',
           },
           {
             name: 'created_on',
@@ -124,8 +135,8 @@ export class Migration2692870736644 implements MigrationInterface {
             name: 'user_id',
             type: 'int',
             isPrimary: true,
-            isGenerated: true,
             isUnique: true,
+            isGenerated: true,
             generationStrategy: 'increment',
           },
           {
@@ -140,10 +151,6 @@ export class Migration2692870736644 implements MigrationInterface {
             name: 'role',
             type: 'tinyint',
             default: 0,
-          },
-          {
-            name: 'application_id',
-            type: 'int',
           },
           {
             name: 'created_on',
@@ -179,7 +186,7 @@ export class Migration2692870736644 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'type',
+            name: 'provider_type',
             type: 'tinyint',
           },
           {
@@ -217,9 +224,21 @@ export class Migration2692870736644 implements MigrationInterface {
         default: null,
       }),
     );
+
+    // Create foreign key for notify_server_api_keys
+    await queryRunner.createForeignKey(
+      'notify_server_api_keys',
+      new TableForeignKey({
+        columnNames: ['application_id'],
+        referencedColumnNames: ['application_id'],
+        referencedTableName: 'notify_applications',
+        onDelete: 'CASCADE',
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropForeignKey('notify_server_api_keys', 'application_id');
     await queryRunner.dropColumn('notify_notifications', 'application_id');
     await queryRunner.query(`DROP TABLE \`notify_applications\``);
     await queryRunner.query(`DROP TABLE \`notify_server_api_keys\``);
