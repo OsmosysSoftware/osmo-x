@@ -25,8 +25,11 @@ import { waTwilioQueueConfig } from './queues/waTwilio.queue';
 import { WaTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilio-notifications.job.consumer';
 import { smsTwilioQueueConfig } from './queues/smsTwilio.queue';
 import { SmsTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/smsTwilio-notifications.job.consumer';
+import { ServerApiKeysResolver } from '../server-api-keys/server-api-keys.resolver';
+import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
+import { ServerApiKey } from '../server-api-keys/entities/server-api-key.entity';
 
-@Module({})
+@Module({ imports: [ServerApiKey] })
 export class NotificationsModule {
   static register(): DynamicModule {
     const configService = new ConfigService();
@@ -89,8 +92,10 @@ export class NotificationsModule {
         JsendFormatter,
         Logger,
         NotificationsResolver,
+        ServerApiKeysService,
+        ServerApiKeysResolver,
       ],
-      exports: [NotificationsService],
+      exports: [NotificationsService, ServerApiKeysService],
       controllers: [NotificationsController],
     };
   }

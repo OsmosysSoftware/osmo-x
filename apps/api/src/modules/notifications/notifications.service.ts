@@ -13,6 +13,8 @@ import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { ConfigService } from '@nestjs/config';
 import { QueryOptionsDto } from './dtos/query-options.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
+import { ServerApiKey } from '../server-api-keys/entities/server-api-key.entity';
+import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 
 @Injectable()
 export class NotificationsService {
@@ -24,6 +26,8 @@ export class NotificationsService {
     private readonly notificationRepository: Repository<Notification>,
     private readonly notificationQueueService: NotificationQueueProducer,
     private readonly configService: ConfigService,
+    @InjectRepository(ServerApiKey)
+    private readonly serverApiKeysService: ServerApiKeysService,
   ) {}
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
@@ -39,6 +43,29 @@ export class NotificationsService {
     notification.createdBy = this.configService.getOrThrow<string>('APP_NAME') || 'OsmoX';
     notification.updatedBy = this.configService.getOrThrow<string>('APP_NAME') || 'OsmoX';
     return this.notificationRepository.save(notification);
+  }
+
+  async setApplicationId(authHeader: Request): Promise<number> {
+    const bearerToken = authHeader.toString();
+    let apiKeyToken = null;
+
+    if (bearerToken.startsWith('Bearer ')) {
+      apiKeyToken = parseInt(bearerToken.substring(7));
+    } else {
+      throw new Error('Invalid bearer token format');
+    }
+
+    if (apiKeyToken == null) {
+      throw new Error('Failed to assign applicationId');
+    }
+
+    const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
+
+    if (apiKeyEntry) {
+      return apiKeyEntry.applicationId;
+    } else {
+      throw new Error('ApplicationId does not exist');
+    }
   }
 
   async addNotificationsToQueue(): Promise<void> {
@@ -103,6 +130,7 @@ export class NotificationsService {
       },
     });
   }
+
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
     this.logger.log('Getting all active notifications with options');
 
