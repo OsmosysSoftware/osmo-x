@@ -28,7 +28,10 @@ export class NotificationsService {
     private readonly serverApiKeysResolver: ServerApiKeysResolver,
   ) {}
 
-  async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
+  async createNotification(
+    notificationData: CreateNotificationDto,
+    authHeader: Request,
+  ): Promise<Notification> {
     this.logger.log('Creating notification...');
     const notification = new Notification(notificationData);
     const enabledChannels = generateEnabledChannelEnum(this.configService);
@@ -38,6 +41,27 @@ export class NotificationsService {
       throw new BadRequestException(`Channel ${notification.channelType} is not enabled`);
     }
 
+    // Set correct details using authorization header
+    const bearerToken = authHeader.toString();
+    let apiKeyToken = null;
+
+    if (bearerToken.startsWith('Bearer ')) {
+      apiKeyToken = bearerToken.substring(7);
+    } else {
+      throw new Error('Invalid bearer token format');
+    }
+
+    if (apiKeyToken == null) {
+      throw new Error('Failed to assign applicationId');
+    }
+
+    const apiKeyEntry = await this.serverApiKeysResolver.findApiKey(apiKeyToken);
+
+    if (!apiKeyEntry) {
+      throw new Error('Related Application does not exist');
+    }
+
+    notification.applicationId = apiKeyEntry.applicationId;
     notification.createdBy = this.configService.getOrThrow<string>('APP_NAME') || 'OsmoX';
     notification.updatedBy = this.configService.getOrThrow<string>('APP_NAME') || 'OsmoX';
     return this.notificationRepository.save(notification);

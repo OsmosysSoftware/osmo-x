@@ -31,10 +31,12 @@ export class NotificationsController {
   ): Promise<Record<string, unknown>> {
     try {
       const authHeader = request.headers['authorization'];
-      const createdNotification =
-        await this.notificationService.createNotification(notificationData);
-      createdNotification.applicationId =
-        await this.notificationService.setApplicationId(authHeader);
+      const createdNotification = await this.notificationService.createNotification(
+        notificationData,
+        authHeader,
+      );
+      // createdNotification.applicationId =
+      //   await this.notificationService.setApplicationId(authHeader);
       this.logger.log('Notification created successfully.');
       return this.jsend.success({ notification: createdNotification });
     } catch (error) {
