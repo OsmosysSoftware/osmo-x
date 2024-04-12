@@ -14,6 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { QueryOptionsDto } from './dtos/query-options.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { ServerApiKeysResolver } from '../server-api-keys/server-api-keys.resolver';
+import { ApplicationsResolver } from '../applications/applications.resolver';
 
 @Injectable()
 export class NotificationsService {
@@ -26,6 +27,7 @@ export class NotificationsService {
     private readonly notificationQueueService: NotificationQueueProducer,
     private readonly configService: ConfigService,
     private readonly serverApiKeysResolver: ServerApiKeysResolver,
+    private readonly applicationsResolver: ApplicationsResolver,
   ) {}
 
   async createNotification(
@@ -41,7 +43,7 @@ export class NotificationsService {
       throw new BadRequestException(`Channel ${notification.channelType} is not enabled`);
     }
 
-    // Set correct details using authorization header
+    // Set correct details for applicationId using authorization header
     const bearerToken = authHeader.toString();
     let apiKeyToken = null;
 
@@ -58,15 +60,26 @@ export class NotificationsService {
     const apiKeyEntry = await this.serverApiKeysResolver.findApiKey(apiKeyToken);
 
     if (!apiKeyEntry) {
-      throw new Error('Related Application does not exist');
+      throw new Error('Related Api Key does not exist');
     }
 
     notification.applicationId = apiKeyEntry.applicationId;
-    notification.createdBy = this.configService.getOrThrow<string>('APP_NAME') || 'OsmoX';
-    notification.updatedBy = this.configService.getOrThrow<string>('APP_NAME') || 'OsmoX';
+
+    // Set correct application name using applicationId
+    const applicationEntry = await this.applicationsResolver.findApplicationById(
+      apiKeyEntry.applicationId,
+    );
+
+    if (!applicationEntry) {
+      throw new Error('Related Application does not exist');
+    }
+
+    notification.createdBy = 'OsmoX';
+    notification.updatedBy = applicationEntry.name;
     return this.notificationRepository.save(notification);
   }
 
+  /*
   async setApplicationId(authHeader: Request): Promise<number> {
     const bearerToken = authHeader.toString();
     let apiKeyToken = null;
@@ -89,6 +102,7 @@ export class NotificationsService {
       throw new Error('ApplicationId does not exist');
     }
   }
+  */
 
   async addNotificationsToQueue(): Promise<void> {
     this.logger.log('Starting CRON job to add pending notifications to queue');

@@ -1,26 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CreateApplicationInput } from './dto/create-application.input';
-import { UpdateApplicationInput } from './dto/update-application.input';
+import { Application } from './entities/application.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ApplicationsService {
-  create(createApplicationInput: CreateApplicationInput) {
-    return 'This action adds a new application';
-  }
+  constructor(
+    @InjectRepository(Application)
+    private readonly applicationsRepository: Repository<Application>,
+  ) {}
 
-  findAll() {
-    return `This action returns all applications`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} application`;
-  }
-
-  update(id: number, updateApplicationInput: UpdateApplicationInput) {
-    return `This action updates a #${id} application`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} application`;
+  async findById(applicationId: number): Promise<Application | undefined> {
+    return this.applicationsRepository.findOne({ where: { applicationId } });
   }
 }
