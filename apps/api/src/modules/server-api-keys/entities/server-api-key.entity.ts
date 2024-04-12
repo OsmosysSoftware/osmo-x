@@ -12,7 +12,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 @Entity({ name: 'notify_server_api_keys' })
 @ObjectType()
 export class ServerApiKey {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'api_key_id' })
   @Field()
   apiKeyId: number;
 
@@ -20,7 +20,7 @@ export class ServerApiKey {
   @Field()
   apiKey: string;
 
-  @Column()
+  @Column({ name: 'application_id' })
   @Field()
   applicationId: number;
 
@@ -33,6 +33,7 @@ export class ServerApiKey {
   updatedOn: Date;
 
   @Column({
+    name: 'status',
     type: 'tinyint',
     width: 1,
     default: Status.ACTIVE,

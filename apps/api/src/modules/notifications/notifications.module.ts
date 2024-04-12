@@ -25,11 +25,11 @@ import { waTwilioQueueConfig } from './queues/waTwilio.queue';
 import { WaTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilio-notifications.job.consumer';
 import { smsTwilioQueueConfig } from './queues/smsTwilio.queue';
 import { SmsTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/smsTwilio-notifications.job.consumer';
-import { ServerApiKeysResolver } from '../server-api-keys/server-api-keys.resolver';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
-import { ServerApiKey } from '../server-api-keys/entities/server-api-key.entity';
+import { ServerApiKeysModule } from '../server-api-keys/server-api-keys.module';
+import { ServerApiKeysResolver } from '../server-api-keys/server-api-keys.resolver';
 
-@Module({ imports: [ServerApiKey] })
+@Module({})
 export class NotificationsModule {
   static register(): DynamicModule {
     const configService = new ConfigService();
@@ -82,6 +82,7 @@ export class NotificationsModule {
         TypeOrmModule.forFeature([Notification]),
         BullModule.registerQueue(...queuesToLoad),
         ...serviceProviderModules,
+        ServerApiKeysModule,
       ],
       providers: [
         NotificationQueueProducer,

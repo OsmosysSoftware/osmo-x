@@ -13,8 +13,7 @@ import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { ConfigService } from '@nestjs/config';
 import { QueryOptionsDto } from './dtos/query-options.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
-import { ServerApiKey } from '../server-api-keys/entities/server-api-key.entity';
-import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
+import { ServerApiKeysResolver } from '../server-api-keys/server-api-keys.resolver';
 
 @Injectable()
 export class NotificationsService {
@@ -26,8 +25,7 @@ export class NotificationsService {
     private readonly notificationRepository: Repository<Notification>,
     private readonly notificationQueueService: NotificationQueueProducer,
     private readonly configService: ConfigService,
-    @InjectRepository(ServerApiKey)
-    private readonly serverApiKeysService: ServerApiKeysService,
+    private readonly serverApiKeysResolver: ServerApiKeysResolver,
   ) {}
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
@@ -50,7 +48,7 @@ export class NotificationsService {
     let apiKeyToken = null;
 
     if (bearerToken.startsWith('Bearer ')) {
-      apiKeyToken = parseInt(bearerToken.substring(7));
+      apiKeyToken = bearerToken.substring(7);
     } else {
       throw new Error('Invalid bearer token format');
     }
@@ -59,7 +57,7 @@ export class NotificationsService {
       throw new Error('Failed to assign applicationId');
     }
 
-    const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
+    const apiKeyEntry = await this.serverApiKeysResolver.findApiKey(apiKeyToken);
 
     if (apiKeyEntry) {
       return apiKeyEntry.applicationId;
