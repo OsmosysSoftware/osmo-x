@@ -1,7 +1,6 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { ApplicationsService } from './applications.service';
 import { Application } from './entities/application.entity';
-import { Int32 } from 'typeorm';
 
 @Resolver(() => Application)
 export class ApplicationsResolver {
