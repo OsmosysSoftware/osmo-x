@@ -13,8 +13,8 @@ import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { ConfigService } from '@nestjs/config';
 import { QueryOptionsDto } from './dtos/query-options.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
-import { ServerApiKeysResolver } from '../server-api-keys/server-api-keys.resolver';
-import { ApplicationsResolver } from '../applications/applications.resolver';
+import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
+import { ApplicationsService } from '../applications/applications.service';
 
 @Injectable()
 export class NotificationsService {
@@ -26,8 +26,8 @@ export class NotificationsService {
     private readonly notificationRepository: Repository<Notification>,
     private readonly notificationQueueService: NotificationQueueProducer,
     private readonly configService: ConfigService,
-    private readonly serverApiKeysResolver: ServerApiKeysResolver,
-    private readonly applicationsResolver: ApplicationsResolver,
+    private readonly serverApiKeysService: ServerApiKeysService,
+    private readonly applicationsService: ApplicationsService,
   ) {}
 
   async createNotification(
@@ -68,7 +68,7 @@ export class NotificationsService {
         throw new Error('Failed to assign applicationId');
       }
 
-      const apiKeyEntry = await this.serverApiKeysResolver.findApiKey(apiKeyToken);
+      const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
 
       if (!apiKeyEntry || !apiKeyEntry.applicationId) {
         throw new Error('Related Api Key does not exist');
@@ -84,7 +84,7 @@ export class NotificationsService {
   // Get correct application name using applicationId
   async getApplicationNameFromId(applicationId: number): Promise<string> {
     try {
-      const applicationEntry = await this.applicationsResolver.findApplicationById(applicationId);
+      const applicationEntry = await this.applicationsService.findById(applicationId);
 
       if (!applicationEntry || !applicationEntry.name) {
         throw new Error('Related Application does not exist');
