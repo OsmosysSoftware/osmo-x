@@ -43,40 +43,58 @@ export class NotificationsService {
       throw new BadRequestException(`Channel ${notification.channelType} is not enabled`);
     }
 
-    // Set correct details for applicationId using authorization header
-    const bearerToken = authHeader.toString();
-    let apiKeyToken = null;
-
-    if (bearerToken.startsWith('Bearer ')) {
-      apiKeyToken = bearerToken.substring(7);
-    } else {
-      throw new Error('Invalid bearer token format');
-    }
-
-    if (apiKeyToken == null) {
-      throw new Error('Failed to assign applicationId');
-    }
-
-    const apiKeyEntry = await this.serverApiKeysResolver.findApiKey(apiKeyToken);
-
-    if (!apiKeyEntry) {
-      throw new Error('Related Api Key does not exist');
-    }
-
-    notification.applicationId = apiKeyEntry.applicationId;
+    // Set correct ApplicationId
+    notification.applicationId = await this.getApplicationIdFromApiKey(authHeader);
 
     // Set correct application name using applicationId
-    const applicationEntry = await this.applicationsResolver.findApplicationById(
-      apiKeyEntry.applicationId,
-    );
-
-    if (!applicationEntry) {
-      throw new Error('Related Application does not exist');
-    }
-
     notification.createdBy = 'OsmoX';
-    notification.updatedBy = applicationEntry.name;
+    notification.updatedBy = await this.getApplicationNameFromId(notification.applicationId);
     return this.notificationRepository.save(notification);
+  }
+
+  // Get correct applicationId using authorization header
+  async getApplicationIdFromApiKey(authHeader: Request): Promise<number> {
+    try {
+      const bearerToken = authHeader.toString();
+      let apiKeyToken = null;
+
+      if (bearerToken.startsWith('Bearer ')) {
+        apiKeyToken = bearerToken.substring(7);
+      } else {
+        throw new Error('Invalid bearer token format');
+      }
+
+      if (apiKeyToken == null) {
+        throw new Error('Failed to assign applicationId');
+      }
+
+      const apiKeyEntry = await this.serverApiKeysResolver.findApiKey(apiKeyToken);
+
+      if (!apiKeyEntry || !apiKeyEntry.applicationId) {
+        throw new Error('Related Api Key does not exist');
+      }
+
+      return apiKeyEntry.applicationId;
+    } catch (error) {
+      this.logger.log('Error creating notification:', error.message);
+      throw error;
+    }
+  }
+
+  // Get correct application name using applicationId
+  async getApplicationNameFromId(applicationId: number): Promise<string> {
+    try {
+      const applicationEntry = await this.applicationsResolver.findApplicationById(applicationId);
+
+      if (!applicationEntry || !applicationEntry.name) {
+        throw new Error('Related Application does not exist');
+      }
+
+      return applicationEntry.name;
+    } catch (error) {
+      this.logger.log('Error creating notification:', error.message);
+      throw error;
+    }
   }
 
   async addNotificationsToQueue(): Promise<void> {
