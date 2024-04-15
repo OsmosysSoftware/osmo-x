@@ -79,31 +79,6 @@ export class NotificationsService {
     return this.notificationRepository.save(notification);
   }
 
-  /*
-  async setApplicationId(authHeader: Request): Promise<number> {
-    const bearerToken = authHeader.toString();
-    let apiKeyToken = null;
-
-    if (bearerToken.startsWith('Bearer ')) {
-      apiKeyToken = bearerToken.substring(7);
-    } else {
-      throw new Error('Invalid bearer token format');
-    }
-
-    if (apiKeyToken == null) {
-      throw new Error('Failed to assign applicationId');
-    }
-
-    const apiKeyEntry = await this.serverApiKeysResolver.findApiKey(apiKeyToken);
-
-    if (apiKeyEntry) {
-      return apiKeyEntry.applicationId;
-    } else {
-      throw new Error('ApplicationId does not exist');
-    }
-  }
-  */
-
   async addNotificationsToQueue(): Promise<void> {
     this.logger.log('Starting CRON job to add pending notifications to queue');
 
