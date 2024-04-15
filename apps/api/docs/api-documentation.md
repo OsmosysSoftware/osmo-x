@@ -111,7 +111,7 @@ curl --location 'http://localhost:3000/notifications' \
         "html": "<b>This is a test notification</b>"
       },
       "applicationId": 1002,
-      "createdBy": "OsmoX",
+      "createdBy": "sampleFoundationApp",
       "updatedBy": "sampleFoundationApp",
       "result": null,
       "id": 92,

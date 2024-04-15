@@ -35,8 +35,6 @@ export class NotificationsController {
         notificationData,
         authHeader,
       );
-      // createdNotification.applicationId =
-      //   await this.notificationService.setApplicationId(authHeader);
       this.logger.log('Notification created successfully.');
       return this.jsend.success({ notification: createdNotification });
     } catch (error) {

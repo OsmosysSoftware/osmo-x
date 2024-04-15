@@ -47,7 +47,7 @@ export class NotificationsService {
     notification.applicationId = await this.getApplicationIdFromApiKey(authHeader);
 
     // Set correct application name using applicationId
-    notification.createdBy = 'OsmoX';
+    notification.createdBy = await this.getApplicationNameFromId(notification.applicationId);
     notification.updatedBy = await this.getApplicationNameFromId(notification.applicationId);
     return this.notificationRepository.save(notification);
   }
