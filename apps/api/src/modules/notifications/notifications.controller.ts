@@ -8,6 +8,7 @@ import {
   Get,
   Param,
   NotFoundException,
+  Req,
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
@@ -25,11 +26,15 @@ export class NotificationsController {
   @Post()
   @UseGuards(ApiKeyGuard)
   async addNotification(
+    @Req() request: Request,
     @Body() notificationData: CreateNotificationDto,
   ): Promise<Record<string, unknown>> {
     try {
-      const createdNotification =
-        await this.notificationService.createNotification(notificationData);
+      const authHeader = request.headers['authorization'];
+      const createdNotification = await this.notificationService.createNotification(
+        notificationData,
+        authHeader,
+      );
       this.logger.log('Notification created successfully.');
       return this.jsend.success({ notification: createdNotification });
     } catch (error) {
