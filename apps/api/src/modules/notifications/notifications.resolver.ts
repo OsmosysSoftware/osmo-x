@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Query, Resolver } from '@nestjs/graphql';
 import { NotificationsService } from './notifications.service';
 import { Notification } from './entities/notification.entity';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -15,9 +15,12 @@ export class NotificationsResolver {
 
   @Query(() => NotificationResponse, { name: 'notifications' })
   async findAll(
+    @Context() context,
     @Args('options', { type: () => QueryOptionsDto, nullable: true, defaultValue: {} })
     options: QueryOptionsDto,
   ): Promise<NotificationResponse> {
-    return this.notificationsService.getAllNotifications(options);
+    const request: Request = context.req;
+    const authorizationHeader = request.headers['authorization'];
+    return this.notificationsService.getAllNotifications(options, authorizationHeader);
   }
 }

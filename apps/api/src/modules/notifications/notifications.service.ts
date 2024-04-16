@@ -160,13 +160,22 @@ export class NotificationsService {
     });
   }
 
-  async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
+  async getAllNotifications(
+    options: QueryOptionsDto,
+    authorizationHeader: Request,
+  ): Promise<NotificationResponse> {
     this.logger.log('Getting all active notifications with options');
 
     const queryBuilder = this.notificationRepository.createQueryBuilder('notification');
 
     // Base where condition
     queryBuilder.where('notification.status = :status', { status: Status.ACTIVE });
+
+    // Get the applicationId currently being used
+    const filterApplicationId = await this.getApplicationIdFromApiKey(authorizationHeader);
+
+    // Where condition to fetch data with applicationId related to server-api-key used
+    queryBuilder.andWhere('notification.applicationId = :appId', { appId: filterApplicationId });
 
     // Search functionality using OR condition
     if (options.search) {

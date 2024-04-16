@@ -10,10 +10,6 @@ export class ServerApiKeysService {
     private readonly serverApiKeyRepository: Repository<ServerApiKey>,
   ) {}
 
-  async findAll(): Promise<ServerApiKey[]> {
-    return this.serverApiKeyRepository.find();
-  }
-
   async findByServerApiKey(apiKey: string): Promise<ServerApiKey | undefined> {
     return this.serverApiKeyRepository.findOne({ where: { apiKey } });
   }
