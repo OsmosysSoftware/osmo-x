@@ -174,6 +174,9 @@ export class NotificationsService {
     // Get the applicationId currently being used
     const filterApplicationId = await this.getApplicationIdFromApiKey(authorizationHeader);
 
+    // Get the applicationName to be displayed
+    const displayApplicationName = await this.getApplicationNameFromId(filterApplicationId);
+
     // Where condition to fetch data with applicationId related to server-api-key used
     queryBuilder.andWhere('notification.applicationId = :appId', { appId: filterApplicationId });
 
@@ -249,7 +252,13 @@ export class NotificationsService {
 
     const [notifications, total] = await queryBuilder.getManyAndCount();
 
-    return { notifications, total, offset: options.offset, limit: options.limit };
+    return {
+      notifications,
+      total,
+      offset: options.offset,
+      limit: options.limit,
+      applicationName: displayApplicationName,
+    };
   }
 
   // Helper method to check if a field is a date field

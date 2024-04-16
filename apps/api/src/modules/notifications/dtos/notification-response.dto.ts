@@ -14,4 +14,7 @@ export class NotificationResponse {
 
   @Field(() => Int)
   limit: number;
+
+  @Field(() => String)
+  applicationName: string;
 }
