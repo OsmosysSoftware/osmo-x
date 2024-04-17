@@ -25,6 +25,11 @@ import { waTwilioQueueConfig } from './queues/waTwilio.queue';
 import { WaTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilio-notifications.job.consumer';
 import { smsTwilioQueueConfig } from './queues/smsTwilio.queue';
 import { SmsTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/smsTwilio-notifications.job.consumer';
+// Import entity modules and services
+import { ServerApiKeysModule } from '../server-api-keys/server-api-keys.module';
+import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
+import { ApplicationsModule } from '../applications/applications.module';
+import { ApplicationsService } from '../applications/applications.service';
 
 @Module({})
 export class NotificationsModule {
@@ -79,6 +84,8 @@ export class NotificationsModule {
         TypeOrmModule.forFeature([Notification]),
         BullModule.registerQueue(...queuesToLoad),
         ...serviceProviderModules,
+        ServerApiKeysModule,
+        ApplicationsModule,
       ],
       providers: [
         NotificationQueueProducer,
@@ -89,8 +96,10 @@ export class NotificationsModule {
         JsendFormatter,
         Logger,
         NotificationsResolver,
+        ServerApiKeysService,
+        ApplicationsService,
       ],
-      exports: [NotificationsService],
+      exports: [NotificationsService, ServerApiKeysService, ApplicationsService],
       controllers: [NotificationsController],
     };
   }
