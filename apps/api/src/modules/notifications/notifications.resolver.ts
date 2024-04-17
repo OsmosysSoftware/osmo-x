@@ -6,7 +6,7 @@ import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { UseGuards } from '@nestjs/common';
 import { NotificationResponse } from './dtos/notification-response.dto';
-import { QueryOptionsDto } from './dtos/query-options.dto';
+import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 
 @Resolver(() => Notification)
 @UseGuards(ApiKeyGuard)

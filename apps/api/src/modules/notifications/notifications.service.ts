@@ -1,25 +1,22 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import {
-  DeliveryStatus,
-  SortOrder,
-  generateEnabledChannelEnum,
-} from 'src/common/constants/notifications';
+import { DeliveryStatus, generateEnabledChannelEnum } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { ConfigService } from '@nestjs/config';
-import { QueryOptionsDto } from './dtos/query-options.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
+import { CoreService } from 'src/common/graphql/services/core.service';
+import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
 
 @Injectable()
-export class NotificationsService {
+export class NotificationsService extends CoreService<Notification> {
+  protected readonly logger = new Logger(NotificationsService.name);
   private isProcessingQueue: boolean = false;
-  private readonly logger = new Logger(NotificationsService.name);
 
   constructor(
     @InjectRepository(Notification)
@@ -28,7 +25,9 @@ export class NotificationsService {
     private readonly configService: ConfigService,
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
-  ) {}
+  ) {
+    super(notificationRepository);
+  }
 
   async createNotification(
     notificationData: CreateNotificationDto,
@@ -161,92 +160,17 @@ export class NotificationsService {
   }
 
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
-    this.logger.log('Getting all active notifications with options');
+    this.logger.log('Getting all notifications with options.');
 
-    const queryBuilder = this.notificationRepository.createQueryBuilder('notification');
+    const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
+    const searchableFields = ['createdBy', 'data', 'result'];
 
-    // Base where condition
-    queryBuilder.where('notification.status = :status', { status: Status.ACTIVE });
-
-    // Search functionality using OR condition
-    if (options.search) {
-      const searchableFields = ['createdBy', 'data', 'result'];
-      queryBuilder.andWhere(
-        new Brackets((qb) => {
-          searchableFields.forEach((field, index) => {
-            const condition = `notification.${field} LIKE :search`;
-
-            if (index === 0) {
-              qb.where(condition, { search: `%${options.search}%` });
-            } else {
-              qb.orWhere(condition, { search: `%${options.search}%` });
-            }
-          });
-        }),
-      );
-    }
-
-    // Applying filters
-    let filterIndex = 0;
-    options.filters?.forEach((filter) => {
-      const field = filter.field;
-      const value = filter.value;
-      const condition = `notification.${field}`;
-      const paramName = `value${filterIndex}`; // Unique parameter name issue: https://github.com/typeorm/typeorm/issues/3428
-
-      switch (filter.operator) {
-        case 'eq':
-          queryBuilder.andWhere(`${condition} = :${paramName}`, { [paramName]: value });
-          break;
-        case 'contains':
-          if (typeof value === 'string') {
-            queryBuilder.andWhere(`${condition} LIKE :${paramName}`, { [paramName]: `%${value}%` });
-          }
-
-          break;
-        case 'gt':
-          queryBuilder.andWhere(`${condition} > :${paramName}`, {
-            [paramName]: this.isDateField(filter.field) ? new Date(String(value)) : value,
-          });
-          break;
-        case 'lt':
-          queryBuilder.andWhere(`${condition} < :${paramName}`, {
-            [paramName]: this.isDateField(filter.field) ? new Date(String(value)) : value,
-          });
-          break;
-        case 'ne':
-          queryBuilder.andWhere(`${condition} != :${paramName}`, { [paramName]: value });
-          break;
-      }
-
-      filterIndex++;
-    });
-
-    // Pagination and Sorting
-    if (options.offset !== undefined) {
-      queryBuilder.skip(options.offset);
-    }
-
-    if (options.limit !== undefined) {
-      queryBuilder.take(options.limit);
-    }
-
-    if (options.sortBy) {
-      queryBuilder.addOrderBy(
-        `notification.${options.sortBy}`,
-        options.sortOrder === SortOrder.ASC ? SortOrder.ASC : SortOrder.DESC,
-      );
-    }
-
-    const [notifications, total] = await queryBuilder.getManyAndCount();
-
-    return { notifications, total, offset: options.offset, limit: options.limit };
-  }
-
-  // Helper method to check if a field is a date field
-  private isDateField(field: string): boolean {
-    // List all date fields from your Notification entity
-    const dateFields = ['createdOn', 'updatedOn'];
-    return dateFields.includes(field);
+    const { items, total } = await super.findAll(
+      options,
+      'notification',
+      searchableFields,
+      baseConditions,
+    );
+    return new NotificationResponse(items, total, options.offset, options.limit);
   }
 }
