@@ -156,6 +156,7 @@ query {
     }
   ) {
     notifications {
+      applicationId
       channelType
       createdBy
       createdOn
@@ -167,6 +168,10 @@ query {
       updatedBy
       updatedOn
     }
+    total,
+    offset,
+    limit,
+    applicationName
   }
 }
 ```
@@ -177,7 +182,7 @@ query {
 curl --location 'http://localhost:3000/graphql' \
 --header 'Authorization: Bearer mysecuretoken' \
 --header 'Content-Type: application/json' \
---data-raw '{"query":"query {\n  notifications(options: {\n    limit: 1,\n    offset: 0,\n    sortBy: \"createdOn\",\n    sortOrder: DESC,\n    search: \"sender@email.com\",\n    filters: [\n      { field: \"channelType\", operator: \"eq\", value: \"1\" },\n    ]\n  }) {\n    notifications {\n      channelType\n      createdBy\n      createdOn\n      data\n      deliveryStatus\n      id\n      result\n      status\n      updatedBy\n      updatedOn\n    }\n  }\n}","variables":{}}'
+--data-raw '{"query":"query {\n  notifications(options: {\n    limit: 1,\n    offset: 0,\n    sortBy: \"createdOn\",\n    sortOrder: DESC,\n    search: \"sender@email.com\",\n    filters: [\n      { field: \"channelType\", operator: \"eq\", value: \"1\" },\n    ]\n  }) {\n    notifications {\n      applicationId\n      channelType\n      createdBy\n      createdOn\n      data\n      deliveryStatus\n      id\n      result\n      status\n      updatedBy\n      updatedOn\n    }\n    total,\n    offset,\n    limit,\n    applicationName\n }\n}","variables":{}}'
 ```
 
 **Sample response**
@@ -188,6 +193,7 @@ curl --location 'http://localhost:3000/graphql' \
     "notifications": {
       "notifications": [
         {
+          "applicationId": 1002,
           "channelType": 1,
           "createdBy": "OsmoX",
           "createdOn": "2024-02-12T07:26:25.000Z",
@@ -220,7 +226,11 @@ curl --location 'http://localhost:3000/graphql' \
           "updatedBy": "OsmoX",
           "updatedOn": "2024-02-12T07:57:43.000Z"
         }
-      ]
+      ],
+      "total": 5,
+      "offset": 0,
+      "limit": 1,
+      "applicationName": "sampleOsmoXApp"
     }
   }
 }
