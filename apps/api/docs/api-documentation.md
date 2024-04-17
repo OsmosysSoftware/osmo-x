@@ -157,6 +157,7 @@ query {
   ) {
     notifications {
       applicationId
+      applicationName
       channelType
       createdBy
       createdOn
@@ -170,8 +171,7 @@ query {
     }
     total,
     offset,
-    limit,
-    applicationName
+    limit
   }
 }
 ```
@@ -182,7 +182,7 @@ query {
 curl --location 'http://localhost:3000/graphql' \
 --header 'Authorization: Bearer mysecuretoken' \
 --header 'Content-Type: application/json' \
---data-raw '{"query":"query {\n  notifications(options: {\n    limit: 1,\n    offset: 0,\n    sortBy: \"createdOn\",\n    sortOrder: DESC,\n    search: \"sender@email.com\",\n    filters: [\n      { field: \"channelType\", operator: \"eq\", value: \"1\" },\n    ]\n  }) {\n    notifications {\n      applicationId\n      channelType\n      createdBy\n      createdOn\n      data\n      deliveryStatus\n      id\n      result\n      status\n      updatedBy\n      updatedOn\n    }\n    total,\n    offset,\n    limit,\n    applicationName\n }\n}","variables":{}}'
+--data-raw '{"query":"query {\n  notifications(options: {\n    limit: 1,\n    offset: 0,\n    sortBy: \"createdOn\",\n    sortOrder: DESC,\n    search: \"sender@email.com\",\n    filters: [\n      { field: \"channelType\", operator: \"eq\", value: \"1\" },\n    ]\n  }) {\n    notifications {\n      applicationName\n      applicationId\n      channelType\n      createdBy\n      createdOn\n      data\n      deliveryStatus\n      id\n      result\n      status\n      updatedBy\n      updatedOn\n    }\n    total,\n    offset,\n    limit,\n }\n}","variables":{}}'
 ```
 
 **Sample response**
