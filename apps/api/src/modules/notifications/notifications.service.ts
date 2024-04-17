@@ -252,12 +252,16 @@ export class NotificationsService {
 
     const [notifications, total] = await queryBuilder.getManyAndCount();
 
+    // Assign related applicationName to each object
+    notifications.forEach((notification) => {
+      notification.applicationName = displayApplicationName;
+    });
+
     return {
       notifications,
       total,
       offset: options.offset,
       limit: options.limit,
-      applicationName: displayApplicationName,
     };
   }
 

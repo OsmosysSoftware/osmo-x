@@ -73,6 +73,9 @@ export class Notification {
   @Field()
   applicationId: number;
 
+  @Field()
+  applicationName?: string;
+
   constructor(notification: Partial<Notification>) {
     Object.assign(this, notification);
   }
