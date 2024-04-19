@@ -23,7 +23,10 @@ export abstract class CoreService<TEntity> {
   ): Promise<{ items: TEntity[]; total: number }> {
     this.logger.log(`Getting all ${alias} with options`);
 
-    const queryBuilder = this.repository.createQueryBuilder(alias);
+    // Left Join and select is used to fetch and diaplay related applicationDetails in response
+    const queryBuilder = this.repository
+      .createQueryBuilder(alias)
+      .leftJoinAndSelect(`${alias}.applicationDetails`, 'notify_applications');
 
     // Apply base conditions
     baseConditions.forEach((condition) => {
