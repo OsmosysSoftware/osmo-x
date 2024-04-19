@@ -23,10 +23,12 @@ export abstract class CoreService<TEntity> {
   ): Promise<{ items: TEntity[]; total: number }> {
     this.logger.log(`Getting all ${alias} with options`);
 
-    // Left Join and select is used to fetch and diaplay related applicationDetails in response
-    const queryBuilder = this.repository
-      .createQueryBuilder(alias)
-      .leftJoinAndSelect(`${alias}.applicationDetails`, 'notify_applications');
+    const queryBuilder = this.repository.createQueryBuilder(alias);
+
+    // Perform a Left Join to fetch and display related applicationDetails only for 'notification' findAll
+    if (alias === 'notification') {
+      queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
+    }
 
     // Apply base conditions
     baseConditions.forEach((condition) => {
