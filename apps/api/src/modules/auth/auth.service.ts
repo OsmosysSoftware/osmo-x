@@ -13,15 +13,16 @@ export class AuthService {
 
   async validateUser(username: string, password: string): Promise<string> {
     const entry = await this.usersService.findByUsername(username);
-    const adminUsername = entry.username;
+
+    if (!entry || !entry.username) {
+      throw new Error('User does not exist');
+    }
+
     const adminPassword = entry.password;
+    const match = comparePasswords(password, adminPassword);
 
-    if (username === adminUsername) {
-      const match = comparePasswords(password, adminPassword);
-
-      if (match) {
-        return username;
-      }
+    if (match) {
+      return username;
     }
 
     return null;
