@@ -156,6 +156,15 @@ query {
     }
   ) {
     notifications {
+      applicationDetails {
+        applicationId
+        name
+        userId
+        status
+        createdOn
+        updatedOn
+      }
+      applicationId
       channelType
       createdBy
       createdOn
@@ -167,6 +176,9 @@ query {
       updatedBy
       updatedOn
     }
+    total,
+    offset,
+    limit
   }
 }
 ```
@@ -177,7 +189,7 @@ query {
 curl --location 'http://localhost:3000/graphql' \
 --header 'Authorization: Bearer mysecuretoken' \
 --header 'Content-Type: application/json' \
---data-raw '{"query":"query {\n  notifications(options: {\n    limit: 1,\n    offset: 0,\n    sortBy: \"createdOn\",\n    sortOrder: DESC,\n    search: \"sender@email.com\",\n    filters: [\n      { field: \"channelType\", operator: \"eq\", value: \"1\" },\n    ]\n  }) {\n    notifications {\n      channelType\n      createdBy\n      createdOn\n      data\n      deliveryStatus\n      id\n      result\n      status\n      updatedBy\n      updatedOn\n    }\n  }\n}","variables":{}}'
+--data-raw '{"query":"query {\n  notifications(\n    options: {\n      limit: 1\n      offset: 0\n      sortBy: \"createdOn\"\n      sortOrder: DESC\n      search: \"sender@email.com\"\n      filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\n    }\n  ) {\n    notifications {\n      applicationDetails {\n        applicationId\n        name\n        userId\n        status\n        createdOn\n        updatedOn\n      }\n      applicationId\n      channelType\n      createdBy\n      createdOn\n      data\n      deliveryStatus\n      id\n      result\n      status\n      updatedBy\n      updatedOn\n    }\n    total,\n    offset,\n    limit\n }\n}","variables":{}}'
 ```
 
 **Sample response**
@@ -188,8 +200,17 @@ curl --location 'http://localhost:3000/graphql' \
     "notifications": {
       "notifications": [
         {
+          "applicationDetails": {
+              "applicationId": 1002,
+              "name": "sampleOsmoXApp",
+              "userId": 2,
+              "status": 1,
+              "createdOn": "2024-04-12T06:06:10.000Z",
+              "updatedOn": "2024-04-12T06:06:10.000Z"
+          },
+          "applicationId": 1002,
           "channelType": 1,
-          "createdBy": "OsmoX",
+          "createdBy": "sampleOsmoXApp",
           "createdOn": "2024-02-12T07:26:25.000Z",
           "data": {
             "from": "sender@email.com",
@@ -217,10 +238,13 @@ curl --location 'http://localhost:3000/graphql' \
             }
           },
           "status": 1,
-          "updatedBy": "OsmoX",
+          "updatedBy": "sampleOsmoXApp",
           "updatedOn": "2024-02-12T07:57:43.000Z"
         }
-      ]
+      ],
+      "total": 5,
+      "offset": 0,
+      "limit": 1
     }
   }
 }

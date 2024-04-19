@@ -4,12 +4,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { IsEnum, IsOptional, IsObject } from 'class-validator';
 import { Status } from 'src/common/constants/database';
 import { ChannelType, DeliveryStatus } from 'src/common/constants/notifications';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
+import { Application } from 'src/modules/applications/entities/application.entity';
 
 @Entity({ name: 'notify_notifications' })
 @ObjectType()
@@ -72,6 +75,11 @@ export class Notification {
   @Column({ name: 'application_id', default: null })
   @Field()
   applicationId: number;
+
+  @ManyToOne(() => Application, (application) => application.notifications)
+  @JoinColumn({ name: 'application_id' })
+  @Field(() => Application)
+  applicationDetails: Application;
 
   constructor(notification: Partial<Notification>) {
     Object.assign(this, notification);

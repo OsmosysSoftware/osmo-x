@@ -4,10 +4,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { IsEnum } from 'class-validator';
 import { Status } from 'src/common/constants/database';
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Notification } from 'src/modules/notifications/entities/notification.entity';
 
 @Entity({ name: 'notify_applications' })
 @ObjectType()
@@ -41,6 +43,9 @@ export class Application {
   @IsEnum(Status)
   @Field()
   status: number;
+
+  @OneToMany(() => Notification, (notification) => notification.applicationDetails)
+  notifications: Notification[];
 
   constructor(application: Partial<Application>) {
     Object.assign(this, application);
