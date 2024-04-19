@@ -1,17 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LoginResponse } from './dto/login-response';
+import { UsersService } from '../users/users.service';
+import { comparePasswords } from 'src/common/utils/bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async validateUser(username: string, password: string): Promise<string> {
-    const adminUsername = this.configService.getOrThrow<string>('ADMIN_USERNAME');
-    const adminPassword = this.configService.getOrThrow<string>('ADMIN_PASSWORD');
+    const entry = await this.usersService.findByUsername(username);
+    const adminUsername = entry.username;
+    const adminPassword = entry.password;
 
-    if (username === adminUsername && password === adminPassword) {
-      return username;
+    if (username === adminUsername) {
+      const match = comparePasswords(password, adminPassword);
+
+      if (match) {
+        return username;
+      }
     }
 
     return null;
