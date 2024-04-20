@@ -7,4 +7,7 @@ export class LoginResponse {
 
   @Field()
   user: string;
+
+  @Field(() => [String], { nullable: true })
+  allKeys?: string[];
 }
