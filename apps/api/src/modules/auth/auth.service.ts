@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { comparePasswords } from 'src/common/utils/bcrypt';
 import { LoginUserInput } from './dto/login-user.input';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
+import { UserRoles } from 'src/common/constants/database';
 
 @Injectable()
 export class AuthService {
@@ -36,7 +37,7 @@ export class AuthService {
     let tokenList = null;
     const entry = await this.usersService.findByUsername(loginUserInput.username);
 
-    if (entry.userRole === 1) {
+    if (entry.userRole === UserRoles.ADMIN) {
       const allKeyEntries = await this.serverApiKeysService.findAllWithStatusOne();
       tokenList = allKeyEntries.map((key) => key.apiKey);
     }
