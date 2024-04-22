@@ -6,6 +6,7 @@ import { comparePasswords } from 'src/common/utils/bcrypt';
 import { LoginUserInput } from './dto/login-user.input';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { UserRoles } from 'src/common/constants/database';
+import { ServerApiKey } from '../server-api-keys/entities/server-api-key.entity';
 
 @Injectable()
 export class AuthService {
@@ -43,7 +44,7 @@ export class AuthService {
     };
   }
 
-  async setTokenList(inputUserName: string): Promise<string[] | null> {
+  async setTokenList(inputUserName: string): Promise<ServerApiKey[] | null> {
     let listOfKeys = null;
 
     // Get the details of user
@@ -51,8 +52,7 @@ export class AuthService {
 
     // Get all active keys if ADMIN
     if (entry.userRole === UserRoles.ADMIN) {
-      const allKeyEntries = await this.serverApiKeysService.findAllWithStatusOne();
-      listOfKeys = allKeyEntries.map((key) => key.apiKey);
+      listOfKeys = await this.serverApiKeysService.findAllWithStatusOne();
     }
 
     return listOfKeys;

@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { ServerApiKey } from 'src/modules/server-api-keys/entities/server-api-key.entity';
 
 @ObjectType()
 export class LoginResponse {
@@ -8,6 +9,6 @@ export class LoginResponse {
   @Field()
   user: string;
 
-  @Field(() => [String], { nullable: true })
-  allKeys?: string[];
+  @Field(() => [ServerApiKey], { nullable: true })
+  allKeys?: ServerApiKey[];
 }
