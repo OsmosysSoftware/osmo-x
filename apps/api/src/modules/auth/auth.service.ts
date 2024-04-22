@@ -34,19 +34,27 @@ export class AuthService {
 
   async login(loginUserInput: LoginUserInput): Promise<LoginResponse> {
     const token = this.configService.getOrThrow<string>('SERVER_API_KEY');
-    let tokenList = null;
-    const entry = await this.usersService.findByUsername(loginUserInput.username);
-
-    // Get all active keys if ADMIN has logged in
-    if (entry.userRole === UserRoles.ADMIN) {
-      const allKeyEntries = await this.serverApiKeysService.findAllWithStatusOne();
-      tokenList = allKeyEntries.map((key) => key.apiKey);
-    }
+    const tokenList = await this.setTokenList(loginUserInput.username);
 
     return {
       token,
       user: loginUserInput.username,
       allKeys: tokenList,
     };
+  }
+
+  async setTokenList(inputUserName: string): Promise<string[] | null> {
+    let listOfKeys = null;
+
+    // Get the details of user
+    const entry = await this.usersService.findByUsername(inputUserName);
+
+    // Get all active keys if ADMIN
+    if (entry.userRole === UserRoles.ADMIN) {
+      const allKeyEntries = await this.serverApiKeysService.findAllWithStatusOne();
+      listOfKeys = allKeyEntries.map((key) => key.apiKey);
+    }
+
+    return listOfKeys;
   }
 }
