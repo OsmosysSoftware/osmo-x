@@ -13,4 +13,8 @@ export class ApplicationsService {
   async findById(applicationId: number): Promise<Application | undefined> {
     return this.applicationsRepository.findOne({ where: { applicationId } });
   }
+
+  async findByUserId(userId: number): Promise<Application | undefined> {
+    return this.applicationsRepository.findOne({ where: { userId } });
+  }
 }

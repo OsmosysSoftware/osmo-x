@@ -15,6 +15,10 @@ export class ServerApiKeysService {
     return this.serverApiKeyRepository.findOne({ where: { apiKey } });
   }
 
+  async findByRelatedApplicationId(applicationId: number): Promise<ServerApiKey | undefined> {
+    return this.serverApiKeyRepository.findOne({ where: { applicationId } });
+  }
+
   async findAllWithStatusOne(): Promise<ServerApiKey[]> {
     return this.serverApiKeyRepository.find({ where: { status: Status.ACTIVE } });
   }

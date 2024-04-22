@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { LoginResponse } from './dto/login-response';
 import { UsersService } from '../users/users.service';
 import { comparePasswords } from 'src/common/utils/bcrypt';
@@ -7,12 +6,13 @@ import { LoginUserInput } from './dto/login-user.input';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { UserRoles } from 'src/common/constants/database';
 import { ServerApiKey } from '../server-api-keys/entities/server-api-key.entity';
+import { ApplicationsService } from '../applications/applications.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private configService: ConfigService,
     private readonly usersService: UsersService,
+    private readonly applicationsService: ApplicationsService,
     private readonly serverApiKeysService: ServerApiKeysService,
   ) {}
 
@@ -34,14 +34,28 @@ export class AuthService {
   }
 
   async login(loginUserInput: LoginUserInput): Promise<LoginResponse> {
-    const token = this.configService.getOrThrow<string>('SERVER_API_KEY');
-    const tokenList = await this.setTokenList(loginUserInput.username);
+    try {
+      const token = await this.getUserToken(loginUserInput.username);
+      const tokenList = await this.setTokenList(loginUserInput.username);
 
-    return {
-      token,
-      user: loginUserInput.username,
-      allKeys: tokenList,
-    };
+      return {
+        token,
+        user: loginUserInput.username,
+        allKeys: tokenList,
+      };
+    } catch (error) {
+      throw new error(`Error while logging in:\n${error}`);
+    }
+  }
+
+  async getUserToken(inputUserName: string): Promise<string> {
+    // Get the api key related to the user
+    const userEntry = await this.usersService.findByUsername(inputUserName);
+    const applicationEntry = await this.applicationsService.findByUserId(userEntry.userId);
+    const serverApiKeyEntry = await this.serverApiKeysService.findByRelatedApplicationId(
+      applicationEntry.applicationId,
+    );
+    return serverApiKeyEntry.apiKey;
   }
 
   async setTokenList(inputUserName: string): Promise<ServerApiKey[] | null> {
