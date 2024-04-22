@@ -37,6 +37,7 @@ export class AuthService {
     let tokenList = null;
     const entry = await this.usersService.findByUsername(loginUserInput.username);
 
+    // Get all active keys if ADMIN has logged in
     if (entry.userRole === UserRoles.ADMIN) {
       const allKeyEntries = await this.serverApiKeysService.findAllWithStatusOne();
       tokenList = allKeyEntries.map((key) => key.apiKey);
