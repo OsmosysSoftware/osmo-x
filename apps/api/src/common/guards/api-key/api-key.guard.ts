@@ -13,29 +13,32 @@ export class ApiKeyGuard implements CanActivate {
 
   async validateRequest(execContext: ExecutionContext): Promise<boolean> {
     const request = execContext.switchToHttp().getRequest();
-    let apiKeyToken = null;
 
     // Get auth header incase of http request
     if (request && request.headers) {
       const authHeader = request.headers['authorization'];
+      const validationResult = await this.validateAuthHeader(authHeader);
 
-      if (authHeader.startsWith('Bearer ')) {
-        apiKeyToken = authHeader.substring(7);
-      } else {
-        throw new Error('Invalid bearer token format');
-      }
-
-      const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
-
-      if (apiKeyToken && apiKeyToken === apiKeyEntry.apiKey) {
+      if (validationResult) {
         return true;
       }
     }
 
-    // Get quth header incase of graphql request
+    // Get auth header incase of graphql request
     const ctx = GqlExecutionContext.create(execContext);
     const req = ctx.getContext().req;
     const authHeader = req.headers.authorization;
+    const validationResult = await this.validateAuthHeader(authHeader);
+
+    if (validationResult) {
+      return true;
+    }
+
+    throw new UnauthorizedException('Invalid API key');
+  }
+
+  async validateAuthHeader(authHeader: string): Promise<boolean> {
+    let apiKeyToken = null;
 
     if (authHeader.startsWith('Bearer ')) {
       apiKeyToken = authHeader.substring(7);
@@ -45,10 +48,14 @@ export class ApiKeyGuard implements CanActivate {
 
     const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
 
+    if (!apiKeyEntry) {
+      throw new Error('Invalid token');
+    }
+
     if (apiKeyToken && apiKeyToken === apiKeyEntry.apiKey) {
       return true;
     }
 
-    throw new UnauthorizedException('Invalid API key');
+    return false;
   }
 }
