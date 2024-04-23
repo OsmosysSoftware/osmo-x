@@ -63,7 +63,6 @@ export class ApplicationsService {
 
       return false;
     } catch (error) {
-      // this.logger.log('Error validating ADMIN user:', error.message);
       throw error;
     }
   }
