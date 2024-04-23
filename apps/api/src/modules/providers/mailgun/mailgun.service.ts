@@ -1,25 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import * as FormData from 'form-data';
 import Mailgun, { MailgunClientOptions, MailgunMessageData, MessagesSendResult } from 'mailgun.js';
 import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import { CreateNotificationAttachmentDto } from 'src/modules/notifications/dtos/create-notification-attachment.dto';
+import { ProvidersService } from '../providers.service';
+import { ChannelType } from 'src/common/constants/notifications';
 
 @Injectable()
 export class MailgunService {
-  private configService: ConfigService = new ConfigService();
   private mailgun: Mailgun = new Mailgun(FormData);
   private mailgunClient;
   private mailgunDomain: string;
 
-  constructor() {
+  constructor(private readonly providersService: ProvidersService) {}
+
+  async onModuleInit(): Promise<void> {
+    await this.assignClient();
+  }
+
+  async assignClient(): Promise<void> {
+    const mailgunConfig = await this.providersService.getConfigById(ChannelType.MAILGUN);
     this.mailgunClient = this.mailgun.client({
       username: 'api',
-      key: this.configService.getOrThrow<string>('MAILGUN_API_KEY'),
-      host: this.configService.getOrThrow<string>('MAILGUN_HOST'),
+      key: mailgunConfig.MAILGUN_API_KEY as string,
+      host: mailgunConfig.MAILGUN_HOST as string,
     } as MailgunClientOptions);
-    this.mailgunDomain = this.configService.getOrThrow<string>('MAILGUN_DOMAIN');
+    this.mailgunDomain = mailgunConfig.MAILGUN_DOMAIN as string;
   }
 
   sendEmail(mailgunNotificationData: MailgunMessageData): Promise<MessagesSendResult> {

@@ -14,7 +14,7 @@ export class ProvidersService {
     const configEntity = await this.providerRepository.findOne({ where: { providerId } });
 
     if (configEntity) {
-      return JSON.parse(configEntity.configuration);
+      return configEntity.configuration as unknown as Record<string, unknown>;
     }
 
     return null;
