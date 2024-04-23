@@ -1,6 +1,5 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ProvidersService } from '../providers.service';
 import { ChannelType } from 'src/common/constants/notifications';
 
@@ -51,7 +50,6 @@ export class Wa360dialogService {
 
   constructor(
     private httpService: HttpService,
-    private configService: ConfigService,
     private readonly providersService: ProvidersService,
   ) {}
 
