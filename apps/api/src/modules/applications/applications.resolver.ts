@@ -12,7 +12,7 @@ import { ApplicationResponse } from './dto/application-response.dto';
 export class ApplicationsResolver {
   constructor(private readonly applicationsService: ApplicationsService) {}
 
-  @Mutation(() => Application, { name: 'applications' })
+  @Mutation(() => Application, { name: 'application' })
   async createApplication(
     @Context() context,
     @Args('createApplicationInput') createApplicationInput: CreateApplicationInput,
