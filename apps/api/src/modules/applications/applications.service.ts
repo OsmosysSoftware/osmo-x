@@ -6,15 +6,20 @@ import { CreateApplicationInput } from './dto/create-application.input';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { UsersService } from '../users/users.service';
 import { UserRoles } from 'src/common/constants/database';
+import { ApplicationResponse } from './dto/application-response.dto';
+import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
+import { CoreService } from 'src/common/graphql/services/core.service';
 
 @Injectable()
-export class ApplicationsService {
+export class ApplicationsService extends CoreService<Application> {
   constructor(
     @InjectRepository(Application)
     private readonly applicationsRepository: Repository<Application>,
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly usersService: UsersService,
-  ) {}
+  ) {
+    super(applicationsRepository);
+  }
 
   async findById(applicationId: number): Promise<Application | undefined> {
     return this.applicationsRepository.findOne({ where: { applicationId } });
@@ -65,5 +70,27 @@ export class ApplicationsService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getAllApplications(
+    options: QueryOptionsDto,
+    authorizationHeader: Request,
+  ): Promise<ApplicationResponse> {
+    const isAdmin = await this.checkAdminUser(authorizationHeader);
+
+    if (!isAdmin) {
+      throw new Error('Access Denied. Not an ADMIN.');
+    }
+
+    const baseConditions = [];
+    const searchableFields = ['name'];
+
+    const { items, total } = await super.findAll(
+      options,
+      'application',
+      searchableFields,
+      baseConditions,
+    );
+    return new ApplicationResponse(items, total, options.offset, options.limit);
   }
 }
