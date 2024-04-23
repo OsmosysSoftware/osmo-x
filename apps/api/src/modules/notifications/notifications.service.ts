@@ -2,16 +2,16 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import { DeliveryStatus, generateEnabledChannelEnum } from 'src/common/constants/notifications';
+import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
-import { ConfigService } from '@nestjs/config';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
+import { ProvidersService } from '../providers/providers.service';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -22,9 +22,9 @@ export class NotificationsService extends CoreService<Notification> {
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
     private readonly notificationQueueService: NotificationQueueProducer,
-    private readonly configService: ConfigService,
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
+    private readonly providersService: ProvidersService,
   ) {
     super(notificationRepository);
   }
@@ -35,7 +35,7 @@ export class NotificationsService extends CoreService<Notification> {
   ): Promise<Notification> {
     this.logger.log('Creating notification...');
     const notification = new Notification(notificationData);
-    const enabledChannels = generateEnabledChannelEnum(this.configService);
+    const enabledChannels = await this.providersService.generateEnabledChannelsEnum();
     const channelEnabled = Object.values(enabledChannels).includes(notification.channelType);
 
     if (!channelEnabled) {
@@ -116,7 +116,8 @@ export class NotificationsService extends CoreService<Notification> {
       return;
     }
 
-    const enabledChannels = generateEnabledChannelEnum(this.configService);
+    //
+    const enabledChannels = await this.providersService.generateEnabledChannelsEnum();
     const pendingNotifications = allPendingNotifications.filter((notification) =>
       Object.values(enabledChannels).includes(notification.channelType),
     );

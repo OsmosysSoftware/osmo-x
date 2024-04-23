@@ -32,6 +32,8 @@ import { ApplicationsModule } from '../applications/applications.module';
 import { ApplicationsService } from '../applications/applications.service';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
+import { ProvidersModule } from '../providers/providers.module';
+import { ProvidersService } from '../providers/providers.service';
 
 @Module({})
 export class NotificationsModule {
@@ -89,6 +91,7 @@ export class NotificationsModule {
         ServerApiKeysModule,
         ApplicationsModule,
         UsersModule,
+        ProvidersModule,
       ],
       providers: [
         NotificationQueueProducer,
@@ -102,8 +105,15 @@ export class NotificationsModule {
         ServerApiKeysService,
         ApplicationsService,
         UsersService,
+        ProvidersService,
       ],
-      exports: [NotificationsService, ServerApiKeysService, ApplicationsService, UsersService],
+      exports: [
+        NotificationsService,
+        ServerApiKeysService,
+        ApplicationsService,
+        UsersService,
+        ProvidersService,
+      ],
       controllers: [NotificationsController],
     };
   }
