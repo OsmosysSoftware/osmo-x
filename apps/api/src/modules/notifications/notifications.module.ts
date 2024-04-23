@@ -30,6 +30,8 @@ import { ServerApiKeysModule } from '../server-api-keys/server-api-keys.module';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsModule } from '../applications/applications.module';
 import { ApplicationsService } from '../applications/applications.service';
+import { UsersModule } from '../users/users.module';
+import { UsersService } from '../users/users.service';
 
 @Module({})
 export class NotificationsModule {
@@ -86,6 +88,7 @@ export class NotificationsModule {
         ...serviceProviderModules,
         ServerApiKeysModule,
         ApplicationsModule,
+        UsersModule,
       ],
       providers: [
         NotificationQueueProducer,
@@ -98,8 +101,9 @@ export class NotificationsModule {
         NotificationsResolver,
         ServerApiKeysService,
         ApplicationsService,
+        UsersService,
       ],
-      exports: [NotificationsService, ServerApiKeysService, ApplicationsService],
+      exports: [NotificationsService, ServerApiKeysService, ApplicationsService, UsersService],
       controllers: [NotificationsController],
     };
   }
