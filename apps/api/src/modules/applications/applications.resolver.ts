@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { ApplicationsService } from './applications.service';
 import { UseGuards } from '@nestjs/common';
 import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
@@ -12,8 +12,14 @@ export class ApplicationsResolver {
 
   @Mutation(() => Application, { name: 'applications' })
   async createApplication(
+    @Context() context,
     @Args('createApplicationInput') createApplicationInput: CreateApplicationInput,
   ): Promise<Application> {
-    return await this.applicationsService.createApplication(createApplicationInput);
+    const request: Request = context.req;
+    const authorizationHeader = request.headers['authorization'];
+    return await this.applicationsService.createApplication(
+      createApplicationInput,
+      authorizationHeader,
+    );
   }
 }
