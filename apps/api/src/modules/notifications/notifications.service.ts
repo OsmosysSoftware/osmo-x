@@ -116,7 +116,6 @@ export class NotificationsService extends CoreService<Notification> {
       return;
     }
 
-    //
     const enabledChannels = await this.providersService.generateEnabledChannelsEnum();
     const pendingNotifications = allPendingNotifications.filter((notification) =>
       Object.values(enabledChannels).includes(notification.channelType),
