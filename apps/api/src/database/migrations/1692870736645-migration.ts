@@ -101,6 +101,10 @@ export class Migration1692870736645 implements MigrationInterface {
             type: 'varchar',
           },
           {
+            name: 'channel_type',
+            type: 'tinyint',
+          },
+          {
             name: 'configuration',
             type: 'text',
           },
@@ -181,7 +185,7 @@ export class Migration1692870736645 implements MigrationInterface {
         name: 'notify_master_providers',
         columns: [
           {
-            name: 'provider_id',
+            name: 'master_id',
             type: 'int',
             isPrimary: true,
             isUnique: true,
@@ -220,11 +224,23 @@ export class Migration1692870736645 implements MigrationInterface {
       }),
     );
 
-    // Add a column in notify_notifications
+    // Add application_id column in notify_notifications
     await queryRunner.addColumn(
       'notify_notifications',
       new TableColumn({
         name: 'application_id',
+        type: 'int',
+        // Kept as null for now
+        isNullable: true,
+        default: null,
+      }),
+    );
+
+    // Add provider_id column in notify_notifications
+    await queryRunner.addColumn(
+      'notify_notifications',
+      new TableColumn({
+        name: 'provider_id',
         type: 'int',
         // Kept as null for now
         isNullable: true,

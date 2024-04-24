@@ -39,6 +39,12 @@ export class ApplicationsService extends CoreService<Application> {
       throw new Error('Access Denied. Not an ADMIN.');
     }
 
+    const userExists = await this.usersService.findByUserId(applicationInput.userId);
+
+    if (!userExists) {
+      throw new Error('This user does not exist.');
+    }
+
     const application = this.applicationsRepository.create(applicationInput);
     return this.applicationsRepository.save(application);
   }

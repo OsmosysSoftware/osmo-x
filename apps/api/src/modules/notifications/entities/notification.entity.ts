@@ -21,6 +21,10 @@ export class Notification {
   @Field()
   id: number;
 
+  @Column({ name: 'provider_id', default: null })
+  @Field()
+  providerId: number;
+
   @Column({ name: 'channel_type', type: 'tinyint', width: 1 })
   @IsEnum(ChannelType)
   @Field()
