@@ -24,14 +24,14 @@ export class ProvidersService {
   async generateEnabledChannelsEnum(): Promise<Record<string, number>> {
     const enabledChannels: Record<string, number> = {};
 
-    // Get the config for all the providers from DB. Add cases as per requirement
+    // Get the config for all the providers. Add as per requirement
     const smtpConfig = await this.getConfigById(ChannelType.SMTP);
     const mailgunConfig = await this.getConfigById(ChannelType.MAILGUN);
     const wa360Config = await this.getConfigById(ChannelType.WA_360_DAILOG);
     const waTwilioConfig = await this.getConfigById(ChannelType.WA_TWILIO);
     const smsTwilioConfig = await this.getConfigById(ChannelType.SMS_TWILIO);
 
-    // Set the enabled channels from config which are assigned true in DB. Add cases as per requirement
+    // Set the enabled channels as per config in DB. Add cases as per requirement
     if ((smtpConfig.ENABLE_SMTP as boolean) === true) {
       enabledChannels['SMTP'] = ChannelType.SMTP;
     }

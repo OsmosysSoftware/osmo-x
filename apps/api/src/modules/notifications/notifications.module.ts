@@ -1,5 +1,5 @@
 import { Module, Logger, DynamicModule } from '@nestjs/common';
-import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { Notification } from './entities/notification.entity';
 import { NotificationsService } from './notifications.service';
@@ -34,74 +34,41 @@ import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { ProvidersModule } from '../providers/providers.module';
 import { ProvidersService } from '../providers/providers.service';
-import { Repository } from 'typeorm';
-import { Provider } from '../providers/entities/provider.entity';
-import { ChannelType } from 'src/common/constants/notifications';
 
 @Module({})
 export class NotificationsModule {
-  private static providerRepository: Repository<Provider>;
-  constructor(
-    @InjectRepository(Provider)
-    _providerRepository: Repository<Provider>,
-  ) {
-    NotificationsModule.providerRepository = _providerRepository;
-  }
-
-  async onModuleInit(): Promise<void> {
-    await NotificationsModule.register();
-  }
-
-  static async getConfigById(providerId: number): Promise<Record<string, unknown> | null> {
-    const configEntity = await NotificationsModule.providerRepository.findOne({
-      where: { providerId },
-    });
-
-    if (configEntity) {
-      return configEntity.configuration as unknown as Record<string, unknown>;
-    }
-
-    return null;
-  }
-
-  static async register(): Promise<DynamicModule> {
+  static register(): DynamicModule {
+    const configService = new ConfigService();
     const logger = new Logger(NotificationsModule.name);
     const modulesToLoad = [];
     const queuesToLoad = [];
     const consumersToLoad = [];
 
-    // Get the config for all the providers. Add as per requirement
-    const smtpConfig = await this.getConfigById(ChannelType.SMTP);
-    const mailgunConfig = await NotificationsModule.getConfigById(ChannelType.MAILGUN);
-    const wa360Config = await NotificationsModule.getConfigById(ChannelType.WA_360_DAILOG);
-    const waTwilioConfig = await NotificationsModule.getConfigById(ChannelType.WA_TWILIO);
-    const smsTwilioConfig = await NotificationsModule.getConfigById(ChannelType.SMS_TWILIO);
-
-    if ((smtpConfig.ENABLE_SMTP as boolean) === true) {
+    if (configService.get<string>('ENABLE_SMTP') === 'true') {
       modulesToLoad.push(SmtpModule);
       queuesToLoad.push(smtpQueueConfig);
       consumersToLoad.push(SmtpNotificationConsumer);
     }
 
-    if ((mailgunConfig.ENABLE_MAILGUN as boolean) === true) {
+    if (configService.get<string>('ENABLE_MAILGUN') === 'true') {
       modulesToLoad.push(MailgunModule);
       queuesToLoad.push(mailgunQueueConfig);
       consumersToLoad.push(MailgunNotificationConsumer);
     }
 
-    if ((wa360Config.ENABLE_WA360DIALOG as boolean) === true) {
+    if (configService.get<string>('ENABLE_WA360DIALOG') === 'true') {
       modulesToLoad.push(Wa360dialogModule);
       queuesToLoad.push(wa360DialogQueueConfig);
       consumersToLoad.push(Wa360dialogNotificationsConsumer);
     }
 
-    if ((waTwilioConfig.ENABLE_WA_TWILIO as boolean) === true) {
+    if (configService.get<string>('ENABLE_WA_TWILIO') === 'true') {
       modulesToLoad.push(WaTwilioModule);
       queuesToLoad.push(waTwilioQueueConfig);
       consumersToLoad.push(WaTwilioNotificationsConsumer);
     }
 
-    if ((smsTwilioConfig.ENABLE_SMS_TWILIO as boolean) === true) {
+    if (configService.get<string>('ENABLE_SMS_TWILIO') === 'true') {
       modulesToLoad.push(SmsTwilioModule);
       queuesToLoad.push(smsTwilioQueueConfig);
       consumersToLoad.push(SmsTwilioNotificationsConsumer);
