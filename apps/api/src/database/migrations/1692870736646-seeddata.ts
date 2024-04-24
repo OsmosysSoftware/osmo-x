@@ -4,11 +4,11 @@ export class SeedData1692870736646 implements MigrationInterface {
   name = 'SeedData1692870736646';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Insert sample data into a table
-    await queryRunner.query(
-      `INSERT INTO osmox.notify_users (username,password,role) VALUES (?, ?, ?)`,
-      ['Admin', '$2b$10$iUUsgPtfqu./C2fnnb80EOlNxc3q73woJd2.Ns0D66xHh0iX4E1vq', 1],
-    );
+    await queryRunner.query(`INSERT INTO notify_users (username,password,role) VALUES (?, ?, ?)`, [
+      'Admin',
+      '$2b$10$iUUsgPtfqu./C2fnnb80EOlNxc3q73woJd2.Ns0D66xHh0iX4E1vq',
+      1,
+    ]);
 
     await queryRunner.query(
       `INSERT INTO notify_applications (application_id,name,user_id) VALUES (?, ?, ?)`,
