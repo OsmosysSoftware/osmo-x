@@ -186,7 +186,7 @@ export class Migration1692870736645 implements MigrationInterface {
         columns: [
           {
             name: 'master_id',
-            type: 'int',
+            type: 'tinyint',
             isPrimary: true,
             isUnique: true,
             isGenerated: true,
@@ -258,16 +258,39 @@ export class Migration1692870736645 implements MigrationInterface {
         onDelete: 'CASCADE',
       }),
     );
+
+    // Create Foreign keys for notify_notifications
+    await queryRunner.createForeignKey(
+      'notify_notifications',
+      new TableForeignKey({
+        columnNames: ['provider_id'],
+        referencedColumnNames: ['provider_id'],
+        referencedTableName: 'notify_providers',
+        onDelete: 'CASCADE',
+      }),
+    );
+
+    await queryRunner.createForeignKey(
+      'notify_notifications',
+      new TableForeignKey({
+        columnNames: ['channel_type'],
+        referencedColumnNames: ['master_id'],
+        referencedTableName: 'notify_master_providers',
+        onDelete: 'CASCADE',
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropForeignKey('notify_notifications', 'channel_type');
+    await queryRunner.dropForeignKey('notify_notifications', 'provider_id');
     await queryRunner.dropForeignKey('notify_server_api_keys', 'application_id');
     await queryRunner.dropColumn('notify_notifications', 'provider_id');
     await queryRunner.dropColumn('notify_notifications', 'application_id');
     await queryRunner.query(`DROP TABLE \`notify_server_api_keys\``);
     await queryRunner.query(`DROP TABLE \`notify_applications\``);
     await queryRunner.query(`DROP TABLE \`notify_providers\``);
-    await queryRunner.query(`DROP TABLE \`notify_users\``);
     await queryRunner.query(`DROP TABLE \`notify_master_providers\``);
+    await queryRunner.query(`DROP TABLE \`notify_users\``);
   }
 }
