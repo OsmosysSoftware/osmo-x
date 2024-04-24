@@ -34,7 +34,13 @@ export class NotificationsService extends CoreService<Notification> {
     authHeader: Request,
   ): Promise<Notification> {
     this.logger.log('Creating notification...');
+
+    // TODO: Write better code logic, update notification entity
+    // Get channel type from providerId & Set the channelType based on providerEntry
+    const providerEntry = await this.providersService.getById(notificationData.providerId);
     const notification = new Notification(notificationData);
+    notification.channelType = providerEntry.channelType;
+
     const enabledChannels = await this.providersService.generateEnabledChannelsEnum();
     const channelEnabled = Object.values(enabledChannels).includes(notification.channelType);
 
@@ -42,8 +48,14 @@ export class NotificationsService extends CoreService<Notification> {
       throw new BadRequestException(`Channel ${notification.channelType} is not enabled`);
     }
 
-    // Set correct ApplicationId
-    notification.applicationId = await this.getApplicationIdFromApiKey(authHeader);
+    // Set correct ApplicationId after verifying
+    const inputApplicationId = await this.getApplicationIdFromApiKey(authHeader);
+
+    if (inputApplicationId != providerEntry.applicationId) {
+      throw new Error('ApplicationId for Server Key and Provider do not match.');
+    }
+
+    notification.applicationId = providerEntry.applicationId;
 
     // Set correct application name using applicationId
     notification.createdBy = await this.getApplicationNameFromId(notification.applicationId);

@@ -11,6 +11,10 @@ export class ProvidersService {
     private readonly providerRepository: Repository<Provider>,
   ) {}
 
+  async getById(providerId: number): Promise<Provider | undefined> {
+    return this.providerRepository.findOne({ where: { providerId } });
+  }
+
   async getConfigById(providerId: number): Promise<Record<string, unknown> | null> {
     const configEntity = await this.providerRepository.findOne({ where: { providerId } });
 
