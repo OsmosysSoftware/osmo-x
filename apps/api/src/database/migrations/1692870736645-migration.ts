@@ -262,9 +262,10 @@ export class Migration1692870736645 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropForeignKey('notify_server_api_keys', 'application_id');
+    await queryRunner.dropColumn('notify_notifications', 'provider_id');
     await queryRunner.dropColumn('notify_notifications', 'application_id');
-    await queryRunner.query(`DROP TABLE \`notify_applications\``);
     await queryRunner.query(`DROP TABLE \`notify_server_api_keys\``);
+    await queryRunner.query(`DROP TABLE \`notify_applications\``);
     await queryRunner.query(`DROP TABLE \`notify_providers\``);
     await queryRunner.query(`DROP TABLE \`notify_users\``);
     await queryRunner.query(`DROP TABLE \`notify_master_providers\``);
