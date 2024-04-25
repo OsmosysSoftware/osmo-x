@@ -10,14 +10,14 @@ export class SeedData1692870736646 implements MigrationInterface {
       1,
     ]);
 
-    await queryRunner.query(
-      `INSERT INTO notify_applications (application_id,name,user_id) VALUES (?, ?, ?)`,
-      [1001, 'sampleOsmoXApp', 1],
-    );
+    await queryRunner.query(`INSERT INTO notify_applications (name,user_id) VALUES (?, ?)`, [
+      'sampleOsmoXApp',
+      1,
+    ]);
 
     await queryRunner.query(
       `INSERT INTO notify_server_api_keys (api_key,application_id) VALUES (?, ?)`,
-      ['OsmoX-test-key', 1001],
+      ['OsmoX-test-key', 1],
     );
 
     // notify_master_providers data
