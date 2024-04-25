@@ -2,16 +2,16 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import { DeliveryStatus, generateEnabledChannelEnum } from 'src/common/constants/notifications';
+import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
-import { Status } from 'src/common/constants/database';
+import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
-import { ConfigService } from '@nestjs/config';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
+import { ProvidersService } from '../providers/providers.service';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -22,9 +22,9 @@ export class NotificationsService extends CoreService<Notification> {
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
     private readonly notificationQueueService: NotificationQueueProducer,
-    private readonly configService: ConfigService,
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
+    private readonly providersService: ProvidersService,
   ) {
     super(notificationRepository);
   }
@@ -34,16 +34,36 @@ export class NotificationsService extends CoreService<Notification> {
     authHeader: Request,
   ): Promise<Notification> {
     this.logger.log('Creating notification...');
-    const notification = new Notification(notificationData);
-    const enabledChannels = generateEnabledChannelEnum(this.configService);
-    const channelEnabled = Object.values(enabledChannels).includes(notification.channelType);
 
-    if (!channelEnabled) {
-      throw new BadRequestException(`Channel ${notification.channelType} is not enabled`);
+    // TODO: Write better code logic, update notification entity
+    // Get channel type from providerId & Set the channelType based on providerEntry
+    const providerEntry = await this.providersService.getById(notificationData.providerId);
+
+    if (!providerEntry) {
+      throw new BadRequestException(`Provider does not exist`);
     }
 
-    // Set correct ApplicationId
-    notification.applicationId = await this.getApplicationIdFromApiKey(authHeader);
+    //TODO: remove this check when validation in "is-data-valid.decorator.ts" is done using providerId
+    if (providerEntry.channelType != notificationData.channelType) {
+      throw new Error('The channelType provided in input does not match channelType for provider');
+    }
+
+    // Check if provider is enabled or not
+    if (providerEntry.isEnabled != IsEnabledStatus.TRUE) {
+      throw new BadRequestException(`Provider ${providerEntry.name} is not enabled`);
+    }
+
+    const notification = new Notification(notificationData);
+    notification.channelType = providerEntry.channelType;
+
+    // Set correct ApplicationId after verifying
+    const inputApplicationId = await this.getApplicationIdFromApiKey(authHeader);
+
+    if (inputApplicationId != providerEntry.applicationId) {
+      throw new Error('The applicationId for Server Key and Provider do not match.');
+    }
+
+    notification.applicationId = providerEntry.applicationId;
 
     // Set correct application name using applicationId
     notification.createdBy = await this.getApplicationNameFromId(notification.applicationId);
@@ -116,13 +136,9 @@ export class NotificationsService extends CoreService<Notification> {
       return;
     }
 
-    const enabledChannels = generateEnabledChannelEnum(this.configService);
-    const pendingNotifications = allPendingNotifications.filter((notification) =>
-      Object.values(enabledChannels).includes(notification.channelType),
-    );
-    this.logger.log(`Adding ${pendingNotifications.length} pending notifications to queue`);
+    this.logger.log(`Adding ${allPendingNotifications.length} pending notifications to queue`);
 
-    for (const notification of pendingNotifications) {
+    for (const notification of allPendingNotifications) {
       try {
         notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
         await this.notificationQueueService.addNotificationToQueue(notification);

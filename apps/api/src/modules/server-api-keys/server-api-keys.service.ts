@@ -12,11 +12,11 @@ export class ServerApiKeysService {
   ) {}
 
   async findByServerApiKey(apiKey: string): Promise<ServerApiKey | undefined> {
-    return this.serverApiKeyRepository.findOne({ where: { apiKey } });
+    return this.serverApiKeyRepository.findOne({ where: { apiKey, status: Status.ACTIVE } });
   }
 
   async findByRelatedApplicationId(applicationId: number): Promise<ServerApiKey | undefined> {
-    return this.serverApiKeyRepository.findOne({ where: { applicationId } });
+    return this.serverApiKeyRepository.findOne({ where: { applicationId, status: Status.ACTIVE } });
   }
 
   async findAllWithStatusOne(): Promise<ServerApiKey[]> {

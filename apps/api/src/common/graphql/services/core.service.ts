@@ -28,6 +28,7 @@ export abstract class CoreService<TEntity> {
     // Perform a Left Join to fetch and display related applicationDetails only for 'notification' findAll
     if (alias === 'notification') {
       queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
+      queryBuilder.leftJoinAndSelect(`${alias}.providerDetails`, 'provider');
     }
 
     // Apply base conditions

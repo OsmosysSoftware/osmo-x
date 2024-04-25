@@ -27,7 +27,10 @@ export class Wa360dialogNotificationsConsumer extends NotificationConsumer {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;
       const notification = (await this.notificationsService.getNotificationById(id))[0];
-      return this.wa360dialogService.sendMessage(notification.data as unknown as Wa360DialogData);
+      return this.wa360dialogService.sendMessage(
+        notification.data as unknown as Wa360DialogData,
+        notification.providerId,
+      );
     });
   }
 }

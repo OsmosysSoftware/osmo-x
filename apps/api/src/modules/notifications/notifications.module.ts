@@ -32,45 +32,41 @@ import { ApplicationsModule } from '../applications/applications.module';
 import { ApplicationsService } from '../applications/applications.service';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
+import { ProvidersModule } from '../providers/providers.module';
+import { ProvidersService } from '../providers/providers.service';
 
 @Module({})
 export class NotificationsModule {
   static register(): DynamicModule {
-    const configService = new ConfigService();
     const logger = new Logger(NotificationsModule.name);
     const modulesToLoad = [];
     const queuesToLoad = [];
     const consumersToLoad = [];
 
-    if (configService.get<string>('ENABLE_SMTP') === 'true') {
-      modulesToLoad.push(SmtpModule);
-      queuesToLoad.push(smtpQueueConfig);
-      consumersToLoad.push(SmtpNotificationConsumer);
-    }
+    // Load SMTP
+    modulesToLoad.push(SmtpModule);
+    queuesToLoad.push(smtpQueueConfig);
+    consumersToLoad.push(SmtpNotificationConsumer);
 
-    if (configService.get<string>('ENABLE_MAILGUN') === 'true') {
-      modulesToLoad.push(MailgunModule);
-      queuesToLoad.push(mailgunQueueConfig);
-      consumersToLoad.push(MailgunNotificationConsumer);
-    }
+    // Load MAILGUN
+    modulesToLoad.push(MailgunModule);
+    queuesToLoad.push(mailgunQueueConfig);
+    consumersToLoad.push(MailgunNotificationConsumer);
 
-    if (configService.get<string>('ENABLE_WA360DIALOG') === 'true') {
-      modulesToLoad.push(Wa360dialogModule);
-      queuesToLoad.push(wa360DialogQueueConfig);
-      consumersToLoad.push(Wa360dialogNotificationsConsumer);
-    }
+    // Load WA360DIALOG
+    modulesToLoad.push(Wa360dialogModule);
+    queuesToLoad.push(wa360DialogQueueConfig);
+    consumersToLoad.push(Wa360dialogNotificationsConsumer);
 
-    if (configService.get<string>('ENABLE_WA_TWILIO') === 'true') {
-      modulesToLoad.push(WaTwilioModule);
-      queuesToLoad.push(waTwilioQueueConfig);
-      consumersToLoad.push(WaTwilioNotificationsConsumer);
-    }
+    // Load WA_TWILIO
+    modulesToLoad.push(WaTwilioModule);
+    queuesToLoad.push(waTwilioQueueConfig);
+    consumersToLoad.push(WaTwilioNotificationsConsumer);
 
-    if (configService.get<string>('ENABLE_SMS_TWILIO') === 'true') {
-      modulesToLoad.push(SmsTwilioModule);
-      queuesToLoad.push(smsTwilioQueueConfig);
-      consumersToLoad.push(SmsTwilioNotificationsConsumer);
-    }
+    // Load SMS_TWILIO
+    modulesToLoad.push(SmsTwilioModule);
+    queuesToLoad.push(smsTwilioQueueConfig);
+    consumersToLoad.push(SmsTwilioNotificationsConsumer);
 
     const serviceProviderModules: DynamicModule[] = modulesToLoad;
 
@@ -89,6 +85,7 @@ export class NotificationsModule {
         ServerApiKeysModule,
         ApplicationsModule,
         UsersModule,
+        ProvidersModule,
       ],
       providers: [
         NotificationQueueProducer,
@@ -102,8 +99,15 @@ export class NotificationsModule {
         ServerApiKeysService,
         ApplicationsService,
         UsersService,
+        ProvidersService,
       ],
-      exports: [NotificationsService, ServerApiKeysService, ApplicationsService, UsersService],
+      exports: [
+        NotificationsService,
+        ServerApiKeysService,
+        ApplicationsService,
+        UsersService,
+        ProvidersService,
+      ],
       controllers: [NotificationsController],
     };
   }

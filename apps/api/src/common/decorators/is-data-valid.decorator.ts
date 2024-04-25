@@ -19,7 +19,7 @@ import { SmsTwilioDataDto } from 'src/modules/notifications/dtos/providers/smsTw
 @ValidatorConstraint({ async: true })
 export class IsDataValidConstraint implements ValidatorConstraintInterface {
   async validate(value: object, args: ValidationArguments): Promise<boolean> {
-    const object = args.object as { channelType: number; data: object };
+    const object = args.object as { providerId: number; channelType: number; data: object };
     const { channelType } = object;
 
     const validateAndThrowError = async (validationData: object): Promise<void> => {

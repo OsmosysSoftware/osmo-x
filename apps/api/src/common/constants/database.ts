@@ -8,9 +8,14 @@ export const UserRoles = {
   ADMIN: 1,
 };
 
-export const ProviderTypes = {
+export const ProviderType = {
   OTHER: 0,
   EMAIL: 1,
   SMS: 2,
   WHATSAPP: 3,
+};
+
+export const IsEnabledStatus = {
+  FALSE: 0,
+  TRUE: 1,
 };

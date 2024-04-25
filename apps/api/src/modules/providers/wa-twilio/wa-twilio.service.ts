@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import * as Twilio from 'twilio';
+import { ProvidersService } from '../providers.service';
 
 export interface WaTwilioData {
   to: string;
@@ -34,14 +34,19 @@ export interface WaTwilioResponseData {
 export class WaTwilioService {
   private twilioClient;
 
-  constructor(private configService: ConfigService) {
-    const accountSid = this.configService.getOrThrow<string>('TWILIO_WA_ACCOUNT_SID');
-    const authToken = this.configService.getOrThrow<string>('TWILIO_WA_AUTH_TOKEN');
+  constructor(private readonly providersService: ProvidersService) {}
+
+  async assignTransport(providerId: number): Promise<void> {
+    const waTwilioConfig = await this.providersService.getConfigById(providerId);
+    const accountSid = waTwilioConfig.TWILIO_WA_ACCOUNT_SID as string;
+    const authToken = waTwilioConfig.TWILIO_WA_AUTH_TOKEN as string;
     this.twilioClient = Twilio(accountSid, authToken);
   }
 
-  async sendMessage(body: WaTwilioData): Promise<WaTwilioResponseData> {
-    const fromWhatsAppNumber = this.configService.getOrThrow<string>('TWILIO_WA_NUMBER');
+  async sendMessage(body: WaTwilioData, providerId: number): Promise<WaTwilioResponseData> {
+    await this.assignTransport(providerId);
+    const waTwilioConfig = await this.providersService.getConfigById(providerId);
+    const fromWhatsAppNumber = waTwilioConfig.TWILIO_WA_NUMBER as string;
 
     const message = await this.twilioClient.messages.create({
       body: body.message,
