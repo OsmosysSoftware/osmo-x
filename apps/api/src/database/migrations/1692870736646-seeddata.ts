@@ -44,7 +44,7 @@ export class SeedData1692870736646 implements MigrationInterface {
       [
         'WA_360_DAILOG',
         3,
-        '{"WA_360_DIALOG_URL":{"label":"MAILGUN API KEY","id":"MAILGUN_API_KEY","pattern":"^https://waba.360dialog.io/v1/messages$","type":"string"},"WA_360_DIALOG_API_KEY":{"label":"WA 360 DIALOG API KEY","id":"WA_360_DIALOG_API_KEY","pattern":"^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$","type":"string"}}',
+        '{"WA_360_DIALOG_URL":{"label":"WA 360 DIALOG URL","id":"WA_360_DIALOG_URL","pattern":"^https://waba.360dialog.io/v1/messages$","type":"string"},"WA_360_DIALOG_API_KEY":{"label":"WA 360 DIALOG API KEY","id":"WA_360_DIALOG_API_KEY","pattern":"^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$","type":"string"}}',
       ],
     );
 
