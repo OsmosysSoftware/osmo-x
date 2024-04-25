@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner, TableForeignKey } from 'typeorm';
 
 export class SeedData1692870736646 implements MigrationInterface {
   name = 'SeedData1692870736646';
@@ -65,9 +65,22 @@ export class SeedData1692870736646 implements MigrationInterface {
         '{"TWILIO_SMS_ACCOUNT_SID":{"label":"TWILIO SMS ACCOUNT SID","id":"TWILIO_SMS_ACCOUNT_SID","pattern":"^AC\\w{3,}$","type":"string"},"TWILIO_SMS_AUTH_TOKEN":{"label":"TWILIO SMS AUTH TOKEN","id":"TWILIO_SMS_AUTH_TOKEN","pattern":"^[a-zA-Z0-9-_]{16,512}$","type":"string"},"TWILIO_SMS_NUMBER":{"label":"TWILIO SMS NUMBER","id":"TWILIO_SMS_NUMBER","pattern":"^\\+[1-9]\\d{6,14}$","type":"string"}}',
       ],
     );
+
+    // Add foreign key for channel_type -> master_id
+    // Adding this after seeding data in master_providers so FK constraint does not fail
+    await queryRunner.createForeignKey(
+      'notify_notifications',
+      new TableForeignKey({
+        columnNames: ['channel_type'],
+        referencedColumnNames: ['master_id'],
+        referencedTableName: 'notify_master_providers',
+        onDelete: 'CASCADE',
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropForeignKey('notify_notifications', 'channel_type');
     await queryRunner.query(`
       DELETE FROM notify_master_providers
       WHERE id IN (1, 2, 3, 4, 5);

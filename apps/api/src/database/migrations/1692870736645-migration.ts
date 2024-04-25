@@ -274,20 +274,9 @@ export class Migration1692870736645 implements MigrationInterface {
         onDelete: 'CASCADE',
       }),
     );
-
-    await queryRunner.createForeignKey(
-      'notify_notifications',
-      new TableForeignKey({
-        columnNames: ['channel_type'],
-        referencedColumnNames: ['master_id'],
-        referencedTableName: 'notify_master_providers',
-        onDelete: 'CASCADE',
-      }),
-    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey('notify_notifications', 'channel_type');
     await queryRunner.dropForeignKey('notify_notifications', 'provider_id');
     await queryRunner.dropForeignKey('notify_server_api_keys', 'application_id');
     await queryRunner.dropColumn('notify_notifications', 'provider_id');
