@@ -8,7 +8,7 @@ export const UserRoles = {
   ADMIN: 1,
 };
 
-export const ProviderTypes = {
+export const ProviderType = {
   OTHER: 0,
   EMAIL: 1,
   SMS: 2,

@@ -13,6 +13,7 @@ import { ChannelType, DeliveryStatus } from 'src/common/constants/notifications'
 import { Field, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { Application } from 'src/modules/applications/entities/application.entity';
+import { Provider } from 'src/modules/providers/entities/provider.entity';
 
 @Entity({ name: 'notify_notifications' })
 @ObjectType()
@@ -84,6 +85,11 @@ export class Notification {
   @JoinColumn({ name: 'application_id' })
   @Field(() => Application)
   applicationDetails: Application;
+
+  @ManyToOne(() => Provider, (provider) => provider.notifications)
+  @JoinColumn({ name: 'provider_id' })
+  @Field(() => Provider)
+  providerDetails: Provider;
 
   constructor(notification: Partial<Notification>) {
     Object.assign(this, notification);

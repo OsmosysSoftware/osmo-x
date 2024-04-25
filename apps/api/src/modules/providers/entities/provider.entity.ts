@@ -7,9 +7,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Notification } from 'src/modules/notifications/entities/notification.entity';
 
 @Entity({ name: 'notify_providers' })
 @ObjectType()
@@ -57,6 +59,9 @@ export class Provider {
   @IsEnum(Status)
   @Field()
   status: number;
+
+  @OneToMany(() => Notification, (notification) => notification.providerDetails)
+  notifications: Notification[];
 
   constructor(provider: Partial<Provider>) {
     Object.assign(this, provider);
