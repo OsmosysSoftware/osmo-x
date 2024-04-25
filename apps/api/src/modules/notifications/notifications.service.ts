@@ -1,10 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
-import { Status } from 'src/common/constants/database';
+import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
@@ -42,6 +42,11 @@ export class NotificationsService extends CoreService<Notification> {
     //TODO: remove this check when validation in "is-data-valid.decorator.ts" is done using providerId
     if (providerEntry.channelType != notificationData.channelType) {
       throw new Error('The channelType provided in input does not match channelType for provider');
+    }
+
+    // Check if provider is enabled or not
+    if (providerEntry.isEnabled != IsEnabledStatus.TRUE) {
+      throw new BadRequestException(`Provider ${providerEntry.name} is not enabled`);
     }
 
     const notification = new Notification(notificationData);

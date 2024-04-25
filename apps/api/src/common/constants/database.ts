@@ -14,3 +14,8 @@ export const ProviderType = {
   SMS: 2,
   WHATSAPP: 3,
 };
+
+export const IsEnabledStatus = {
+  FALSE: 0,
+  TRUE: 1,
+};

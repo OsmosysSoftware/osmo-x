@@ -105,6 +105,11 @@ export class Migration1692870736645 implements MigrationInterface {
             type: 'tinyint',
           },
           {
+            name: 'is_enabled',
+            type: 'tinyint',
+            default: 1,
+          },
+          {
             name: 'configuration',
             type: 'text',
           },

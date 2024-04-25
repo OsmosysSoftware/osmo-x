@@ -1,7 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { IsEnum, IsObject } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { Status } from 'src/common/constants/database';
+import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { ChannelType } from 'src/common/constants/notifications';
 import {
   Column,
@@ -28,6 +28,16 @@ export class Provider {
   @IsEnum(ChannelType)
   @Field()
   channelType: number;
+
+  @Column({
+    name: 'is_enabled',
+    type: 'tinyint',
+    width: 1,
+    default: IsEnabledStatus.TRUE,
+  })
+  @IsEnum(IsEnabledStatus)
+  @Field()
+  isEnabled: number;
 
   @Column({ name: 'configuration', type: 'json' })
   @IsObject()
