@@ -7,3 +7,10 @@ export const UserRoles = {
   USER: 0,
   ADMIN: 1,
 };
+
+export const ProviderTypes = {
+  OTHER: 0,
+  EMAIL: 1,
+  SMS: 2,
+  WHATSAPP: 3,
+};
