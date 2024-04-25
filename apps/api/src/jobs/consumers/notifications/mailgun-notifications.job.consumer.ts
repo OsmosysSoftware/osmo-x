@@ -28,7 +28,10 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
       const formattedNotificationData = await this.mailgunService.formatNotificationData(
         notification.data,
       );
-      return this.mailgunService.sendEmail(formattedNotificationData as MailgunMessageData);
+      return this.mailgunService.sendEmail(
+        formattedNotificationData as MailgunMessageData,
+        notification.providerId,
+      );
     });
   }
 }

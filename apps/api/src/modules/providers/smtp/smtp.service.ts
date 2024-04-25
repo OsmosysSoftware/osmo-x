@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ProvidersService } from '../providers.service';
-import { ChannelType } from 'src/common/constants/notifications';
 
 @Injectable()
 export class SmtpService {
@@ -9,12 +8,8 @@ export class SmtpService {
 
   constructor(private readonly providersService: ProvidersService) {}
 
-  async onModuleInit(): Promise<void> {
-    await this.assignTransport();
-  }
-
-  async assignTransport(): Promise<void> {
-    const smtpConfig = await this.providersService.getConfigById(ChannelType.SMTP);
+  async assignTransport(providerId: number): Promise<void> {
+    const smtpConfig = await this.providersService.getConfigById(providerId);
     this.transporter = nodemailer.createTransport({
       host: smtpConfig.SMTP_HOST as string,
       port: smtpConfig.SMTP_PORT as number,
@@ -25,7 +20,11 @@ export class SmtpService {
     });
   }
 
-  sendEmail(smtpNotificationData: nodemailer.SendMailOptions): Promise<string> {
+  async sendEmail(
+    smtpNotificationData: nodemailer.SendMailOptions,
+    providerId: number,
+  ): Promise<string> {
+    await this.assignTransport(providerId);
     return this.transporter.sendMail(smtpNotificationData);
   }
 }

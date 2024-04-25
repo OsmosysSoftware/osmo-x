@@ -27,7 +27,10 @@ export class SmsTwilioNotificationsConsumer extends NotificationConsumer {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;
       const notification = (await this.notificationsService.getNotificationById(id))[0];
-      return this.smsTwilioService.sendMessage(notification.data as unknown as SmsTwilioData);
+      return this.smsTwilioService.sendMessage(
+        notification.data as unknown as SmsTwilioData,
+        notification.providerId,
+      );
     });
   }
 }

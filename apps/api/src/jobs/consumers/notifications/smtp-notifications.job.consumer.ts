@@ -25,7 +25,10 @@ export class SmtpNotificationConsumer extends NotificationConsumer {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;
       const notification = (await this.notificationsService.getNotificationById(id))[0];
-      return this.smtpService.sendEmail(notification.data as nodemailer.SendMailOptions);
+      return this.smtpService.sendEmail(
+        notification.data as nodemailer.SendMailOptions,
+        notification.providerId,
+      );
     });
   }
 }

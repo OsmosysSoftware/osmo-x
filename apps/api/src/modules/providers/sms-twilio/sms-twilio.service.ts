@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as Twilio from 'twilio';
 import { ProvidersService } from '../providers.service';
-import { ChannelType } from 'src/common/constants/notifications';
 
 export interface SmsTwilioData {
   to: string;
@@ -37,19 +36,16 @@ export class SmsTwilioService {
 
   constructor(private readonly providersService: ProvidersService) {}
 
-  async onModuleInit(): Promise<void> {
-    await this.assignTransport();
-  }
-
-  async assignTransport(): Promise<void> {
-    const smsTwilioConfig = await this.providersService.getConfigById(ChannelType.SMS_TWILIO);
+  async assignTransport(providerId: number): Promise<void> {
+    const smsTwilioConfig = await this.providersService.getConfigById(providerId);
     const accountSid = smsTwilioConfig.TWILIO_SMS_ACCOUNT_SID as string;
     const authToken = smsTwilioConfig.TWILIO_SMS_AUTH_TOKEN as string;
     this.twilioClient = Twilio(accountSid, authToken);
   }
 
-  async sendMessage(body: SmsTwilioData): Promise<SmsTwilioResponseData> {
-    const smsTwilioConfig = await this.providersService.getConfigById(ChannelType.SMS_TWILIO);
+  async sendMessage(body: SmsTwilioData, providerId: number): Promise<SmsTwilioResponseData> {
+    await this.assignTransport(providerId);
+    const smsTwilioConfig = await this.providersService.getConfigById(providerId);
     const fromSmsNumber = smsTwilioConfig.TWILIO_SMS_NUMBER as string;
 
     const message = await this.twilioClient.messages.create({

@@ -5,7 +5,6 @@ import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import { CreateNotificationAttachmentDto } from 'src/modules/notifications/dtos/create-notification-attachment.dto';
 import { ProvidersService } from '../providers.service';
-import { ChannelType } from 'src/common/constants/notifications';
 
 @Injectable()
 export class MailgunService {
@@ -15,12 +14,8 @@ export class MailgunService {
 
   constructor(private readonly providersService: ProvidersService) {}
 
-  async onModuleInit(): Promise<void> {
-    await this.assignClient();
-  }
-
-  async assignClient(): Promise<void> {
-    const mailgunConfig = await this.providersService.getConfigById(ChannelType.MAILGUN);
+  async assignClient(providerId: number): Promise<void> {
+    const mailgunConfig = await this.providersService.getConfigById(providerId);
     this.mailgunClient = this.mailgun.client({
       username: 'api',
       key: mailgunConfig.MAILGUN_API_KEY as string,
@@ -29,7 +24,11 @@ export class MailgunService {
     this.mailgunDomain = mailgunConfig.MAILGUN_DOMAIN as string;
   }
 
-  sendEmail(mailgunNotificationData: MailgunMessageData): Promise<MessagesSendResult> {
+  async sendEmail(
+    mailgunNotificationData: MailgunMessageData,
+    providerId: number,
+  ): Promise<MessagesSendResult> {
+    await this.assignClient(providerId);
     return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
   }
 
