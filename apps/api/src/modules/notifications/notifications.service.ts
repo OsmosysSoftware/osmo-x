@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
@@ -46,13 +46,6 @@ export class NotificationsService extends CoreService<Notification> {
 
     const notification = new Notification(notificationData);
     notification.channelType = providerEntry.channelType;
-
-    const enabledChannels = await this.providersService.generateEnabledChannelsEnum();
-    const channelEnabled = Object.values(enabledChannels).includes(notification.channelType);
-
-    if (!channelEnabled) {
-      throw new BadRequestException(`Channel ${notification.channelType} is not enabled`);
-    }
 
     // Set correct ApplicationId after verifying
     const inputApplicationId = await this.getApplicationIdFromApiKey(authHeader);
@@ -134,13 +127,9 @@ export class NotificationsService extends CoreService<Notification> {
       return;
     }
 
-    const enabledChannels = await this.providersService.generateEnabledChannelsEnum();
-    const pendingNotifications = allPendingNotifications.filter((notification) =>
-      Object.values(enabledChannels).includes(notification.channelType),
-    );
-    this.logger.log(`Adding ${pendingNotifications.length} pending notifications to queue`);
+    this.logger.log(`Adding ${allPendingNotifications.length} pending notifications to queue`);
 
-    for (const notification of pendingNotifications) {
+    for (const notification of allPendingNotifications) {
       try {
         notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
         await this.notificationQueueService.addNotificationToQueue(notification);
