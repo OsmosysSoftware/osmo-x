@@ -44,7 +44,7 @@ export class AuthService {
         allKeys: tokenList,
       };
     } catch (error) {
-      throw new Error(`Error while logging in: ${error}`);
+      throw new Error(`Error while logging in: ${error.message}`);
     }
   }
 
