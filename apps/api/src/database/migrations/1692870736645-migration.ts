@@ -14,6 +14,8 @@ export class Migration1692870736645 implements MigrationInterface {
             type: 'int',
             isPrimary: true,
             isUnique: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
           },
           {
             name: 'name',
@@ -91,6 +93,8 @@ export class Migration1692870736645 implements MigrationInterface {
             type: 'int',
             isPrimary: true,
             isUnique: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
           },
           {
             name: 'name',
@@ -181,6 +185,8 @@ export class Migration1692870736645 implements MigrationInterface {
             type: 'int',
             isPrimary: true,
             isUnique: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
           },
           {
             name: 'name',

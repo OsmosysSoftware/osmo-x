@@ -5,10 +5,6 @@ import { IsNotEmpty } from 'class-validator';
 export class CreateApplicationInput {
   @Field()
   @IsNotEmpty()
-  applicationId: number;
-
-  @Field()
-  @IsNotEmpty()
   name: string;
 
   @Field()
