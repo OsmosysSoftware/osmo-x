@@ -39,6 +39,10 @@ export class NotificationsService extends CoreService<Notification> {
     // Get channel type from providerId & Set the channelType based on providerEntry
     const providerEntry = await this.providersService.getById(notificationData.providerId);
 
+    if (!providerEntry) {
+      throw new BadRequestException(`Provider does not exist`);
+    }
+
     //TODO: remove this check when validation in "is-data-valid.decorator.ts" is done using providerId
     if (providerEntry.channelType != notificationData.channelType) {
       throw new Error('The channelType provided in input does not match channelType for provider');

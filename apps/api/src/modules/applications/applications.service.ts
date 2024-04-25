@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateApplicationInput } from './dto/create-application.input';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { UsersService } from '../users/users.service';
-import { UserRoles } from 'src/common/constants/database';
+import { Status, UserRoles } from 'src/common/constants/database';
 import { ApplicationResponse } from './dto/application-response.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
@@ -22,11 +22,11 @@ export class ApplicationsService extends CoreService<Application> {
   }
 
   async findById(applicationId: number): Promise<Application | undefined> {
-    return this.applicationsRepository.findOne({ where: { applicationId } });
+    return this.applicationsRepository.findOne({ where: { applicationId, status: Status.ACTIVE } });
   }
 
   async findByUserId(userId: number): Promise<Application | undefined> {
-    return this.applicationsRepository.findOne({ where: { userId } });
+    return this.applicationsRepository.findOne({ where: { userId, status: Status.ACTIVE } });
   }
 
   async createApplication(
