@@ -6,6 +6,7 @@ export class CreateNotificationDto {
   @IsNumber()
   providerId: number;
 
+  // TODO: remove once validation is done using providerId
   @IsEnum(ChannelType)
   channelType: number;
 

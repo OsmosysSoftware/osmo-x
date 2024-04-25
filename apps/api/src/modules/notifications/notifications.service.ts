@@ -38,6 +38,12 @@ export class NotificationsService extends CoreService<Notification> {
     // TODO: Write better code logic, update notification entity
     // Get channel type from providerId & Set the channelType based on providerEntry
     const providerEntry = await this.providersService.getById(notificationData.providerId);
+
+    //TODO: remove this check when validation in "is-data-valid.decorator.ts" is done using providerId
+    if (providerEntry.channelType != notificationData.channelType) {
+      throw new Error('The channelType provided in input does not match channelType for provider');
+    }
+
     const notification = new Notification(notificationData);
     notification.channelType = providerEntry.channelType;
 
@@ -52,7 +58,7 @@ export class NotificationsService extends CoreService<Notification> {
     const inputApplicationId = await this.getApplicationIdFromApiKey(authHeader);
 
     if (inputApplicationId != providerEntry.applicationId) {
-      throw new Error('ApplicationId for Server Key and Provider do not match.');
+      throw new Error('The applicationId for Server Key and Provider do not match.');
     }
 
     notification.applicationId = providerEntry.applicationId;
