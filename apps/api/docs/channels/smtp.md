@@ -2,9 +2,9 @@
 
 SMTP (Simple Mail Transfer Protocol) is a protocol used for sending email messages between servers. Nodemailer is a popular Node.js library that allows you to send emails using various transport methods, including SMTP.
 
-### ENV Values to Update
+### Values to Update in Database
 
-When using Nodemailer to send emails via SMTP, you need to provide certain environment variables that hold the SMTP server configuration details. Here are the ENV values you need to update:
+When using Nodemailer to send emails via SMTP, you need to provide certain variables that hold the SMTP server configuration details. Here are the values you need to update:
 
 ```sh
 # SMTP Configuration
@@ -23,6 +23,7 @@ Here's a sample request body:
 
 ```jsonc
 {
+  "providerId": 1,                                 // ChannelType associated with providerId should be 1 (SMTP)
   "channelType": 1,
   "data": {
     "from": "sender@example.com",                  // Sender's email address

@@ -2,9 +2,9 @@
 
 Mailgun is an email service provider that offers a RESTful API for sending emails from your Node.js application. Their official `npm` module, `mailgun.js`, makes it easy to integrate Mailgun into your Node.js app and send emails using API requests.
 
-### ENV Values to Update
+### Values to Update in Database
 
-When using Mailgun to send emails via their API, you need to provide certain environment variables that hold the Mailgun configuration details. Here are the ENV values you need to update:
+When using Mailgun to send emails via their API, you need to provide certain variables that hold the Mailgun configuration details. Here are the values you need to update:
 
 ```sh
 # Mailgun
@@ -22,6 +22,7 @@ Here's a sample request body:
 
 ```jsonc
 {
+  "providerId": 2,                                  // ChannelType associated with providerId should be 1 (Mailgun)
   "channelType": 2,
   "data": {
     "from": "sender@example.com",                   // Sender's email address

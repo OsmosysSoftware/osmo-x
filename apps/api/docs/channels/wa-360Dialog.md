@@ -2,9 +2,9 @@
 
 360dialog is a leading and official accredited Meta WhatsApp solution provider (BSP), providing the relevant building blocks & services around messaging, WhatsApp newsletters and performance marketing with the WhatsApp Business API.
 
-### ENV Values to Update
+### Values to Update in Database
 
-When using 360Dialog to send whatsApp messages via their API, you need to provide certain environment variables that hold the 360Dialog configuration details. Here are the ENV values you need to update:
+When using 360Dialog to send whatsApp messages via their API, you need to provide certain variables that hold the 360Dialog configuration details. Here are the values you need to update:
 
 ```sh
 # WhatsApp 360Dialog
