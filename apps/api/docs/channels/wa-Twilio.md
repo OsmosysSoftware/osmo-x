@@ -2,9 +2,9 @@
 
 Using the WhatsApp Business Platform with Twilio, you can send and receive messages to WhatsApp users using the same Twilio Messaging APIs you already know and enjoy. Dive into the Twilio SDKs and helper libraries, see our quickstart and API reference docs, read through guides on templates and Twilio phone numbers, and find the sample code you'll need.
 
-### ENV Values to Update
+### Values to Update in Database
 
-When using Twilio to send whatsApp messages via their API/Client, you need to provide certain environment variables that hold the Twilio configuration details. Here are the ENV values you need to update:
+When using Twilio to send whatsApp messages via their API/Client, you need to provide certain variables that hold the Twilio configuration details. Here are the values you need to update:
 
 ```sh
 # WhatsApp Twilio

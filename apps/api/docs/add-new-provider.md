@@ -16,14 +16,13 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
     npm install <package_name>
     ```
 
-2. **Update `.env` and `.env.example`**
+2. **Update the database**
 
-    If your new provider requires configuration values that will be set via the `.env` file, make sure to also update the `.env.example` file so that new users are up to date with needed environment variables and values.
-    You need to have a env value to determine whether or not to enable the provider.
+    Set the respective details of newly added provider in `notify_master_providers` table. This contains the configuration template and other related details for your provider.
 
-    ```sh
-    ENABLE_MY_NEW_SERVICE=true
-    ```
+    To use this provider, create a new entry in `notify_providers` table. This will contain and save the configuration details for your provider. Also set the `is_enabled` field as 1 to enable the provider. These details will be used for the OsmoX APP process.
+
+    Take reference for what fields need to be added from [Database Design Document](./database-design.md).
 
 3. **Update `src/common/constants/notifications.ts`**
 
@@ -40,14 +39,6 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
     };
     ```
 
-    Additionally, update the `generateEnabledChannelEnum` function for checking and enabling your new channel:
-
-    ```ts
-    if (configService.get('ENABLE_CHANNEL_NAME') === 'true') {
-      enabledChannels[<CHANNEL_NAME>] = ChannelType.<CHANNEL_NAME>;
-    }
-    ```
-
 4. **Create `.queue.ts` file**
 
     All providers will be using a queue specific to them for queuing notifications that have to be sent. The required values for this queue for a provider is specified in the `src/modules/notifications/queues` folder.
@@ -62,7 +53,6 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
     };
     ```
 
-
 5. **Generate a new module for the provider**
 
     Create a new module for the provider, run the following command to generate it using `nest`:
@@ -73,15 +63,14 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 
     The `app.module.ts` file will automatically update to import this new service and add it in the `providers` array.
 
-    Remove the new added module from `app.module.ts` and add it in notifications module register logic.
+    Remove the new added module from `app.module.ts` and add it in `notifications.module.ts` register logic.
     Ex:
 
     ```js
-    if (configService.get<string>('ENABLE_MAILGUN') === 'true') {
-      modulesToLoad.push(MailgunModule);
-      queuesToLoad.push(mailgunQueueConfig);
-      consumersToLoad.push(MailgunNotificationConsumer);
-    }
+    // Load NewProvider
+    modulesToLoad.push(NewProviderModule);
+    queuesToLoad.push(NewProviderConfig);
+    consumersToLoad.push(NewProviderNotificationConsumer);
     ```
 
 5. **Generate new service file**
@@ -144,5 +133,3 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 10. **Update and add documentation**
 
     Add a new document `<channel_name>.md` in the `docs/channels` folder describing environment variables to be set and how to use the new provider channel with sample request body and any additional information. Update the `usage-guide.md` file to add and link the new channel document under [5. Available Channel Types](usage-guide.md#5-available-channel-types).
-
-    Additionally, update the [Development Setup](development-setup.md) and [Production Setup](production-setup.md) documents for the updated `.env` file variables and any other relevant changes.
