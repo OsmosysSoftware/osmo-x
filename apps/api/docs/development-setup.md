@@ -43,7 +43,6 @@ sudo systemctl status mariadb
    ```env
    # Server
    SERVER_PORT=3000
-   SERVER_API_KEY=OsmoX-test-key
 
    # Node env
    NODE_ENV=development

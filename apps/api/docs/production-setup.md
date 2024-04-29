@@ -24,7 +24,6 @@ Make sure Redis and MariaDB server are up and running.
   ```env
   # Server
   SERVER_PORT=3000
-  SERVER_API_KEY=OsmoX-test-key
 
   # Database configuration
   DB_TYPE=mysql
@@ -33,7 +32,7 @@ Make sure Redis and MariaDB server are up and running.
   DB_USERNAME=root
   DB_PASSWORD=your-password
   DB_NAME=your-database
-   MARIADB_DOCKER_PORT=3307 # (required only if using docker)
+  MARIADB_DOCKER_PORT=3307 # (required only if using docker)
 
   # Redis configuration
   REDIS_HOST=127.0.0.1 # use value as osmox-redis in docker
