@@ -9,9 +9,9 @@ export interface SmsPlivoData {
 
 /*
 export interface SmsPlivoResponseData {
-  date_created: string;
-  status: string;
-  to: string;
+  api_id: string;
+  message: string;
+  message_uuid: string[];
 }
 */
 
