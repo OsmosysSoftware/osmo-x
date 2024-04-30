@@ -1,1366 +1,2016 @@
 {
-  "info": {
-    "_postman_id": "2f7b7355-b1b0-4cf8-bc53-6049561fb418",
-    "name": "OsmoX",
-    "description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "24502738"
-  },
-  "item": [
-    {
-      "name": "360Dialog WhatsApp Notifications",
-      "item": [
-        {
-          "name": "Send 360Dialog WhatsApp Notification - Success",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-                  "    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response contains a valid 'notification' object\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response 'channelType' is 3\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
-                  "});",
-                  "pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows successfully creating new notification for the 360Dialog WhatsApp channel type."
-          },
-          "response": []
-        },
-        {
-          "name": "Send 360Dialog WhatsApp Notification - Missing To Field",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 3,\n    \"data\": {\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when missing the `to` field."
-          },
-          "response": []
-        },
-        {
-          "name": "Send 360Dialog WhatsApp Notification - Invalid channel",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid 'channelType'\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 4,\n    \"data\": {\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when passing invalid channel value."
-          },
-          "response": []
-        },
-        {
-          "name": "Send 360Dialog WhatsApp Notification - Invalid API Key",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Failed request with invalid API key\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(401);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "bad-api-key",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when passing invalid API key."
-          },
-          "response": []
-        }
-      ],
-      "description": "Collection of requests pertaining to creating notifications for the 360Dialog WhatsApp channel type."
-    },
-    {
-      "name": "Twilio WhatsApp Notifications",
-      "item": [
-        {
-          "name": "Send Twilio WhatsApp Notification - Success",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-                  "    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response contains a valid 'notification' object\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response 'channelType' is 3\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
-                  "});",
-                  "pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 5,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
-          },
-          "response": []
-        },
-        {
-          "name": "Send Twilio WhatsApp Notification - Missing To Field",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 4,\n    \"data\": {\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
-          },
-          "response": []
-        },
-        {
-          "name": "Send Twilio WhatsApp Notification - Invalid channel",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid 'channelType'\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 5,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid channel value."
-          },
-          "response": []
-        },
-        {
-          "name": "Send Twilio WhatsApp Notification - Invalid API Key",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Failed request with invalid API key\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(401);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "bad-api-key",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 4,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
-          },
-          "response": []
-        }
-      ],
-      "description": "Collection of requests pertaining to creating notifications for the Twilio WhatsApp channel type."
-    },
-    {
-      "name": "Twilio SMS Notifications",
-      "item": [
-        {
-          "name": "Send Twilio SMS Notification - Success",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "  pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-                  "  var jsonData = pm.response.json();",
-                  "  pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-                  "  pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response contains a valid 'notification' object\", function () {",
-                  "  var jsonData = pm.response.json();",
-                  "  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response 'channelType' is 5\", function () {",
-                  "  var jsonData = pm.response.json();",
-                  "  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 5);",
-                  "});",
-                  "pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-                  "  var jsonData = pm.response.json();",
-                  "  pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"channelType\": 5,\n  \"data\": {\n    \"to\": \"+15005550006\",\n    \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n  }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows successfully creating new notification for the Twilio SMS channel type."
-          },
-          "response": []
-        },
-        {
-          "name": "Send Twilio SMS Notification - Missing To Field",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "  pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-                  "  pm.expect(pm.response.code).to.equal(400);",
-                  "  pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "  pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"channelType\": 5,\n  \"data\": {\n    \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n  }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
-          },
-          "response": []
-        },
-        {
-          "name": "Send Twilio SMS Notification - Invalid channel",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "  pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid 'channelType'\", function () {",
-                  "  pm.expect(pm.response.code).to.equal(400);",
-                  "  pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "  pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3, 4, 5\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"channelType\": 55,\n  \"data\": {\n    \"to\": \"+15005550006\",\n    \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n  }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid channel value."
-          },
-          "response": []
-        },
-        {
-          "name": "Send Twilio SMS Notification - Invalid API Key",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "  pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Failed request with invalid API key\", function () {",
-                  "  pm.expect(pm.response.code).to.equal(401);",
-                  "  pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "  pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "bad-api-key",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"channelType\": 5,\n  \"data\": {\n    \"to\": \"+15005550006\",\n    \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n  }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
-          },
-          "response": []
-        }
-      ],
-      "description": "Collection of requests pertaining to creating notifications for the Twilio SMS channel type."
-    },
-    {
-      "name": "Mailgun Notifications",
-      "item": [
-        {
-          "name": "Send Mailgun Notification - Success",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-                  "    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response contains a valid 'notification' object\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response 'channelType' is 2\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 2);",
-                  "});",
-                  "pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows successfully creating new notification for the Mailgun channel type."
-          },
-          "response": []
-        },
-        {
-          "name": "Send Mailgun Notification - Missing To Field",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the Mailgun channel type when missing the `to` field."
-          },
-          "response": []
-        },
-        {
-          "name": "Send Mailgun Notification - Invalid channel",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid 'channelType'\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid channel value."
-          },
-          "response": []
-        },
-        {
-          "name": "Send Mailgun Notification - Invalid API Key",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Failed request with invalid API key\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(401);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "bad-api-key",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid API key."
-          },
-          "response": []
-        }
-      ],
-      "description": "Collection of requests pertaining to creating notifications for the Mailgun channel type."
-    },
-    {
-      "name": "SMTP Notifications",
-      "item": [
-        {
-          "name": "Send SMTP Notification - Success",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-                  "    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response contains a valid 'notification' object\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response 'channelType' is 1\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 1);",
-                  "});",
-                  "pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows successfully creating new notification for the SMTP channel type."
-          },
-          "response": []
-        },
-        {
-          "name": "Send SMTP Notification - Missing To Field",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
-          },
-          "response": []
-        },
-        {
-          "name": "Send SMTP Notification - Invalid channel",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for Invalid 'channelType'\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid channel value."
-          },
-          "response": []
-        },
-        {
-          "name": "Send SMTP Notification - Invalid API Key",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Failed request with invalid API key\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(401);",
-                  "    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-                  "    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "bad-api-key",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-            },
-            "url": {
-              "raw": "localhost:3000/notifications",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["notifications"]
-            },
-            "description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
-          },
-          "response": []
-        }
-      ],
-      "description": "Collection of requests pertaining to creating notifications for the SMTP channel type."
-    },
-    {
-      "name": "Authentication",
-      "item": [
-        {
-          "name": "Login - Success",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response has valid 'data' property\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response contains a valid 'login' object\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property(\"login\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response contains valid 'token' and 'user' values\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.login).to.have.property(\"token\").to.be.a(\"string\");",
-                  "    pm.expect(jsonData.data.login).to.have.property(\"user\").to.be.a(\"string\");",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "graphql",
-              "graphql": {
-                "query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    user\n    __typename\n  }\n}",
-                "operationName": "LoginUser",
-                "variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
-              }
-            },
-            "url": {
-              "raw": "http://localhost:3000/graphql",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["graphql"]
-            },
-            "description": "Allows successfully logging in and obtaining the auth token from API."
-          },
-          "response": []
-        },
-        {
-          "name": "Login - Invalid credentials",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for failed login with invalid credentials\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(200);",
-                  "    pm.expect(pm.response.json().data).to.equal(null);",
-                  "    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
-                  "    pm.expect(pm.response.json().errors[0].message).to.equal(\"Invalid username or password\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "graphql",
-              "graphql": {
-                "query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    user\n    __typename\n  }\n}",
-                "operationName": "LoginUser",
-                "variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"abc{{adminPassword}}\"\n}"
-              }
-            },
-            "url": {
-              "raw": "http://localhost:3000/graphql",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["graphql"]
-            },
-            "description": "Allows representing failure while logging in when passing invalid credentials."
-          },
-          "response": []
-        },
-        {
-          "name": "Login - Missing password",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for failed login with missing password\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
-                  "    pm.expect(pm.response.json().errors[0].message).to.equal(\"Field \\\"LoginUserInput.password\\\" of required type \\\"String!\\\" was not provided.\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "graphql",
-              "graphql": {
-                "query": "mutation LoginUser($username: String!) {\n  login(loginUserInput: {username: $username}) {\n    token\n    user\n    __typename\n  }\n}",
-                "operationName": "LoginUser",
-                "variables": "{\n  \"username\": \"{{adminUsername}}\"\n}"
-              }
-            },
-            "url": {
-              "raw": "http://localhost:3000/graphql",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["graphql"]
-            },
-            "description": "Allows representing failure while logging in when missing `password` value."
-          },
-          "response": []
-        },
-        {
-          "name": "Login - Bad request",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for failed login with bad request\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
-                  "    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "graphql",
-              "graphql": {
-                "query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    users\n    __typename\n  }\n}",
-                "operationName": "LoginUser",
-                "variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
-              }
-            },
-            "url": {
-              "raw": "http://localhost:3000/graphql",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["graphql"]
-            },
-            "description": "Allows representing failure while logging in when using invalid/bad request."
-          },
-          "response": []
-        }
-      ],
-      "description": "Collection of requests pertaining to authentication related requests such as login."
-    },
-    {
-      "name": "All Notifications",
-      "item": [
-        {
-          "name": "Fetch All Notifications - Success",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response has valid 'data' property\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response contains a valid 'notifications' object\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property(\"notifications\").to.be.an(\"object\");",
-                  "});",
-                  "pm.test(\"Response contains a valid 'notifications' array\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.notifications).to.have.property(\"notifications\").to.be.an(\"array\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"variables\": {},\n    \"query\": \"{\\n  notifications {\\n    notifications {\\n    channelType\\n    createdBy\\n    createdOn\\n    data\\n    deliveryStatus\\n    id\\n    result\\n    status\\n    updatedBy\\n    updatedOn\\n    __typename\\n  }\\n}\\n}\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:3000/graphql",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["graphql"]
-            },
-            "description": "Allows successfully fetching all notifications based on the options passed."
-          },
-          "response": []
-        },
-        {
-          "name": "Fetch All Notifications - Bad request",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response is valid JSON\", function () {",
-                  "    pm.response.to.be.json;",
-                  "});",
-                  "pm.test(\"Response for fetching notifications with bad request\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(400);",
-                  "    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
-                  "    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{apikey}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"variables\": {},\n    \"query\": \"{\\n  notifications {\\n    notifications {\\n    channelType\\n    createdBy\\n    createdOn\\n    data\\n    deliveryStatus\\n    id\\n    results\\n    status\\n    updatedBy\\n    updatedOn\\n    __typename\\n  }\\n}\\n}\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:3000/graphql",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "3000",
-              "path": ["graphql"]
-            },
-            "description": "Allows representing failure when fetching all notifications when using invalid/bad request."
-          },
-          "response": []
-        }
-      ],
-      "description": "Collection of requests pertaining to fetching all notifications."
-    }
-  ]
+	"info": {
+		"_postman_id": "6b149bb4-7b28-497b-af99-fab5641f5c43",
+		"name": "OsmoX",
+		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27217372"
+	},
+	"item": [
+		{
+			"name": "360Dialog WhatsApp Notifications",
+			"item": [
+				{
+					"name": "Send 360Dialog WhatsApp Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 3\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 3 also has channelType 3\n    \"providerId\": 3,\n    \"channelType\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the 360Dialog WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send 360Dialog WhatsApp Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 3\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 6 does not have channelType 3\n    \"providerId\": 6,\n    \"channelType\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the 360Dialog WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send 360Dialog WhatsApp Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 3,\n    \"channelType\": 3,\n    \"data\": {\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send 360Dialog WhatsApp Notification - Invalid channel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid 'channelType'\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 3,\n    \"channelType\": 4,\n    \"data\": {\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when passing invalid channel value."
+					},
+					"response": []
+				},
+				{
+					"name": "Send 360Dialog WhatsApp Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid API key\", function () {",
+									"    pm.expect(pm.response.code).to.equal(401);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 3,\n    \"channelType\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the 360Dialog WhatsApp channel type."
+		},
+		{
+			"name": "Twilio WhatsApp Notifications",
+			"item": [
+				{
+					"name": "Send Twilio WhatsApp Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 3\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 4 also has channelType 4\n    \"providerId\": 4,\n    \"channelType\": 4,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 3\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 6 does not have channelType 4\n    \"providerId\": 6,\n    \"channelType\": 4,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 4,\n    \"channelType\": 4,\n    \"data\": {\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp Notification - Invalid channel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid 'channelType'\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 4,\n    \"channelType\": 5,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid channel value."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid API key\", function () {",
+									"    pm.expect(pm.response.code).to.equal(401);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 4,\n    \"channelType\": 4,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the Twilio WhatsApp channel type."
+		},
+		{
+			"name": "Twilio SMS Notifications",
+			"item": [
+				{
+					"name": "Send Twilio SMS Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"  pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 5\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 5);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 5 also has channelType 5\n    \"providerId\": 5,\n    \"channelType\": 5,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio SMS Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"  pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 5\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 5);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 6 does not have channelType 5\n    \"providerId\": 6,\n    \"channelType\": 5,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio SMS Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"  pm.expect(pm.response.code).to.equal(400);",
+									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"  pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 5,\n    \"channelType\": 5,\n    \"data\": {\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio SMS Notification - Invalid channel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid 'channelType'\", function () {",
+									"  pm.expect(pm.response.code).to.equal(400);",
+									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"  pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3, 4, 5\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 5,\n    \"channelType\": 55,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid channel value."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio SMS Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid API key\", function () {",
+									"  pm.expect(pm.response.code).to.equal(401);",
+									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"  pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 5,\n    \"channelType\": 5,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the Twilio SMS channel type."
+		},
+		{
+			"name": "Mailgun Notifications",
+			"item": [
+				{
+					"name": "Send Mailgun Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 2\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 2);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 2 also has channelType 2\n    \"providerId\": 2,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Mailgun channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Mailgun Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 2\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 2);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 6 does not have channelType 2\n    \"providerId\": 6,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Mailgun channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Mailgun Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 2,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Mailgun channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Mailgun Notification - Invalid channel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid 'channelType'\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 2,\n    \"channelType\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid channel value."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Mailgun Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid API key\", function () {",
+									"    pm.expect(pm.response.code).to.equal(401);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 2,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the Mailgun channel type."
+		},
+		{
+			"name": "SMTP Notifications",
+			"item": [
+				{
+					"name": "Send SMTP Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 1);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 1 also has channelType 1\n    \"providerId\": 1,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SMTP channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMTP Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 1);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 6 does not have channelType 1\n    \"providerId\": 6,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SMTP channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMTP Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 1,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMTP Notification - Invalid channel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid 'channelType'\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 1,\n    \"channelType\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid channel value."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMTP Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid API key\", function () {",
+									"    pm.expect(pm.response.code).to.equal(401);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 1,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the SMTP channel type."
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'login' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"login\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains valid 'token' and 'user' values\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.login).to.have.property(\"token\").to.be.a(\"string\");",
+									"    pm.expect(jsonData.data.login).to.have.property(\"user\").to.be.a(\"string\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    user\n    allKeys {\n       apiKeyId\n       apiKey\n       applicationId\n       status\n    }\n    __typename\n  }\n}",
+								"operationName": "LoginUser",
+								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully logging in and obtaining the auth token from API."
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Invalid credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for failed login with invalid credentials\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().data).to.equal(null);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.equal(\"Invalid username or password\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    user\n    allKeys {\n       apiKeyId\n       apiKey\n       applicationId\n       status\n    }\n    __typename\n  }\n}",
+								"operationName": "LoginUser",
+								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"abc{{adminPassword}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows representing failure while logging in when passing invalid credentials."
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Missing password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for failed login with missing password\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.equal(\"Field \\\"LoginUserInput.password\\\" of required type \\\"String!\\\" was not provided.\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation LoginUser($username: String!) {\n  login(loginUserInput: {username: $username}) {\n    token\n    user\n    allKeys {\n       apiKeyId\n       apiKey\n       applicationId\n       status\n    }\n    __typename\n  }\n}",
+								"operationName": "LoginUser",
+								"variables": "{\n  \"username\": \"{{adminUsername}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows representing failure while logging in when missing `password` value."
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Bad request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for failed login with bad request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    users\n    allKeys {\n       apiKeyId\n       apiKey\n       applicationId\n       status\n    }\n    __typename\n  }\n}",
+								"operationName": "LoginUser",
+								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows representing failure while logging in when using invalid/bad request."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to authentication related requests such as login."
+		},
+		{
+			"name": "All Notifications",
+			"item": [
+				{
+					"name": "Fetch All Notifications - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notifications' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notifications\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notifications' array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notifications).to.have.property(\"notifications\").to.be.an(\"array\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully fetching all notifications based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch All Notifications - Bad request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for fetching notifications with bad request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  notifications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows representing failure when fetching all notifications when using invalid/bad request."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to fetching all notifications."
+		},
+		{
+			"name": "Notification by Id",
+			"item": [
+				{
+					"name": "Fetch Notification by ID - Success",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "FoundationX-test-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/notifications/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "All Applications",
+			"item": [
+				{
+					"name": "Fetch all Applications - Success",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "mysecretadminkey",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"key\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch all Applications - Bad Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "mysecretadminkey",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"key\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Application",
+			"item": [
+				{
+					"name": "Create new Application - Success",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "mysecretadminkey",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleFoundationXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Application - Bad Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "mysecretadminkey",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        name: \"sampleFoundationXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
 }
