@@ -10,12 +10,6 @@ Set field `is_enabled` = 1
 
 Then set the following configurations in `configuration` field
 
-```sh
-# WhatsApp 360Dialog
-=api-url #
-=your-api-key
-```
-
 | Key             | Description     |
 |-----------------|-----------------|
 | WA_360_DIALOG_API_KEY    | WA 360 Dialog api key |

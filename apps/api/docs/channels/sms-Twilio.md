@@ -31,7 +31,7 @@ Then set the following configurations in `configuration` field
 
 Here's a sample request body:
 
-```json
+```jsonc
 {
   // Set your respective providerId
   "providerId": 5,
