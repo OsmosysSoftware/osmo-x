@@ -7,28 +7,13 @@ export interface SmsPlivoData {
   message: string;
 }
 
-export interface SmsTwilioResponseData {
-  account_sid: string;
-  api_version: string;
-  body: string;
+/*
+export interface SmsPlivoResponseData {
   date_created: string;
-  date_sent: string;
-  date_updated: string;
-  direction: string;
-  error_code: string | null;
-  error_message: string | null;
-  from: string;
-  num_media: string;
-  num_segments: string;
-  price: string | null;
-  price_unit: string | null;
-  messaging_service_sid: string;
-  sid: string;
   status: string;
-  subresource_uris: object;
   to: string;
-  uri: string;
 }
+*/
 
 @Injectable()
 export class SmsPlivoService {
