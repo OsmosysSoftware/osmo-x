@@ -28,7 +28,7 @@ export class User {
     name: 'role',
     type: 'tinyint',
     width: 1,
-    default: UserRoles.USER,
+    default: UserRoles.BASIC,
   })
   @IsEnum(UserRoles)
   @Field()
