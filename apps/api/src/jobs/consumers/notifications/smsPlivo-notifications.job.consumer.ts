@@ -20,7 +20,7 @@ export class SmsPlivoNotificationsConsumer extends NotificationConsumer {
   }
 
   @Process()
-  async processSmsTwilioNotificationQueue(job: Job<number>): Promise<void> {
+  async processSmsPlivoNotificationQueue(job: Job<number>): Promise<void> {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;
       const notification = (await this.notificationsService.getNotificationById(id))[0];
