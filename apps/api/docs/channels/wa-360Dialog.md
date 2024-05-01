@@ -8,7 +8,7 @@ When using 360Dialog to send whatsApp messages via their API, you need to provid
 
 Set field `is_enabled` = 1
 
-Then set the following configurations in `configuration` field
+Then set the following configurations in the `configuration` field
 
 | Key             | Description     |
 |-----------------|-----------------|

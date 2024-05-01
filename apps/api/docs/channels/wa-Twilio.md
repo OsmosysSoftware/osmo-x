@@ -8,7 +8,7 @@ When using Twilio to send whatsApp messages via their API/Client, you need to pr
 
 Set field `is_enabled` = 1
 
-Then set the following configurations in `configuration` field
+Then set the following configurations in the `configuration` field
 
 | Key             | Description     |
 |-----------------|-----------------|

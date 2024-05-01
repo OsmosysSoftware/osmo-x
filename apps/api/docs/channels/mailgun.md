@@ -8,7 +8,7 @@ When using Mailgun to send emails via their API, you need to provide certain var
 
 Set field `is_enabled` = 1
 
-Then set the following configurations in `configuration` field
+Then set the following configurations in the `configuration` field
 
 | Key             | Description     |
 |-----------------|-----------------|

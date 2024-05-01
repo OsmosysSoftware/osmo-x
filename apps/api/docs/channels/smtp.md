@@ -8,7 +8,7 @@ When using Nodemailer to send emails via SMTP, you need to provide certain varia
 
 Set field `is_enabled` = 1
 
-Then set the following configurations in `configuration` field
+Then set the following configurations in the `configuration` field
 
 | Key             | Description     |
 |-----------------|-----------------|
