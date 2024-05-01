@@ -10,7 +10,7 @@ When using Twilio to send whatsApp messages via their API/Client, you need to pr
 
 Set field `is_enabled` as 1.
 
-Then set the following configurations in `configuration` field:
+Then set the following configurations in the `configuration` field:
 
 | Key                   | Description            |
 | --------------------- | ---------------------- |
@@ -48,4 +48,4 @@ Here's a sample request body:
 
 References
 
-- https://www.twilio.com/docs/content/send-templates-created-with-the-content-template-builder
+- [Twilio - Send templates created with the content template builder](https://www.twilio.com/docs/content/send-templates-created-with-the-content-template-builder)
