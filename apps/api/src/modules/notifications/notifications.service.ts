@@ -1,50 +1,69 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import {
-  DeliveryStatus,
-  SortOrder,
-  generateEnabledChannelEnum,
-} from 'src/common/constants/notifications';
+import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
-import { Status } from 'src/common/constants/database';
+import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
-import { ConfigService } from '@nestjs/config';
-import { QueryOptionsDto } from './dtos/query-options.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
+import { CoreService } from 'src/common/graphql/services/core.service';
+import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
+import { ProvidersService } from '../providers/providers.service';
 
 @Injectable()
-export class NotificationsService {
+export class NotificationsService extends CoreService<Notification> {
+  protected readonly logger = new Logger(NotificationsService.name);
   private isProcessingQueue: boolean = false;
-  private readonly logger = new Logger(NotificationsService.name);
 
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
     private readonly notificationQueueService: NotificationQueueProducer,
-    private readonly configService: ConfigService,
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
-  ) {}
+    private readonly providersService: ProvidersService,
+  ) {
+    super(notificationRepository);
+  }
 
   async createNotification(
     notificationData: CreateNotificationDto,
     authHeader: Request,
   ): Promise<Notification> {
     this.logger.log('Creating notification...');
-    const notification = new Notification(notificationData);
-    const enabledChannels = generateEnabledChannelEnum(this.configService);
-    const channelEnabled = Object.values(enabledChannels).includes(notification.channelType);
 
-    if (!channelEnabled) {
-      throw new BadRequestException(`Channel ${notification.channelType} is not enabled`);
+    // TODO: Write better code logic, update notification entity
+    // Get channel type from providerId & Set the channelType based on providerEntry
+    const providerEntry = await this.providersService.getById(notificationData.providerId);
+
+    if (!providerEntry) {
+      throw new BadRequestException(`Provider does not exist`);
     }
 
-    // Set correct ApplicationId
-    notification.applicationId = await this.getApplicationIdFromApiKey(authHeader);
+    //TODO: remove this check when validation in "is-data-valid.decorator.ts" is done using providerId
+    if (providerEntry.channelType != notificationData.channelType) {
+      throw new Error('The channelType provided in input does not match channelType for provider');
+    }
+
+    // Check if provider is enabled or not
+    if (providerEntry.isEnabled != IsEnabledStatus.TRUE) {
+      throw new BadRequestException(`Provider ${providerEntry.name} is not enabled`);
+    }
+
+    const notification = new Notification(notificationData);
+    notification.channelType = providerEntry.channelType;
+
+    // Set correct ApplicationId after verifying
+    const inputApplicationId = await this.getApplicationIdFromApiKey(authHeader);
+
+    if (inputApplicationId != providerEntry.applicationId) {
+      throw new Error('The applicationId for Server Key and Provider do not match.');
+    }
+
+    notification.applicationId = providerEntry.applicationId;
 
     // Set correct application name using applicationId
     notification.createdBy = await this.getApplicationNameFromId(notification.applicationId);
@@ -117,13 +136,9 @@ export class NotificationsService {
       return;
     }
 
-    const enabledChannels = generateEnabledChannelEnum(this.configService);
-    const pendingNotifications = allPendingNotifications.filter((notification) =>
-      Object.values(enabledChannels).includes(notification.channelType),
-    );
-    this.logger.log(`Adding ${pendingNotifications.length} pending notifications to queue`);
+    this.logger.log(`Adding ${allPendingNotifications.length} pending notifications to queue`);
 
-    for (const notification of pendingNotifications) {
+    for (const notification of allPendingNotifications) {
       try {
         notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
         await this.notificationQueueService.addNotificationToQueue(notification);
@@ -160,93 +175,27 @@ export class NotificationsService {
     });
   }
 
-  async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
-    this.logger.log('Getting all active notifications with options');
+  async getAllNotifications(
+    options: QueryOptionsDto,
+    authorizationHeader: Request,
+  ): Promise<NotificationResponse> {
+    this.logger.log('Getting all notifications with options.');
 
-    const queryBuilder = this.notificationRepository.createQueryBuilder('notification');
+    // Get the applicationId currently being used for filtering data based on api key
+    const filterApplicationId = await this.getApplicationIdFromApiKey(authorizationHeader);
 
-    // Base where condition
-    queryBuilder.where('notification.status = :status', { status: Status.ACTIVE });
+    const baseConditions = [
+      { field: 'status', value: Status.ACTIVE },
+      { field: 'applicationId', value: filterApplicationId },
+    ];
+    const searchableFields = ['createdBy', 'data', 'result'];
 
-    // Search functionality using OR condition
-    if (options.search) {
-      const searchableFields = ['createdBy', 'data', 'result'];
-      queryBuilder.andWhere(
-        new Brackets((qb) => {
-          searchableFields.forEach((field, index) => {
-            const condition = `notification.${field} LIKE :search`;
-
-            if (index === 0) {
-              qb.where(condition, { search: `%${options.search}%` });
-            } else {
-              qb.orWhere(condition, { search: `%${options.search}%` });
-            }
-          });
-        }),
-      );
-    }
-
-    // Applying filters
-    let filterIndex = 0;
-    options.filters?.forEach((filter) => {
-      const field = filter.field;
-      const value = filter.value;
-      const condition = `notification.${field}`;
-      const paramName = `value${filterIndex}`; // Unique parameter name issue: https://github.com/typeorm/typeorm/issues/3428
-
-      switch (filter.operator) {
-        case 'eq':
-          queryBuilder.andWhere(`${condition} = :${paramName}`, { [paramName]: value });
-          break;
-        case 'contains':
-          if (typeof value === 'string') {
-            queryBuilder.andWhere(`${condition} LIKE :${paramName}`, { [paramName]: `%${value}%` });
-          }
-
-          break;
-        case 'gt':
-          queryBuilder.andWhere(`${condition} > :${paramName}`, {
-            [paramName]: this.isDateField(filter.field) ? new Date(String(value)) : value,
-          });
-          break;
-        case 'lt':
-          queryBuilder.andWhere(`${condition} < :${paramName}`, {
-            [paramName]: this.isDateField(filter.field) ? new Date(String(value)) : value,
-          });
-          break;
-        case 'ne':
-          queryBuilder.andWhere(`${condition} != :${paramName}`, { [paramName]: value });
-          break;
-      }
-
-      filterIndex++;
-    });
-
-    // Pagination and Sorting
-    if (options.offset !== undefined) {
-      queryBuilder.skip(options.offset);
-    }
-
-    if (options.limit !== undefined) {
-      queryBuilder.take(options.limit);
-    }
-
-    if (options.sortBy) {
-      queryBuilder.addOrderBy(
-        `notification.${options.sortBy}`,
-        options.sortOrder === SortOrder.ASC ? SortOrder.ASC : SortOrder.DESC,
-      );
-    }
-
-    const [notifications, total] = await queryBuilder.getManyAndCount();
-
-    return { notifications, total, offset: options.offset, limit: options.limit };
-  }
-
-  // Helper method to check if a field is a date field
-  private isDateField(field: string): boolean {
-    // List all date fields from your Notification entity
-    const dateFields = ['createdOn', 'updatedOn'];
-    return dateFields.includes(field);
+    const { items, total } = await super.findAll(
+      options,
+      'notification',
+      searchableFields,
+      baseConditions,
+    );
+    return new NotificationResponse(items, total, options.offset, options.limit);
   }
 }

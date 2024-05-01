@@ -15,11 +15,12 @@ import { BadRequestException } from '@nestjs/common';
 import { CreateNotificationDto } from 'src/modules/notifications/dtos/create-notification.dto';
 import { WaTwilioDataDto } from 'src/modules/notifications/dtos/providers/waTwilio-data.dto';
 import { SmsTwilioDataDto } from 'src/modules/notifications/dtos/providers/smsTwilio-data.dto';
+import { SmsPlivoDataDto } from 'src/modules/notifications/dtos/providers/plivo-data.dto';
 
 @ValidatorConstraint({ async: true })
 export class IsDataValidConstraint implements ValidatorConstraintInterface {
   async validate(value: object, args: ValidationArguments): Promise<boolean> {
-    const object = args.object as { channelType: number; data: object };
+    const object = args.object as { providerId: number; channelType: number; data: object };
     const { channelType } = object;
 
     const validateAndThrowError = async (validationData: object): Promise<void> => {
@@ -60,6 +61,12 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
         const smsTwilioData = new SmsTwilioDataDto();
         Object.assign(smsTwilioData, value);
         await validateAndThrowError(smsTwilioData);
+        return true;
+
+      case ChannelType.SMS_PLIVO:
+        const smsPlivoData = new SmsPlivoDataDto();
+        Object.assign(smsPlivoData, value);
+        await validateAndThrowError(smsPlivoData);
         return true;
 
       default:

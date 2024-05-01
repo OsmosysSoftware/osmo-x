@@ -2,17 +2,29 @@
 
 SMTP (Simple Mail Transfer Protocol) is a protocol used for sending email messages between servers. Nodemailer is a popular Node.js library that allows you to send emails using various transport methods, including SMTP.
 
-### ENV Values to Update
+### Values to Update in Database
 
-When using Nodemailer to send emails via SMTP, you need to provide certain environment variables that hold the SMTP server configuration details. Here are the ENV values you need to update:
+When using Nodemailer to send emails via SMTP, you need to provide certain variables that hold the SMTP server configuration details. Here are the values you need to update in table `notify_providers`:
 
-```sh
-# SMTP Configuration
-ENABLE_SMTP=true
-SMTP_HOST=smtp.example.com         # SMTP server hostname
-SMTP_PORT=587                      # Port number for SMTP (587 for TLS, 465 for SSL)
-SMTP_USERNAME=your-smtp-username   # Your SMTP username for authentication
-SMTP_PASSWORD=your-smtp-password   # Your SMTP password for authentication
+Set field `is_enabled` = 1
+
+Then set the following configurations in the `configuration` field
+
+| Key             | Description     |
+|-----------------|-----------------|
+| SMTP_HOST       | SMTP server hostname |
+| SMTP_PORT       | Port number for SMTP (587 for TLS, 465 for SSL) |
+| SMTP_USERNAME   | Your SMTP username for authentication |
+| SMTP_PASSWORD   | Your SMTP password for authentication |
+
+```jsonc
+// Sample json to set in configuration field
+{
+  "SMTP_HOST": "smtp.example.com",
+  "SMTP_PORT": 587,
+  "SMTP_USERNAME": "your-smtp-username",
+  "SMTP_PASSWORD": "your-smtp-password"
+}
 ```
 
 Make sure to replace `smtp.example.com`, `your-smtp-username`, and `your-smtp-password` with the appropriate values provided by your SMTP service provider.
@@ -23,7 +35,8 @@ Here's a sample request body:
 
 ```jsonc
 {
-  "channelType": 1,
+  "providerId": 1,                                 // Set your respective providerId
+  "channelType": 1,                                // ChannelType associated with providerId should be 1 (SMTP)
   "data": {
     "from": "sender@example.com",                  // Sender's email address
     "to": "recipient@example.com",                 // Recipient's email address

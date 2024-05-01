@@ -1,24 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { ProvidersService } from '../providers.service';
 
 @Injectable()
 export class SmtpService {
   private transporter: nodemailer.Transporter;
-  private configService: ConfigService = new ConfigService();
 
-  constructor() {
+  constructor(private readonly providersService: ProvidersService) {}
+
+  async assignTransport(providerId: number): Promise<void> {
+    const smtpConfig = await this.providersService.getConfigById(providerId);
     this.transporter = nodemailer.createTransport({
-      host: this.configService.getOrThrow<string>('SMTP_HOST'),
-      port: this.configService.getOrThrow<number>('SMTP_PORT'),
+      host: smtpConfig.SMTP_HOST as string,
+      port: smtpConfig.SMTP_PORT as number,
       auth: {
-        user: this.configService.getOrThrow<string>('SMTP_USERNAME'),
-        pass: this.configService.getOrThrow<string>('SMTP_PASSWORD'),
+        user: smtpConfig.SMTP_USERNAME as string,
+        pass: smtpConfig.SMTP_PASSWORD as string,
       },
     });
   }
 
-  sendEmail(smtpNotificationData: nodemailer.SendMailOptions): Promise<string> {
+  async sendEmail(
+    smtpNotificationData: nodemailer.SendMailOptions,
+    providerId: number,
+  ): Promise<string> {
+    await this.assignTransport(providerId);
     return this.transporter.sendMail(smtpNotificationData);
   }
 }

@@ -43,10 +43,10 @@ sudo systemctl status mariadb
    ```env
    # Server
    SERVER_PORT=3000
-   SERVER_API_KEY=OsmoX-test-key
 
    # Node env
    NODE_ENV=development
+
    # Database configuration
    DB_TYPE=mysql
    DB_HOST=localhost # use value as osmox-mariadb in docker
@@ -60,39 +60,6 @@ sudo systemctl status mariadb
    REDIS_HOST=127.0.0.1 # use value as osmox-redis in docker
    REDIS_PORT=6379
    REDIS_DOCKER_PORT=6397 # (required only if using docker)
-
-   # SMTP
-   ENABLE_SMTP=true
-   SMTP_HOST=
-   SMTP_PORT=
-   SMTP_USERNAME=
-   SMTP_PASSWORD=
-
-   # Mailgun
-   ENABLE_MAILGUN=true
-   MAILGUN_API_KEY=
-   MAILGUN_HOST=  # api.mailgun.net for US, api.eu.mailgun.net for EU
-   MAILGUN_DOMAIN=
-
-   # WhatsApp 360Dialog
-   ENABLE_WA360DIALOG=true
-   WA_360_DIALOG_URL=https://waba.360dialog.io/v1/messages
-   WA_360_DIALOG_API_KEY=
-
-   # WhatsApp Twilio
-   ENABLE_WA_TWILIO=
-   TWILIO_WA_ACCOUNT_SID=
-   TWILIO_WA_AUTH_TOKEN=
-   TWILIO_WA_NUMBER=
-
-   # SMS Twilio
-   ENABLE_SMS_TWILIO=
-   TWILIO_SMS_ACCOUNT_SID=
-   TWILIO_SMS_AUTH_TOKEN=
-   TWILIO_SMS_NUMBER=
-
-   # TEMP
-   APP_NAME=OsmoX
    ```
 
    Alternatively, use the `.env.example` file instead.

@@ -24,7 +24,10 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;
       const notification = (await this.notificationsService.getNotificationById(id))[0];
-      return this.waTwilioService.sendMessage(notification.data as unknown as WaTwilioData);
+      return this.waTwilioService.sendMessage(
+        notification.data as unknown as WaTwilioData,
+        notification.providerId,
+      );
     });
   }
 }

@@ -2,16 +2,27 @@
 
 Mailgun is an email service provider that offers a RESTful API for sending emails from your Node.js application. Their official `npm` module, `mailgun.js`, makes it easy to integrate Mailgun into your Node.js app and send emails using API requests.
 
-### ENV Values to Update
+### Values to Update in Database
 
-When using Mailgun to send emails via their API, you need to provide certain environment variables that hold the Mailgun configuration details. Here are the ENV values you need to update:
+When using Mailgun to send emails via their API, you need to provide certain variables that hold the Mailgun configuration details. Here are the values you need to update in table `notify_providers`:
 
-```sh
-# Mailgun
-ENABLE_MAILGUN=true
-MAILGUN_API_KEY=your-api-key         # Your Mailgun API key
-MAILGUN_HOST=api.mailgun.net         # Mailgun host; api.mailgun.net for US, api.eu.mailgun.net for EU
-MAILGUN_DOMAIN=your.mailgun.domain   # Your Mailgun domain name
+Set field `is_enabled` = 1
+
+Then set the following configurations in the `configuration` field
+
+| Key             | Description     |
+|-----------------|-----------------|
+| MAILGUN_API_KEY | Your Mailgun API key |
+| MAILGUN_HOST    | Mailgun host; api.mailgun.net for US, api.eu.mailgun.net for EU |
+| MAILGUN_DOMAIN  | Your Mailgun domain name |
+
+```jsonc
+// Sample json to set in configuration field
+{
+  "MAILGUN_API_KEY": "your-api-key ",
+  "MAILGUN_HOST": "api.mailgun.net ",
+  "MAILGUN_DOMAIN": "your.mailgun.domain"
+}
 ```
 
 Make sure to replace `your-api-key`, `api.mailgun.net`, and `your.mailgun.domain` with the appropriate values as per your Mailgun account setup.
@@ -22,7 +33,8 @@ Here's a sample request body:
 
 ```jsonc
 {
-  "channelType": 2,
+  "providerId": 2,                                  // Set your respective providerId
+  "channelType": 2,                                 // ChannelType associated with providerId should be 2 (Mailgun)
   "data": {
     "from": "sender@example.com",                   // Sender's email address
     "to": "recipient@example.com",                  // Recipient's email address
