@@ -4,9 +4,9 @@ Twilio enables sending SMS through its API, allowing developers to programmatica
 
 Refer to the messaging documentation to dive deeper into the features Twilio offers and understanding how it all works.
 
-### ENV Values to Update
+### Values to Update in Database
 
-When using Twilio to send SMS messages via their API/Client, you need to provide certain environment variables that hold the Twilio configuration details. Here are the ENV values you need to update:
+When using Twilio to send SMS messages via their API/Client, you need to provide certain variables that hold the Twilio configuration details. Here are the values you need to update:
 
 ```sh
 # SMS Twilio

@@ -24,7 +24,6 @@ Make sure Redis and MariaDB server are up and running.
   ```env
   # Server
   SERVER_PORT=3000
-  SERVER_API_KEY=OsmoX-test-key
 
   # Database configuration
   DB_TYPE=mysql
@@ -33,33 +32,12 @@ Make sure Redis and MariaDB server are up and running.
   DB_USERNAME=root
   DB_PASSWORD=your-password
   DB_NAME=your-database
-   MARIADB_DOCKER_PORT=3307 # (required only if using docker)
+  MARIADB_DOCKER_PORT=3307 # (required only if using docker)
 
   # Redis configuration
   REDIS_HOST=127.0.0.1 # use value as osmox-redis in docker
   REDIS_PORT=6379
   REDIS_DOCKER_PORT=6397 # (required only if using docker)
-
-  # SMTP
-  ENABLE_SMTP=true
-  SMTP_HOST=smtp.example.com
-  SMTP_PORT=587
-  SMTP_USERNAME=your-smtp-username
-  SMTP_PASSWORD=your-smtp-password
-
-  # Mailgun
-  ENABLE_MAILGUN=true
-  MAILGUN_API_KEY=your-mailgun-api-key
-  MAILGUN_HOST=api.mailgun.net
-  MAILGUN_DOMAIN=your.mailgun.domain
-
-  # WhatsApp 360Dialog
-  ENABLE_WA360DIALOG=true
-  WA_360_DIALOG_URL=https://waba.360dialog.io/v1/messages
-  WA_360_DIALOG_API_KEY=
-
-  # TEMP
-  APP_NAME=OsmoX
   ```
 
 Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.

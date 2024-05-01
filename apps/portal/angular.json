@@ -68,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "osmox-portal:build:production"
+              "buildTarget": "osmox-portal:build:production"
             },
             "development": {
-              "browserTarget": "osmox-portal:build:development"
+              "buildTarget": "osmox-portal:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -79,7 +79,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "osmox-portal:build"
+            "buildTarget": "osmox-portal:build"
           }
         },
         "test": {
@@ -103,6 +103,9 @@
     }
   },
   "cli": {
-    "schematicCollections": ["@angular-eslint/schematics"]
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ],
+    "analytics": false
   }
 }

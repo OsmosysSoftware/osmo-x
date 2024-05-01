@@ -4,7 +4,7 @@ export const Status = {
 };
 
 export const UserRoles = {
-  USER: 0,
+  BASIC: 0,
   ADMIN: 1,
 };
 
