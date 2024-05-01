@@ -4,13 +4,23 @@
 
 ### Values to Update in Database
 
-When using 360Dialog to send whatsApp messages via their API, you need to provide certain variables that hold the 360Dialog configuration details. Here are the values you need to update:
+When using 360Dialog to send whatsApp messages via their API, you need to provide certain variables that hold the 360Dialog configuration details. Here are the values you need to update in table `notify_providers`:
 
-```sh
-# WhatsApp 360Dialog
-ENABLE_WA360DIALOG=true
-WA_360_DIALOG_URL=api-url # which is https://waba.360dialog.io/v1/messages
-WA_360_DIALOG_API_KEY=your-api-key
+Set field `is_enabled` = 1
+
+Then set the following configurations in the `configuration` field
+
+| Key             | Description     |
+|-----------------|-----------------|
+| WA_360_DIALOG_API_KEY    | WA 360 Dialog api key |
+| WA_360_DIALOG_URL        | api url which is https://waba.360dialog.io/v1/messages |
+
+```jsonc
+// Sample json to set in configuration field
+{
+  "WA_360_DIALOG_API_KEY": "api-url",
+  "WA_360_DIALOG_URL": "your-api-key"
+}
 ```
 
 Make sure to replace `your-api-key` and `api-url` with the appropriate values.
@@ -21,6 +31,8 @@ Here's a sample request body:
 
 ```jsonc
 {
+    // Set your respective providerId
+    "providerId": 3,
     "channelType": 3,
     "data": {
         "to": "919004812051",

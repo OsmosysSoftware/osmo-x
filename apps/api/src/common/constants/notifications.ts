@@ -11,4 +11,5 @@ export const ChannelType = {
   WA_360_DAILOG: 3,
   WA_TWILIO: 4,
   SMS_TWILIO: 5,
+  SMS_PLIVO: 6,
 };

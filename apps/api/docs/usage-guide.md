@@ -101,6 +101,7 @@ OsmoX supports multiple channel types, allowing you to choose the most suitable 
 |         WhatsApp - 360Dialog         |     3     | [WhatsApp - 360Dialog](channels/wa-360Dialog.md) |
 |          WhatsApp - Twilio           |     4     |    [WhatsApp - Twilio](channels/wa-Twilio.md)    |
 |             SMS - Twilio             |     5     |      [SMS - Twilio](channels/sms-Twilio.md)      |
+|             SMS - Plivo              |     6     |      [SMS - Plivo](channels/sms-Plivo.md)      |
 
 ## 6. Delivery Status Information
 
