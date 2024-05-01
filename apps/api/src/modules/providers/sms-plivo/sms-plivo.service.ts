@@ -7,13 +7,11 @@ export interface SmsPlivoData {
   message: string;
 }
 
-/*
 export interface SmsPlivoResponseData {
   api_id: string;
   message: string;
   message_uuid: string[];
 }
-*/
 
 @Injectable()
 export class SmsPlivoService {
@@ -28,7 +26,7 @@ export class SmsPlivoService {
     this.plivoClient = new plivo.Client(authId, authToken);
   }
 
-  async sendMessage(body: SmsPlivoData, providerId: number): Promise<unknown> {
+  async sendMessage(body: SmsPlivoData, providerId: number): Promise<SmsPlivoResponseData> {
     await this.assignTransport(providerId);
     const smsPlivoConfig = await this.providersService.getConfigById(providerId);
     const fromNumber = smsPlivoConfig.PLIVO_SMS_NUMBER as string;
