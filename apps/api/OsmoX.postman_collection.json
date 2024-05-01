@@ -1,12 +1,598 @@
 {
 	"info": {
-		"_postman_id": "6b149bb4-7b28-497b-af99-fab5641f5c43",
+		"_postman_id": "73374830-c505-45f9-a3b5-97773a13ee19",
 		"name": "OsmoX",
 		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "27217372"
 	},
 	"item": [
+		{
+			"name": "SMTP Notifications",
+			"item": [
+				{
+					"name": "Send SMTP Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 1);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 1 also has channelType 1\n    \"providerId\": 1,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SMTP channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMTP Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 1);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 6 does not have channelType 1\n    \"providerId\": 6,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SMTP channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMTP Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 1,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMTP Notification - Invalid channel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid 'channelType'\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 1,\n    \"channelType\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid channel value."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SMTP Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid API key\", function () {",
+									"    pm.expect(pm.response.code).to.equal(401);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 1,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the SMTP channel type."
+		},
+		{
+			"name": "Mailgun Notifications",
+			"item": [
+				{
+					"name": "Send Mailgun Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 2\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 2);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 2 also has channelType 2\n    \"providerId\": 2,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Mailgun channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Mailgun Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 2\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 2);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 6 does not have channelType 2\n    \"providerId\": 6,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Mailgun channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Mailgun Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 2,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Mailgun channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Mailgun Notification - Invalid channel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid 'channelType'\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 2,\n    \"channelType\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid channel value."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Mailgun Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid API key\", function () {",
+									"    pm.expect(pm.response.code).to.equal(401);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 2,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the Mailgun channel type."
+		},
 		{
 			"name": "360Dialog WhatsApp Notifications",
 			"item": [
@@ -887,34 +1473,34 @@
 			"description": "Collection of requests pertaining to creating notifications for the Twilio SMS channel type."
 		},
 		{
-			"name": "Mailgun Notifications",
+			"name": "Plivo SMS Notifications",
 			"item": [
 				{
-					"name": "Send Mailgun Notification - Success",
+					"name": "Send Plivo SMS Notification - Success",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
+									"  pm.response.to.be.json;",
 									"});",
 									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"  pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
 									"});",
 									"pm.test(\"Response contains a valid 'notification' object\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
-									"pm.test(\"Response 'channelType' is 2\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 2);",
+									"pm.test(\"Response 'channelType' is 5\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 5);",
 									"});",
 									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
 									"});",
 									""
 								],
@@ -938,7 +1524,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 2 also has channelType 2\n    \"providerId\": 2,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 6 also has channelType 6\n    \"providerId\": 6,\n    \"channelType\": 6,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -950,36 +1536,36 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Mailgun channel type."
+						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
 					},
 					"response": []
 				},
 				{
-					"name": "Send Mailgun Notification - Mismatch in ChannelType",
+					"name": "Send Plivo SMS Notification - Mismatch in ChannelType",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
+									"  pm.response.to.be.json;",
 									"});",
 									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"  pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
 									"});",
 									"pm.test(\"Response contains a valid 'notification' object\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
-									"pm.test(\"Response 'channelType' is 2\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 2);",
+									"pm.test(\"Response 'channelType' is 5\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 5);",
 									"});",
 									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
 									"});",
 									""
 								],
@@ -1003,7 +1589,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 6 does not have channelType 2\n    \"providerId\": 6,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 1 does not have channelType 6\n    \"providerId\": 1,\n    \"channelType\": 6,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1015,24 +1601,24 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Mailgun channel type."
+						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
 					},
 					"response": []
 				},
 				{
-					"name": "Send Mailgun Notification - Missing To Field",
+					"name": "Send Plivo SMS Notification - Missing To Field",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
+									"  pm.response.to.be.json;",
 									"});",
 									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"  pm.expect(pm.response.code).to.equal(400);",
+									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"  pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1055,7 +1641,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"providerId\": 2,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+							"raw": "{\n    \"providerId\": 6,\n    \"channelType\": 6,\n    \"data\": {\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1067,24 +1653,24 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Mailgun channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
 					},
 					"response": []
 				},
 				{
-					"name": "Send Mailgun Notification - Invalid channel",
+					"name": "Send Plivo SMS Notification - Invalid channel",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
+									"  pm.response.to.be.json;",
 									"});",
 									"pm.test(\"Response for Invalid 'channelType'\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
+									"  pm.expect(pm.response.code).to.equal(400);",
+									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"  pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3, 4, 5\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1107,7 +1693,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"providerId\": 2,\n    \"channelType\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+							"raw": "{\n    \"providerId\": 6,\n    \"channelType\": 55,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1119,24 +1705,24 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid channel value."
+						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid channel value."
 					},
 					"response": []
 				},
 				{
-					"name": "Send Mailgun Notification - Invalid API Key",
+					"name": "Send Plivo SMS Notification - Invalid API Key",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
+									"  pm.response.to.be.json;",
 									"});",
 									"pm.test(\"Failed request with invalid API key\", function () {",
-									"    pm.expect(pm.response.code).to.equal(401);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"  pm.expect(pm.response.code).to.equal(401);",
+									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"  pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
 									"});",
 									""
 								],
@@ -1160,7 +1746,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"providerId\": 2,\n    \"channelType\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+							"raw": "{\n    \"providerId\": 6,\n    \"channelType\": 6,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1172,305 +1758,12 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
 					},
 					"response": []
 				}
 			],
-			"description": "Collection of requests pertaining to creating notifications for the Mailgun channel type."
-		},
-		{
-			"name": "SMTP Notifications",
-			"item": [
-				{
-					"name": "Send SMTP Notification - Success",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 1);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 1 also has channelType 1\n    \"providerId\": 1,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
-					},
-					"response": []
-				},
-				{
-					"name": "Send SMTP Notification - Mismatch in ChannelType",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 1);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 6 does not have channelType 1\n    \"providerId\": 6,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
-					},
-					"response": []
-				},
-				{
-					"name": "Send SMTP Notification - Missing To Field",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 1,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
-					},
-					"response": []
-				},
-				{
-					"name": "Send SMTP Notification - Invalid channel",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response for Invalid 'channelType'\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data[0]).to.equal(\"channelType must be one of the following values: 1, 2, 3\");",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 1,\n    \"channelType\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid channel value."
-					},
-					"response": []
-				},
-				{
-					"name": "Send SMTP Notification - Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Failed request with invalid API key\", function () {",
-									"    pm.expect(pm.response.code).to.equal(401);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "bad-api-key",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 1,\n    \"channelType\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
-					},
-					"response": []
-				}
-			],
-			"description": "Collection of requests pertaining to creating notifications for the SMTP channel type."
+			"description": "Collection of requests pertaining to creating notifications for the Plivo SMS channel type."
 		},
 		{
 			"name": "Authentication",
@@ -1856,7 +2149,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to fetching single notification by Id"
 		},
 		{
 			"name": "All Applications",
@@ -1933,7 +2227,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to fetching all applications."
 		},
 		{
 			"name": "New Application",
@@ -2010,7 +2305,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to creating new application."
 		}
 	]
 }
