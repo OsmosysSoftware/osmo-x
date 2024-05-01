@@ -7,6 +7,7 @@ import { loggerConfig } from './config/logger.config';
 import { JsendFormatter } from './common/jsend-formatter';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as packageJson from '../package.json';
 
 const logDir = 'logs';
 
@@ -21,13 +22,12 @@ async function bootstrap(): Promise<void> {
     logger: loggerConfig,
   });
   const config = new DocumentBuilder()
-    .setTitle('OsmoX')
-    .setDescription(
-      'Centralized multi-channel notification management component for streamlined communication across email, SMS, WhatsApp, and push notifications.',
-    )
-    .setVersion('2.0.0')
+    .setTitle(packageJson.name)
+    .setDescription(packageJson.description)
+    .setVersion(packageJson.version)
     .addBearerAuth()
     .build();
+  
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.useGlobalPipes(new ValidationPipe());
