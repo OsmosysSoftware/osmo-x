@@ -6,7 +6,7 @@ This particular provider can be used to send WhatsApp messages generated using C
 
 ### Values to Update in Database
 
-When using Twilio to send whatsApp messages via their API/Client, you need to provide certain variables that hold the Twilio configuration details. Here are the values you need to update in table `notify_providers`:
+When using Twilio to send WhatsApp messages via their API/Client, you need to provide certain variables that hold the Twilio configuration details. Here are the values you need to update in table `notify_providers`:
 
 Set field `is_enabled` as 1.
 
