@@ -8,6 +8,7 @@ import { WA360DIALOG_QUEUE } from 'src/modules/notifications/queues/wa360dialog.
 import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
 import { WA_TWILIO_QUEUE } from 'src/modules/notifications/queues/waTwilio.queue';
 import { SMS_TWILIO_QUEUE } from 'src/modules/notifications/queues/smsTwilio.queue';
+import { SMS_PLIVO_QUEUE } from 'src/modules/notifications/queues/smsPlivo.queue';
 import { WA_TWILIO_BUSINESS_QUEUE } from 'src/modules/notifications/queues/waTwilioBusiness.queue';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class NotificationQueueProducer {
     @Optional() @InjectQueue(WA360DIALOG_QUEUE) private readonly wa360DialogQueue: Queue,
     @Optional() @InjectQueue(WA_TWILIO_QUEUE) private readonly waTwilioQueue: Queue,
     @Optional() @InjectQueue(SMS_TWILIO_QUEUE) private readonly smsTwilioQueue: Queue,
+    @Optional() @InjectQueue(SMS_PLIVO_QUEUE) private readonly smsPlivoQueue: Queue,
     @Optional()
     @InjectQueue(WA_TWILIO_BUSINESS_QUEUE)
     private readonly waTwilioBusinessQueue: Queue,
@@ -41,6 +43,7 @@ export class NotificationQueueProducer {
       this.wa360DialogQueue,
       this.waTwilioQueue,
       this.smsTwilioQueue,
+      this.smsPlivoQueue,
       this.waTwilioBusinessQueue,
     ].filter((q) => q);
     this.listenForError(queues);
@@ -72,10 +75,15 @@ export class NotificationQueueProducer {
         }
 
         break;
-
       case ChannelType.SMS_TWILIO:
         if (this.smsTwilioQueue) {
           await this.smsTwilioQueue.add(notification.id);
+        }
+
+        break;
+      case ChannelType.SMS_PLIVO:
+        if (this.smsPlivoQueue) {
+          await this.smsPlivoQueue.add(notification.id);
         }
 
         break;
