@@ -34,6 +34,9 @@ import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { ProvidersModule } from '../providers/providers.module';
 import { ProvidersService } from '../providers/providers.service';
+import { WaTwilioBusinessModule } from '../providers/wa-twilio-business/wa-twilio-business.module';
+import { waTwilioBusinessQueueConfig } from './queues/waTwilioBusiness.queue';
+import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 
 @Module({})
 export class NotificationsModule {
@@ -67,6 +70,11 @@ export class NotificationsModule {
     modulesToLoad.push(SmsTwilioModule);
     queuesToLoad.push(smsTwilioQueueConfig);
     consumersToLoad.push(SmsTwilioNotificationsConsumer);
+
+    // Load WA_TWILIO_BUSINESS
+    modulesToLoad.push(WaTwilioBusinessModule);
+    queuesToLoad.push(waTwilioBusinessQueueConfig);
+    consumersToLoad.push(WaTwilioBusinessNotificationsConsumer);
 
     const serviceProviderModules: DynamicModule[] = modulesToLoad;
 

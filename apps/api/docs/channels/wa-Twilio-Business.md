@@ -1,0 +1,51 @@
+## Twilio WhatsApp (Business)
+
+Using the WhatsApp Business Platform with Twilio, you can send and receive messages to WhatsApp users using the same Twilio Messaging APIs you already know and enjoy. Dive into the Twilio SDKs and helper libraries, see the quickstart and API reference docs, read through guides on templates and Twilio phone numbers, and find the sample code you'll need.
+
+This particular provider can be used to send WhatsApp messages generated using Content Template Builder.
+
+### Values to Update in Database
+
+When using Twilio to send whatsApp messages via their API/Client, you need to provide certain variables that hold the Twilio configuration details. Here are the values you need to update in table `notify_providers`:
+
+Set field `is_enabled` as 1.
+
+Then set the following configurations in `configuration` field:
+
+| Key                   | Description            |
+| --------------------- | ---------------------- |
+| TWILIO_WA_ACCOUNT_SID | Twilio SMS account SID |
+| TWILIO_WA_AUTH_TOKEN  | Twilio SMS auth token  |
+
+```jsonc
+// Sample json to set in configuration field
+{
+  "TWILIO_WA_ACCOUNT_SID": "ACXXXXXXXXXXXXXXXXX",
+  "TWILIO_WA_AUTH_TOKEN": "someauthtoken"
+}
+```
+
+### Sample Request Body
+
+Here's a sample request body:
+
+```jsonc
+{
+  // Set your respective providerId
+  "providerId": 7,
+  "channelType": 7,
+  "data": {
+    "contentSid": "HXXXXXXXXX",
+    "from": "MGXXXXXXXX",
+    "contentVariables": {
+      "1": "Name",
+      "2": "52" // Numbers should also be strings
+    },
+    "to": "+919004812051"
+  }
+}
+```
+
+References
+
+- https://www.twilio.com/docs/content/send-templates-created-with-the-content-template-builder
