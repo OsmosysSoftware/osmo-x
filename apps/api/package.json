@@ -54,6 +54,7 @@
     "nodemailer": "^6.9.9",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
+    "plivo": "^4.62.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "twilio": "^5.0.0-rc.1",

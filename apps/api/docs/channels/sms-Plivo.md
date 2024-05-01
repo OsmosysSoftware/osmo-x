@@ -1,6 +1,6 @@
-## Twilio SMS
+## Plivo SMS
 
-Twilio enables sending SMS through its API, allowing developers to programmatically send and receive text messages worldwide. Users integrate Twilio's API into their applications, triggering automated SMS messages for various purposes such as notifications, alerts, and customer communications.
+Plivo enables sending SMS through its API, allowing developers to programmatically send and receive text messages worldwide. Users integrate Plivo's API into their applications, triggering automated SMS messages for various purposes such as notifications, alerts, and customer communications.
 
 Refer to the messaging documentation to dive deeper into the features Plivo offers and understand how it all works.
 
@@ -14,16 +14,16 @@ Then set the following configurations in the `configuration` field
 
 | Key             | Description     |
 |-----------------|-----------------|
-| TWILIO_SMS_ACCOUNT_SID   | Twilio SMS account SID |
-| TWILIO_SMS_AUTH_TOKEN    | Twilio SMS auth token |
-| TWILIO_SMS_NUMBER        | Twilio registered phone number |
+| PLIVO_SMS_AUTH_ID    | Plivo Auth Id |
+| PLIVO_SMS_AUTH_TOKEN | Plivo Auth Token |
+| PLIVO_SMS_NUMBER     | Plivo registered Number |
 
 ```jsonc
 // Sample json to set in configuration field
 {
-  "TWILIO_SMS_ACCOUNT_SID": "ACapiKeyMsg",
-  "TWILIO_SMS_AUTH_TOKEN": "some-auth-token",
-  "TWILIO_SMS_NUMBER": "+15005550006"
+  "PLIVO_SMS_AUTH_ID": "PlivoAuthId",
+  "PLIVO_SMS_AUTH_TOKEN": "PlivoAuthToken",
+  "PLIVO_SMS_NUMBER": "+919000180002"
 }
 ```
 
@@ -34,15 +34,15 @@ Here's a sample request body:
 ```jsonc
 {
   // Set your respective providerId
-  "providerId": 5,
-  "channelType": 5,
+  "providerId": 6,
+  "channelType": 6,
   "data": {
     "to": "+15005550006",
-    "message": "Your appointment is coming up on March 21 at 2PM"
+    "message": "This is a test message from OsmoX."
   }
 }
 ```
 
 ### References
 
-- https://www.twilio.com/docs/messaging/quickstart
+- https://www.plivo.com/docs/messaging/quickstart/node-expressjs/

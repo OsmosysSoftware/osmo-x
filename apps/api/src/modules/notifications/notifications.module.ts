@@ -34,6 +34,9 @@ import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { ProvidersModule } from '../providers/providers.module';
 import { ProvidersService } from '../providers/providers.service';
+import { SmsPlivoModule } from '../providers/sms-plivo/sms-plivo.module';
+import { smsPlivoQueueConfig } from './queues/smsPlivo.queue';
+import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
 
 @Module({})
 export class NotificationsModule {
@@ -67,6 +70,11 @@ export class NotificationsModule {
     modulesToLoad.push(SmsTwilioModule);
     queuesToLoad.push(smsTwilioQueueConfig);
     consumersToLoad.push(SmsTwilioNotificationsConsumer);
+
+    // Load SMS_PLIVO
+    modulesToLoad.push(SmsPlivoModule);
+    queuesToLoad.push(smsPlivoQueueConfig);
+    consumersToLoad.push(SmsPlivoNotificationsConsumer);
 
     const serviceProviderModules: DynamicModule[] = modulesToLoad;
 
