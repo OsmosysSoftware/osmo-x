@@ -66,6 +66,15 @@ export class SeedData1692870736646 implements MigrationInterface {
       ],
     );
 
+    await queryRunner.query(
+      `INSERT INTO notify_master_providers (name,provider_type,configuration) VALUES (?, ?, ?)`,
+      [
+        'SMS_PLIVO',
+        2,
+        '{"PLIVO_SMS_AUTH_ID":{"label":"PLIVO SMS AUTH ID","id":"PLIVO_SMS_AUTH_ID","pattern":"^AC\\w{3,}$","type":"string"},"PLIVO_SMS_AUTH_TOKEN":{"label":"PLIVO SMS AUTH TOKEN","id":"PLIVO_SMS_AUTH_TOKEN","pattern":"^[a-zA-Z0-9-_]{16,512}$","type":"string"},"PLIVO_SMS_NUMBER":{"label":"PLIVO SMS NUMBER","id":"PLIVO_SMS_NUMBER","pattern":"^\\+[1-9]\\d{6,14}$","type":"string"}}',
+      ],
+    );
+
     // Add foreign key for channel_type -> master_id
     // Adding this after seeding data in master_providers so FK constraint does not fail
     await queryRunner.createForeignKey(
@@ -83,7 +92,7 @@ export class SeedData1692870736646 implements MigrationInterface {
     await queryRunner.dropForeignKey('notify_notifications', 'channel_type');
     await queryRunner.query(`
       DELETE FROM notify_master_providers
-      WHERE id IN (1, 2, 3, 4, 5);
+      WHERE id IN (1, 2, 3, 4, 5, 6);
     `);
     await queryRunner.query(`
       DELETE FROM notify_server_api_keys
