@@ -39,7 +39,7 @@ Make sure Redis and MariaDB server are up and running.
   REDIS_PORT=6379
   REDIS_DOCKER_PORT=6397 # (required only if using docker)
 
-  # TEMP
+  # Docker env
   COMPOSE_PROJECT_NAME=osmo-x  # Add your project name here.
   ```
 
