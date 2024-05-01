@@ -42,7 +42,15 @@ Please make sure to have these versions installed on your development server bef
 
    Make sure to replace the above example values with appropriate values as per your setup and configuration.
 
-4. Start the development server:
+4. Declare project-name in the .env and .env.example files:
+
+   ```sh
+   COMPOSE_PROJECT_NAME=project-name
+   ```
+
+   Updating .env and .env.example with COMPOSE_PROJECT_NAME=project-name is needed to set the project name for Docker Compose, which helps in organizing and managing multiple Docker projects running on the same system
+
+5. Start the development server:
 
    ```sh
    npm run start
