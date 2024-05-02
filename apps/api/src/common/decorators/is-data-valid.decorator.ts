@@ -26,8 +26,14 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
 
   async validate(value: object, args: ValidationArguments): Promise<boolean> {
     const object = args.object as { providerId: number; data: object };
-    const channelTypeFromProviderId = (await this.providersService.getById(object.providerId))
-      .channelType;
+    let channelTypeFromProviderId = null;
+
+    try {
+      channelTypeFromProviderId = (await this.providersService.getById(object.providerId))
+        .channelType;
+    } catch (error) {
+      throw new Error(`Error while fetching channelType from ProviderId: ${error}`);
+    }
 
     const validateAndThrowError = async (validationData: object): Promise<void> => {
       const errors: ValidationError[] = await validate(validationData);
