@@ -10,6 +10,8 @@ export const ChannelType = {
   MAILGUN: 2,
   WA_360_DAILOG: 3,
   WA_TWILIO: 4,
+  SMS_TWILIO: 5,
+  SMS_PLIVO: 6,
 };
 
 export const ChannelTypeMap = {
@@ -38,6 +40,20 @@ export const ChannelTypeMap = {
     serviceIcon: 'assets/icons/whatsapp.svg',
     altText: 'WhatsApp',
     providerName: 'Twilio',
+    providerIcon: 'assets/icons/twilio.svg',
+    style: 'whatsapp',
+  },
+  [ChannelType.SMS_TWILIO]: {
+    serviceIcon: 'assets/icons/whatsapp.svg',
+    altText: 'SMS',
+    providerName: 'Twilio',
+    providerIcon: 'assets/icons/twilio.svg',
+    style: 'whatsapp',
+  },
+  [ChannelType.SMS_PLIVO]: {
+    serviceIcon: 'assets/icons/whatsapp.svg',
+    altText: 'SMS',
+    providerName: 'Plivo',
     providerIcon: 'assets/icons/twilio.svg',
     style: 'whatsapp',
   },
