@@ -17,12 +17,24 @@ import { WaTwilioDataDto } from 'src/modules/notifications/dtos/providers/waTwil
 import { SmsTwilioDataDto } from 'src/modules/notifications/dtos/providers/smsTwilio-data.dto';
 import { SmsPlivoDataDto } from 'src/modules/notifications/dtos/providers/plivo-data.dto';
 import { WaTwilioBusinessDataDto } from 'src/modules/notifications/dtos/providers/waTwilioBusiness-data.dto';
+import { Injectable } from '@nestjs/common';
+import { ProvidersService } from 'src/modules/providers/providers.service';
 
-@ValidatorConstraint({ async: true })
+@ValidatorConstraint({ name: 'isDataValidConstraint', async: true })
+@Injectable()
 export class IsDataValidConstraint implements ValidatorConstraintInterface {
+  constructor(private readonly providersService: ProvidersService) {}
+
   async validate(value: object, args: ValidationArguments): Promise<boolean> {
-    const object = args.object as { providerId: number; channelType: number; data: object };
-    const { channelType } = object;
+    const object = args.object as { providerId: number; data: object };
+    let channelTypeFromProviderId = null;
+
+    try {
+      channelTypeFromProviderId = (await this.providersService.getById(object.providerId))
+        .channelType;
+    } catch (error) {
+      throw new Error(`Error while fetching channelType from ProviderId: ${error}`);
+    }
 
     const validateAndThrowError = async (validationData: object): Promise<void> => {
       const errors: ValidationError[] = await validate(validationData);
@@ -33,7 +45,7 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
       }
     };
 
-    switch (channelType) {
+    switch (channelTypeFromProviderId) {
       case ChannelType.SMTP:
         const smtpData = new SMTPDataDto();
         Object.assign(smtpData, value);

@@ -6,7 +6,10 @@ SMTP (Simple Mail Transfer Protocol) is a protocol used for sending email messag
 
 When using Nodemailer to send emails via SMTP, you need to provide certain variables that hold the SMTP server configuration details. Here are the values you need to update in table `notify_providers`:
 
-Set field `is_enabled` = 1
+Create a new entry in table `notify_providers` and set the fields - `name`, `application_id`, `user_id`
+
+- Set field `channel_type` = 1 (for SMTP)
+- Set field `is_enabled` = 1 (to enable the newly created provider)
 
 Then set the following configurations in the `configuration` field
 
@@ -35,8 +38,8 @@ Here's a sample request body:
 
 ```jsonc
 {
-  "providerId": 1,                                 // Set your respective providerId
-  "channelType": 1,                                // ChannelType associated with providerId should be 1 (SMTP)
+  // Set your respective providerId. ChannelType associated with providerId should be 1 (SMTP)
+  "providerId": 1,
   "data": {
     "from": "sender@example.com",                  // Sender's email address
     "to": "recipient@example.com",                 // Recipient's email address

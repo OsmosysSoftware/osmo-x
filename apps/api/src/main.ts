@@ -6,6 +6,9 @@ import * as fs from 'fs';
 import { loggerConfig } from './config/logger.config';
 import { JsendFormatter } from './common/jsend-formatter';
 import { HttpExceptionFilter } from './common/http-exception.filter';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as packageJson from '../package.json';
+import { useContainer } from 'class-validator';
 
 const logDir = 'logs';
 
@@ -19,6 +22,16 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     logger: loggerConfig,
   });
+  // used to inject services in validator decorators
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  const config = new DocumentBuilder()
+    .setTitle(packageJson.name)
+    .setDescription(packageJson.description)
+    .setVersion(packageJson.version)
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter(new JsendFormatter()));
   // TODO: Update origin as needed

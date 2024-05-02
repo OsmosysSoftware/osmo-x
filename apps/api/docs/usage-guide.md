@@ -47,7 +47,6 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
 ```json
 {
   "providerId": 1,
-  "channelType": 1,
   "data": {
     "from": "sender@example.com",
     "to": "recipient@example.com",
