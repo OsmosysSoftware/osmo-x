@@ -9,6 +9,7 @@ import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
 import { WA_TWILIO_QUEUE } from 'src/modules/notifications/queues/waTwilio.queue';
 import { SMS_TWILIO_QUEUE } from 'src/modules/notifications/queues/smsTwilio.queue';
 import { SMS_PLIVO_QUEUE } from 'src/modules/notifications/queues/smsPlivo.queue';
+import { WA_TWILIO_BUSINESS_QUEUE } from 'src/modules/notifications/queues/waTwilioBusiness.queue';
 
 @Injectable()
 export class NotificationQueueProducer {
@@ -21,6 +22,9 @@ export class NotificationQueueProducer {
     @Optional() @InjectQueue(WA_TWILIO_QUEUE) private readonly waTwilioQueue: Queue,
     @Optional() @InjectQueue(SMS_TWILIO_QUEUE) private readonly smsTwilioQueue: Queue,
     @Optional() @InjectQueue(SMS_PLIVO_QUEUE) private readonly smsPlivoQueue: Queue,
+    @Optional()
+    @InjectQueue(WA_TWILIO_BUSINESS_QUEUE)
+    private readonly waTwilioBusinessQueue: Queue,
   ) {}
 
   private listenForError(queue: Queue[]): void {
@@ -40,6 +44,7 @@ export class NotificationQueueProducer {
       this.waTwilioQueue,
       this.smsTwilioQueue,
       this.smsPlivoQueue,
+      this.waTwilioBusinessQueue,
     ].filter((q) => q);
     this.listenForError(queues);
   }
@@ -79,6 +84,13 @@ export class NotificationQueueProducer {
       case ChannelType.SMS_PLIVO:
         if (this.smsPlivoQueue) {
           await this.smsPlivoQueue.add(notification.id);
+        }
+
+        break;
+
+      case ChannelType.WA_TWILIO_BUSINESS:
+        if (this.waTwilioBusinessQueue) {
+          await this.waTwilioBusinessQueue.add(notification.id);
         }
 
         break;

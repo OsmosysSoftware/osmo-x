@@ -12,6 +12,7 @@ Welcome to the usage guide for OsmoX, a powerful notification management system 
   - [1. Overview](#1-overview)
   - [2. Pushing Data to the Database](#2-pushing-data-to-the-database)
   - [3. Using the OsmoX API](#3-using-the-osmox-api)
+    - [Authorization Header](#authorization-header)
   - [4. Tracking Notification Status](#4-tracking-notification-status)
   - [5. Available Channel Types](#5-available-channel-types)
   - [6. Delivery Status Information](#6-delivery-status-information)
@@ -46,7 +47,6 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
 ```json
 {
   "providerId": 1,
-  "channelType": 1,
   "data": {
     "from": "sender@example.com",
     "to": "recipient@example.com",
@@ -94,14 +94,15 @@ OsmoX updates the `delivery_status` and `result` columns to provide information 
 
 OsmoX supports multiple channel types, allowing you to choose the most suitable one for your notifications. Currently, the available channel types are:
 
-|           **Channel Type**           | **Value** |                   **Document**                   |
-| :----------------------------------: | :-------: | :----------------------------------------------: |
-| SMTP - Simple Mail Transfer Protocol |     1     |             [SMTP](channels/smtp.md)             |
-|               Mailgun                |     2     |          [Mailgun](channels/mailgun.md)          |
-|         WhatsApp - 360Dialog         |     3     | [WhatsApp - 360Dialog](channels/wa-360Dialog.md) |
-|          WhatsApp - Twilio           |     4     |    [WhatsApp - Twilio](channels/wa-Twilio.md)    |
-|             SMS - Twilio             |     5     |      [SMS - Twilio](channels/sms-Twilio.md)      |
-|             SMS - Plivo              |     6     |      [SMS - Plivo](channels/sms-Plivo.md)      |
+|           **Channel Type**           | **Value** |                          **Document**                          |
+| :----------------------------------: | :-------: | :------------------------------------------------------------: |
+| SMTP - Simple Mail Transfer Protocol |     1     |                    [SMTP](channels/smtp.md)                    |
+|               Mailgun                |     2     |                 [Mailgun](channels/mailgun.md)                 |
+|         WhatsApp - 360Dialog         |     3     |        [WhatsApp - 360Dialog](channels/wa-360Dialog.md)        |
+|          WhatsApp - Twilio           |     4     |           [WhatsApp - Twilio](channels/wa-Twilio.md)           |
+|             SMS - Twilio             |     5     |             [SMS - Twilio](channels/sms-Twilio.md)             |
+|             SMS - Plivo              |     6     |              [SMS - Plivo](channels/sms-Plivo.md)              |
+|     WhatsApp - Twilio (Business)     |     7     | [WhatsApp - Twilio (Business)](channels/wa-Twilio-Business.md) |
 
 ## 6. Delivery Status Information
 

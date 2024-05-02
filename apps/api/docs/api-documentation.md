@@ -78,7 +78,11 @@ This sections lists notification related requests such as creating new notificat
 
 Allows the user to create a new notification for processing and sending it. Requires passing bearer token for authorization.
 
-Note: The `channelType` should be the same as the channel type set in the `providerId`.
+**Note:**
+- The **Provider** should have a valid `channelType`.
+- The **Provider** should be enabled.
+- The `application id` for the **Server API Key** and **Provider** should match.
+- The `data` passed should have all the fields related to `channelType`.
 
 Refer the [Available Channel Types](./usage-guide.md#5-available-channel-types) for understanding the different channel types and [Delivery Status Information](./usage-guide.md#6-delivery-status-information) for understanding `deliveryStatus` in response.
 
@@ -91,7 +95,6 @@ Refer the [Available Channel Types](./usage-guide.md#5-available-channel-types) 
 ```json
 {
   "providerId": 1,
-  "channelType": 1,
   "data": {
     "from": "sender@email.com",
     "to": "receiver@email.com",
@@ -110,7 +113,6 @@ curl --location 'http://localhost:3000/notifications' \
 --header 'Authorization: Bearer mysecuretoken' \
 --data-raw '{
   "providerId": 1,
-  "channelType": 1,
   "data": {
     "from": "sender@email.com",
     "to": "receiver@email.com",
