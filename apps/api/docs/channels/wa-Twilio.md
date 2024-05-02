@@ -6,7 +6,10 @@ Using the WhatsApp Business Platform with Twilio, you can send and receive messa
 
 When using Twilio to send whatsApp messages via their API/Client, you need to provide certain variables that hold the Twilio configuration details. Here are the values you need to update in table `notify_providers`:
 
-Set field `is_enabled` = 1
+Create a new entry in table `notify_providers` and set the fields - `name`, `application_id`, `user_id`
+
+- Set field `channel_type` = 4 (for Twilio WhatsApp)
+- Set field `is_enabled` = 1 (to enable the newly created provider)
 
 Then set the following configurations in the `configuration` field
 
@@ -31,7 +34,7 @@ Here's a sample request body:
 
 ```jsonc
 {
-  // Set your respective providerId
+  // Set your respective providerId. ChannelType associated with providerId should be 4 (Twilio WhatsApp)
   "providerId": 4,
   "channelType": 4,
   "data": {
