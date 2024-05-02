@@ -8,7 +8,10 @@ This particular provider can be used to send WhatsApp messages generated using C
 
 When using Twilio to send WhatsApp messages via their API/Client, you need to provide certain variables that hold the Twilio configuration details. Here are the values you need to update in table `notify_providers`:
 
-Set field `is_enabled` as 1.
+Create a new entry in table `notify_providers` and set the fields - `name`, `application_id`, `user_id`
+
+- Set field `channel_type` = 7 (for Twilio WhatsApp (Business))
+- Set field `is_enabled` = 1 (to enable the newly created provider)
 
 Then set the following configurations in the `configuration` field:
 
@@ -21,7 +24,7 @@ Then set the following configurations in the `configuration` field:
 // Sample json to set in configuration field
 {
   "TWILIO_WA_ACCOUNT_SID": "ACXXXXXXXXXXXXXXXXX",
-  "TWILIO_WA_AUTH_TOKEN": "someauthtoken"
+  "TWILIO_WA_AUTH_TOKEN": "someauthtoken",
 }
 ```
 
@@ -31,18 +34,17 @@ Here's a sample request body:
 
 ```jsonc
 {
-  // Set your respective providerId
+  // Set your respective providerId. channelType associated with providerId should be 7 (Twilio WhatsApp (Business))
   "providerId": 7,
-  "channelType": 7,
   "data": {
     "contentSid": "HXXXXXXXXX",
     "from": "MGXXXXXXXX",
     "contentVariables": {
       "1": "Name",
-      "2": "52" // Numbers should also be strings
+      "2": "52", // Numbers should also be strings
     },
-    "to": "+919004812051"
-  }
+    "to": "+919004812051",
+  },
 }
 ```
 
