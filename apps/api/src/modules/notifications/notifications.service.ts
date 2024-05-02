@@ -43,11 +43,6 @@ export class NotificationsService extends CoreService<Notification> {
       throw new BadRequestException(`Provider does not exist`);
     }
 
-    //TODO: remove this check when validation in "is-data-valid.decorator.ts" is done using providerId
-    if (providerEntry.channelType != notificationData.channelType) {
-      throw new Error('The channelType provided in input does not match channelType for provider');
-    }
-
     // Check if provider is enabled or not
     if (providerEntry.isEnabled != IsEnabledStatus.TRUE) {
       throw new BadRequestException(`Provider ${providerEntry.name} is not enabled`);
