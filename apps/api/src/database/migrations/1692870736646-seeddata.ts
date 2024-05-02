@@ -6,6 +6,7 @@ export class SeedData1692870736646 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`INSERT INTO notify_users (username,password,role) VALUES (?, ?, ?)`, [
       'Admin',
+      // Admin123
       '$2b$10$iUUsgPtfqu./C2fnnb80EOlNxc3q73woJd2.Ns0D66xHh0iX4E1vq',
       1,
     ]);
@@ -75,6 +76,15 @@ export class SeedData1692870736646 implements MigrationInterface {
       ],
     );
 
+    await queryRunner.query(
+      `INSERT INTO notify_master_providers (name,provider_type,configuration) VALUES (?, ?, ?)`,
+      [
+        'WA_TWILIO_BUSINESS',
+        3,
+        '{"TWILIO_WA_ACCOUNT_SID":{"label":"TWILIO WA ACCOUNT SID","id":"TWILIO_WA_ACCOUNT_SID","pattern":"^AC\\w{3,}$","type":"string"},"TWILIO_WA_AUTH_TOKEN":{"label":"TWILIO WA AUTH TOKEN","id":"TWILIO_WA_AUTH_TOKEN","pattern":"^[a-zA-Z0-9-_]{16,512}$","type":"string"}}',
+      ],
+    );
+
     // Add foreign key for channel_type -> master_id
     // Adding this after seeding data in master_providers so FK constraint does not fail
     await queryRunner.createForeignKey(
@@ -92,7 +102,7 @@ export class SeedData1692870736646 implements MigrationInterface {
     await queryRunner.dropForeignKey('notify_notifications', 'channel_type');
     await queryRunner.query(`
       DELETE FROM notify_master_providers
-      WHERE id IN (1, 2, 3, 4, 5, 6);
+      WHERE id IN (1, 2, 3, 4, 5, 6, 7);
     `);
     await queryRunner.query(`
       DELETE FROM notify_server_api_keys

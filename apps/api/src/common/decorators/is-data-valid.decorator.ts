@@ -16,6 +16,7 @@ import { CreateNotificationDto } from 'src/modules/notifications/dtos/create-not
 import { WaTwilioDataDto } from 'src/modules/notifications/dtos/providers/waTwilio-data.dto';
 import { SmsTwilioDataDto } from 'src/modules/notifications/dtos/providers/smsTwilio-data.dto';
 import { SmsPlivoDataDto } from 'src/modules/notifications/dtos/providers/plivo-data.dto';
+import { WaTwilioBusinessDataDto } from 'src/modules/notifications/dtos/providers/waTwilioBusiness-data.dto';
 import { Injectable } from '@nestjs/common';
 import { ProvidersService } from 'src/modules/providers/providers.service';
 
@@ -79,6 +80,12 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
         const smsPlivoData = new SmsPlivoDataDto();
         Object.assign(smsPlivoData, value);
         await validateAndThrowError(smsPlivoData);
+        return true;
+
+      case ChannelType.WA_TWILIO_BUSINESS:
+        const waTwilioBusinessData = new WaTwilioBusinessDataDto();
+        Object.assign(waTwilioBusinessData, value);
+        await validateAndThrowError(waTwilioBusinessData);
         return true;
 
       default:

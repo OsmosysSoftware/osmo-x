@@ -37,6 +37,9 @@ import { ProvidersService } from '../providers/providers.service';
 import { SmsPlivoModule } from '../providers/sms-plivo/sms-plivo.module';
 import { smsPlivoQueueConfig } from './queues/smsPlivo.queue';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
+import { WaTwilioBusinessModule } from '../providers/wa-twilio-business/wa-twilio-business.module';
+import { waTwilioBusinessQueueConfig } from './queues/waTwilioBusiness.queue';
+import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 
 @Module({})
 export class NotificationsModule {
@@ -75,6 +78,11 @@ export class NotificationsModule {
     modulesToLoad.push(SmsPlivoModule);
     queuesToLoad.push(smsPlivoQueueConfig);
     consumersToLoad.push(SmsPlivoNotificationsConsumer);
+
+    // Load WA_TWILIO_BUSINESS
+    modulesToLoad.push(WaTwilioBusinessModule);
+    queuesToLoad.push(waTwilioBusinessQueueConfig);
+    consumersToLoad.push(WaTwilioBusinessNotificationsConsumer);
 
     const serviceProviderModules: DynamicModule[] = modulesToLoad;
 

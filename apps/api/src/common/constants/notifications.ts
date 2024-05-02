@@ -12,4 +12,5 @@ export const ChannelType = {
   WA_TWILIO: 4,
   SMS_TWILIO: 5,
   SMS_PLIVO: 6,
+  WA_TWILIO_BUSINESS: 7,
 };
