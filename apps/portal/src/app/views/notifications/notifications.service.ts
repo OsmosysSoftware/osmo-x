@@ -16,8 +16,8 @@ interface GetNotificationsResponse {
 export class NotificationsService {
   constructor(private graphqlService: GraphqlService) {}
 
-  getNotifications(variables): Observable<Notification[]> {
-    return this.graphqlService.query(GetNotifications, variables).pipe(
+  getNotifications(variables, inputToken): Observable<Notification[]> {
+    return this.graphqlService.query(GetNotifications, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetNotificationsResponse>) => {
         if (response.error) {
           const errorMessage: string = response.error.message;
