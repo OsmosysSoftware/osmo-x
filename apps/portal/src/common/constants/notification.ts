@@ -12,6 +12,7 @@ export const ChannelType = {
   WA_TWILIO: 4,
   SMS_TWILIO: 5,
   SMS_PLIVO: 6,
+  WA_TWILIO_BUSINESS: 7,
 };
 
 export const ChannelTypeMap = {
@@ -56,5 +57,12 @@ export const ChannelTypeMap = {
     providerName: 'Plivo',
     providerIcon: 'assets/icons/plivo.png',
     style: 'sms',
+  },
+  [ChannelType.WA_TWILIO_BUSINESS]: {
+    serviceIcon: 'assets/icons/whatsapp.svg',
+    altText: 'Whatsapp',
+    providerName: 'Twilio Business',
+    providerIcon: 'assets/icons/twilio.svg',
+    style: 'whatsapp',
   },
 };
