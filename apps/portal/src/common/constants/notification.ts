@@ -44,17 +44,17 @@ export const ChannelTypeMap = {
     style: 'whatsapp',
   },
   [ChannelType.SMS_TWILIO]: {
-    serviceIcon: 'assets/icons/whatsapp.svg',
+    serviceIcon: 'assets/icons/sms.svg',
     altText: 'SMS',
     providerName: 'Twilio',
     providerIcon: 'assets/icons/twilio.svg',
-    style: 'whatsapp',
+    style: 'sms',
   },
   [ChannelType.SMS_PLIVO]: {
-    serviceIcon: 'assets/icons/whatsapp.svg',
+    serviceIcon: 'assets/icons/sms.svg',
     altText: 'SMS',
     providerName: 'Plivo',
-    providerIcon: 'assets/icons/twilio.svg',
-    style: 'whatsapp',
+    providerIcon: 'assets/icons/plivo.png',
+    style: 'sms',
   },
 };
