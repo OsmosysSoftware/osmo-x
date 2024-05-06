@@ -104,8 +104,6 @@ export class NotificationsComponent implements OnInit {
       });
     }
 
-    this.notifications = [];
-
     // Fetch notifications and handle errors
     this.notificationService
       .getNotifications(variables, this.selectedApplication)
@@ -122,6 +120,7 @@ export class NotificationsComponent implements OnInit {
         }),
       )
       .subscribe((notifications: Notification[]) => {
+        this.notifications = [];
         this.notifications.push(...notifications);
         // Apply filters to the merged array of notifications
         this.applyFilters();
