@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ChannelType, ChannelTypeMap, DeliveryStatus } from 'src/common/constants/notification';
 import { MessageService } from 'primeng/api';
-// import { catchError, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { NotificationsService } from './notifications.service';
 import { Notification } from './notification.model';
 
@@ -36,9 +36,13 @@ export class NotificationsComponent implements OnInit {
     value,
   }));
 
+  applications = null;
+
   selectedChannelType = null;
 
   selectedDeliveryStatus = null;
+
+  selectedApplication = null;
 
   pageSizeOptions: number[] = [5, 10, 25, 50];
 
@@ -62,7 +66,22 @@ export class NotificationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.applications = this.getApplications();
+    this.selectedApplication = JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
     this.loadNotifications();
+  }
+
+  getApplications() {
+    this.allServerApiKeysList = [];
+    const allKeysFromLocalStorage = JSON.parse(localStorage.getItem('osmoXUserData'))?.allKeys;
+
+    if (!allKeysFromLocalStorage) {
+      this.allServerApiKeysList.push(JSON.parse(localStorage.getItem('osmoXUserData'))?.token);
+    } else {
+      this.allServerApiKeysList = allKeysFromLocalStorage.map((item) => item.apiKey);
+    }
+
+    return this.allServerApiKeysList;
   }
 
   loadNotifications() {
@@ -85,61 +104,29 @@ export class NotificationsComponent implements OnInit {
       });
     }
 
-    const allKeysFromLocalStorage = JSON.parse(localStorage.getItem('osmoXUserData'))?.allKeys;
-
-    if (!allKeysFromLocalStorage) {
-      this.allServerApiKeysList.push(JSON.parse(localStorage.getItem('osmoXUserData'))?.token);
-    } else {
-      this.allServerApiKeysList = allKeysFromLocalStorage.map((item) => item.apiKey);
-    }
-
     this.notifications = [];
 
-    this.allServerApiKeysList.forEach((token) => {
-      // For each token, fetch notifications and handle errors
-      this.notificationService.getNotifications(variables, token).subscribe(
-        (data: Notification[]) => {
-          // Append the received data to a foreign variable
-          this.notifications.push(...data);
-          this.applyFilters();
-        },
-        (error) => {
+    // Fetch notifications and handle errors
+    this.notificationService
+      .getNotifications(variables, this.selectedApplication)
+      .pipe(
+        // catchError operator to handle errors
+        catchError((error) => {
           this.messageService.add({
             key: 'tst',
             severity: 'error',
             summary: 'Error',
             detail: `There was an error while loading notifications. Reason: ${error.message}`,
           });
-        },
-      );
-    });
-
-    this.loading = false;
-
-    // this.allServerApiKeysList.forEach((token) => {
-    //   // For each token, fetch notifications and handle errors
-    //   this.notificationService
-    //     .getNotifications(variables, token)
-    //     .pipe(
-    //       // catchError operator to handle errors
-    //       catchError((error) => {
-    //         this.messageService.add({
-    //           key: 'tst',
-    //           severity: 'error',
-    //           summary: 'Error',
-    //           detail: `There was an error while loading notifications. Reason: ${error.message}`,
-    //         });
-    //         return of([]);
-    //       }),
-    //     )
-    //     .subscribe((notifications: Notification[]) => {
-    //       // Merge the fetched notifications into the `allNotifications` array
-    //       this.notifications.push(...notifications);
-    //       // Apply filters to the merged array of notifications
-    //       this.applyFilters();
-    //       this.loading = false;
-    //     });
-    // });
+          return of([]);
+        }),
+      )
+      .subscribe((notifications: Notification[]) => {
+        this.notifications.push(...notifications);
+        // Apply filters to the merged array of notifications
+        this.applyFilters();
+        this.loading = false;
+      });
   }
 
   applyFilters() {

@@ -18,7 +18,6 @@ export class GraphqlService {
     variables?: unknown,
     inputToken?: string,
   ): Observable<ApolloQueryResult<T>> {
-    // const token = JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
     let headers;
 
     if (inputToken) {

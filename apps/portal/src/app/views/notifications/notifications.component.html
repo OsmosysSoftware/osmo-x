@@ -21,6 +21,14 @@
         [showClear]="true"
         (onChange)="loadNotifications()"
       ></p-dropdown>
+      <p-dropdown
+        [options]="applications"
+        [(ngModel)]="selectedApplication"
+        placeholder="Select an Application"
+        class="grid-dropdown"
+        [showClear]="false"
+        (onChange)="loadNotifications()"
+      ></p-dropdown>
     </div>
   </div>
 
