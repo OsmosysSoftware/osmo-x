@@ -76,7 +76,7 @@ This sections lists notification related requests such as creating new notificat
 
 ### Create Notification
 
-Allows the user to create a new notification for processing and sending it. Requires passing bearer token for authorization.
+Allows the user to create a new notification for processing and sending it. Requires passing `x-api-key` token as header for validation.
 
 **Note:**
 - The **Provider** should have a valid `channelType`.
@@ -110,7 +110,7 @@ Refer the [Available Channel Types](./usage-guide.md#5-available-channel-types) 
 ```sh
 curl --location 'http://localhost:3000/notifications' \
 --header 'Content-Type: application/json' \
---header 'Authorization: Bearer mysecuretoken' \
+--header 'x-api-key: mysecuretoken' \
 --data-raw '{
   "providerId": 1,
   "data": {
@@ -301,61 +301,6 @@ curl --location 'http://localhost:3000/graphql' \
       "total": 5,
       "offset": 0,
       "limit": 1
-    }
-  }
-}
-```
-
-### Fetch Notification by Id
-
-Allows the user to fetch notification based on the passed notificationId.
-
-**Endpoint:** `http://localhost:3000//notifications/{notificationId}`
-
-**Method:** `GET`
-
-**Sample Request:** http://localhost:3000/notifications/2
-
-**Sample Response:**
-
-```json
-{
-  "status": "success",
-  "data": {
-    "notification": {
-      "id": 2,
-      "providerId": 2,
-      "channelType": 2,
-      "data": {
-        "from": "sender@email.com",
-        "to": "receiver@email.com",
-        "subject": "Test subject",
-        "text": "This is a test notification",
-        "html": "<b>This is a test notification</b>"
-      },
-      "deliveryStatus": 4,
-      "result": {
-        "result": {
-          "accepted": ["receiver@email.com"],
-          "rejected": [],
-          "ehlo": ["PIPELINING", "8BITMIME", "SMTPUTF8", "AUTH LOGIN PLAIN"],
-          "envelopeTime": 514,
-          "messageTime": 396,
-          "messageSize": 598,
-          "response": "250 Accepted [STATUS=new MSGID=ZO8BDrs4Cney.EXBZcnPdyNjH.7avN-FAAAAmpIr4f.gj7e4YPfAABUQxYg]",
-          "envelope": {
-            "from": "sender@email.com",
-            "to": ["receiver@email.com"]
-          },
-          "messageId": "<7d5f2937-d22c-ace0-1455-988520eeece0@email.com>"
-        }
-      },
-      "createdOn": "2024-04-29T08:14:28.000Z",
-      "updatedOn": "2024-04-29T08:14:28.000Z",
-      "createdBy": "sampleFoundationXApp",
-      "updatedBy": "sampleFoundationXApp",
-      "status": 1,
-      "applicationId": 2
     }
   }
 }
