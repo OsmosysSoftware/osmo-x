@@ -52,13 +52,7 @@ export class ApplicationsService extends CoreService<Application> {
   async checkAdminUser(authHeader: Request): Promise<boolean> {
     try {
       const bearerToken = authHeader.toString();
-      let apiKeyToken = null;
-
-      if (bearerToken.startsWith('Bearer ')) {
-        apiKeyToken = bearerToken.substring(7);
-      } else {
-        throw new Error('Invalid bearer token format');
-      }
+      const apiKeyToken = bearerToken.substring(7);
 
       // Find the related server api key entry
       const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ApplicationsService } from './applications.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Application } from './entities/application.entity';
@@ -11,7 +11,13 @@ import { UsersService } from '../users/users.service';
 @Module({
   // Import ServerApiKeysModule to resolve ApiKeyGuard dependency
   imports: [TypeOrmModule.forFeature([Application]), ServerApiKeysModule, UsersModule],
-  providers: [ApplicationsService, ApplicationsResolver, ServerApiKeysService, UsersService],
+  providers: [
+    ApplicationsService,
+    ApplicationsResolver,
+    ServerApiKeysService,
+    UsersService,
+    Logger,
+  ],
   exports: [TypeOrmModule],
 })
 export class ApplicationsModule {}

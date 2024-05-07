@@ -13,11 +13,11 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key             | Description     |
-|-----------------|-----------------|
-| MAILGUN_API_KEY | Your Mailgun API key |
+| Key             | Description                                                     |
+|-----------------|-----------------------------------------------------------------|
+| MAILGUN_API_KEY | Your Mailgun API key                                            |
 | MAILGUN_HOST    | Mailgun host; api.mailgun.net for US, api.eu.mailgun.net for EU |
-| MAILGUN_DOMAIN  | Your Mailgun domain name |
+| MAILGUN_DOMAIN  | Your Mailgun domain name                                        |
 
 ```jsonc
 // Sample json to set in configuration field

@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
-import { IsEnabledStatus, Status } from 'src/common/constants/database';
+import { Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
@@ -29,35 +29,15 @@ export class NotificationsService extends CoreService<Notification> {
     super(notificationRepository);
   }
 
-  async createNotification(
-    notificationData: CreateNotificationDto,
-    authHeader: Request,
-  ): Promise<Notification> {
+  async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
     this.logger.log('Creating notification...');
 
-    // TODO: Write better code logic, update notification entity
-    // Get channel type from providerId & Set the channelType based on providerEntry
+    // ApiKeyGuard validates the provider and application details
     const providerEntry = await this.providersService.getById(notificationData.providerId);
-
-    if (!providerEntry) {
-      throw new BadRequestException(`Provider does not exist`);
-    }
-
-    // Check if provider is enabled or not
-    if (providerEntry.isEnabled != IsEnabledStatus.TRUE) {
-      throw new BadRequestException(`Provider ${providerEntry.name} is not enabled`);
-    }
-
     const notification = new Notification(notificationData);
+
+    // Get channel type and applicationId from providerId & set the values
     notification.channelType = providerEntry.channelType;
-
-    // Set correct ApplicationId after verifying
-    const inputApplicationId = await this.getApplicationIdFromApiKey(authHeader);
-
-    if (inputApplicationId != providerEntry.applicationId) {
-      throw new Error('The applicationId for Server Key and Provider do not match.');
-    }
-
     notification.applicationId = providerEntry.applicationId;
 
     // Set correct application name using applicationId
@@ -70,13 +50,7 @@ export class NotificationsService extends CoreService<Notification> {
   async getApplicationIdFromApiKey(authHeader: Request): Promise<number> {
     try {
       const bearerToken = authHeader.toString();
-      let apiKeyToken = null;
-
-      if (bearerToken.startsWith('Bearer ')) {
-        apiKeyToken = bearerToken.substring(7);
-      } else {
-        throw new Error('Invalid bearer token format');
-      }
+      const apiKeyToken = bearerToken.substring(7);
 
       if (apiKeyToken == null) {
         throw new Error('Failed to assign applicationId');

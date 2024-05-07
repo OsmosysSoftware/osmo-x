@@ -15,10 +15,10 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key             | Description     |
-|-----------------|-----------------|
-| PLIVO_SMS_AUTH_ID    | Plivo Auth Id |
-| PLIVO_SMS_AUTH_TOKEN | Plivo Auth Token |
+| Key                  | Description             |
+|----------------------|-------------------------|
+| PLIVO_SMS_AUTH_ID    | Plivo Auth Id           |
+| PLIVO_SMS_AUTH_TOKEN | Plivo Auth Token        |
 | PLIVO_SMS_NUMBER     | Plivo registered Number |
 
 ```jsonc

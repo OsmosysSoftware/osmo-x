@@ -13,12 +13,12 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key             | Description     |
-|-----------------|-----------------|
-| SMTP_HOST       | SMTP server hostname |
+| Key             | Description                                     |
+|-----------------|-------------------------------------------------|
+| SMTP_HOST       | SMTP server hostname                            |
 | SMTP_PORT       | Port number for SMTP (587 for TLS, 465 for SSL) |
-| SMTP_USERNAME   | Your SMTP username for authentication |
-| SMTP_PASSWORD   | Your SMTP password for authentication |
+| SMTP_USERNAME   | Your SMTP username for authentication           |
+| SMTP_PASSWORD   | Your SMTP password for authentication           |
 
 ```jsonc
 // Sample json to set in configuration field
