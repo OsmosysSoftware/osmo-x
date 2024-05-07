@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
@@ -16,14 +17,11 @@ export class ApiKeyGuard implements CanActivate {
   constructor(
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly providersService: ProvidersService,
+    private logger: Logger,
   ) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    try {
-      return this.validateRequest(context);
-    } catch (error) {
-      return error;
-    }
+    return this.validateRequest(context);
   }
 
   async validateRequest(execContext: ExecutionContext): Promise<boolean> {
@@ -66,12 +64,14 @@ export class ApiKeyGuard implements CanActivate {
     if (serverApiKeyHeader) {
       apiKeyToken = serverApiKeyHeader;
     } else {
+      this.logger.error('Header x-api-key was not provided');
       throw new UnauthorizedException('Header x-api-key was not provided');
     }
 
     const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
 
     if (!apiKeyEntry) {
+      //this.logger.error('Invalid x-api-key');
       throw new UnauthorizedException('Invalid x-api-key');
     }
 
@@ -79,11 +79,13 @@ export class ApiKeyGuard implements CanActivate {
     const providerEntry = await this.providersService.getById(requestProviderId);
 
     if (!providerEntry) {
-      throw new BadRequestException(`Provider does not exist`);
+      this.logger.error('Provider does not exist');
+      throw new BadRequestException('Provider does not exist');
     }
 
     // Check if provider is enabled or not
     if (providerEntry.isEnabled != IsEnabledStatus.TRUE) {
+      this.logger.error(`Provider ${providerEntry.name} is not enabled`);
       throw new BadRequestException(`Provider ${providerEntry.name} is not enabled`);
     }
 
@@ -91,6 +93,7 @@ export class ApiKeyGuard implements CanActivate {
     const inputApplicationId = await this.getApplicationIdFromApiKey(apiKeyToken);
 
     if (inputApplicationId != providerEntry.applicationId) {
+      this.logger.error('The applicationId for Server Key and Provider do not match.');
       throw new BadRequestException('The applicationId for Server Key and Provider do not match.');
     }
 
@@ -107,11 +110,13 @@ export class ApiKeyGuard implements CanActivate {
       const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
 
       if (!apiKeyEntry || !apiKeyEntry.applicationId) {
+        this.logger.error('Related Api Key does not exist');
         throw new Error('Related Api Key does not exist');
       }
 
       return apiKeyEntry.applicationId;
     } catch (error) {
+      this.logger.error(error.message);
       throw error;
     }
   }

@@ -1,11 +1,20 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { ServerApiKeysService } from 'src/modules/server-api-keys/server-api-keys.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly serverApiKeysService: ServerApiKeysService) {}
+  constructor(
+    private readonly serverApiKeysService: ServerApiKeysService,
+    private logger: Logger,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     return this.validateRequest(context);
@@ -40,6 +49,7 @@ export class AuthGuard implements CanActivate {
   // TODO: validate using jwt token instead of db
   async validateAuthHeader(authHeader: string): Promise<boolean> {
     if (!authHeader) {
+      this.logger.error('No bearer token provided');
       throw new UnauthorizedException('No bearer token provided');
     }
 
@@ -48,12 +58,14 @@ export class AuthGuard implements CanActivate {
     if (authHeader.startsWith('Bearer ')) {
       apiKeyToken = authHeader.substring(7);
     } else {
+      this.logger.error('Invalid bearer token format');
       throw new UnauthorizedException('Invalid bearer token format');
     }
 
     const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
 
     if (!apiKeyEntry) {
+      this.logger.error('Invalid token');
       throw new UnauthorizedException('Invalid token');
     }
 
