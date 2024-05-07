@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Logger,
-  HttpException,
-  UseGuards,
-  Get,
-  Param,
-  NotFoundException,
-  Req,
-} from '@nestjs/common';
+import { Controller, Post, Body, Logger, HttpException, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { JsendFormatter } from 'src/common/jsend-formatter';
@@ -26,15 +15,12 @@ export class NotificationsController {
   @Post()
   @UseGuards(ApiKeyGuard)
   async addNotification(
-    @Req() request: Request,
     @Body() notificationData: CreateNotificationDto,
   ): Promise<Record<string, unknown>> {
     try {
-      const authHeader = request.headers['authorization'];
-      const createdNotification = await this.notificationService.createNotification(
-        notificationData,
-        authHeader,
-      );
+      // ApiKeyGuard checks if requested providerId is valid, correct channelType and applicationId present
+      const createdNotification =
+        await this.notificationService.createNotification(notificationData);
       this.logger.log('Notification created successfully.');
       return this.jsend.success({ notification: createdNotification });
     } catch (error) {
