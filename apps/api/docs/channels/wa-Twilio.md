@@ -13,10 +13,10 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key             | Description     |
-|-----------------|-----------------|
-| TWILIO_WA_ACCOUNT_SID   | Twilio SMS account SID |
-| TWILIO_WA_AUTH_TOKEN    | Twilio SMS auth token |
+| Key                     | Description                    |
+|-------------------------|--------------------------------|
+| TWILIO_WA_ACCOUNT_SID   | Twilio SMS account SID         |
+| TWILIO_WA_AUTH_TOKEN    | Twilio SMS auth token          |
 | TWILIO_WA_NUMBER        | Twilio registered phone number |
 
 ```jsonc

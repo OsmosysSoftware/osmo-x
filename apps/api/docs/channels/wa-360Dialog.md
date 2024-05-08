@@ -13,9 +13,9 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key             | Description     |
-|-----------------|-----------------|
-| WA_360_DIALOG_API_KEY    | WA 360 Dialog api key |
+| Key                      | Description                                            |
+|--------------------------|--------------------------------------------------------|
+| WA_360_DIALOG_API_KEY    | WA 360 Dialog api key                                  |
 | WA_360_DIALOG_URL        | api url which is https://waba.360dialog.io/v1/messages |
 
 ```jsonc
