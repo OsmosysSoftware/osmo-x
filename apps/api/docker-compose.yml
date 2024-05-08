@@ -1,6 +1,7 @@
 version: '3'
 services:
   osmox-api:
+    image: osmox-api
     container_name: osmox-api
     build:
       context: .
