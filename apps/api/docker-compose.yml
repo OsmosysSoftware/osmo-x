@@ -13,7 +13,7 @@ services:
     environment:
       NODE_ENV: production
 
-  mariadb:
+  osmox-mariadb:
     container_name: osmox-mariadb
     image: mariadb:latest
     restart: always
@@ -25,9 +25,9 @@ services:
     ports:
       - '127.0.0.1:${MARIADB_DOCKER_PORT}:3306'
     volumes:
-      - osmox-db:/var/lib/mysql
+      - osmox-mariadb-data:/var/lib/mysql
 
-  redis:
+  osmox-redis:
     container_name: osmox-redis
     image: redis:latest
     restart: always
@@ -35,4 +35,4 @@ services:
       - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
 
 volumes:
-  osmox-db: ~
+  osmox-mariadb-data: ~
