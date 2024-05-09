@@ -13,12 +13,15 @@ const serverApiKey = environment.serverApiKey ?? '';
 export class GraphqlService {
   constructor(private apollo: Apollo) {}
 
-  query<T>(query: DocumentNode, variables?: unknown): Observable<ApolloQueryResult<T>> {
-    const token = JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
+  query<T>(
+    query: DocumentNode,
+    variables?: unknown,
+    inputToken?: string,
+  ): Observable<ApolloQueryResult<T>> {
     let headers;
 
-    if (token) {
-      headers = { Authorization: `Bearer ${token}` };
+    if (inputToken) {
+      headers = { Authorization: `Bearer ${inputToken}` };
     } else {
       headers = {};
     }

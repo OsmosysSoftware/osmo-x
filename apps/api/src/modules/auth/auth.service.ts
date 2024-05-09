@@ -7,6 +7,7 @@ import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service
 import { UserRoles } from 'src/common/constants/database';
 import { ServerApiKey } from '../server-api-keys/entities/server-api-key.entity';
 import { ApplicationsService } from '../applications/applications.service';
+import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 
 @Injectable()
 export class AuthService {
@@ -64,9 +65,12 @@ export class AuthService {
     // Get the details of user
     const entry = await this.usersService.findByUsername(inputUserName);
 
+    // Set filters
+    const options: QueryOptionsDto = new QueryOptionsDto();
+
     // Get all active keys if ADMIN
     if (entry.userRole === UserRoles.ADMIN) {
-      listOfKeys = await this.serverApiKeysService.findAllWithStatusOne();
+      listOfKeys = await this.serverApiKeysService.getAllServerApiKeys(options);
     }
 
     return listOfKeys;

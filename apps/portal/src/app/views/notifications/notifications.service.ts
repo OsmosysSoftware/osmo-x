@@ -16,15 +16,15 @@ interface GetNotificationsResponse {
 export class NotificationsService {
   constructor(private graphqlService: GraphqlService) {}
 
-  getNotifications(variables): Observable<Notification[]> {
-    return this.graphqlService.query(GetNotifications, variables).pipe(
+  getNotifications(variables, inputToken): Observable<Notification[]> {
+    return this.graphqlService.query(GetNotifications, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetNotificationsResponse>) => {
         if (response.error) {
           const errorMessage: string = response.error.message;
           throw new Error(errorMessage);
         } else {
           const notifications = response.data?.notifications.notifications;
-          return JSON.parse(JSON.stringify(notifications));
+          return [...notifications];
         }
       }),
     );
