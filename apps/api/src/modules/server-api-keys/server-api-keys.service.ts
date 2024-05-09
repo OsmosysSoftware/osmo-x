@@ -23,10 +23,6 @@ export class ServerApiKeysService extends CoreService<ServerApiKey> {
     return this.serverApiKeyRepository.findOne({ where: { applicationId, status: Status.ACTIVE } });
   }
 
-  async findAllWithStatusOne(): Promise<ServerApiKey[]> {
-    return this.serverApiKeyRepository.find({ where: { status: Status.ACTIVE } });
-  }
-
   async getAllServerApiKeys(options: QueryOptionsDto): Promise<ServerApiKey[]> {
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
     const searchableFields = ['createdBy', 'data', 'result'];

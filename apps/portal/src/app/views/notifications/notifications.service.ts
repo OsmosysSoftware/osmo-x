@@ -20,7 +20,7 @@ export class NotificationsService {
     return this.graphqlService.query(GetNotifications, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetNotificationsResponse>) => {
         const notifications = response.data?.notifications.notifications;
-        return JSON.parse(JSON.stringify(notifications));
+        return [...notifications];
       }),
       catchError((error) => {
         const errorMessage: string = error.message;
