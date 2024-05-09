@@ -17,6 +17,8 @@ export class NotificationsComponent implements OnInit {
 
   allServerApiKeysList = [];
 
+  allApplicationsList = [];
+
   channelTypeMap = ChannelTypeMap;
 
   deliveryStatusMap = {
@@ -26,6 +28,7 @@ export class NotificationsComponent implements OnInit {
     [DeliveryStatus.FAILED]: { value: 'Failed', style: 'failed' },
   };
 
+  // for component
   channelTypes = Object.entries(ChannelType).map(([, value]) => ({
     label: `${this.channelTypeMap[value].altText} - ${this.channelTypeMap[value].providerName}`,
     value,
@@ -43,6 +46,8 @@ export class NotificationsComponent implements OnInit {
   selectedDeliveryStatus = null;
 
   selectedApplication = null;
+
+  mapApplicationAndKeys = null;
 
   pageSizeOptions: number[] = [5, 10, 25, 50];
 
@@ -67,7 +72,7 @@ export class NotificationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.applications = this.getApplications();
-    this.selectedApplication = JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
+    this.selectedApplication = this.setApplicationOnInit();
     this.loadNotifications();
   }
 
@@ -77,11 +82,35 @@ export class NotificationsComponent implements OnInit {
 
     if (!allKeysFromLocalStorage) {
       this.allServerApiKeysList.push(JSON.parse(localStorage.getItem('osmoXUserData'))?.token);
-    } else {
-      this.allServerApiKeysList = allKeysFromLocalStorage.map((item) => item.apiKey);
+      return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
     }
 
-    return this.allServerApiKeysList;
+    this.allServerApiKeysList = allKeysFromLocalStorage.map((item) => item.apiKey);
+
+    this.mapApplicationAndKeys = new Map<string, string>();
+
+    allKeysFromLocalStorage.forEach((application) => {
+      this.allApplicationsList.push(application.applicationDetails.name);
+      this.mapApplicationAndKeys.set(application.applicationDetails.name, application.apiKey);
+    });
+
+    return this.allApplicationsList;
+  }
+
+  setApplicationOnInit() {
+    if (this.allApplicationsList.length === 0) {
+      return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
+    }
+
+    return this.allApplicationsList[0];
+  }
+
+  setTokenForSelectedApplication() {
+    if (this.allApplicationsList.length === 0) {
+      return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
+    }
+
+    return this.mapApplicationAndKeys.get(this.selectedApplication);
   }
 
   loadNotifications() {
@@ -104,9 +133,12 @@ export class NotificationsComponent implements OnInit {
       });
     }
 
+    // set the token based on selected application
+    const tokenForSelectedApplication = this.setTokenForSelectedApplication();
+
     // Fetch notifications and handle errors
     this.notificationService
-      .getNotifications(variables, this.selectedApplication)
+      .getNotifications(variables, tokenForSelectedApplication)
       .pipe(
         // catchError operator to handle errors
         catchError((error) => {

@@ -32,6 +32,9 @@ export const LoginUser = gql`
         apiKeyId
         apiKey
         applicationId
+        applicationDetails {
+          name
+        }
         status
       }
     }

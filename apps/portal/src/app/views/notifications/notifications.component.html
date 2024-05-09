@@ -28,6 +28,7 @@
         class="grid-dropdown"
         [showClear]="false"
         (onChange)="loadNotifications()"
+        *ngIf="allApplicationsList.length !== 0"
       ></p-dropdown>
     </div>
   </div>
