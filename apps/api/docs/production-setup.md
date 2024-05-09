@@ -40,7 +40,7 @@ Make sure Redis and MariaDB server are up and running.
   REDIS_DOCKER_PORT=6397 # (required only if using docker)
 
   # Docker env
-  COMPOSE_PROJECT_NAME=osmo-x  # Add your project name here.
+  COMPOSE_PROJECT_NAME=osmox-api  # Add your project name here.
   ```
 
 Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
