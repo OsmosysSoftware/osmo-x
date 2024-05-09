@@ -10,6 +10,7 @@ import { IsEnum } from 'class-validator';
 import { Status } from 'src/common/constants/database';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
+import { ServerApiKey } from 'src/modules/server-api-keys/entities/server-api-key.entity';
 
 @Entity({ name: 'notify_applications' })
 @ObjectType()
@@ -46,6 +47,10 @@ export class Application {
 
   @OneToMany(() => Notification, (notification) => notification.applicationDetails)
   notifications: Notification[];
+
+  // create join for fetching data from portal
+  @OneToMany(() => ServerApiKey, (serverApiKey) => serverApiKey.applicationDetails)
+  serverApiKey: ServerApiKey[];
 
   constructor(application: Partial<Application>) {
     Object.assign(this, application);

@@ -4,10 +4,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { IsEnum } from 'class-validator';
 import { Status } from 'src/common/constants/database';
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Application } from 'src/modules/applications/entities/application.entity';
 
 @Entity({ name: 'notify_server_api_keys' })
 @ObjectType()
@@ -41,6 +44,11 @@ export class ServerApiKey {
   @IsEnum(Status)
   @Field()
   status: number;
+
+  @ManyToOne(() => Application, (application) => application.serverApiKey)
+  @JoinColumn({ name: 'application_id' })
+  @Field(() => Application)
+  applicationDetails: Application;
 
   constructor(serverApiKey: Partial<ServerApiKey>) {
     Object.assign(this, serverApiKey);
