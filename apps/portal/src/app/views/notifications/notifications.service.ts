@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { GraphqlService } from 'src/app/graphql/graphql.service';
 import { GetNotifications } from 'src/app/graphql/graphql.queries';
 import { ApolloQueryResult } from '@apollo/client/core';
@@ -19,12 +19,13 @@ export class NotificationsService {
   getNotifications(variables, inputToken): Observable<Notification[]> {
     return this.graphqlService.query(GetNotifications, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetNotificationsResponse>) => {
-        const notifications = response.data?.notifications.notifications;
-        return JSON.parse(JSON.stringify(notifications));
-      }),
-      catchError((error) => {
-        const errorMessage: string = error.message;
-        throw new Error(errorMessage);
+        if (response.error) {
+          const errorMessage: string = response.error.message;
+          throw new Error(errorMessage);
+        } else {
+          const notifications = response.data?.notifications.notifications;
+          return JSON.parse(JSON.stringify(notifications));
+        }
       }),
     );
   }
