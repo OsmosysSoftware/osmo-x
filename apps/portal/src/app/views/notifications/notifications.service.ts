@@ -24,7 +24,7 @@ export class NotificationsService {
           throw new Error(errorMessage);
         } else {
           const notifications = response.data?.notifications.notifications;
-          return JSON.parse(JSON.stringify(notifications));
+          return [...notifications];
         }
       }),
     );
