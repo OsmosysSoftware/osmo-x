@@ -10,6 +10,7 @@ import { WA_TWILIO_QUEUE } from 'src/modules/notifications/queues/waTwilio.queue
 import { SMS_TWILIO_QUEUE } from 'src/modules/notifications/queues/smsTwilio.queue';
 import { SMS_PLIVO_QUEUE } from 'src/modules/notifications/queues/smsPlivo.queue';
 import { WA_TWILIO_BUSINESS_QUEUE } from 'src/modules/notifications/queues/waTwilioBusiness.queue';
+import { SMS_KAPSYSTEM_QUEUE } from 'src/modules/notifications/queues/smsKapsystem.queue';
 
 @Injectable()
 export class NotificationQueueProducer {
@@ -22,6 +23,7 @@ export class NotificationQueueProducer {
     @Optional() @InjectQueue(WA_TWILIO_QUEUE) private readonly waTwilioQueue: Queue,
     @Optional() @InjectQueue(SMS_TWILIO_QUEUE) private readonly smsTwilioQueue: Queue,
     @Optional() @InjectQueue(SMS_PLIVO_QUEUE) private readonly smsPlivoQueue: Queue,
+    @Optional() @InjectQueue(SMS_KAPSYSTEM_QUEUE) private readonly smsKapsystemQueue: Queue,
     @Optional()
     @InjectQueue(WA_TWILIO_BUSINESS_QUEUE)
     private readonly waTwilioBusinessQueue: Queue,
@@ -94,6 +96,13 @@ export class NotificationQueueProducer {
         }
 
         break;
+        
+      case ChannelType.SMS_KAPSYSTEM:
+       if (this.smsKapsystemQueue) {
+        await this.smsKapsystemQueue.add(notification.id);
+       }
+       break;
+
     }
   }
 }
