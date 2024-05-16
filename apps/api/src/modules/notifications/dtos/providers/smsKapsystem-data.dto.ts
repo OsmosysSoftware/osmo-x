@@ -1,4 +1,4 @@
-import { IsNotEmpty, isNotEmpty } from "class-validator";
+import { IsNotEmpty } from 'class-validator';
 
 export class KapsystemDataDto {
   @IsNotEmpty()

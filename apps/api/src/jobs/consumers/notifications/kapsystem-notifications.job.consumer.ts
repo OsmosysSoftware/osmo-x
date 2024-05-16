@@ -3,7 +3,10 @@ import { NotificationConsumer } from './notification.consumer';
 import { SMS_KAPSYSTEM_QUEUE } from 'src/modules/notifications/queues/smsKapsystem.queue';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { KapsystemData, SmsKapsystemService } from 'src/modules/providers/sms-kapsystem/sms-kapsystem.service';
+import {
+  KapsystemData,
+  SmsKapsystemService,
+} from 'src/modules/providers/sms-kapsystem/sms-kapsystem.service';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { Job } from 'bull';
@@ -16,7 +19,7 @@ export class KapsystemNotificationsConsumer extends NotificationConsumer {
     private readonly kapsystemService: SmsKapsystemService,
     notificationsService: NotificationsService,
   ) {
-    super(notificationRepository, notificationsService)
+    super(notificationRepository, notificationsService);
   }
 
   @Process()

@@ -16,8 +16,8 @@ export interface Results {
 }
 
 export interface Result {
-  status:      string;
-  messageid:   string;
+  status: string;
+  messageid: string;
   destination: string;
 }
 
@@ -30,12 +30,12 @@ export class SmsKapsystemService {
 
   constructor(
     private httpService: HttpService,
-    private readonly providersService: ProvidersService
-  ) { }
+    private readonly providersService: ProvidersService,
+  ) {}
 
   async assignKAPSystemValues(providerId: number): Promise<void> {
     const smsKapsystemConfig = await this.providersService.getConfigById(providerId);
-    this.apiUrl = smsKapsystemConfig.KAP_SMS_BASE_API_URL as string
+    this.apiUrl = smsKapsystemConfig.KAP_SMS_BASE_API_URL as string;
     this.username = smsKapsystemConfig.KAP_SMS_ACCOUNT_USERNAME as string;
     this.password = smsKapsystemConfig.KAP_SMS_ACCOUNT_PASSWORD as string;
     this.senderId = smsKapsystemConfig.KAP_SMS_ACCOUNT_SENDER_ID as string;
@@ -45,21 +45,25 @@ export class SmsKapsystemService {
     await this.assignKAPSystemValues(providerId);
 
     function objToQueryString(obj: KapsystemData): string {
-      let queryString = "";
+      let queryString = '';
 
       for (const key in obj) {
-        if (queryString != "") {
-          queryString += "&";
+        if (queryString != '') {
+          queryString += '&';
         }
-        
-        queryString += (key + "=" + encodeURIComponent(obj[key]));
+
+        queryString += key + '=' + encodeURIComponent(obj[key]);
       }
       return queryString;
     }
 
-    this.apiUrl = this.apiUrl + `?username=${this.username}&password=${this.password}&sender=${this.senderId}&` + objToQueryString(body);
+    this.apiUrl =
+      this.apiUrl +
+      `?username=${this.username}&password=${this.password}&sender=${this.senderId}&` +
+      objToQueryString(body);
+
     const response = await this.httpService.get(this.apiUrl).toPromise();
-    console.log('Api url ' + this.apiUrl + '\nRESSSSSSSSSSSSSSSS: ', response.data + '\nMessage' + body.SMSText)
-    return response.data
+
+    return response.data;
   }
 }
