@@ -22,7 +22,7 @@ export class SmsKapsystemService {
 
     async assignKAPSystemValues(providerId: number): Promise<void> {
         const smsKapsystemConfig = await this.providersService.getConfigById(providerId);
-        this.apiUrl = smsKapsystemConfig.KAP_SMS_ACCOUNT_API_URL as string
+        this.apiUrl = smsKapsystemConfig.KAP_SMS_BASE_API_URL as string
         this.username = smsKapsystemConfig.KAP_SMS_ACCOUNT_USERNAME as string;
         this.password = smsKapsystemConfig.KAP_SMS_ACCOUNT_PASSWORD as string;
         this.senderId = smsKapsystemConfig.KAP_SMS_ACCOUNT_SENDER_ID as string;
@@ -45,7 +45,7 @@ export class SmsKapsystemService {
         this.apiUrl = this.apiUrl + `?username=${this.username}&password=${this.password}&sender=${this.senderId}&` + objToQueryString(body);
         const response = await this.httpService.get(this.apiUrl).toPromise();
         // const res = firstValueFrom(response);
-        console.log('Api url ' + this.apiUrl + '\nRESSSSSSSSSSSSSSSS: ', response.data + '\nMessage' + body.SMSText)
+        // console.log('Api url ' + this.apiUrl + '\nRESSSSSSSSSSSSSSSS: ', response.data + '\nMessage' + body.SMSText)
         return response.data
     }
 }
