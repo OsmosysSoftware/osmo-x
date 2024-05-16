@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ProvidersService } from '../providers.service';
+import { firstValueFrom } from 'rxjs';
 
 export interface KapsystemData {
   SMSText: string;
@@ -63,8 +64,9 @@ export class SmsKapsystemService {
       `?username=${this.username}&password=${this.password}&sender=${this.senderId}&` +
       objToQueryString(body);
 
-    const response = await this.httpService.get(this.apiUrl).toPromise();
+    const response = await this.httpService.get(this.apiUrl);
+    const res = await firstValueFrom(response);
 
-    return response.data;
+    return res.data;
   }
 }
