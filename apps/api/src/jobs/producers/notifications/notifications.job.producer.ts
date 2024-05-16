@@ -27,7 +27,7 @@ export class NotificationQueueProducer {
     @Optional()
     @InjectQueue(WA_TWILIO_BUSINESS_QUEUE)
     private readonly waTwilioBusinessQueue: Queue,
-  ) {}
+  ) { }
 
   private listenForError(queue: Queue[]): void {
     if (queue) {
@@ -96,12 +96,12 @@ export class NotificationQueueProducer {
         }
 
         break;
-        
+
       case ChannelType.SMS_KAPSYSTEM:
-       if (this.smsKapsystemQueue) {
-        await this.smsKapsystemQueue.add(notification.id);
-       }
-       break;
+        if (this.smsKapsystemQueue) {
+          await this.smsKapsystemQueue.add(notification.id);
+        }
+        break;
 
     }
   }

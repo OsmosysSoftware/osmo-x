@@ -8,6 +8,6 @@ import { HttpModule } from '@nestjs/axios';
 @Module({
   imports: [HttpModule, ConfigModule, ProvidersModule],
   providers: [SmsKapsystemService, ProvidersService],
-  exports: [SmsKapsystemService]
+  exports: [SmsKapsystemService],
 })
 export class SmsKapsystemModule {}
