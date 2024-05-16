@@ -101,6 +101,7 @@ export class NotificationQueueProducer {
         if (this.smsKapsystemQueue) {
           await this.smsKapsystemQueue.add(notification.id);
         }
+        
         break;
     }
   }

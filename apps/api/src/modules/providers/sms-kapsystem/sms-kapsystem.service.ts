@@ -54,6 +54,7 @@ export class SmsKapsystemService {
 
         queryString += key + '=' + encodeURIComponent(obj[key]);
       }
+      
       return queryString;
     }
 
