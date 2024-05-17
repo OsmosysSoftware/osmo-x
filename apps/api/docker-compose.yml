@@ -9,8 +9,8 @@ services:
     ports:
       - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
     depends_on:
-      - mariadb
-      - redis
+      - osmox-mariadb
+      - osmox-redis
     environment:
       NODE_ENV: production
 

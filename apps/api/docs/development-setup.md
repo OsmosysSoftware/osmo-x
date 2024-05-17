@@ -62,7 +62,7 @@ sudo systemctl status mariadb
    REDIS_DOCKER_PORT=6397 # (required only if using docker)
 
    # Docker env
-   COMPOSE_PROJECT_NAME=osmo-x  # Add your project name here.
+   COMPOSE_PROJECT_NAME=osmox-api  # Add your project name here.
    ```
 
    Alternatively, use the `.env.example` file instead.

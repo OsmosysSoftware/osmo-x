@@ -45,10 +45,10 @@ Please make sure to have these versions installed on your development server bef
 4. Declare project-name in the .env file:
 
    ```sh
-   COMPOSE_PROJECT_NAME=osmo-x
+   COMPOSE_PROJECT_NAME=osmox-portal
    ```
 
-   Updating .env file with COMPOSE_PROJECT_NAME=osmo-x is needed to set the project name for Docker Compose, which helps in organizing and managing multiple Docker projects running on the same system
+   Updating .env file with `COMPOSE_PROJECT_NAME=osmox-portal` is needed to set the project name for Docker Compose, which helps in organizing and managing multiple Docker projects running on the same system
 
 5. Start the development server:
 
