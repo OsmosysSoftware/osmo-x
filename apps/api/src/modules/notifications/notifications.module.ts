@@ -42,7 +42,7 @@ import { waTwilioBusinessQueueConfig } from './queues/waTwilioBusiness.queue';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 import { SmsKapsystemModule } from '../providers/sms-kapsystem/sms-kapsystem.module';
 import { smsKapsystemQueueConfig } from './queues/smsKapsystem.queue';
-import { KapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/kapsystem-notifications.job.consumer';
+import { KapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
 
 @Module({})
 export class NotificationsModule {
