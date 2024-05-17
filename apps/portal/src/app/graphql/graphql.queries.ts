@@ -6,12 +6,14 @@ export const GetNotifications = gql`
       options: { limit: 100, sortBy: "createdOn", sortOrder: DESC, filters: $filters }
     ) {
       notifications {
+        applicationId
         channelType
         createdBy
         createdOn
         data
         deliveryStatus
         id
+        providerId
         result
         status
         updatedBy
@@ -26,6 +28,15 @@ export const LoginUser = gql`
     login(loginUserInput: { username: $username, password: $password }) {
       token
       user
+      allKeys {
+        apiKeyId
+        apiKey
+        applicationId
+        applicationDetails {
+          name
+        }
+        status
+      }
     }
   }
 `;

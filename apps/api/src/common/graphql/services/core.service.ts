@@ -31,6 +31,10 @@ export abstract class CoreService<TEntity> {
       queryBuilder.leftJoinAndSelect(`${alias}.providerDetails`, 'provider');
     }
 
+    if (alias === 'serverApiKeys') {
+      queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
+    }
+
     // Apply base conditions
     baseConditions.forEach((condition) => {
       queryBuilder.andWhere(`${alias}.${condition.field} = :${condition.field}`, {
