@@ -4,8 +4,10 @@ import { ProvidersService } from '../providers.service';
 import { firstValueFrom } from 'rxjs';
 
 export interface KapsystemData {
-  SMSText: string;
-  GSM: string;
+  indiaDltContentTemplateId: string;
+  indiaDltPrincipalEntityId: string;
+  text: string;
+  to: string;
 }
 
 export interface KapsystemResponse {
@@ -61,7 +63,7 @@ export class SmsKapsystemService {
 
     this.apiUrl =
       this.apiUrl +
-      `?username=${this.username}&password=${this.password}&sender=${this.senderId}&` +
+      `?username=${this.username}&password=${this.password}&from=${this.senderId}&` +
       objToQueryString(body);
 
     const response = await this.httpService.get(this.apiUrl);

@@ -42,8 +42,10 @@ Here's a sample request body:
     "providerId": 2,
     "channelType": 8,
     "data": {
-        "GSM": "918577867848",
-        "SMSText": "Hello Ayush, your order #234K3J4 has been Shipped.\nThank you for using our service."
+        "indiaDltContentTemplateId": "1707160146562806652",
+        "indiaDltPrincipalEntityId":"1601100000000005964",
+        "to": "911234567890,914578126395",
+        "from": "Hello Ayush, your order #234K3J4 has been Shipped.\nThank you for using our service."
     }
 }
 ```

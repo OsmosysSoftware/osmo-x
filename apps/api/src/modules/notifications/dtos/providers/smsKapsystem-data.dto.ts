@@ -2,8 +2,14 @@ import { IsNotEmpty } from 'class-validator';
 
 export class KapsystemDataDto {
   @IsNotEmpty()
-  SMSText: string;
+  indiaDltContentTemplateId: string;
 
   @IsNotEmpty()
-  GSM: string;
+  indiaDltPrincipalEntityId: string;
+
+  @IsNotEmpty()
+  text: string;
+
+  @IsNotEmpty()
+  to: string;
 }
