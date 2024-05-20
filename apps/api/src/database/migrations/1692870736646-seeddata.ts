@@ -85,6 +85,15 @@ export class SeedData1692870736646 implements MigrationInterface {
       ],
     );
 
+    await queryRunner.query(
+      `INSERT INTO notify_master_providers (name,provider_type,configuration) VALUES (?, ?, ?)`,
+      [
+        'SMS_KAPSYSTEM',
+        2,
+        '{"KAP_SMS_BASE_API_URL": {"lable": "KAP SMS BASE API URL","id": "KAP_SMS_BASE_API_URL","pattern": "^https?://[^(\\?\\s)]+$","type": "string"},"KAP_SMS_ACCOUNT_USERNAME": {"lable": "KAP SMS ACCOUNT USERNAME","id": "KAP_SMS_ACCOUNT_USERNAME","pattern": "^[a-zA-Z0-9_-]{3,30}$","type": "string"},"KAP_SMS_ACCOUNT_PASSWORD": {"lable": "KAP_SMS_ACCOUNT_PASSWORD","id": "KAP SMS ACCOUNT PASSWORD","pattern": "^[a-zA-Z0-9_-]{3,30}$","type": "string"},"KAP_SMS_FROM": {"lable": "KAP SMS FROM","id": "KAP_SMS_FROM","pattern": "^[a-zA-Z]{6}$","type": "string"}}',
+      ],
+    );
+
     // Add foreign key for channel_type -> master_id
     // Adding this after seeding data in master_providers so FK constraint does not fail
     await queryRunner.createForeignKey(
@@ -102,7 +111,7 @@ export class SeedData1692870736646 implements MigrationInterface {
     await queryRunner.dropForeignKey('notify_notifications', 'channel_type');
     await queryRunner.query(`
       DELETE FROM notify_master_providers
-      WHERE id IN (1, 2, 3, 4, 5, 6, 7);
+      WHERE id IN (1, 2, 3, 4, 5, 6, 7, 8);
     `);
     await queryRunner.query(`
       DELETE FROM notify_server_api_keys
