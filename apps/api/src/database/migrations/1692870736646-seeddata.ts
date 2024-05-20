@@ -90,7 +90,7 @@ export class SeedData1692870736646 implements MigrationInterface {
       [
         'SMS_KAPSYSTEM',
         2,
-        '{"KAP_SMS_BASE_API_URL": {"lable": "KAP SMS BASE API URL","id": "KAP_SMS_BASE_API_URL","pattern": "^https?://[^(\\?\\s)]+$","type": "string"},"KAP_SMS_ACCOUNT_USERNAME": {"lable": "KAP SMS ACCOUNT USERNAME","id": "KAP_SMS_ACCOUNT_USERNAME","pattern": "^[a-zA-Z0-9_-]{3,30}$","type": "string"},"KAP_SMS_ACCOUNT_PASSWORD": {"lable": "KAP_SMS_ACCOUNT_PASSWORD","id": "KAP SMS ACCOUNT PASSWORD","pattern": "^[a-zA-Z0-9_-]{3,30}$","type": "string"},"KAP_SMS_ACCOUNT_SENDER_ID": {"lable": "KAP SMS ACCOUNT SENDER ID","id": "KAP_SMS_ACCOUNT_SENDER_ID","pattern": "^[a-zA-Z]{6}$","type": "string"}}',
+        '{"KAP_SMS_BASE_API_URL": {"lable": "KAP SMS BASE API URL","id": "KAP_SMS_BASE_API_URL","pattern": "^https?://[^(\\?\\s)]+$","type": "string"},"KAP_SMS_ACCOUNT_USERNAME": {"lable": "KAP SMS ACCOUNT USERNAME","id": "KAP_SMS_ACCOUNT_USERNAME","pattern": "^[a-zA-Z0-9_-]{3,30}$","type": "string"},"KAP_SMS_ACCOUNT_PASSWORD": {"lable": "KAP_SMS_ACCOUNT_PASSWORD","id": "KAP SMS ACCOUNT PASSWORD","pattern": "^[a-zA-Z0-9_-]{3,30}$","type": "string"},"KAP_SMS_FROM": {"lable": "KAP SMS FROM","id": "KAP_SMS_FROM","pattern": "^[a-zA-Z]{6}$","type": "string"}}',
       ],
     );
 

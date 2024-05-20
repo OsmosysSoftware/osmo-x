@@ -29,7 +29,7 @@ export class SmsKapsystemService {
   private apiUrl;
   private username;
   private password;
-  private senderId;
+  private from;
 
   constructor(
     private httpService: HttpService,
@@ -41,7 +41,7 @@ export class SmsKapsystemService {
     this.apiUrl = smsKapsystemConfig.KAP_SMS_BASE_API_URL as string;
     this.username = smsKapsystemConfig.KAP_SMS_ACCOUNT_USERNAME as string;
     this.password = smsKapsystemConfig.KAP_SMS_ACCOUNT_PASSWORD as string;
-    this.senderId = smsKapsystemConfig.KAP_SMS_ACCOUNT_SENDER_ID as string;
+    this.from = smsKapsystemConfig.KAP_SMS_FROM as string;
   }
 
   async sendMessage(body: KapsystemData, providerId: number): Promise<KapsystemResponse> {
@@ -63,7 +63,7 @@ export class SmsKapsystemService {
 
     this.apiUrl =
       this.apiUrl +
-      `?username=${this.username}&password=${this.password}&from=${this.senderId}&` +
+      `?username=${this.username}&password=${this.password}&from=${this.from}&` +
       objToQueryString(body);
 
     const response = await this.httpService.get(this.apiUrl);
