@@ -43,8 +43,8 @@ Here's a sample request body:
     "data": {
         "indiaDltContentTemplateId": "1707160146562806652",
         "indiaDltPrincipalEntityId":"1601100000000005964",
-        "to": "911234567890,914578126395",
-        "from": "Hello Ayush, your order #234K3J4 has been Shipped.\nThank you for using our service."
+        "to": "+911234567890,+914578126395",
+        "text": "Hello Ayush, your order #234K3J4 has been Shipped.\nThank you for using our service."
     }
 }
 ```
