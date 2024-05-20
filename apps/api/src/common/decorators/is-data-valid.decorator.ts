@@ -19,7 +19,7 @@ import { SmsPlivoDataDto } from 'src/modules/notifications/dtos/providers/plivo-
 import { WaTwilioBusinessDataDto } from 'src/modules/notifications/dtos/providers/waTwilioBusiness-data.dto';
 import { Injectable } from '@nestjs/common';
 import { ProvidersService } from 'src/modules/providers/providers.service';
-import { KapsystemDataDto } from 'src/modules/notifications/dtos/providers/smsKapsystem-data.dto';
+import { SmsKapsystemDataDto } from 'src/modules/notifications/dtos/providers/smsKapsystem-data.dto';
 
 @ValidatorConstraint({ name: 'isDataValidConstraint', async: true })
 @Injectable()
@@ -90,7 +90,7 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
         return true;
 
       case ChannelType.SMS_KAPSYSTEM:
-        const kapsystemData = new KapsystemDataDto();
+        const kapsystemData = new SmsKapsystemDataDto();
         Object.assign(kapsystemData, value);
         await validateAndThrowError(kapsystemData);
         return true;

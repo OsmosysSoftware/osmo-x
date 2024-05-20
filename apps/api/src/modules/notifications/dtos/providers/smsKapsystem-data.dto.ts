@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class KapsystemDataDto {
+export class SmsKapsystemDataDto {
   @IsNotEmpty()
   indiaDltContentTemplateId: string;
 

@@ -42,7 +42,7 @@ import { waTwilioBusinessQueueConfig } from './queues/waTwilioBusiness.queue';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 import { SmsKapsystemModule } from '../providers/sms-kapsystem/sms-kapsystem.module';
 import { smsKapsystemQueueConfig } from './queues/smsKapsystem.queue';
-import { KapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
+import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
 
 @Module({})
 export class NotificationsModule {
@@ -90,7 +90,7 @@ export class NotificationsModule {
     // Load SMS_KAPSYSTEM
     modulesToLoad.push(SmsKapsystemModule);
     queuesToLoad.push(smsKapsystemQueueConfig);
-    consumersToLoad.push(KapsystemNotificationsConsumer);
+    consumersToLoad.push(SmsKapsystemNotificationsConsumer);
 
     const serviceProviderModules: DynamicModule[] = modulesToLoad;
 

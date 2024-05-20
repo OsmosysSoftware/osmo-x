@@ -12,7 +12,7 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { Job } from 'bull';
 
 @Processor(SMS_KAPSYSTEM_QUEUE)
-export class KapsystemNotificationsConsumer extends NotificationConsumer {
+export class SmsKapsystemNotificationsConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
@@ -23,7 +23,7 @@ export class KapsystemNotificationsConsumer extends NotificationConsumer {
   }
 
   @Process()
-  async processKapsystemNotificationQueue(job: Job<number>): Promise<void> {
+  async processSmsKapsystemNotificationQueue(job: Job<number>): Promise<void> {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;
       const notification = (await this.notificationsService.getNotificationById(id))[0];
