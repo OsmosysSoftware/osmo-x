@@ -103,7 +103,7 @@ OsmoX supports multiple channel types, allowing you to choose the most suitable 
 |             SMS - Twilio             |     5     |             [SMS - Twilio](channels/sms-Twilio.md)             |
 |             SMS - Plivo              |     6     |              [SMS - Plivo](channels/sms-Plivo.md)              |
 |     WhatsApp - Twilio (Business)     |     7     | [WhatsApp - Twilio (Business)](channels/wa-Twilio-Business.md) |
-|           SMS - KAPSystem            |     6     |           [SMS - KAPSystem](channels/sms-kapsystem.md)         |
+|           SMS - KAPSystem            |     8     |           [SMS - KAPSystem](channels/sms-kapsystem.md)         |
 
 ## 6. Delivery Status Information
 
