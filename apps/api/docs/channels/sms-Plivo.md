@@ -45,6 +45,12 @@ Here's a sample request body:
 }
 ```
 
+### Dependencies
+
+| Package Name       | Version    | Description                                                                                                                                                |
+| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| plivo      | ^4.62.0  | Plivo client for sending SMS and making voice calls.     |
+
 ### References
 
 - https://www.plivo.com/docs/messaging/quickstart/node-expressjs/

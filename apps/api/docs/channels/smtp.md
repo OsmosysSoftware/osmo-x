@@ -71,4 +71,10 @@ In addition to the provided fields, there are several other options you can incl
 
 These options allow you to customize the email message according to your needs. Remember to adjust the options based on your specific use case and requirements.
 
+### Dependencies
+
+| Package Name       | Version    | Description                                                                                                                                                |
+| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| nodemailer      | ^6.9.13  | Nodemailer library for sending emails using SMTP, SMTP pool, sendmail, or direct transport.     |
+
 Reference: https://nodemailer.com/message/

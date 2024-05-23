@@ -65,4 +65,11 @@ In addition to the provided fields, there are several other options you can incl
 
 These options allow you to customize the email message according to your needs. Remember to adjust the options based on your specific use case and requirements.
 
+### Dependencies
+
+| Package Name       | Version    | Description                                                                                                                                                |
+| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| mailgun.js       | ^10.2.1   | A Mailgun client for JavaScript, used to interact with the Mailgun API.     |
+| form-data           | ^4.0.0 | Used by mailgun.js to handle form data for HTTP requests.     | 
+
 Reference: https://documentation.mailgun.com/en/latest/api-sending.html

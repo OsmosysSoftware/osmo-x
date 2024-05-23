@@ -95,6 +95,13 @@ Here's a sample request body:
 }
 ```
 
+### Dependencies
+
+| Package Name       | Version    | Description                                                                                                                                                |
+| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| @nestjs/axios      | ^3.0.2  | Integration of Axios with NestJS for making HTTP requests.     |
+
 References
 - https://docs.360dialog.com/partner/first-steps/sandbox#example-request-payload
 - https://docs.360dialog.com/partner/first-steps/sandbox#5.-send-a-template-message-optional
+  
