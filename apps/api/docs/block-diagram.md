@@ -12,6 +12,8 @@ The block diagram represents the software application's architecture in a visual
 
 ![Block Diagram](./assets/OsmoX-block-diagram.png)
 
+The Block diagram file for OsmoX can be accessed [here](#./assets/OsmoX-block-diagram.drawio).
+
 ## Components and Functionalities
 
 ### 1. User/Application
