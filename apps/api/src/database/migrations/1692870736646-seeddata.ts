@@ -102,7 +102,7 @@ export class SeedData1692870736646 implements MigrationInterface {
     await queryRunner.dropForeignKey('notify_notifications', 'channel_type');
     await queryRunner.query(`
       DELETE FROM notify_master_providers
-      WHERE id IN (1, 2, 3, 4, 5, 6, 7, 8);
+      WHERE id IN (1, 2, 3, 4, 5, 6, 7);
     `);
     await queryRunner.query(`
       DELETE FROM notify_server_api_keys
