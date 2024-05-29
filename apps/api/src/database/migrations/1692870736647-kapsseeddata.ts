@@ -17,7 +17,7 @@ export class KapsSeedData1692870736647 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       DELETE FROM notify_master_providers
-      WHERE id IN (8);
+      WHERE master_id = 8;
     `);
   }
 }
