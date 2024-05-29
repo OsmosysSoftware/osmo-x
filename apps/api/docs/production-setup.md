@@ -15,7 +15,7 @@ Before setting up OsmoX for production, ensure you have the following prerequisi
 - **Docker:** 26.1.2, build 211e74b
 - **Docker Compose:** v2.1.1
 
-These prerequisites are essential for deploying and running OsmoX in a environment.
+These prerequisites are essential for deploying and running OsmoX in an environment.
 
 Make sure Redis and MariaDB server are up and running.
 
