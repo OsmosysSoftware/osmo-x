@@ -11,8 +11,6 @@ Before setting up OsmoX for development, ensure you have the following prerequis
 - **Git:** Git v2.x or higher.
 - **MariaDB:** MariaDB v10.x or higher.
 - **Redis:** Redis v6.x or higher
-- **Docker:** 26.1.2, build 211e74b
-- **Docker Compose:** v2.1.1
 
 These prerequisites are essential for deploying and running OsmoX in an environment.
 

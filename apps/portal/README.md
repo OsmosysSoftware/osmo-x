@@ -39,6 +39,10 @@ Before deploying the Portal with Docker, ensure that you have the following inst
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
+Ensure their versions are:
+- **Docker:** Docker v26.1.2
+- **Docker Compose:** Docker Compose v2.1.1
+
 Create an `.env` file and set the following value:
 
 ```dotenv

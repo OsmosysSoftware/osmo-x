@@ -12,8 +12,8 @@ Before setting up OsmoX for production, ensure you have the following prerequisi
 - **MariaDB:** MariaDB v10.x or higher.
 - **Redis:** Redis v6.x or higher
 - **PM2 (Process Manager):** PM2 v5.x or higher.
-- **Docker:** 26.1.2, build 211e74b
-- **Docker Compose:** v2.1.1
+- **Docker:** Docker v26.1.2
+- **Docker Compose:** Docker Compose v2.1.1
 
 These prerequisites are essential for deploying and running OsmoX in an environment.
 
