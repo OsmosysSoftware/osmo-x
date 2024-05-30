@@ -1,0 +1,398 @@
+<mxfile host="app.diagrams.net" modified="2023-11-08T13:20:57.931Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="L_0vslKykM7u8DEVpU0n" version="22.0.8" type="device">
+  <diagram name="Page-1" id="U7kH-epYJp6n53xCjkGP">
+    <mxGraphModel dx="2626" dy="2172" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="VuztZd5diSc5d07SC9xR-14" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="260" y="-250" width="840" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-22" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;opacity=50;" parent="1" vertex="1">
+          <mxGeometry x="280" y="-30" width="1180" height="470" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-17" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#b85450;fillColor=#f8cecc;opacity=50;" parent="1" vertex="1">
+          <mxGeometry x="-10" y="-230" width="510" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-42" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="630" y="-8.74" width="180" height="438.5" as="geometry" />
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.009;entryY=0.312;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-1" target="PHZ-Gd2ygnw3X2nU42TV-20" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="170" />
+              <mxPoint x="520" y="80" />
+            </Array>
+            <mxPoint x="580" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.002;entryY=0.316;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-1" target="PHZ-Gd2ygnw3X2nU42TV-25" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="250" />
+              <mxPoint x="540" y="360" />
+              <mxPoint x="579" y="360" />
+            </Array>
+            <mxPoint x="580" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.016;entryY=0.316;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-1" target="PHZ-Gd2ygnw3X2nU42TV-21" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="563" y="210" />
+            </Array>
+            <mxPoint x="580" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-1" value="Cron" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="304" y="160" width="166" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-8" value="User/Application" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="10" y="-180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-16" target="8XwY_JzCTahz7euxyNvv-3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="412" y="-30" />
+              <mxPoint x="412" y="-30" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-16" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="302" width="170" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-17" value="Database" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="357" y="58" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-15" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://d1.awsstatic.com/logos/partners/MariaDB_Logo.d8a208f0a889a8f0f0551b8391a065ea79c54f3a.png;" parent="1" vertex="1">
+          <mxGeometry x="337" y="7.999999999999972" width="100" height="51.47" as="geometry" />
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.651;entryY=1.008;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-1" target="PHZ-Gd2ygnw3X2nU42TV-16" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="413" y="130" />
+              <mxPoint x="413" y="130" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.348;entryY=0.02;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-16" target="PHZ-Gd2ygnw3X2nU42TV-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="362" y="90" />
+              <mxPoint x="362" y="90" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-20" target="PHZ-Gd2ygnw3X2nU42TV-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="100" />
+              <mxPoint x="540" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-20" target="VuztZd5diSc5d07SC9xR-11" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="795" y="76.26" />
+              <mxPoint x="795" y="76.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-20" value="SMTP Queue" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="655" y="61.26" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-21" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="230" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="550" y="230" />
+              <mxPoint x="550" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-21" target="VuztZd5diSc5d07SC9xR-12" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="795" y="206.26" />
+              <mxPoint x="795" y="206.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-21" value="Mailgun Queue" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="655" y="191.26" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-25" target="VuztZd5diSc5d07SC9xR-13" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="795" y="356.26" />
+              <mxPoint x="795" y="356.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-25" value="WhatsApp - 360Dialog Queue" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="655" y="341.26" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="PHZ-Gd2ygnw3X2nU42TV-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-25" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="270" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="520" y="380" />
+              <mxPoint x="520" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="VuztZd5diSc5d07SC9xR-1" target="VuztZd5diSc5d07SC9xR-11" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1090" y="106.26" />
+              <mxPoint x="1090" y="106.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="VuztZd5diSc5d07SC9xR-1" target="VuztZd5diSc5d07SC9xR-8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-1" value="SMTP Server" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1162.5" y="51.26" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="VuztZd5diSc5d07SC9xR-2" target="VuztZd5diSc5d07SC9xR-12" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1080" y="236.26" />
+              <mxPoint x="1080" y="236.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="VuztZd5diSc5d07SC9xR-2" target="VuztZd5diSc5d07SC9xR-9" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1162.5" y="166.26" width="130" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-3" value="Mailgun" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1197.5" y="236.26" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-4" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://www.duocircle.com/wp-content/uploads/2021/05/mailgun-logo.png;" parent="1" vertex="1">
+          <mxGeometry x="1172.21" y="181.26" width="110.58" height="53.06" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="VuztZd5diSc5d07SC9xR-5" target="VuztZd5diSc5d07SC9xR-13" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1090" y="386.26" />
+              <mxPoint x="1090" y="386.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="VuztZd5diSc5d07SC9xR-5" target="VuztZd5diSc5d07SC9xR-10" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-5" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1162.5" y="321.26" width="130" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-6" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://www.360dialog.com/wp-content/uploads/2021/03/Company_logo.png;" parent="1" vertex="1">
+          <mxGeometry x="1175.33" y="341.26" width="104.34" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-7" value="360Dialog" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1150" y="391.26" width="155" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-8" value="Recipient(s)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="1380" y="61.26" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-9" value="Recipient(s)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="1380" y="191.26" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-10" value="Recipient(s)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="1380" y="341.26" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="VuztZd5diSc5d07SC9xR-11" target="PHZ-Gd2ygnw3X2nU42TV-20" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="815" y="106.26" />
+              <mxPoint x="815" y="106.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="VuztZd5diSc5d07SC9xR-11" target="VuztZd5diSc5d07SC9xR-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1050" y="71.26" />
+              <mxPoint x="1050" y="71.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-11" value="SMTP Service" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="910" y="61.26" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="VuztZd5diSc5d07SC9xR-12" target="PHZ-Gd2ygnw3X2nU42TV-21" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="825" y="236.26" />
+              <mxPoint x="825" y="236.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.002;entryY=0.324;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="VuztZd5diSc5d07SC9xR-12" target="VuztZd5diSc5d07SC9xR-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1100" y="201.26" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1060" y="201" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-12" value="Mailgun Service" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="910" y="191.26" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="VuztZd5diSc5d07SC9xR-13" target="PHZ-Gd2ygnw3X2nU42TV-25" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="825" y="386.26" />
+              <mxPoint x="825" y="386.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.004;entryY=0.308;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="VuztZd5diSc5d07SC9xR-13" target="VuztZd5diSc5d07SC9xR-5" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1100" y="351.26" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1060" y="351.26" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-13" value="WhatsApp - 360Dialog Service" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="910" y="341.26" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-16" value="Osmo-Notify" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="660" y="-250" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="VuztZd5diSc5d07SC9xR-43" value="Bull Queue" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="677.5" y="-10" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="302" y="-210" width="168" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-3" value="API" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="331" y="-120" width="108" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-4" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://res.cloudinary.com/practicaldev/image/fetch/s--m_Ng9MLF--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/i/fppjegg7q1kb2pdzmlvf.png;" parent="1" vertex="1">
+          <mxGeometry x="311.5" y="-190" width="147" height="61.74" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.002;entryY=0.416;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="PHZ-Gd2ygnw3X2nU42TV-8" target="8XwY_JzCTahz7euxyNvv-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="-160" />
+              <mxPoint x="240" y="-160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.008;entryY=0.678;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="8XwY_JzCTahz7euxyNvv-2" target="PHZ-Gd2ygnw3X2nU42TV-8" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="261" y="-140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.356;entryY=0.009;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="8XwY_JzCTahz7euxyNvv-2" target="PHZ-Gd2ygnw3X2nU42TV-16" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="363" y="-45" />
+              <mxPoint x="363" y="-45" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-18" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#b85450;fillColor=#f8cecc;opacity=50;" parent="1" vertex="1">
+          <mxGeometry x="1175.33" y="-235" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-19" value="Notification Ingestion Process" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1230" y="-230" width="112.5" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-20" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;opacity=50;" parent="1" vertex="1">
+          <mxGeometry x="1175.33" y="-175" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-23" value="Notification Data Request" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="150" y="-190" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-24" value="Confirmation Response" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="160" y="-135" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-25" value="Notification Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="297" y="-60" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-26" value="Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="417" y="-60" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-27" value="Pending Notifications" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="290" y="110" width="67" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-28" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="417" y="110" width="88" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-29" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="542" y="101.26" width="88" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-31" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="542" y="381.26" width="88" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-32" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="542" y="234.32" width="88" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-35" value="Pending SMTP Notifications" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="534" y="51.26" width="89.5" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-36" value="Pending Mailgun&amp;nbsp; Notifications" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="545" y="166.26" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-37" value="Pending WhatsApp Notifications" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="539.25" y="315" width="93.5" height="41.26" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-39" value="Pending SMTP Notification" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="813" y="46" width="89.5" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-40" value="Pending Mailgun&amp;nbsp; Notification" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="820" y="160" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-42" value="Pending WhatsApp Notification" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="813" y="312" width="93.5" height="41.26" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-43" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="818.5" y="389" width="88" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-44" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="818.5" y="236.26" width="88" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-45" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="813.75" y="108" width="88" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-46" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1062" y="108" width="88" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-47" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1062" y="234.32" width="88" height="35.68" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-48" value="Provider Response Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="389" width="88" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-49" value="SMTP Request Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1049" y="40" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-50" value="Mailgun Request Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1049" y="171.26" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-51" value="360Dialog Request Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1049" y="321.26" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-52" value="Mail" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1305" y="61.260000000000005" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-53" value="Mail" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1305" y="191.26" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8XwY_JzCTahz7euxyNvv-54" value="WhatsApp Message" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1305" y="341.26" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="6r-pFXoc1YKWH5FSKKsW-3" value="Notification Delivery Process" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="-170" width="100" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
