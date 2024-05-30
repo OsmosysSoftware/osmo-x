@@ -48,3 +48,10 @@ Here's a sample request body:
     }
 }
 ```
+
+### Dependencies
+
+| Package Name       | Version    | Description                                                                                                                                                |
+| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| @nestjs/axios      | ^3.0.2   | Integration of Axios with NestJS for making HTTP requests.     |
+| rxjs           | ^7.8.1 | Reactive extensions library for JavaScript, used for composing asynchronous and event-based programs.     |

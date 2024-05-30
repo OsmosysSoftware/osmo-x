@@ -45,6 +45,12 @@ Here's a sample request body:
 }
 ```
 
+### Dependencies
+
+| Package Name       | Version    | Description                                                                                                                                                |
+| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| twilio      | ^5.0.4  | Twilio client for sending SMS, making voice calls, and other communication functionalities.     |
+
 ### References
 
 - https://www.twilio.com/docs/messaging/quickstart
