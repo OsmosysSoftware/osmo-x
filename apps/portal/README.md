@@ -40,6 +40,7 @@ Before deploying the Portal with Docker, ensure that you have the following inst
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
 Ensure their versions are:
+
 - **Docker:** Docker v26.1.2
 - **Docker Compose:** Docker Compose v2.1.1
 
