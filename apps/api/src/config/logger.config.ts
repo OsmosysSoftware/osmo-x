@@ -1,24 +1,28 @@
 import { WinstonModule, utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import { transports, format } from 'winston';
 import { join } from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import 'winston-daily-rotate-file';
 
 const logDir = 'logs';
 const logFormat = format.combine(
   format.timestamp(),
   format.printf((info) => {
-    const { timestamp, severity, requestId, httpMethod, requestUrl, level, message, stack, data } =
-      info;
+    const { timestamp, level, url, httpMethod, context, data, message, stack } = info;
+    const severity =
+      level === 'error' || level === 'fatal' ? 'high' : level === 'warn' ? 'med' : 'low';
+    const tracebackId = uuidv4();
     const logObject = {
       timestamp,
       level,
       severity,
-      requestId,
+      tracebackId,
+      url,
       httpMethod,
-      requestUrl,
+      source: context,
+      data,
       message,
       stackTrace: stack,
-      data,
     };
     return JSON.stringify(logObject);
   }),
