@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository, Brackets } from 'typeorm';
 import { QueryOptionsDto } from '../dtos/query-options.dto';
 
+type FilterValue = string | number | boolean | Date | Array<string | number | boolean>;
+
 @Injectable()
 export abstract class CoreService<TEntity> {
   protected readonly logger = new Logger(CoreService.name);
@@ -19,7 +21,7 @@ export abstract class CoreService<TEntity> {
     options: QueryOptionsDto,
     alias: string,
     searchableFields: string[] = [],
-    baseConditions: Array<{ field: string; value: unknown; operator?: string }> = [],
+    baseConditions: Array<{ field: string; value: FilterValue; operator?: string }> = [],
   ): Promise<{ items: TEntity[]; total: number }> {
     this.logger.log(`Getting all ${alias} with options`);
 
@@ -59,13 +61,13 @@ export abstract class CoreService<TEntity> {
       const operator = filter.operator;
       const paramName = `param${index}`;
       let condition = `${alias}.${field}`;
-      let value: any = filter.value;
+      let value: FilterValue = filter.value;
 
       if (this.isDateField(field) && (operator === 'gt' || operator === 'lt')) {
-        value = new Date(filter.value);
+        value = new Date(filter.value as string);
       } else if (operator === 'in') {
         // Ensure the value is parsed as an array for 'in' operator
-        value = Array.isArray(filter.value) ? filter.value : JSON.parse(filter.value);
+        value = Array.isArray(filter.value) ? filter.value : JSON.parse(filter.value as string);
       }
 
       switch (operator) {
