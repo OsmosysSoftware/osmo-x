@@ -57,12 +57,16 @@ export abstract class CoreService<TEntity> {
     options.filters?.forEach((filter, index) => {
       const field = filter.field;
       const operator = filter.operator;
-      const value =
-        this.isDateField(field) && (operator === 'gt' || operator === 'lt')
-          ? new Date(filter.value)
-          : filter.value;
       const paramName = `param${index}`;
       let condition = `${alias}.${field}`;
+      let value: any = filter.value;
+
+      if (this.isDateField(field) && (operator === 'gt' || operator === 'lt')) {
+        value = new Date(filter.value);
+      } else if (operator === 'in') {
+        // Ensure the value is parsed as an array for 'in' operator
+        value = Array.isArray(filter.value) ? filter.value : JSON.parse(filter.value);
+      }
 
       switch (operator) {
         case 'eq':
@@ -86,6 +90,9 @@ export abstract class CoreService<TEntity> {
           break;
         case 'ne':
           condition += ` != :${paramName}`;
+          break;
+        case 'in':
+          condition += ` IN (:...${paramName})`;
           break;
         // Add other operators as needed
       }
