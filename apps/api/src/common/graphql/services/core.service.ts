@@ -66,8 +66,19 @@ export abstract class CoreService<TEntity> {
       if (this.isDateField(field) && (operator === 'gt' || operator === 'lt')) {
         value = new Date(filter.value as string);
       } else if (operator === 'in') {
-        // Ensure the value is parsed as an array for 'in' operator
-        value = Array.isArray(filter.value) ? filter.value : JSON.parse(filter.value as string);
+        if (typeof filter.value === 'string') {
+          try {
+            value = JSON.parse(filter.value);
+
+            if (!Array.isArray(value)) {
+              value = filter.value.split(',').map((item) => item.trim());
+            }
+          } catch (error) {
+            value = filter.value.split(',').map((item) => item.trim());
+          }
+        } else if (!Array.isArray(filter.value)) {
+          value = [filter.value];
+        }
       }
 
       switch (operator) {
