@@ -13,7 +13,7 @@ export const ChannelType = {
   SMS_TWILIO: 5,
   SMS_PLIVO: 6,
   WA_TWILIO_BUSINESS: 7,
-  SMS_KAPSYSTEM: 8
+  SMS_KAPSYSTEM: 8,
 };
 
 export const ChannelTypeMap = {
