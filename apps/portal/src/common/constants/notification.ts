@@ -13,6 +13,7 @@ export const ChannelType = {
   SMS_TWILIO: 5,
   SMS_PLIVO: 6,
   WA_TWILIO_BUSINESS: 7,
+  SMS_KAPSYSTEM: 8,
 };
 
 export const ChannelTypeMap = {
@@ -64,5 +65,12 @@ export const ChannelTypeMap = {
     providerName: 'Twilio Business',
     providerIcon: 'assets/icons/twilio.svg',
     style: 'whatsapp',
+  },
+  [ChannelType.SMS_KAPSYSTEM]: {
+    serviceIcon: 'assets/icons/sms.svg',
+    altText: 'SMS',
+    providerName: 'KAP System',
+    providerIcon: 'assets/icons/kaps.png',
+    style: 'sms',
   },
 };
