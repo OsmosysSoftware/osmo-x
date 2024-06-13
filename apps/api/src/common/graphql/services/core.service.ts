@@ -2,8 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository, Brackets } from 'typeorm';
 import { QueryOptionsDto } from '../dtos/query-options.dto';
 
-type FilterValue = string | number | boolean | Date | Array<string | number | boolean>;
-
 @Injectable()
 export abstract class CoreService<TEntity> {
   protected readonly logger = new Logger(CoreService.name);
@@ -21,7 +19,7 @@ export abstract class CoreService<TEntity> {
     options: QueryOptionsDto,
     alias: string,
     searchableFields: string[] = [],
-    baseConditions: Array<{ field: string; value: FilterValue; operator?: string }> = [],
+    baseConditions: Array<{ field: string; value: unknown; operator?: string }> = [],
   ): Promise<{ items: TEntity[]; total: number }> {
     this.logger.log(`Getting all ${alias} with options`);
 
@@ -61,24 +59,17 @@ export abstract class CoreService<TEntity> {
       const operator = filter.operator;
       const paramName = `param${index}`;
       let condition = `${alias}.${field}`;
-      let value: FilterValue = filter.value;
+      let value = filter.value;
 
-      if (this.isDateField(field) && (operator === 'gt' || operator === 'lt')) {
-        value = new Date(filter.value as string);
-      } else if (operator === 'in') {
-        if (typeof filter.value === 'string') {
-          try {
-            value = JSON.parse(filter.value);
-
-            if (!Array.isArray(value)) {
-              value = filter.value.split(',').map((item) => item.trim());
-            }
-          } catch (error) {
-            value = filter.value.split(',').map((item) => item.trim());
-          }
-        } else if (!Array.isArray(filter.value)) {
-          value = [filter.value];
+      if (operator === 'in' && typeof value === 'string') {
+        try {
+          // Attempt to parse the string as JSON to convert it into an array
+          value = JSON.parse(value);
+        } catch (error) {
+          throw new Error(`Error parsing value for 'in' operator: ${error.message}`);
         }
+      } else if (this.isDateField(field) && (operator === 'gt' || operator === 'lt')) {
+        value = new Date(value) as unknown as string;
       }
 
       switch (operator) {
