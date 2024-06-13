@@ -85,7 +85,6 @@ export abstract class CoreService<TEntity> {
         case 'lt':
           condition += ` < :${paramName}`;
           break;
-          condition += ` < :${paramName}`;
         case 'gte':
           condition += ` >= :${paramName}`;
           break;
