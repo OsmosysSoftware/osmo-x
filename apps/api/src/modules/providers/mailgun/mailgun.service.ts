@@ -19,7 +19,7 @@ export class MailgunService {
     this.mailgunClient = this.mailgun.client({
       username: 'api',
       key: mailgunConfig.MAILGUN_API_KEY as string,
-      host: mailgunConfig.MAILGUN_HOST as string,
+      url: `https://${mailgunConfig.MAILGUN_HOST as string}`,
     } as MailgunClientOptions);
     this.mailgunDomain = mailgunConfig.MAILGUN_DOMAIN as string;
   }
