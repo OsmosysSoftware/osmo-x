@@ -19,7 +19,7 @@ Then set the following configurations in the `configuration` field:
 | MAILGUN_HOST    | Mailgun host; api.mailgun.net for US, api.eu.mailgun.net for EU |
 | MAILGUN_DOMAIN  | Your Mailgun domain name                                        |
 
-```json
+```jsonc
 // Sample JSON to set in the configuration field
 {
   "MAILGUN_API_KEY": "your-api-key",
@@ -34,7 +34,7 @@ Make sure to replace `your-api-key`, `api.mailgun.net`, and `your.mailgun.domain
 
 Here's a sample request body:
 
-```json
+```jsonc
 {
   // Set your respective providerId. ChannelType associated with providerId should be 2 (Mailgun)
   "providerId": 2,
