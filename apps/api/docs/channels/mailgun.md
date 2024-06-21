@@ -49,7 +49,7 @@ Here's a sample request body:
     "attachment": [                                 // Attachments (optional)
       {
         "filename": "names.txt",
-        "data": "John Doe\nJane Doe",
+        "content": "John Doe\nJane Doe",
       },
     ],
   }
@@ -103,4 +103,4 @@ These options allow you to customize the email message according to your needs. 
 | mailgun.js    | ^10.2.1 | A Mailgun client for JavaScript                 |
 | form-data     | ^4.0.0  | Used by mailgun.js to handle form data for HTTP requests |
 
-Reference: https://documentation.mailgun.com/en/latest/api-sending.html
+Reference: [Mailgun API Documentation](https://documentation.mailgun.com/en/latest/api-sending.html)
