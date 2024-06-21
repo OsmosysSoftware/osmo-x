@@ -9,6 +9,7 @@ import { HttpExceptionFilter } from './common/http-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as packageJson from '../package.json';
 import { useContainer } from 'class-validator';
+import { urlencoded, json } from 'express';
 
 const logDir = 'logs';
 
@@ -34,6 +35,8 @@ async function bootstrap(): Promise<void> {
   SwaggerModule.setup('api', app, document);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter(new JsendFormatter()));
+  app.use(json({ limit: configService.get('REQUEST_MAX_SIZE', '50mb') }));
+  app.use(urlencoded({ extended: true, limit: configService.get('REQUEST_MAX_SIZE', '50mb') }));
   // TODO: Update origin as needed
   app.enableCors({ origin: '*', credentials: true });
   await app.listen(configService.getOrThrow('SERVER_PORT'));
