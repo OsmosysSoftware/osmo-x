@@ -1,18 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import * as FormData from 'form-data';
 import Mailgun, { MailgunClientOptions, MailgunMessageData, MessagesSendResult } from 'mailgun.js';
 import * as path from 'path';
 import * as fs from 'node:fs/promises';
+import * as mime from 'mime-types';
 import { CreateNotificationAttachmentDto } from 'src/modules/notifications/dtos/create-notification-attachment.dto';
 import { ProvidersService } from '../providers.service';
+import { Stream } from 'stream';
 
 @Injectable()
 export class MailgunService {
-  private mailgun: Mailgun = new Mailgun(FormData);
-  private mailgunClient;
+  private mailgun: Mailgun;
+  private mailgunClient: ReturnType<Mailgun['client']>;
   private mailgunDomain: string;
 
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(private readonly providersService: ProvidersService) {
+    this.mailgun = new Mailgun(FormData);
+  }
 
   async assignClient(providerId: number): Promise<void> {
     const mailgunConfig = await this.providersService.getConfigById(providerId);
@@ -32,9 +36,11 @@ export class MailgunService {
     return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
   }
 
-  async formatNotificationData(notificationData: Record<string, unknown>): Promise<object> {
+  async formatNotificationData(
+    notificationData: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
     if (notificationData.attachments) {
-      const formattedNotificationData = notificationData;
+      const formattedNotificationData = { ...notificationData };
 
       formattedNotificationData.attachment = await this.formatAttachments(
         notificationData.attachments as CreateNotificationAttachmentDto[],
@@ -47,23 +53,31 @@ export class MailgunService {
     return notificationData;
   }
 
-  async formatAttachments(attachments: CreateNotificationAttachmentDto[]): Promise<object[]> {
-    const formattedAttachments = [];
+  private async formatAttachments(
+    attachments: CreateNotificationAttachmentDto[],
+  ): Promise<{ filename: string; data: Buffer; contentType: string }[]> {
+    return Promise.all(
+      attachments.map(async (attachment) => {
+        let data: Buffer | string | Stream = attachment.content;
 
-    for (const attachment of attachments) {
-      let data = attachment.content;
+        if (attachment.path) {
+          try {
+            const filepath = path.resolve(attachment.path);
+            data = await fs.readFile(filepath);
+          } catch (error) {
+            throw new BadRequestException(
+              `Failed to read file at path: ${attachment.path}: ${error.message}`,
+            );
+          }
+        }
 
-      if (attachment.path) {
-        const filepath = path.resolve(attachment.path);
-        data = await fs.readFile(filepath);
-      }
-
-      formattedAttachments.push({
-        filename: attachment.filename,
-        data,
-      });
-    }
-
-    return formattedAttachments;
+        const contentType = mime.lookup(attachment.filename) || 'application/octet-stream';
+        return {
+          filename: attachment.filename,
+          data: Buffer.isBuffer(data) ? data : Buffer.from(data as string, 'base64'),
+          contentType,
+        };
+      }),
+    );
   }
 }

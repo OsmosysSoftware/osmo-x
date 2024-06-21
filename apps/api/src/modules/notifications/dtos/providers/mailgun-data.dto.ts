@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, ValidateIf, ValidateNested } from 'class-validator';
 import {
   AttachmentValidation,
   CreateNotificationAttachmentDto,
@@ -31,6 +31,7 @@ export class MailgunDataDto {
   html: string;
 
   @IsOptional()
+  @ValidateNested({ each: true })
   @Type(() => CreateNotificationAttachmentDto)
   @AttachmentValidation()
   attachments: CreateNotificationAttachmentDto[];
