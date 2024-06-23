@@ -73,7 +73,7 @@ export class ProvidersService extends CoreService<Provider> {
 
     const { items, total } = await super.findAll(
       options,
-      'application',
+      'provider',
       searchableFields,
       baseConditions,
     );

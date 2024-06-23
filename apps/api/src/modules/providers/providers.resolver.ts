@@ -22,7 +22,7 @@ export class ProvidersResolver {
     return await this.providerService.createProvider(createProviderInput, authorizationHeader);
   }
 
-  @Query(() => ProviderResponse, { name: 'provider' })
+  @Query(() => ProviderResponse, { name: 'providers' })
   async findAll(
     @Context() context,
     @Args('options', { type: () => QueryOptionsDto, nullable: true, defaultValue: {} })

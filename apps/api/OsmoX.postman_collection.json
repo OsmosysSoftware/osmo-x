@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "c33b0616-f8e2-44f4-b23f-8156d111adb1",
+		"_postman_id": "e205690f-73d7-4faf-892a-02e3c94e0598",
 		"name": "OsmoX",
 		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "24502738"
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "20654268"
 	},
 	"item": [
 		{
@@ -49,28 +49,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "a9b71207-36c3-47fc-921a-e100e45aa777"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "30aa390c-4f94-437a-8c7e-c441d63f02ed"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 1 also has channelType 1\n    \"providerId\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the SMTP channel type."
 					},
 					"response": []
@@ -114,28 +106,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "13c548bb-18a0-4744-8628-31ba7246027f"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "6918ae90-2f76-43f7-88e3-d437eb711f1b"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 1\n    \"providerId\": 6,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the SMTP channel type."
 					},
 					"response": []
@@ -166,28 +150,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "d2bbb8aa-01c2-4105-a4bc-5875cb8bd885"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "4541cd79-546f-4b9b-893e-b85945d08676"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
 					},
 					"response": []
@@ -219,28 +195,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "4f316682-f21d-4a3f-a697-73144a414537"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"type": "text"
+								"uuid": "6e4a0b74-e799-424c-9046-5ded14f38997"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
 					},
 					"response": []
@@ -290,28 +258,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "8039b9c7-9ad4-4353-bfb4-5c3bb3920d98"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "a048d703-ea59-45a1-bb6c-db0cd9cafd1a"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 2 also has channelType 2\n    \"providerId\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Mailgun channel type."
 					},
 					"response": []
@@ -355,28 +315,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "1b33fc1d-1c13-4def-a442-3ab64c84562c"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "bcfa7986-45c2-458c-855e-866214f18aeb"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 2\n    \"providerId\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Mailgun channel type."
 					},
 					"response": []
@@ -407,28 +359,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "6d52e76b-5002-4da6-bd89-4ffcd4eb3765"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "a85bf1a5-ba0b-49c6-bb7b-eeb7f6fc94a5"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Mailgun channel type when missing the `to` field."
 					},
 					"response": []
@@ -460,28 +404,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "340c9286-ba6c-4455-83e3-10d709ddecd2"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"type": "text"
+								"uuid": "d874d5e7-e498-4c9e-9a63-1860e15c8153"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Mailgun channel type when passing invalid API key."
 					},
 					"response": []
@@ -531,28 +467,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "79b87e9e-9ee5-4774-afa6-d5a3da54fb2d"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "434b71cf-b608-488f-a00f-641ec481be62"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 3 also has channelType 3\n    \"providerId\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the 360Dialog WhatsApp channel type."
 					},
 					"response": []
@@ -596,28 +524,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "d54c2bd1-f485-47e3-b48b-8fd12842fd34"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "644c7f5c-36e8-49b4-a6ca-cfbbc18bbd4a"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 3\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the 360Dialog WhatsApp channel type."
 					},
 					"response": []
@@ -648,28 +568,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "3f1dfe0b-6fc9-43e1-a40b-ca0e5840fdd4"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "43a78d96-6871-4ab3-bad3-d34844dd9f9a"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 3,\n    \"data\": {\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when missing the `to` field."
 					},
 					"response": []
@@ -701,28 +613,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "beb44774-16c4-488d-845b-e1bb71f50f40"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"type": "text"
+								"uuid": "58270290-49d4-46cf-8389-580c48dc9bad"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the 360Dialog WhatsApp channel type when passing invalid API key."
 					},
 					"response": []
@@ -772,28 +676,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "5a7dfcfb-154b-4878-8327-32fe837cc46f"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "8c660301-0e5d-4beb-b1f6-7408dbdca2d9"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 4 also has channelType 4\n    \"providerId\": 4,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
 					},
 					"response": []
@@ -837,28 +733,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "2189d25f-5cec-4824-a63e-b1e3e2b95bdd"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "bf720701-ea30-4dd9-b968-91ec64559842"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 4\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
 					},
 					"response": []
@@ -889,28 +777,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "c6181a52-c5e3-4e87-bb1e-03f3f17d2249"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "fbda7f32-9f97-44ee-b25d-cce6a08720b0"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 4,\n    \"data\": {\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
 					},
 					"response": []
@@ -942,28 +822,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "98f84c81-a3f8-4c6f-bac4-bfa18030f508"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"type": "text"
+								"uuid": "ca0792d5-6b35-418a-a18d-a6a6daf010cf"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 4,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
 					},
 					"response": []
@@ -1012,28 +884,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "bc3352b8-6ccc-4166-9e39-d35cf61d976e"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "7d945cb7-b95f-49db-98bf-c4e1bf803b35"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
 					},
 					"response": []
@@ -1056,28 +920,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "ea120f67-8c85-459c-a1f1-058652e68191"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "cca43199-cf43-408d-a01f-5d8d003cfec7"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 77,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
 					},
 					"response": []
@@ -1107,28 +963,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "eec01632-b565-4a44-8415-7c5b020834d1"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "f9890953-628f-4663-a243-1a8160f29e31"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    }\n  }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
 					},
 					"response": []
@@ -1151,28 +999,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "05c99440-3887-48df-9235-d8770046c336"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer bad-api-key",
-								"type": "text"
+								"uuid": "88e266d4-c8fc-434b-bc0e-af2171841c4e"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
 					},
 					"response": []
@@ -1222,28 +1062,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "47e478eb-c0b0-412f-a32d-c901da15d8cd"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "f5c3a029-01db-4782-a495-6cd6a2ee8baf"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 5 also has channelType 5\n    \"providerId\": 5,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
 					},
 					"response": []
@@ -1287,28 +1119,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "d38a9353-7ac8-4728-9b1c-e6b28d4a4c6e"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "57659097-de5a-4a3d-8e2e-afdce10c4a52"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 5\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
 					},
 					"response": []
@@ -1339,28 +1163,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "bfc9a803-c3b5-4d9d-8a02-ad84c30cecf7"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "ed276539-7e8c-44d5-a3fe-01309fd98c90"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 5,\n    \"data\": {\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
 					},
 					"response": []
@@ -1392,28 +1208,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "a5e69805-d25d-498e-9007-c021e7a4ed27"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"type": "text"
+								"uuid": "9d8b3e3b-f80f-4427-b991-2d2ee3ed241a"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 5,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
 					},
 					"response": []
@@ -1463,28 +1271,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "c6f540c3-5f3c-4c75-b1cd-29cae8b40453"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "65801ce0-3356-4886-aff5-7e022e92173f"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 also has channelType 6\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
 					},
 					"response": []
@@ -1528,28 +1328,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "ba64e072-3d0d-4e67-86de-a81da8c1bda9"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "c5b90535-7d73-4d08-a313-fb8cbd94ed50"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 1 does not have channelType 6\n    \"providerId\": 1,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
 					},
 					"response": []
@@ -1580,28 +1372,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "e0e9f388-b29b-4365-88f3-f22f1637fde0"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"type": "text"
+								"uuid": "24f57d37-35e3-4fae-82d5-1e3a6f1804bf"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 6,\n    \"data\": {\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
 					},
 					"response": []
@@ -1633,28 +1417,20 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "9632bcd0-413e-4e5f-bbe2-f640b89b9000"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"type": "text"
+								"uuid": "54f92977-40f6-40a6-b150-8805b07b21c5"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
+						"url": "localhost:3000/notifications",
 						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
 					},
 					"response": []
@@ -1699,7 +1475,8 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "1918bf3d-7985-4c81-90f8-b9c0483e68c5"
 							}
 						],
 						"body": {
@@ -1710,17 +1487,7 @@
 								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						},
+						"url": "http://localhost:3000/graphql",
 						"description": "Allows successfully logging in and obtaining the auth token from API."
 					},
 					"response": []
@@ -1753,7 +1520,8 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "dd8ca1ed-d816-4f38-9c29-a4fa4b77e380"
 							}
 						],
 						"body": {
@@ -1764,17 +1532,7 @@
 								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"abc{{adminPassword}}\"\n}"
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						},
+						"url": "http://localhost:3000/graphql",
 						"description": "Allows representing failure while logging in when passing invalid credentials."
 					},
 					"response": []
@@ -1806,7 +1564,8 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "229a80f3-51e6-4ad6-a4c9-abc80b6bd8a3"
 							}
 						],
 						"body": {
@@ -1817,17 +1576,7 @@
 								"variables": "{\n  \"username\": \"{{adminUsername}}\"\n}"
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						},
+						"url": "http://localhost:3000/graphql",
 						"description": "Allows representing failure while logging in when missing `password` value."
 					},
 					"response": []
@@ -1859,7 +1608,8 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "e027ec6f-1019-45e6-96cf-913a4df84919"
 							}
 						],
 						"body": {
@@ -1870,17 +1620,7 @@
 								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						},
+						"url": "http://localhost:3000/graphql",
 						"description": "Allows representing failure while logging in when using invalid/bad request."
 					},
 					"response": []
@@ -1925,11 +1665,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer {{apikey}}"
+								"value": "Bearer {{apikey}}",
+								"uuid": "01d0cde7-c2e6-4b55-af59-e97503baac2e"
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "115be579-6909-4525-bbd7-f2031acab6db"
 							}
 						],
 						"body": {
@@ -1939,17 +1681,7 @@
 								"variables": ""
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						},
+						"url": "http://localhost:3000/graphql",
 						"description": "Allows successfully fetching all notifications based on the options passed."
 					},
 					"response": []
@@ -1981,11 +1713,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer {{apikey}}"
+								"value": "Bearer {{apikey}}",
+								"uuid": "2d4bb4f8-2864-49cf-b4ed-d901573a14bd"
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"uuid": "644633f2-81a9-4a85-93fd-8a919f071672"
 							}
 						],
 						"body": {
@@ -1995,17 +1729,7 @@
 								"variables": ""
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						},
+						"url": "http://localhost:3000/graphql",
 						"description": "Allows representing failure when fetching all notifications when using invalid/bad request."
 					},
 					"response": []
@@ -2021,28 +1745,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "FoundationX-test-key",
-									"type": "string"
-								}
-							]
+							"bearer": {
+								"token": "FoundationX-test-key"
+							}
 						},
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/notifications/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications",
-								"1"
-							]
-						}
+						"url": "http://localhost:3000/notifications/1"
 					},
 					"response": []
 				}
@@ -2057,13 +1766,9 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "mysecretadminkey",
-									"type": "string"
-								}
-							]
+							"bearer": {
+								"token": "mysecretadminkey"
+							}
 						},
 						"method": "POST",
 						"header": [],
@@ -2074,17 +1779,7 @@
 								"variables": ""
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						}
+						"url": "http://localhost:3000/graphql"
 					},
 					"response": []
 				},
@@ -2093,13 +1788,9 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "mysecretadminkey",
-									"type": "string"
-								}
-							]
+							"bearer": {
+								"token": "mysecretadminkey"
+							}
 						},
 						"method": "POST",
 						"header": [],
@@ -2110,17 +1801,7 @@
 								"variables": ""
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						}
+						"url": "http://localhost:3000/graphql"
 					},
 					"response": []
 				}
@@ -2135,13 +1816,9 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "mysecretadminkey",
-									"type": "string"
-								}
-							]
+							"bearer": {
+								"token": "mysecretadminkey"
+							}
 						},
 						"method": "POST",
 						"header": [],
@@ -2152,17 +1829,7 @@
 								"variables": ""
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						}
+						"url": "http://localhost:3000/graphql"
 					},
 					"response": []
 				},
@@ -2171,13 +1838,9 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "mysecretadminkey",
-									"type": "string"
-								}
-							]
+							"bearer": {
+								"token": "mysecretadminkey"
+							}
 						},
 						"method": "POST",
 						"header": [],
@@ -2188,22 +1851,111 @@
 								"variables": ""
 							}
 						},
-						"url": {
-							"raw": "http://localhost:3000/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"graphql"
-							]
-						}
+						"url": "http://localhost:3000/graphql"
 					},
 					"response": []
 				}
 			],
 			"description": "Collection of requests pertaining to creating new application."
+		},
+		{
+			"name": "All Providers",
+			"item": [
+				{
+					"name": "Fetch all Providers - Success",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "OsmoX-test-key"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  providers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providers {\r\n        providerId\r\n        name\r\n        channelType\r\n        configuration\r\n        isEnabled\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": "http://localhost:3000/graphql"
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch all Providers - Bad Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "mysecretadminkey"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  providers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      unknownValue: \"Some unknown parameter\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providers {\r\n        providerId\r\n        name\r\n        channelType\r\n        configuration\r\n        isEnabled\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": "http://localhost:3000/graphql"
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to fetching all applications."
+		},
+		{
+			"name": "New Provider",
+			"item": [
+				{
+					"name": "Create new Provider - Success",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "OsmoX-test-key"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": "http://localhost:3000/graphql"
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Provider - Bad Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "OsmoX-test-key"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        unknownValue: \"Some unknown parameter\",\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": "http://localhost:3000/graphql"
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

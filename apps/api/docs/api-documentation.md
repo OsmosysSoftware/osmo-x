@@ -449,3 +449,174 @@ curl --location 'http://localhost:3000/graphql' \
   }
 }
 ```
+
+## Providers
+
+This sections lists providers related requests such as creating new provider and fetching all providers.
+
+### Create new Provider
+
+Allows the user with `Admin` role to create a new Provider.
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method: `POST`**
+
+**Body:** `graphql`
+
+```graphql
+mutation CreateProvider {
+    provider(createProviderInput: {
+        applicationId: 5,
+        channelType: 2,
+        configuration: {},
+        isEnabled: 1,
+        name: "Mailgun PineStem",
+        userId: 1,
+    }) {
+        applicationId
+        channelType
+        configuration
+        isEnabled
+        name
+        userId
+        createdOn
+        updatedOn
+        status
+    }
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'http://localhost:3000/graphql' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer OsmoX-test-key' \
+--data '{"query":"mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}","variables":{}}'
+```
+
+**Sample response**
+
+```json
+{
+    "data": {
+        "provider": {
+            "applicationId": 5,
+            "channelType": 2,
+            "configuration": {},
+            "isEnabled": 1,
+            "name": "Mailgun PineStem",
+            "userId": 1,
+            "createdOn": "2024-06-23T09:30:39.000Z",
+            "updatedOn": "2024-06-23T09:30:39.000Z",
+            "status": 1
+        }
+    }
+}
+```
+
+### Fetch all Providers
+
+Allows the user to fetch all providers based on the passed query parameters. Requires passing bearer token for authorization.
+
+The different options that can be used while fetching providers are as follows:
+
+- `limit:` Limit the number of results to the provided value
+- `offset:` Offset the result set by the provided value
+- `sortBy:` Sort the results by the provided key
+- `sortOrder:` Sort the results in either `ASC`ending or `DESC`ending order
+- `search:` Search for the provided value in `createdBy`, `data` and `result` and return results matching it
+- `filters:` Filter the results based on the provided `field`, `operator` and `value`. Operator can be `eq` (equal), `ne` (not equal), `contains`, `gt` (greater than) or `lt` (less than)
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method:** `POST`
+
+**Body:** `graphql`
+
+```graphql
+query {
+  providers(
+    options: {
+      limit: 5
+      offset: 0
+      sortBy: "createdOn"
+      sortOrder: ASC
+    }
+  ) {
+    providers {
+        providerId
+        name
+        channelType
+        configuration
+        isEnabled
+        userId
+        createdOn
+        updatedOn
+        status
+    }
+    total,
+    offset,
+    limit
+  }
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'http://localhost:3000/graphql' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer OsmoX-test-key' \
+--data '{"query":"query {\r\n  providers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providers {\r\n        providerId\r\n        name\r\n        channelType\r\n        configuration\r\n        isEnabled\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
+```
+
+**Sample response**
+
+```json
+{
+    "data": {
+        "providers": {
+            "providers": [
+                {
+                    "providerId": 4,
+                    "name": "KAPS Pinestem",
+                    "channelType": 8,
+                    "configuration": {},
+                    "isEnabled": 1,
+                    "userId": 1,
+                    "createdOn": "2024-05-20T11:26:36.000Z",
+                    "updatedOn": "2024-05-20T11:26:36.000Z",
+                    "status": 1
+                },
+                {
+                    "providerId": 6,
+                    "name": "Mailgun PineStem",
+                    "channelType": 2,
+                    "configuration": {},
+                    "isEnabled": 1,
+                    "userId": 1,
+                    "createdOn": "2024-06-21T09:46:27.000Z",
+                    "updatedOn": "2024-06-21T09:46:27.000Z",
+                    "status": 1
+                },
+                {
+                    "providerId": 7,
+                    "name": "Mailgun PineStem",
+                    "channelType": 2,
+                    "configuration": {},
+                    "isEnabled": 1,
+                    "userId": 1,
+                    "createdOn": "2024-06-23T09:30:39.000Z",
+                    "updatedOn": "2024-06-23T09:30:39.000Z",
+                    "status": 1
+                }
+            ],
+            "total": 3,
+            "offset": 0,
+            "limit": 5
+        }
+    }
+}
+```
