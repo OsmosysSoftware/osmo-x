@@ -39,7 +39,7 @@ export class ProvidersService extends CoreService<Provider> {
 
     const userExists = await this.usersService.findByUserId(providerInput.userId);
     const applicationExists = await this.applicationsService.findById(providerInput.applicationId);
-    const channelExists = Object.values(ChannelType).includes(providerInput.channelType);;
+    const channelExists = Object.values(ChannelType).includes(providerInput.channelType);
 
     if (!userExists) {
       throw new Error('Invalid userId');
