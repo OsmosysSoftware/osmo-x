@@ -7,6 +7,7 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { NotificationConsumer } from './notification.consumer';
 import { WA_TWILIO_QUEUE } from 'src/modules/notifications/queues/waTwilio.queue';
 import { WaTwilioData, WaTwilioService } from 'src/modules/providers/wa-twilio/wa-twilio.service';
+import { DeliveryStatus } from 'src/common/constants/notifications';
 
 @Processor(WA_TWILIO_QUEUE)
 export class WaTwilioNotificationsConsumer extends NotificationConsumer {
@@ -21,13 +22,23 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
 
   @Process()
   async processWaTwilioNotificationQueue(job: Job<number>): Promise<void> {
-    return super.processNotificationQueue(job, async () => {
-      const id = job.data;
-      const notification = (await this.notificationsService.getNotificationById(id))[0];
-      return this.waTwilioService.sendMessage(
-        notification.data as unknown as WaTwilioData,
-        notification.providerId,
-      );
-    });
+    const id = job.data;
+    const notification = (await this.notificationsService.getNotificationById(id))[0];
+
+    if (notification.deliveryStatus === DeliveryStatus.PENDING) {
+      return super.processNotificationQueue(job, async () => {
+        return this.waTwilioService.sendMessage(
+          notification.data as unknown as WaTwilioData,
+          notification.providerId,
+        );
+      });
+    } else if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
+      return super.processAwaitingConfirmationNotificationQueue(job, async () => {
+        return await this.waTwilioService.getDeliveryStatus(
+          notification.result.sid as string,
+          notification.providerId,
+        );
+      });
+    }
   }
 }

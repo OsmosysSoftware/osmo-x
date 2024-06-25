@@ -10,4 +10,9 @@ export class ScheduleService {
   async addNotificationsToQueue(): Promise<void> {
     this.notificationsService.addNotificationsToQueue();
   }
+
+  @Cron(CronExpression.EVERY_SECOND)
+  async getProviderConfirmation(): Promise<void> {
+    this.notificationsService.getProviderConfirmation();
+  }
 }
