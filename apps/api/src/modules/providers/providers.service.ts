@@ -37,9 +37,19 @@ export class ProvidersService extends CoreService<Provider> {
     }
 
     const userExists = await this.usersService.findByUserId(providerInput.userId);
+    const applicationExists = await this.applicationsService.findById(providerInput.applicationId);
+    const channelExists = providerInput.channelType >= 1 && providerInput.channelType <= 8
 
     if (!userExists) {
-      throw new Error('This user does not exist.');
+      throw new Error('Invalid userId');
+    }
+
+    if (!applicationExists) {
+      throw new Error('Invalid applicationId.');
+    }
+
+    if (!channelExists) {
+      throw new Error('Invalid channelType');
     }
 
     const provider = this.providerRepository.create(providerInput);
