@@ -51,4 +51,4 @@ Here's a sample request body:
 
 References
 
-- https://www.twilio.com/docs/whatsapp
+- [Twilio WhatsApp documentation](https://www.twilio.com/docs/whatsapp)
