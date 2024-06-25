@@ -9,6 +9,7 @@ import { ApplicationsService } from '../applications/applications.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ProviderResponse } from './dto/provider-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
+import { ChannelType } from 'src/common/constants/notifications';
 
 @Injectable()
 export class ProvidersService extends CoreService<Provider> {
@@ -38,7 +39,7 @@ export class ProvidersService extends CoreService<Provider> {
 
     const userExists = await this.usersService.findByUserId(providerInput.userId);
     const applicationExists = await this.applicationsService.findById(providerInput.applicationId);
-    const channelExists = providerInput.channelType >= 1 && providerInput.channelType <= 8;
+    const channelExists = Object.values(ChannelType).includes(providerInput.channelType);;
 
     if (!userExists) {
       throw new Error('Invalid userId');
