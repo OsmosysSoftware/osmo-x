@@ -36,7 +36,6 @@ Here's a sample request body:
 {
     // Set your respective providerId. ChannelType associated with providerId should be 3 (360Dialog)
     "providerId": 3,
-    "channelType": 3,
     "data": {
         "to": "919004812051",
         "type": "template",
@@ -104,4 +103,3 @@ Here's a sample request body:
 References
 - https://docs.360dialog.com/partner/first-steps/sandbox#example-request-payload
 - https://docs.360dialog.com/partner/first-steps/sandbox#5.-send-a-template-message-optional
-  

@@ -36,7 +36,6 @@ Here's a sample request body:
 {
   // Set your respective providerId. ChannelType associated with providerId should be 4 (Twilio WhatsApp)
   "providerId": 4,
-  "channelType": 4,
   "data": {
       "to": "+919004812051",
       "message": "Your appointment is coming up on July 21 at 3PM"
@@ -52,5 +51,4 @@ Here's a sample request body:
 
 References
 
-- https://www.twilio.com/docs/whatsapp
-  
+- [Twilio WhatsApp documentation](https://www.twilio.com/docs/whatsapp)
