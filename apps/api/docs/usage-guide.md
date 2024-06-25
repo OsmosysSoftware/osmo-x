@@ -12,7 +12,7 @@ Welcome to the usage guide for OsmoX, a powerful notification management system 
   - [1. Overview](#1-overview)
   - [2. Pushing Data to the Database](#2-pushing-data-to-the-database)
   - [3. Using the OsmoX API](#3-using-the-osmox-api)
-    - [Authorization Header](#authorization-header)
+    - [x-api-key Header](#x-api-key-header)
   - [4. Tracking Notification Status](#4-tracking-notification-status)
   - [5. Available Channel Types](#5-available-channel-types)
   - [6. Delivery Status Information](#6-delivery-status-information)
@@ -32,12 +32,12 @@ To use the OsmoX API, follow these steps:
 - **Method:** POST
 - **Endpoint:** `/notifications`
 
-### Authorization Header
+### x-api-key Header
 
-To add a bearer token to the Authorization header, use the following format:
+To add the API key to the x-api-key header, use the following format:
 
 ```plaintext
-Authorization: Bearer SERVER_API_KEY_VALUE
+x-api-key: SERVER_API_KEY_VALUE
 ```
 
 Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include in the header.
