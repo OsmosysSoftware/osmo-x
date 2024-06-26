@@ -40,14 +40,19 @@ export abstract class NotificationConsumer {
 
   async processAwaitingConfirmationNotificationQueue(
     job: Job<number>,
-    getNotificationStatus: () => Promise<number>,
+    getNotificationStatus: () => Promise<{
+      result: unknown;
+      deliveryStatus: number;
+    }>,
   ): Promise<void> {
     const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
 
     try {
       this.logger.log(`Checking delivery status from provider for notification with id: ${id}`);
-      notification.deliveryStatus = await getNotificationStatus();
+      const response = await getNotificationStatus();
+      notification.result = response.result as Record<string, unknown>;
+      notification.deliveryStatus = response.deliveryStatus;
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
       notification.retryCount++;
