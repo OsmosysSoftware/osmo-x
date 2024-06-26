@@ -2,7 +2,6 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ProvidersService } from '../providers.service';
 import { firstValueFrom } from 'rxjs';
-
 export interface KapsystemData {
   indiaDltContentTemplateId: string;
   indiaDltPrincipalEntityId: string;
@@ -70,5 +69,15 @@ export class SmsKapsystemService {
     const res = await firstValueFrom(response);
 
     return res.data;
+  }
+  async getDeliveryStatus(messageId: string, providerId: number): Promise<KapsystemResponse> {
+    try {
+      await this.assignKAPSystemValues(providerId);
+      const statusUrl = `${this.apiUrl}&method=sms.status&id=${messageId}`;
+      const response = await this.httpService.post(statusUrl);
+      const res = await firstValueFrom(response);
+
+      return res.data;
+    } catch {}
   }
 }

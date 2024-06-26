@@ -98,7 +98,7 @@ export class NotificationsService extends CoreService<Notification> {
     }
 
     this.isProcessingQueue = true;
-    let allPendingNotifications = [];
+    let allPendingNotifications: Notification[] = [];
 
     try {
       allPendingNotifications = await this.getPendingNotifications();
@@ -113,8 +113,15 @@ export class NotificationsService extends CoreService<Notification> {
 
     for (const notification of allPendingNotifications) {
       try {
-        notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
-        await this.notificationQueueService.addNotificationToQueue(notification);
+        if (notification.retryCount < this.maxRetryCount) {
+          notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
+          await this.notificationQueueService.addNotificationToQueue(notification);
+        } else {
+          this.logger.log(
+            `Notification with ID ${notification.id} has attempted max allowed retries, setting delivery status to FAILED`,
+          );
+          notification.deliveryStatus = DeliveryStatus.FAILED;
+        }
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.PENDING;
         notification.result = { result: error };
