@@ -13,10 +13,10 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key                      | Description                                            |
-|--------------------------|--------------------------------------------------------|
-| WA_360_DIALOG_API_KEY    | WA 360 Dialog api key                                  |
-| WA_360_DIALOG_URL        | api url which is https://waba.360dialog.io/v1/messages |
+| Key                   | Description                                            |
+| --------------------- | ------------------------------------------------------ |
+| WA_360_DIALOG_API_KEY | WA 360 Dialog api key                                  |
+| WA_360_DIALOG_URL     | api url which is https://waba.360dialog.io/v1/messages |
 
 ```jsonc
 // Sample json to set in configuration field
@@ -96,10 +96,10 @@ Here's a sample request body:
 
 ### Dependencies
 
-| Package Name       | Version    | Description                                                                                                                                                |
-| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| @nestjs/axios      | ^3.0.2  | Integration of Axios with NestJS for making HTTP requests.     |
+| Package Name  | Version | Description                                                |
+| ------------- | ------- | ---------------------------------------------------------- |
+| @nestjs/axios | ^3.0.2  | Integration of Axios with NestJS for making HTTP requests. |
 
 References
-- https://docs.360dialog.com/partner/first-steps/sandbox#example-request-payload
-- https://docs.360dialog.com/partner/first-steps/sandbox#5.-send-a-template-message-optional
+- https://docs.360dialog.com/partner/integration/waba-integration
+- https://docs.360dialog.com/partner/integration/waba-integration/sandbox#id-5.-send-a-template-message-optional
