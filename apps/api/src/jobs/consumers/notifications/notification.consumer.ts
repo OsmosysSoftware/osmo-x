@@ -48,7 +48,6 @@ export abstract class NotificationConsumer {
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
       notification.retryCount++;
-      notification.result = { result: error };
       this.logger.error(
         `Error getting delivery status from provider for notification with id: ${id}`,
       );

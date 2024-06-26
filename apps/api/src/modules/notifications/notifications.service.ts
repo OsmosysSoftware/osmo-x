@@ -166,7 +166,6 @@ export class NotificationsService extends CoreService<Notification> {
         }
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
-        notification.result = { result: error };
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
         this.logger.error(JSON.stringify(error, null, 2));
       } finally {
@@ -214,7 +213,6 @@ export class NotificationsService extends CoreService<Notification> {
     // Get the applicationId currently being used for filtering data based on api key
     const filterApplicationId = await this.getApplicationIdFromApiKey(authorizationHeader);
 
-    // TODO: role based filtering for applicationId
     const baseConditions = [
       { field: 'status', value: Status.ACTIVE },
       { field: 'applicationId', value: filterApplicationId },
