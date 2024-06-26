@@ -6,7 +6,11 @@ import { NotificationsService } from 'src/modules/notifications/notifications.se
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
 import { WA_TWILIO_QUEUE } from 'src/modules/notifications/queues/waTwilio.queue';
-import { WaTwilioData, WaTwilioService } from 'src/modules/providers/wa-twilio/wa-twilio.service';
+import {
+  WaTwilioData,
+  WaTwilioResponseData,
+  WaTwilioService,
+} from 'src/modules/providers/wa-twilio/wa-twilio.service';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 
 @Processor(WA_TWILIO_QUEUE)
@@ -35,7 +39,7 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
     } else if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
       return super.processAwaitingConfirmationNotificationQueue(job, async () => {
         const result = await this.waTwilioService.getDeliveryStatus(
-          notification.result.sid as string,
+          (notification.result.result as WaTwilioResponseData).sid as string,
           notification.providerId,
         );
         const deliveryStatus = result.status;
