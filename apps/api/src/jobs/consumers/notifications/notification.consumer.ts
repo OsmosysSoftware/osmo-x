@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
-import { WaTwilioResponseData } from 'src/modules/providers/wa-twilio/wa-twilio.service';
 
 export abstract class NotificationConsumer {
   private readonly logger = new Logger(this.constructor.name);
@@ -39,24 +38,13 @@ export abstract class NotificationConsumer {
     }
   }
 
-  async processAwaitingConfirmationNotificationQueue(
-    job: Job<number>,
-    getNotificationStatus: () => Promise<unknown>,
-  ): Promise<void> {
+  async process360DialogAwaitingConfirmationNotificationQueue(job: Job<number>): Promise<void> {
     const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
 
     try {
-      this.logger.log(`Checking delivery status from provider for notification with id: ${id}`);
-      const result = (await getNotificationStatus()) as WaTwilioResponseData;
-
-      const deliveryStatus = result.status;
-
-      if (deliveryStatus === 'failed' || deliveryStatus === 'undelivered') {
-        notification.deliveryStatus = DeliveryStatus.FAILED;
-      } else {
-        notification.deliveryStatus = DeliveryStatus.SUCCESS;
-      }
+      // We do not have a way to cross verify via API so move to success
+      notification.deliveryStatus = DeliveryStatus.SUCCESS;
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
       notification.retryCount++;

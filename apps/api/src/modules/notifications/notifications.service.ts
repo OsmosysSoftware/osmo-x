@@ -30,7 +30,7 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly configService: ConfigService,
   ) {
     super(notificationRepository);
-    this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
+    this.maxRetryCount = parseInt(this.configService.get('MAX_RETRY_COUNT', '3'));
   }
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
@@ -214,6 +214,7 @@ export class NotificationsService extends CoreService<Notification> {
     // Get the applicationId currently being used for filtering data based on api key
     const filterApplicationId = await this.getApplicationIdFromApiKey(authorizationHeader);
 
+    // TODO: role based filtering for applicationId
     const baseConditions = [
       { field: 'status', value: Status.ACTIVE },
       { field: 'applicationId', value: filterApplicationId },
