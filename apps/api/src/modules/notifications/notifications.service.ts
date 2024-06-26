@@ -12,11 +12,13 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
   protected readonly logger = new Logger(NotificationsService.name);
   private isProcessingQueue: boolean = false;
+  private maxRetryCount: number;
 
   constructor(
     @InjectRepository(Notification)
@@ -25,8 +27,10 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
     private readonly providersService: ProvidersService,
+    private readonly configService: ConfigService,
   ) {
     super(notificationRepository);
+    this.maxRetryCount = parseInt(this.configService.get('MAX_RETRY_COUNT', '3'));
   }
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
@@ -94,7 +98,7 @@ export class NotificationsService extends CoreService<Notification> {
     }
 
     this.isProcessingQueue = true;
-    let allPendingNotifications = [];
+    let allPendingNotifications: Notification[] = [];
 
     try {
       allPendingNotifications = await this.getPendingNotifications();
@@ -109,8 +113,15 @@ export class NotificationsService extends CoreService<Notification> {
 
     for (const notification of allPendingNotifications) {
       try {
-        notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
-        await this.notificationQueueService.addNotificationToQueue(notification);
+        if (notification.retryCount < this.maxRetryCount) {
+          notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
+          await this.notificationQueueService.addNotificationToQueue(notification);
+        } else {
+          this.logger.log(
+            `Notification with ID ${notification.id} has attempted max allowed retries, setting delivery status to FAILED`,
+          );
+          notification.deliveryStatus = DeliveryStatus.FAILED;
+        }
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.PENDING;
         notification.result = { result: error };
@@ -124,11 +135,61 @@ export class NotificationsService extends CoreService<Notification> {
     this.isProcessingQueue = false;
   }
 
+  async getProviderConfirmation(): Promise<void> {
+    this.logger.log(
+      'Starting CRON job to add notifications to queue for confirmation from provider',
+    );
+
+    let allAwaitingConfirmationNotifications: Notification[] = [];
+
+    try {
+      allAwaitingConfirmationNotifications = await this.getAwaitingConfirmationNotifications();
+    } catch (error) {
+      this.logger.error('Error fetching awaiting confirmation notifications');
+      this.logger.error(JSON.stringify(error, null, 2));
+      return;
+    }
+
+    this.logger.log(
+      `Adding ${allAwaitingConfirmationNotifications.length} awaiting confirmation notifications to queue`,
+    );
+
+    for (const notification of allAwaitingConfirmationNotifications) {
+      try {
+        if (notification.retryCount < this.maxRetryCount) {
+          await this.notificationQueueService.addNotificationToQueue(notification);
+        } else {
+          this.logger.log(
+            `Notification with ID ${notification.id} has attempted max allowed retries, setting delivery status to FAILED`,
+          );
+          notification.deliveryStatus = DeliveryStatus.FAILED;
+        }
+      } catch (error) {
+        notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
+        notification.result = { result: error };
+        this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
+        this.logger.error(JSON.stringify(error, null, 2));
+      } finally {
+        await this.notificationRepository.save(notification);
+      }
+    }
+  }
+
   getPendingNotifications(): Promise<Notification[]> {
     this.logger.log('Getting all active pending notifications');
     return this.notificationRepository.find({
       where: {
         deliveryStatus: DeliveryStatus.PENDING,
+        status: Status.ACTIVE,
+      },
+    });
+  }
+
+  getAwaitingConfirmationNotifications(): Promise<Notification[]> {
+    this.logger.log('Getting all awaiting confirmation notifications');
+    return this.notificationRepository.find({
+      where: {
+        deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
         status: Status.ACTIVE,
       },
     });
@@ -153,6 +214,7 @@ export class NotificationsService extends CoreService<Notification> {
     // Get the applicationId currently being used for filtering data based on api key
     const filterApplicationId = await this.getApplicationIdFromApiKey(authorizationHeader);
 
+    // TODO: role based filtering for applicationId
     const baseConditions = [
       { field: 'status', value: Status.ACTIVE },
       { field: 'applicationId', value: filterApplicationId },

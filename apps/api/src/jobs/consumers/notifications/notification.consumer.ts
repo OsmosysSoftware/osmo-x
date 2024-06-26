@@ -25,12 +25,35 @@ export abstract class NotificationConsumer {
     try {
       this.logger.log(`Sending notification with id: ${id}`);
       const result = await sendNotification();
-      notification.deliveryStatus = DeliveryStatus.SUCCESS;
+      notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
       notification.result = { result };
     } catch (error) {
-      notification.deliveryStatus = DeliveryStatus.FAILED;
+      notification.deliveryStatus = DeliveryStatus.PENDING;
+      notification.retryCount++;
       notification.result = { result: error };
       this.logger.error(`Error sending notification with id: ${id}`);
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+    } finally {
+      await this.notificationRepository.save(notification);
+    }
+  }
+
+  async processAwaitingConfirmationNotificationQueue(
+    job: Job<number>,
+    getNotificationStatus: () => Promise<number>,
+  ): Promise<void> {
+    const id = job.data;
+    const notification = (await this.notificationsService.getNotificationById(id))[0];
+
+    try {
+      this.logger.log(`Checking delivery status from provider for notification with id: ${id}`);
+      notification.deliveryStatus = await getNotificationStatus();
+    } catch (error) {
+      notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
+      notification.retryCount++;
+      this.logger.error(
+        `Error getting delivery status from provider for notification with id: ${id}`,
+      );
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {
       await this.notificationRepository.save(notification);

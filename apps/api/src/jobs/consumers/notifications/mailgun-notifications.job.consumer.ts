@@ -8,6 +8,7 @@ import { MailgunService } from 'src/modules/providers/mailgun/mailgun.service';
 import { MailgunMessageData } from 'mailgun.js';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
+import { DeliveryStatus } from 'src/common/constants/notifications';
 
 @Processor(MAILGUN_QUEUE)
 export class MailgunNotificationConsumer extends NotificationConsumer {
@@ -22,16 +23,23 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
 
   @Process()
   async processMailgunNotificationQueue(job: Job<number>): Promise<void> {
-    return super.processNotificationQueue(job, async () => {
-      const id = job.data;
-      const notification = (await this.notificationsService.getNotificationById(id))[0];
-      const formattedNotificationData = await this.mailgunService.formatNotificationData(
-        notification.data,
-      );
-      return this.mailgunService.sendEmail(
-        formattedNotificationData as MailgunMessageData,
-        notification.providerId,
-      );
-    });
+    const id = job.data;
+    const notification = (await this.notificationsService.getNotificationById(id))[0];
+    if (notification.deliveryStatus === DeliveryStatus.PENDING) {
+      return super.processNotificationQueue(job, async () => {
+        const formattedNotificationData = await this.mailgunService.formatNotificationData(
+          notification.data,
+        );
+        return this.mailgunService.sendEmail(
+          formattedNotificationData as MailgunMessageData,
+          notification.providerId,
+        );
+      });
+    } else if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
+      return super.processAwaitingConfirmationNotificationQueue(job, async () => {
+        // TODO: Check for Delivery Confirmation
+        return DeliveryStatus.SUCCESS;
+      });
+    }
   }
 }
