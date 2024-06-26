@@ -34,10 +34,17 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
       });
     } else if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
       return super.processAwaitingConfirmationNotificationQueue(job, async () => {
-        return await this.waTwilioService.getDeliveryStatus(
+        const result = await this.waTwilioService.getDeliveryStatus(
           notification.result.sid as string,
           notification.providerId,
         );
+        const deliveryStatus = result.status;
+
+        if (deliveryStatus === 'failed' || deliveryStatus === 'undelivered') {
+          return DeliveryStatus.FAILED;
+        }
+
+        return DeliveryStatus.SUCCESS;
       });
     }
   }
