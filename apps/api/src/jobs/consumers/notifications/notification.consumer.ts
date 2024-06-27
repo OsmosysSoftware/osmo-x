@@ -25,12 +25,72 @@ export abstract class NotificationConsumer {
     try {
       this.logger.log(`Sending notification with id: ${id}`);
       const result = await sendNotification();
-      notification.deliveryStatus = DeliveryStatus.SUCCESS;
+      notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
       notification.result = { result };
     } catch (error) {
-      notification.deliveryStatus = DeliveryStatus.FAILED;
+      notification.deliveryStatus = DeliveryStatus.PENDING;
+      notification.retryCount++;
       notification.result = { result: error };
       this.logger.error(`Error sending notification with id: ${id}`);
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+    } finally {
+      await this.notificationRepository.save(notification);
+    }
+  }
+  // async processAwaitingConfirmationNotificationQueue(
+  //   job: Job<number>,
+  //   getNotificationStatus: () => Promise<{
+  //     result: unknown;
+  //     deliveryStatus: number;
+  //   }>,
+  // ): Promise<void> {
+  //   const id = job.data;
+  //   const notification = (await this.notificationsService.getNotificationById(id))[0];
+
+  //   //try {
+  //   this.logger.log(`Checking delivery status from provider for notification with id: ${id}`);
+  //   const response = await getNotificationStatus();
+  //   notification.result = response.result as Record<string, unknown>;
+  //   notification.deliveryStatus = response.deliveryStatus;
+  //   /*} catch (error) {
+  //     notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
+  //     this.logger.error(
+  //       `Error getting delivery status from provider for notification with id: ${id}`,
+  //     );
+  //     this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+  //   } finally {
+  //     await this.notificationRepository.save(notification);
+  //   }*/
+  // }
+  async processAwaitingConfirmationNotificationQueue(
+    job: Job<number>,
+    getNotificationStatus: () => Promise<{
+      result: unknown;
+      deliveryStatus: number;
+    }>,
+  ): Promise<void> {
+    const id = job.data;
+    const notification = (await this.notificationsService.getNotificationById(id))[0];
+
+    try {
+      this.logger.log(`Checking delivery status from provider for notification with id: ${id}`);
+      const response = await getNotificationStatus();
+      notification.result = { result: response.result as Record<string, unknown> };
+      notification.deliveryStatus = response.deliveryStatus;
+
+      if (notification.deliveryStatus === DeliveryStatus.PENDING) {
+        this.logger.log(
+          `Notification with ID ${id} was not sent correctly as per provider. Another attempt will be made to send the notification`,
+        );
+        this.logger.log('Provider response: ' + JSON.stringify(response.result));
+        notification.retryCount++;
+      }
+    } catch (error) {
+      notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
+      notification.retryCount++;
+      this.logger.error(
+        `Error getting delivery status from provider for notification with id: ${id}`,
+      );
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {
       await this.notificationRepository.save(notification);
