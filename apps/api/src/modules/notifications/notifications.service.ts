@@ -18,6 +18,7 @@ import { ConfigService } from '@nestjs/config';
 export class NotificationsService extends CoreService<Notification> {
   protected readonly logger = new Logger(NotificationsService.name);
   private isProcessingQueue: boolean = false;
+  private isProcessingConfirmationQueue: boolean = false;
   private maxRetryCount: number;
 
   constructor(
@@ -140,11 +141,20 @@ export class NotificationsService extends CoreService<Notification> {
       'Starting CRON job to add notifications to queue for confirmation from provider',
     );
 
+    if (this.isProcessingConfirmationQueue) {
+      this.logger.log(
+        'Notifications are already being added to confirmation queue, skipping this CRON job',
+      );
+      return;
+    }
+
+    this.isProcessingConfirmationQueue = true;
     let allAwaitingConfirmationNotifications: Notification[] = [];
 
     try {
       allAwaitingConfirmationNotifications = await this.getAwaitingConfirmationNotifications();
     } catch (error) {
+      this.isProcessingConfirmationQueue = false;
       this.logger.error('Error fetching awaiting confirmation notifications');
       this.logger.error(JSON.stringify(error, null, 2));
       return;
@@ -163,15 +173,17 @@ export class NotificationsService extends CoreService<Notification> {
             `Notification with ID ${notification.id} has attempted max allowed retries, setting delivery status to FAILED`,
           );
           notification.deliveryStatus = DeliveryStatus.FAILED;
+          await this.notificationRepository.save(notification);
         }
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
         this.logger.error(JSON.stringify(error, null, 2));
-      } finally {
         await this.notificationRepository.save(notification);
       }
     }
+
+    this.isProcessingConfirmationQueue = false;
   }
 
   getPendingNotifications(): Promise<Notification[]> {

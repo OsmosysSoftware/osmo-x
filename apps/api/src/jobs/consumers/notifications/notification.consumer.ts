@@ -51,8 +51,16 @@ export abstract class NotificationConsumer {
     try {
       this.logger.log(`Checking delivery status from provider for notification with id: ${id}`);
       const response = await getNotificationStatus();
-      notification.result = response.result as Record<string, unknown>;
+      notification.result = { result: response.result as Record<string, unknown> };
       notification.deliveryStatus = response.deliveryStatus;
+
+      if (notification.deliveryStatus === DeliveryStatus.PENDING) {
+        this.logger.log(
+          `Notification with ID ${id} was not sent correctly as per provider. Another attempt will be made to send the notification`,
+        );
+        this.logger.log('Provider response: ' + JSON.stringify(response.result));
+        notification.retryCount++;
+      }
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
       notification.retryCount++;
