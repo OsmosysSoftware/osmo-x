@@ -9,6 +9,7 @@ import { MailgunMessageData } from 'mailgun.js';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
 import { DeliveryStatus } from 'src/common/constants/notifications';
+import { MessagesSendResult} from 'mailgun.js';
 
 @Processor(MAILGUN_QUEUE)
 export class MailgunNotificationConsumer extends NotificationConsumer {
@@ -37,8 +38,19 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
       });
     } else if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
       return super.processAwaitingConfirmationNotificationQueue(job, async () => {
-        // TODO: Check for Delivery Confirmation
-        return DeliveryStatus.SUCCESS;
+        const notificationSendResponse = notification.result.result as MessagesSendResult
+        const result = await this.mailgunService.getDeliverStatus(
+          notificationSendResponse.id,
+          notification.providerId,
+        )
+
+        const deliveryStatus = result.event;
+
+        if (deliveryStatus === 'failed' || deliveryStatus === 'rejected') {
+          return { result, deliveryStatus: DeliveryStatus.PENDING };
+        }
+
+        return { result, deliveryStatus: DeliveryStatus.SUCCESS };
       });
     }
   }
