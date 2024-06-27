@@ -45,7 +45,7 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
         const deliveryStatus = result.status;
 
         if (deliveryStatus === 'failed' || deliveryStatus === 'undelivered') {
-          return { result, deliveryStatus: DeliveryStatus.FAILED };
+          return { result, deliveryStatus: DeliveryStatus.PENDING };
         }
 
         return { result, deliveryStatus: DeliveryStatus.SUCCESS };
