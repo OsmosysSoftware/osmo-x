@@ -13,6 +13,24 @@ export interface SmsPlivoResponseData {
   message_uuid: string[];
 }
 
+export interface PlivoMessageStatusResponse {
+  api_id: string;
+  error_code: string;
+  from_number: string;
+  message_direction: string;
+  message_state: string;
+  message_time: string;
+  message_type: string;
+  message_uuid: string;
+  resource_uri: string;
+  to_number: string;
+  total_amount: string;
+  total_rate: string;
+  units: number;
+  status: string;
+  // add any other fields you expect in the response
+}
+
 @Injectable()
 export class SmsPlivoService {
   private plivoClient;
@@ -37,6 +55,16 @@ export class SmsPlivoService {
       text: body.message,
     });
 
+    return response;
+  }
+  async getDeliveryStatus(
+    messageUuid: string,
+    providerId: number,
+  ): Promise<PlivoMessageStatusResponse> {
+    await this.assignTransport(providerId);
+
+    const response = await this.plivoClient.messages.get(messageUuid);
+    console.log(response);
     return response;
   }
 }
