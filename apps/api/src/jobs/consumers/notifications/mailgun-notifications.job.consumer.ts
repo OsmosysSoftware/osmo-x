@@ -1,15 +1,14 @@
-import { Process, Processor } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Job } from 'bullmq';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
-import { MAILGUN_QUEUE } from 'src/modules/notifications/queues/mailgun.queue';
 import { MailgunService } from 'src/modules/providers/mailgun/mailgun.service';
 import { MailgunMessageData } from 'mailgun.js';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
+import { Injectable } from '@nestjs/common';
 
-@Processor(MAILGUN_QUEUE)
+@Injectable()
 export class MailgunNotificationConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
@@ -20,7 +19,6 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
     super(notificationRepository, notificationsService);
   }
 
-  @Process()
   async processMailgunNotificationQueue(job: Job<number>): Promise<void> {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;

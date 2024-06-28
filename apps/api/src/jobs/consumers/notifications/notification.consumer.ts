@@ -1,11 +1,12 @@
-import { Logger } from '@nestjs/common';
-import { Job } from 'bull';
+import { Injectable, Logger } from '@nestjs/common';
+import { Job } from 'bullmq';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 
+@Injectable()
 export abstract class NotificationConsumer {
   private readonly logger = new Logger(this.constructor.name);
 

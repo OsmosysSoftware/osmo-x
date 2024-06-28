@@ -1,17 +1,16 @@
-import { Process, Processor } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Job } from 'bullmq';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
-import { SMS_TWILIO_QUEUE } from 'src/modules/notifications/queues/smsTwilio.queue';
 import {
   SmsTwilioData,
   SmsTwilioService,
 } from 'src/modules/providers/sms-twilio/sms-twilio.service';
+import { Injectable } from '@nestjs/common';
 
-@Processor(SMS_TWILIO_QUEUE)
+@Injectable()
 export class SmsTwilioNotificationsConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
@@ -22,7 +21,6 @@ export class SmsTwilioNotificationsConsumer extends NotificationConsumer {
     super(notificationRepository, notificationsService);
   }
 
-  @Process()
   async processSmsTwilioNotificationQueue(job: Job<number>): Promise<void> {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;

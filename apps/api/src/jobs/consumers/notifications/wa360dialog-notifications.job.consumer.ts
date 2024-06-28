@@ -1,17 +1,16 @@
-import { Process, Processor } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Job } from 'bullmq';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
-import { WA360DIALOG_QUEUE } from 'src/modules/notifications/queues/wa360dialog.queue';
 import {
   Wa360DialogData,
   Wa360dialogService,
 } from 'src/modules/providers/wa360dialog/wa360dialog.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
+import { Injectable } from '@nestjs/common';
 
-@Processor(WA360DIALOG_QUEUE)
+@Injectable()
 export class Wa360dialogNotificationsConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
@@ -22,7 +21,6 @@ export class Wa360dialogNotificationsConsumer extends NotificationConsumer {
     super(notificationRepository, notificationsService);
   }
 
-  @Process()
   async processWa360dialogNotificationQueue(job: Job<number>): Promise<void> {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;

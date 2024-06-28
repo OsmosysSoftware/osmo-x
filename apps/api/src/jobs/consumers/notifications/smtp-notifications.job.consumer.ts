@@ -1,15 +1,14 @@
-import { Process, Processor } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Job } from 'bullmq';
 import * as nodemailer from 'nodemailer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
-import { SMTP_QUEUE } from 'src/modules/notifications/queues/smtp.queue';
 import { SmtpService } from 'src/modules/providers/smtp/smtp.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
+import { Injectable } from '@nestjs/common';
 
-@Processor(SMTP_QUEUE)
+@Injectable()
 export class SmtpNotificationConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
@@ -20,7 +19,6 @@ export class SmtpNotificationConsumer extends NotificationConsumer {
     super(notificationRepository, notificationsService);
   }
 
-  @Process()
   async processSmtpNotificationQueue(job: Job<number>): Promise<void> {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;

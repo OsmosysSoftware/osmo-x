@@ -1,6 +1,4 @@
-import { Process, Processor } from '@nestjs/bull';
 import { NotificationConsumer } from './notification.consumer';
-import { SMS_KAPSYSTEM_QUEUE } from 'src/modules/notifications/queues/smsKapsystem.queue';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -9,9 +7,10 @@ import {
 } from 'src/modules/providers/sms-kapsystem/sms-kapsystem.service';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
-import { Job } from 'bull';
+import { Job } from 'bullmq';
+import { Injectable } from '@nestjs/common';
 
-@Processor(SMS_KAPSYSTEM_QUEUE)
+@Injectable()
 export class SmsKapsystemNotificationsConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
@@ -22,7 +21,6 @@ export class SmsKapsystemNotificationsConsumer extends NotificationConsumer {
     super(notificationRepository, notificationsService);
   }
 
-  @Process()
   async processSmsKapsystemNotificationQueue(job: Job<number>): Promise<void> {
     return super.processNotificationQueue(job, async () => {
       const id = job.data;
