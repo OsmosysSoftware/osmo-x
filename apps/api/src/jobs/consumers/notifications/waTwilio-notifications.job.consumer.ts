@@ -36,7 +36,9 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
           notification.providerId,
         );
       });
-    } else if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
+    }
+
+    if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
       return super.processAwaitingConfirmationNotificationQueue(job, async () => {
         const result = await this.waTwilioService.getDeliveryStatus(
           (notification.result.result as WaTwilioResponseData).sid as string,

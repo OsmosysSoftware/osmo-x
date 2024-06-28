@@ -55,7 +55,9 @@ export class WaTwilioService {
         to: `whatsapp:${body.to}`,
       });
       return message;
-    } catch (error) {}
+    } catch (error) {
+      throw new Error(`Failed to send message: ${error.message}`);
+    }
   }
 
   async getDeliveryStatus(sid: string, providerId: number): Promise<WaTwilioResponseData> {
@@ -63,6 +65,8 @@ export class WaTwilioService {
       await this.assignTransport(providerId);
       const message = await this.twilioClient.messages(sid).fetch();
       return message;
-    } catch (error) {}
+    } catch (error) {
+      throw new Error(`Failed to fetch delivery status: ${error.message}`);
+    }
   }
 }
