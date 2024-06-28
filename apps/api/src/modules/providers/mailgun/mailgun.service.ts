@@ -1,6 +1,11 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as FormData from 'form-data';
-import Mailgun, { MailgunClientOptions, MailgunMessageData, MessagesSendResult, DomainEvent } from 'mailgun.js';
+import Mailgun, {
+  MailgunClientOptions,
+  MailgunMessageData,
+  MessagesSendResult,
+  DomainEvent,
+} from 'mailgun.js';
 import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import * as mime from 'mime-types';
@@ -81,12 +86,11 @@ export class MailgunService {
     );
   }
 
-  async getDeliverStatus(
-    messageId: string,
-    providerId: number,
-  ): Promise<DomainEvent> {
+  async getDeliverStatus(messageId: string, providerId: number): Promise<DomainEvent> {
     await this.assignClient(providerId);
-    const response = await this.mailgunClient.events.get(this.mailgunDomain, {"message-id": messageId});
+    const response = await this.mailgunClient.events.get(this.mailgunDomain, {
+      'message-id': messageId,
+    });
     return response.items[0];
   }
 }

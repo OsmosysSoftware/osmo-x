@@ -84,7 +84,7 @@ export class Notification {
   @Column({ name: 'retry_count', type: 'int', default: 0 })
   @Field()
   retryCount: number;
-  
+
   @ManyToOne(() => Application, (application) => application.notifications)
   @JoinColumn({ name: 'application_id' })
   @Field(() => Application)
