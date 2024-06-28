@@ -26,6 +26,7 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
   async processMailgunNotificationQueue(job: Job<number>): Promise<void> {
     const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
+
     if (notification.deliveryStatus === DeliveryStatus.PENDING) {
       return super.processNotificationQueue(job, async () => {
         const formattedNotificationData = await this.mailgunService.formatNotificationData(
@@ -37,6 +38,7 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
         );
       });
     }
+
     if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
       return super.processAwaitingConfirmationNotificationQueue(job, async () => {
         const notificationSendResponse = notification.result.result as MessagesSendResult;
