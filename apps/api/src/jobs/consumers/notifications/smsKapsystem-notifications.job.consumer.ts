@@ -7,8 +7,7 @@ import {
 } from 'src/modules/providers/sms-kapsystem/sms-kapsystem.service';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
-import { Job } from 'bullmq';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 
 @Injectable()
 export class SmsKapsystemNotificationsConsumer extends NotificationConsumer {
@@ -16,14 +15,14 @@ export class SmsKapsystemNotificationsConsumer extends NotificationConsumer {
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
     private readonly kapsystemService: SmsKapsystemService,
+    @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
   ) {
     super(notificationRepository, notificationsService);
   }
 
-  async processSmsKapsystemNotificationQueue(job: Job<number>): Promise<void> {
-    return super.processNotificationQueue(job, async () => {
-      const id = job.data;
+  async processSmsKapsystemNotificationQueue(id: number): Promise<void> {
+    return super.processNotificationQueue(id, async () => {
       const notification = (await this.notificationsService.getNotificationById(id))[0];
       return this.kapsystemService.sendMessage(
         notification.data as unknown as KapsystemData,

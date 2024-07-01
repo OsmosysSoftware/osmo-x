@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Job } from 'bullmq';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
@@ -17,10 +16,9 @@ export abstract class NotificationConsumer {
   ) {}
 
   async processNotificationQueue(
-    job: Job<number>,
+    id: number,
     sendNotification: () => Promise<unknown>,
   ): Promise<void> {
-    const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
 
     try {

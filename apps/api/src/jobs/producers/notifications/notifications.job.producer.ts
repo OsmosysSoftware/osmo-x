@@ -14,7 +14,14 @@ export class NotificationQueueProducer {
 
   async addNotificationToQueue(notification: Notification): Promise<void> {
     const provider = await this.providersService.getById(notification.providerId);
-    const queue = this.queueService.getOrCreateQueue(notification.channelType, provider.name);
-    await queue.add(notification.id);
+    const queue = this.queueService.getOrCreateQueue(
+      'send',
+      provider.channelType.toString(),
+      notification.providerId.toString(),
+    );
+    await queue.add(notification.id.toString(), {
+      id: notification.id,
+      providerId: notification.providerId,
+    });
   }
 }

@@ -1,4 +1,3 @@
-import { Job } from 'bullmq';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
@@ -8,7 +7,7 @@ import {
   WaTwilioBusinessData,
   WaTwilioBusinessService,
 } from 'src/modules/providers/wa-twilio-business/wa-twilio-business.service';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 
 @Injectable()
 export class WaTwilioBusinessNotificationsConsumer extends NotificationConsumer {
@@ -16,14 +15,14 @@ export class WaTwilioBusinessNotificationsConsumer extends NotificationConsumer 
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
     private readonly waTwilioBusinessService: WaTwilioBusinessService,
+    @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
   ) {
     super(notificationRepository, notificationsService);
   }
 
-  async processWaTwilioBusinessNotificationQueue(job: Job<number>): Promise<void> {
-    return super.processNotificationQueue(job, async () => {
-      const id = job.data;
+  async processWaTwilioBusinessNotificationQueue(id: number): Promise<void> {
+    return super.processNotificationQueue(id, async () => {
       const notification = (await this.notificationsService.getNotificationById(id))[0];
       return this.waTwilioBusinessService.sendMessage(
         notification.data as unknown as WaTwilioBusinessData,

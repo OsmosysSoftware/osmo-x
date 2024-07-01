@@ -1,4 +1,3 @@
-import { Job } from 'bullmq';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
@@ -6,7 +5,7 @@ import { MailgunService } from 'src/modules/providers/mailgun/mailgun.service';
 import { MailgunMessageData } from 'mailgun.js';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 
 @Injectable()
 export class MailgunNotificationConsumer extends NotificationConsumer {
@@ -14,14 +13,14 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
     private readonly mailgunService: MailgunService,
+    @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
   ) {
     super(notificationRepository, notificationsService);
   }
 
-  async processMailgunNotificationQueue(job: Job<number>): Promise<void> {
-    return super.processNotificationQueue(job, async () => {
-      const id = job.data;
+  async processMailgunNotificationQueue(id: number): Promise<void> {
+    return super.processNotificationQueue(id, async () => {
       const notification = (await this.notificationsService.getNotificationById(id))[0];
       const formattedNotificationData = await this.mailgunService.formatNotificationData(
         notification.data,
