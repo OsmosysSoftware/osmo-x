@@ -5,6 +5,7 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { NotificationConsumer } from './notification.consumer';
 import { SmsPlivoData, SmsPlivoService } from 'src/modules/providers/sms-plivo/sms-plivo.service';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SmsPlivoNotificationsConsumer extends NotificationConsumer {
@@ -14,8 +15,9 @@ export class SmsPlivoNotificationsConsumer extends NotificationConsumer {
     private readonly smsPlivoService: SmsPlivoService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService);
+    super(notificationRepository, notificationsService, configService);
   }
 
   async processSmsPlivoNotificationQueue(id: number): Promise<void> {

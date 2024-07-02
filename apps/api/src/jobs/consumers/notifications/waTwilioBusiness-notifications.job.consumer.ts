@@ -8,6 +8,7 @@ import {
   WaTwilioBusinessService,
 } from 'src/modules/providers/wa-twilio-business/wa-twilio-business.service';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class WaTwilioBusinessNotificationsConsumer extends NotificationConsumer {
@@ -17,8 +18,9 @@ export class WaTwilioBusinessNotificationsConsumer extends NotificationConsumer 
     private readonly waTwilioBusinessService: WaTwilioBusinessService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService);
+    super(notificationRepository, notificationsService, configService);
   }
 
   async processWaTwilioBusinessNotificationQueue(id: number): Promise<void> {

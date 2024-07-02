@@ -36,4 +36,4 @@ lerna-debug.log*
 
 # Environment variable file
 .env
-.schema.gpl
+schema.gpl

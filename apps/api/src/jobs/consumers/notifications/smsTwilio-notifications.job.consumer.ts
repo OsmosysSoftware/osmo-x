@@ -8,6 +8,7 @@ import {
   SmsTwilioService,
 } from 'src/modules/providers/sms-twilio/sms-twilio.service';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SmsTwilioNotificationsConsumer extends NotificationConsumer {
@@ -17,8 +18,9 @@ export class SmsTwilioNotificationsConsumer extends NotificationConsumer {
     private readonly smsTwilioService: SmsTwilioService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService);
+    super(notificationRepository, notificationsService, configService);
   }
 
   async processSmsTwilioNotificationQueue(id: number): Promise<void> {

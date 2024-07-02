@@ -8,6 +8,7 @@ import {
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SmsKapsystemNotificationsConsumer extends NotificationConsumer {
@@ -17,8 +18,9 @@ export class SmsKapsystemNotificationsConsumer extends NotificationConsumer {
     private readonly kapsystemService: SmsKapsystemService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService);
+    super(notificationRepository, notificationsService, configService);
   }
 
   async processSmsKapsystemNotificationQueue(id: number): Promise<void> {

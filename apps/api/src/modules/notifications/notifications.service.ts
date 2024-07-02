@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import { DeliveryStatus } from 'src/common/constants/notifications';
+import { DeliveryStatus, QueueAction } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
@@ -17,6 +17,7 @@ import { ProvidersService } from '../providers/providers.service';
 export class NotificationsService extends CoreService<Notification> {
   protected readonly logger = new Logger(NotificationsService.name);
   private isProcessingQueue: boolean = false;
+  private isProcessingConfirmationQueue: boolean = false;
 
   constructor(
     @InjectRepository(Notification)
@@ -94,7 +95,7 @@ export class NotificationsService extends CoreService<Notification> {
     }
 
     this.isProcessingQueue = true;
-    let allPendingNotifications = [];
+    let allPendingNotifications: Notification[] = [];
 
     try {
       allPendingNotifications = await this.getPendingNotifications();
@@ -110,7 +111,7 @@ export class NotificationsService extends CoreService<Notification> {
     for (const notification of allPendingNotifications) {
       try {
         notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
-        await this.notificationQueueService.addNotificationToQueue(notification);
+        await this.notificationQueueService.addNotificationToQueue(QueueAction.SEND, notification);
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.PENDING;
         notification.result = { result: error };
@@ -124,11 +125,67 @@ export class NotificationsService extends CoreService<Notification> {
     this.isProcessingQueue = false;
   }
 
+  async getProviderConfirmation(): Promise<void> {
+    this.logger.log(
+      'Starting CRON job to add notifications to queue for confirmation from provider',
+    );
+
+    if (this.isProcessingConfirmationQueue) {
+      this.logger.log(
+        'Notifications are already being added to confirmation queue, skipping this CRON job',
+      );
+      return;
+    }
+
+    this.isProcessingConfirmationQueue = true;
+    let allAwaitingConfirmationNotifications: Notification[] = [];
+
+    try {
+      allAwaitingConfirmationNotifications = await this.getAwaitingConfirmationNotifications();
+    } catch (error) {
+      this.isProcessingConfirmationQueue = false;
+      this.logger.error('Error fetching awaiting confirmation notifications');
+      this.logger.error(JSON.stringify(error, null, 2));
+      return;
+    }
+
+    this.logger.log(
+      `Adding ${allAwaitingConfirmationNotifications.length} awaiting confirmation notifications to queue`,
+    );
+
+    for (const notification of allAwaitingConfirmationNotifications) {
+      try {
+        notification.deliveryStatus = DeliveryStatus.QUEUED_CONFIRMATION;
+        await this.notificationQueueService.addNotificationToQueue(
+          QueueAction.DELIVERY_STATUS,
+          notification,
+        );
+      } catch (error) {
+        notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
+        this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
+        this.logger.error(JSON.stringify(error, null, 2));
+        await this.notificationRepository.save(notification);
+      }
+    }
+
+    this.isProcessingConfirmationQueue = false;
+  }
+
   getPendingNotifications(): Promise<Notification[]> {
     this.logger.log('Getting all active pending notifications');
     return this.notificationRepository.find({
       where: {
         deliveryStatus: DeliveryStatus.PENDING,
+        status: Status.ACTIVE,
+      },
+    });
+  }
+
+  getAwaitingConfirmationNotifications(): Promise<Notification[]> {
+    this.logger.log('Getting all awaiting confirmation notifications');
+    return this.notificationRepository.find({
+      where: {
+        deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
         status: Status.ACTIVE,
       },
     });

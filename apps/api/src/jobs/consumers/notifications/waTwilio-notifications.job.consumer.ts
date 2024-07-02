@@ -3,8 +3,14 @@ import { Repository } from 'typeorm';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
-import { WaTwilioData, WaTwilioService } from 'src/modules/providers/wa-twilio/wa-twilio.service';
+import {
+  WaTwilioData,
+  WaTwilioResponseData,
+  WaTwilioService,
+} from 'src/modules/providers/wa-twilio/wa-twilio.service';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { DeliveryStatus, ProviderDeliveryStatus } from 'src/common/constants/notifications';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class WaTwilioNotificationsConsumer extends NotificationConsumer {
@@ -14,8 +20,9 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
     private readonly waTwilioService: WaTwilioService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService);
+    super(notificationRepository, notificationsService, configService);
   }
 
   async processWaTwilioNotificationQueue(id: number): Promise<void> {
@@ -25,6 +32,30 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
         notification.data as unknown as WaTwilioData,
         notification.providerId,
       );
+    });
+  }
+
+  async processWaTwilioNotificationConfirmationQueue(id: number): Promise<void> {
+    return super.processAwaitingConfirmationNotificationQueue(id, async () => {
+      const notification = (await this.notificationsService.getNotificationById(id))[0];
+      const result = await this.waTwilioService.getDeliveryStatus(
+        (notification.result.result as WaTwilioResponseData).sid as string,
+        notification.providerId,
+      );
+      const deliveryStatus = result.status;
+
+      if (ProviderDeliveryStatus.WA_TWILIO.FAILURE_STATES.includes(deliveryStatus)) {
+        return { result, deliveryStatus: DeliveryStatus.PENDING };
+      }
+
+      if (ProviderDeliveryStatus.WA_TWILIO.SUCCESS_STATES.includes(deliveryStatus)) {
+        return { result, deliveryStatus: DeliveryStatus.SUCCESS };
+      }
+
+      return {
+        result,
+        deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
+      };
     });
   }
 }
