@@ -27,7 +27,7 @@ const configService = new ConfigService();
       inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
-    NotificationsModule.register(),
+    NotificationsModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gpl'),
