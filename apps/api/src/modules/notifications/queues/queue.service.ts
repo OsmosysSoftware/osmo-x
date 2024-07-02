@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Queue, Worker, QueueEvents } from 'bullmq';
+import ms = require('ms');
 import { ChannelType } from 'src/common/constants/notifications';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
 import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
@@ -18,8 +19,8 @@ export class QueueService {
   private workers: Map<string, Worker> = new Map();
   private queueEvents: Map<string, QueueEvents> = new Map();
   private redisConfig: { host: string; port: number };
-  private idleTimeout = 10 * 60 * 1000; // 10 minutes
-  private cleanupInterval = 5 * 60 * 1000; // 5 minutes
+  private idleTimeout: number;
+  private cleanupInterval: number;
 
   constructor(
     private readonly configService: ConfigService,
@@ -36,7 +37,12 @@ export class QueueService {
       host: this.configService.get<string>('REDIS_HOST'),
       port: this.configService.get<number>('REDIS_PORT'),
     };
-    this.startCleanupTask();
+
+    if (this.configService.get('CLEANUP_IDLE_RESOURCES', 'false') === 'true') {
+      this.idleTimeout = ms(this.configService.get<string>('IDLE_TIMEOUT', '30m'));
+      this.cleanupInterval = ms(this.configService.get<string>('CLEANUP_INTERVAL', '7d'));
+      this.startCleanupTask();
+    }
   }
 
   private createQueue(queueName: string): Queue {
