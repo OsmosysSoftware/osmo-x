@@ -9,7 +9,7 @@ import { SMS_PLIVO_QUEUE } from 'src/modules/notifications/queues/smsPlivo.queue
 import {
   SmsPlivoData,
   SmsPlivoService,
-  PlivoMessageStatusResponse,
+  SmsPlivoResponseData,
 } from 'src/modules/providers/sms-plivo/sms-plivo.service';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 
@@ -39,12 +39,16 @@ export class SmsPlivoNotificationsConsumer extends NotificationConsumer {
     } else if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
       return super.processAwaitingConfirmationNotificationQueue(job, async () => {
         const result = await this.smsPlivoService.getDeliveryStatus(
-          (notification.result.result as PlivoMessageStatusResponse).message_uuid as string,
+          (notification.result.result as SmsPlivoResponseData).messageUuid[0] as string,
           notification.providerId,
         );
-        const deliveryStatus = result.status;
+        const deliveryStatus = result.message_state;
 
-        if (deliveryStatus === 'expired' || deliveryStatus === 'undelivered') {
+        if (
+          deliveryStatus === 'failed' ||
+          deliveryStatus === 'undelivered' ||
+          deliveryStatus === 'rejected'
+        ) {
           return { result, deliveryStatus: DeliveryStatus.FAILED };
         }
 

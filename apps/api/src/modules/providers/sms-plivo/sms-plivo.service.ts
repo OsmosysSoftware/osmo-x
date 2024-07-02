@@ -10,7 +10,7 @@ export interface SmsPlivoData {
 export interface SmsPlivoResponseData {
   api_id: string;
   message: string;
-  message_uuid: string[];
+  messageUuid: string[];
 }
 
 export interface PlivoMessageStatusResponse {
@@ -64,7 +64,7 @@ export class SmsPlivoService {
     await this.assignTransport(providerId);
 
     const response = await this.plivoClient.messages.get(messageUuid);
-    console.log(response);
+    //console.log(response);
     return response;
   }
 }
