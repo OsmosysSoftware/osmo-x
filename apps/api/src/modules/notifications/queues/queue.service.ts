@@ -52,7 +52,7 @@ export class QueueService {
     const queueEvents = new QueueEvents(queueName, { connection: this.redisConfig });
     queueEvents.on('stalled', async (jobId) => {
       this.logger.warn(`Job stalled in queue ${queueName}, jobId: ${jobId}`);
-      // Handle stalled job, e.g., retry the job or move to a failed queue
+      // TODO: Handle stalled job, e.g., retry the job or move to a failed queue
     });
 
     this.queueEvents.set(queueName, queueEvents);
