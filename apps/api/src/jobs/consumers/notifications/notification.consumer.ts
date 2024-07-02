@@ -1,11 +1,11 @@
-import { Logger } from '@nestjs/common';
-import { Job } from 'bull';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 
+@Injectable()
 export abstract class NotificationConsumer {
   private readonly logger = new Logger(this.constructor.name);
 
@@ -16,10 +16,9 @@ export abstract class NotificationConsumer {
   ) {}
 
   async processNotificationQueue(
-    job: Job<number>,
+    id: number,
     sendNotification: () => Promise<unknown>,
   ): Promise<void> {
-    const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
 
     try {
@@ -39,13 +38,12 @@ export abstract class NotificationConsumer {
   }
 
   async processAwaitingConfirmationNotificationQueue(
-    job: Job<number>,
+    id: number,
     getNotificationStatus: () => Promise<{
       result: unknown;
       deliveryStatus: number;
     }>,
   ): Promise<void> {
-    const id = job.data;
     const notification = (await this.notificationsService.getNotificationById(id))[0];
 
     try {
