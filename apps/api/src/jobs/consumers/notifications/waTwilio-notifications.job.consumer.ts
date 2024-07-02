@@ -44,14 +44,16 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
 
       if (ProviderDeliveryStatus.WA_TWILIO.FAILURE_STATES.includes(deliveryStatus)) {
         return { result, deliveryStatus: DeliveryStatus.PENDING };
-      } else if (ProviderDeliveryStatus.WA_TWILIO.SUCCESS_STATES.includes(deliveryStatus)) {
-        return { result, deliveryStatus: DeliveryStatus.SUCCESS };
-      } else {
-        return {
-          result,
-          deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
-        };
       }
+
+      if (ProviderDeliveryStatus.WA_TWILIO.SUCCESS_STATES.includes(deliveryStatus)) {
+        return { result, deliveryStatus: DeliveryStatus.SUCCESS };
+      }
+
+      return {
+        result,
+        deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
+      };
     });
   }
 }
