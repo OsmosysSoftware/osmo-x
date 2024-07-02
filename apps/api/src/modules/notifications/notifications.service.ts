@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import { DeliveryStatus } from 'src/common/constants/notifications';
+import { DeliveryStatus, QueueAction } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
@@ -114,9 +114,12 @@ export class NotificationsService extends CoreService<Notification> {
 
     for (const notification of allPendingNotifications) {
       try {
-        if (notification.retryCount < this.maxRetryCount) {
+        if (notification.retryCount <= this.maxRetryCount) {
           notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
-          await this.notificationQueueService.addNotificationToQueue(notification);
+          await this.notificationQueueService.addNotificationToQueue(
+            QueueAction.SEND,
+            notification,
+          );
         } else {
           this.logger.log(
             `Notification with ID ${notification.id} has attempted max allowed retries, setting delivery status to FAILED`,
@@ -166,8 +169,12 @@ export class NotificationsService extends CoreService<Notification> {
 
     for (const notification of allAwaitingConfirmationNotifications) {
       try {
-        if (notification.retryCount < this.maxRetryCount) {
-          await this.notificationQueueService.addNotificationToQueue(notification);
+        if (notification.retryCount <= this.maxRetryCount) {
+          notification.deliveryStatus = DeliveryStatus.QUEUED_CONFIRMATION;
+          await this.notificationQueueService.addNotificationToQueue(
+            QueueAction.DELIVERY_STATUS,
+            notification,
+          );
         } else {
           this.logger.log(
             `Notification with ID ${notification.id} has attempted max allowed retries, setting delivery status to FAILED`,

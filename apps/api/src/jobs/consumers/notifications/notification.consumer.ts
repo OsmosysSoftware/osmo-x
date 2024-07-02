@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
-import { DeliveryStatus } from 'src/common/constants/notifications';
+import {
+  DeliveryStatus,
+  SkipProviderConfirmationChannels,
+} from 'src/common/constants/notifications';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 
 @Injectable()
@@ -25,6 +28,11 @@ export abstract class NotificationConsumer {
       this.logger.log(`Sending notification with id: ${id}`);
       const result = await sendNotification();
       notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
+
+      if (SkipProviderConfirmationChannels.includes(notification.channelType)) {
+        notification.deliveryStatus = DeliveryStatus.SUCCESS;
+      }
+
       notification.result = { result };
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.PENDING;

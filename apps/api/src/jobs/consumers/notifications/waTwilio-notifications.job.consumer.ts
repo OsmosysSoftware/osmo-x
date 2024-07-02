@@ -9,7 +9,7 @@ import {
   WaTwilioService,
 } from 'src/modules/providers/wa-twilio/wa-twilio.service';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { DeliveryStatus } from 'src/common/constants/notifications';
+import { DeliveryStatus, ProviderDeliveryStatus } from 'src/common/constants/notifications';
 
 @Injectable()
 export class WaTwilioNotificationsConsumer extends NotificationConsumer {
@@ -24,31 +24,34 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
   }
 
   async processWaTwilioNotificationQueue(id: number): Promise<void> {
-    const notification = (await this.notificationsService.getNotificationById(id))[0];
+    return super.processNotificationQueue(id, async () => {
+      const notification = (await this.notificationsService.getNotificationById(id))[0];
+      return this.waTwilioService.sendMessage(
+        notification.data as unknown as WaTwilioData,
+        notification.providerId,
+      );
+    });
+  }
 
-    if (notification.deliveryStatus === DeliveryStatus.PENDING) {
-      return super.processNotificationQueue(id, async () => {
-        return this.waTwilioService.sendMessage(
-          notification.data as unknown as WaTwilioData,
-          notification.providerId,
-        );
-      });
-    }
+  async processWaTwilioNotificationConfirmationQueue(id: number): Promise<void> {
+    return super.processAwaitingConfirmationNotificationQueue(id, async () => {
+      const notification = (await this.notificationsService.getNotificationById(id))[0];
+      const result = await this.waTwilioService.getDeliveryStatus(
+        (notification.result.result as WaTwilioResponseData).sid as string,
+        notification.providerId,
+      );
+      const deliveryStatus = result.status;
 
-    if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
-      return super.processAwaitingConfirmationNotificationQueue(id, async () => {
-        const result = await this.waTwilioService.getDeliveryStatus(
-          (notification.result.result as WaTwilioResponseData).sid as string,
-          notification.providerId,
-        );
-        const deliveryStatus = result.status;
-
-        if (deliveryStatus === 'failed' || deliveryStatus === 'undelivered') {
-          return { result, deliveryStatus: DeliveryStatus.PENDING };
-        }
-
+      if (ProviderDeliveryStatus.WA_TWILIO.FAILURE_STATES.includes(deliveryStatus)) {
+        return { result, deliveryStatus: DeliveryStatus.PENDING };
+      } else if (ProviderDeliveryStatus.WA_TWILIO.SUCCESS_STATES.includes(deliveryStatus)) {
         return { result, deliveryStatus: DeliveryStatus.SUCCESS };
-      });
-    }
+      } else {
+        return {
+          result,
+          deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
+        };
+      }
+    });
   }
 }
