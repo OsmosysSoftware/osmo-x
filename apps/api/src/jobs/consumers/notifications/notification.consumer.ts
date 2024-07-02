@@ -7,16 +7,21 @@ import {
   SkipProviderConfirmationChannels,
 } from 'src/common/constants/notifications';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export abstract class NotificationConsumer {
   private readonly logger = new Logger(this.constructor.name);
+  private maxRetryCount: number;
 
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
     protected readonly notificationsService: NotificationsService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
+  }
 
   async processNotificationQueue(
     id: number,
@@ -37,6 +42,14 @@ export abstract class NotificationConsumer {
     } catch (error) {
       notification.deliveryStatus = DeliveryStatus.PENDING;
       notification.retryCount++;
+
+      if (notification.retryCount > this.maxRetryCount) {
+        this.logger.log(
+          `Notification with ID ${notification.id} has attempted max allowed retries (sending), setting delivery status to ${DeliveryStatus.FAILED}`,
+        );
+        notification.deliveryStatus = DeliveryStatus.FAILED;
+      }
+
       notification.result = { result: error };
       this.logger.error(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
@@ -75,6 +88,13 @@ export abstract class NotificationConsumer {
       );
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {
+      if (notification.retryCount > this.maxRetryCount) {
+        this.logger.log(
+          `Notification with ID ${notification.id} has attempted max allowed retries (provider confirmation), setting delivery status to ${DeliveryStatus.FAILED}`,
+        );
+        notification.deliveryStatus = DeliveryStatus.FAILED;
+      }
+
       await this.notificationRepository.save(notification);
     }
   }

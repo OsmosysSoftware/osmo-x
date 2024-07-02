@@ -8,6 +8,7 @@ import {
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class Wa360dialogNotificationsConsumer extends NotificationConsumer {
@@ -17,8 +18,9 @@ export class Wa360dialogNotificationsConsumer extends NotificationConsumer {
     private readonly wa360dialogService: Wa360dialogService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService);
+    super(notificationRepository, notificationsService, configService);
   }
 
   async processWa360dialogNotificationQueue(id: number): Promise<void> {

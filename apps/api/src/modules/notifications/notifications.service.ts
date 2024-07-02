@@ -12,14 +12,12 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
   protected readonly logger = new Logger(NotificationsService.name);
   private isProcessingQueue: boolean = false;
   private isProcessingConfirmationQueue: boolean = false;
-  private maxRetryCount: number;
 
   constructor(
     @InjectRepository(Notification)
@@ -28,10 +26,8 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
     private readonly providersService: ProvidersService,
-    private readonly configService: ConfigService,
   ) {
     super(notificationRepository);
-    this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
   }
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
@@ -114,18 +110,8 @@ export class NotificationsService extends CoreService<Notification> {
 
     for (const notification of allPendingNotifications) {
       try {
-        if (notification.retryCount <= this.maxRetryCount) {
-          notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
-          await this.notificationQueueService.addNotificationToQueue(
-            QueueAction.SEND,
-            notification,
-          );
-        } else {
-          this.logger.log(
-            `Notification with ID ${notification.id} has attempted max allowed retries, setting delivery status to FAILED`,
-          );
-          notification.deliveryStatus = DeliveryStatus.FAILED;
-        }
+        notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
+        await this.notificationQueueService.addNotificationToQueue(QueueAction.SEND, notification);
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.PENDING;
         notification.result = { result: error };
@@ -169,19 +155,11 @@ export class NotificationsService extends CoreService<Notification> {
 
     for (const notification of allAwaitingConfirmationNotifications) {
       try {
-        if (notification.retryCount <= this.maxRetryCount) {
-          notification.deliveryStatus = DeliveryStatus.QUEUED_CONFIRMATION;
-          await this.notificationQueueService.addNotificationToQueue(
-            QueueAction.DELIVERY_STATUS,
-            notification,
-          );
-        } else {
-          this.logger.log(
-            `Notification with ID ${notification.id} has attempted max allowed retries, setting delivery status to FAILED`,
-          );
-          notification.deliveryStatus = DeliveryStatus.FAILED;
-          await this.notificationRepository.save(notification);
-        }
+        notification.deliveryStatus = DeliveryStatus.QUEUED_CONFIRMATION;
+        await this.notificationQueueService.addNotificationToQueue(
+          QueueAction.DELIVERY_STATUS,
+          notification,
+        );
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
