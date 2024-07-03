@@ -8,6 +8,7 @@ import { NotificationConsumer } from './notification.consumer';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { MessagesSendResult } from 'mailgun.js';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MailgunNotificationConsumer extends NotificationConsumer {
@@ -17,8 +18,9 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
     private readonly mailgunService: MailgunService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService);
+    super(notificationRepository, notificationsService, configService);
   }
 
   async processMailgunNotificationQueue(id: number): Promise<void> {

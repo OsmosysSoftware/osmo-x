@@ -44,15 +44,29 @@ export class WaTwilioService {
   }
 
   async sendMessage(body: WaTwilioData, providerId: number): Promise<WaTwilioResponseData> {
-    await this.assignTransport(providerId);
-    const waTwilioConfig = await this.providersService.getConfigById(providerId);
-    const fromWhatsAppNumber = waTwilioConfig.TWILIO_WA_NUMBER as string;
+    try {
+      await this.assignTransport(providerId);
+      const waTwilioConfig = await this.providersService.getConfigById(providerId);
+      const fromWhatsAppNumber = waTwilioConfig.TWILIO_WA_NUMBER as string;
 
-    const message = await this.twilioClient.messages.create({
-      body: body.message,
-      from: `whatsapp:${fromWhatsAppNumber}`,
-      to: `whatsapp:${body.to}`,
-    });
-    return message;
+      const message = await this.twilioClient.messages.create({
+        body: body.message,
+        from: `whatsapp:${fromWhatsAppNumber}`,
+        to: `whatsapp:${body.to}`,
+      });
+      return message;
+    } catch (error) {
+      throw new Error(`Failed to send message: ${error.message}`);
+    }
+  }
+
+  async getDeliveryStatus(sid: string, providerId: number): Promise<WaTwilioResponseData> {
+    try {
+      await this.assignTransport(providerId);
+      const message = await this.twilioClient.messages(sid).fetch();
+      return message;
+    } catch (error) {
+      throw new Error(`Failed to fetch delivery status: ${error.message}`);
+    }
   }
 }

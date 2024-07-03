@@ -6,6 +6,7 @@ import { SmtpService } from 'src/modules/providers/smtp/smtp.service';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SmtpNotificationConsumer extends NotificationConsumer {
@@ -15,8 +16,9 @@ export class SmtpNotificationConsumer extends NotificationConsumer {
     private readonly smtpService: SmtpService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService);
+    super(notificationRepository, notificationsService, configService);
   }
 
   async processSmtpNotificationQueue(id: number): Promise<void> {
