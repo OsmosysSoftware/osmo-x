@@ -32,18 +32,19 @@ export abstract class NotificationConsumer {
     try {
       this.logger.log(`Sending notification with id: ${id}`);
       const result = await sendNotification();
-      notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
 
       if (SkipProviderConfirmationChannels.includes(notification.channelType)) {
         notification.deliveryStatus = DeliveryStatus.SUCCESS;
+      } else {
+        notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
       }
 
       notification.result = { result };
     } catch (error) {
-      notification.deliveryStatus = DeliveryStatus.PENDING;
-      notification.retryCount++;
-
-      if (notification.retryCount > this.maxRetryCount) {
+      if (notification.retryCount < this.maxRetryCount) {
+        notification.deliveryStatus = DeliveryStatus.PENDING;
+        notification.retryCount++;
+      } else {
         this.logger.log(
           `Notification with ID ${notification.id} has attempted max allowed retries (sending), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
@@ -81,20 +82,21 @@ export abstract class NotificationConsumer {
         notification.retryCount++;
       }
     } catch (error) {
-      notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
-      notification.retryCount++;
-      this.logger.error(
-        `Error getting delivery status from provider for notification with id: ${id}`,
-      );
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-    } finally {
-      if (notification.retryCount > this.maxRetryCount) {
+      if (notification.retryCount < this.maxRetryCount) {
+        notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
+        notification.retryCount++;
+      } else {
         this.logger.log(
           `Notification with ID ${notification.id} has attempted max allowed retries (provider confirmation), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
       }
 
+      this.logger.error(
+        `Error getting delivery status from provider for notification with id: ${id}`,
+      );
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+    } finally {
       await this.notificationRepository.save(notification);
     }
   }
