@@ -58,4 +58,14 @@ export class WaTwilioBusinessService {
     });
     return message;
   }
+
+  async getDeliveryStatus(sid: string, providerId: number): Promise<WaTwilioBusinessResponseData> {
+    try {
+      await this.assignTransport(providerId);
+      const message = await this.twilioClient.messages(sid).fetch();
+      return message;
+    } catch (error) {
+      throw new Error(`Failed to fetch delivery status: ${error.message}`);
+    }
+  }
 }
