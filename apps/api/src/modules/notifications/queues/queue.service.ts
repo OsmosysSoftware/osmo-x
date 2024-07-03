@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Queue, Worker, QueueEvents } from 'bullmq';
 import ms = require('ms');
-import { ChannelType } from 'src/common/constants/notifications';
+import { ChannelType, QueueAction } from 'src/common/constants/notifications';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
 import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
@@ -72,46 +72,47 @@ export class QueueService {
     if (!this.queues.has(queueName)) {
       this.logger.log(`Creating new queue and worker for ${queueName}`);
       this.createQueue(queueName);
-      this.createWorker(action, providerType, providerId, queueName);
+      this.createWorker(action, providerType, queueName);
     }
 
     return this.queues.get(queueName);
   }
 
-  private createWorker(
-    action: string,
-    providerType: string,
-    providerId: string,
-    queueName: string,
-  ): void {
+  private createWorker(action: string, providerType: string, queueName: string): void {
     const processJob = async (job): Promise<void> => {
       switch (`${action}-${providerType}`) {
-        case `send-${ChannelType.SMTP}`:
+        case `${QueueAction.SEND}-${ChannelType.SMTP}`:
           await this.smtpNotificationConsumer.processSmtpNotificationQueue(job.data.id);
           break;
-        case `send-${ChannelType.MAILGUN}`:
+        case `${QueueAction.SEND}-${ChannelType.MAILGUN}`:
           await this.mailgunNotificationConsumer.processMailgunNotificationQueue(job.data.id);
           break;
-        case `send-${ChannelType.WA_360_DAILOG}`:
+        case `${QueueAction.SEND}-${ChannelType.WA_360_DAILOG}`:
           await this.wa360dialogNotificationConsumer.processWa360dialogNotificationQueue(
             job.data.id,
           );
           break;
-        case `send-${ChannelType.WA_TWILIO}`:
+        // WA_TWILIO cases
+        case `${QueueAction.SEND}-${ChannelType.WA_TWILIO}`:
           await this.waTwilioNotificationConsumer.processWaTwilioNotificationQueue(job.data.id);
           break;
-        case `send-${ChannelType.SMS_TWILIO}`:
+        case `${QueueAction.DELIVERY_STATUS}-${ChannelType.WA_TWILIO}`:
+          await this.waTwilioNotificationConsumer.processWaTwilioNotificationConfirmationQueue(
+            job.data.id,
+          );
+          break;
+        case `${QueueAction.SEND}-${ChannelType.SMS_TWILIO}`:
           await this.smsTwilioNotificationConsumer.processSmsTwilioNotificationQueue(job.data.id);
           break;
-        case `send-${ChannelType.SMS_PLIVO}`:
+        case `${QueueAction.SEND}-${ChannelType.SMS_PLIVO}`:
           await this.smsPlivoNotificationConsumer.processSmsPlivoNotificationQueue(job.data.id);
           break;
-        case `send-${ChannelType.WA_TWILIO_BUSINESS}`:
+        case `${QueueAction.SEND}-${ChannelType.WA_TWILIO_BUSINESS}`:
           await this.waTwilioBusinessNotificationConsumer.processWaTwilioBusinessNotificationQueue(
             job.data.id,
           );
           break;
-        case `send-${ChannelType.SMS_KAPSYSTEM}`:
+        case `${QueueAction.SEND}-${ChannelType.SMS_KAPSYSTEM}`:
           await this.smsKapsystemNotificationConsumer.processSmsKapsystemNotificationQueue(
             job.data.id,
           );
