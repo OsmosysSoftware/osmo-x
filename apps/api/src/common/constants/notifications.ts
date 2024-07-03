@@ -36,10 +36,17 @@ export const ProviderDeliveryStatus = {
     SUCCESS_STATES: ['sent', 'delivered', 'read'],
     FAILURE_STATES: ['failed', 'undelivered'],
   },
+  WA_360_DAILOG: {
+    SUCCESS_STATES: ['sent', 'delivered', 'read'],
+    FAILURE_STATES: ['failed'],
+  },
   SMS_KAPSYSTEM: {
     SUCCESS_STATES: ['DELIVRD'],
     FAILURE_STATES: ['EXPIRED', 'UNDELIV', 'FAILED'],
   },
 };
 
-export const SkipProviderConfirmationChannels = [ChannelType.SMS_KAPSYSTEM];
+export const SkipProviderConfirmationChannels = [
+  ChannelType.SMS_KAPSYSTEM,
+  ChannelType.WA_360_DAILOG,
+];
