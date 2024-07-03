@@ -1,6 +1,11 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as FormData from 'form-data';
-import Mailgun, { MailgunClientOptions, MailgunMessageData, MessagesSendResult } from 'mailgun.js';
+import Mailgun, {
+  MailgunClientOptions,
+  MailgunMessageData,
+  MessagesSendResult,
+  DomainEvent,
+} from 'mailgun.js';
 import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import * as mime from 'mime-types';
@@ -32,8 +37,12 @@ export class MailgunService {
     mailgunNotificationData: MailgunMessageData,
     providerId: number,
   ): Promise<MessagesSendResult> {
-    await this.assignClient(providerId);
-    return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
+    try {
+      await this.assignClient(providerId);
+      return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
+    } catch (error) {
+      throw new Error(`Failed to send message: ${error.message}`);
+    }
   }
 
   async formatNotificationData(
@@ -79,5 +88,17 @@ export class MailgunService {
         };
       }),
     );
+  }
+
+  async getDeliveryStatus(messageId: string, providerId: number): Promise<DomainEvent> {
+    try {
+      await this.assignClient(providerId);
+      const response = await this.mailgunClient.events.get(this.mailgunDomain, {
+        'message-id': messageId,
+      });
+      return response.items[0];
+    } catch (error) {
+      throw new Error(`Failed to fetch delivery status: ${error.message}`);
+    }
   }
 }

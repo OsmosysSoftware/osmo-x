@@ -84,8 +84,14 @@ export class QueueService {
         case `${QueueAction.SEND}-${ChannelType.SMTP}`:
           await this.smtpNotificationConsumer.processSmtpNotificationQueue(job.data.id);
           break;
+        // MAILGUN cases
         case `${QueueAction.SEND}-${ChannelType.MAILGUN}`:
           await this.mailgunNotificationConsumer.processMailgunNotificationQueue(job.data.id);
+          break;
+        case `${QueueAction.DELIVERY_STATUS}-${ChannelType.MAILGUN}`:
+          await this.mailgunNotificationConsumer.processMailgunNotificationConfirmationQueue(
+            job.data.id,
+          );
           break;
         case `${QueueAction.SEND}-${ChannelType.WA_360_DAILOG}`:
           await this.wa360dialogNotificationConsumer.processWa360dialogNotificationQueue(
