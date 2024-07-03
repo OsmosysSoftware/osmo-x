@@ -38,4 +38,7 @@ export const ProviderDeliveryStatus = {
   },
 };
 
-export const SkipProviderConfirmationChannels = [ChannelType.SMS_KAPSYSTEM, ChannelType.WA_360_DAILOG];
+export const SkipProviderConfirmationChannels = [
+  ChannelType.SMS_KAPSYSTEM,
+  ChannelType.WA_360_DAILOG,
+];
