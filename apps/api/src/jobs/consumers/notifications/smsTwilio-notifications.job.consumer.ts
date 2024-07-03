@@ -5,10 +5,12 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { NotificationConsumer } from './notification.consumer';
 import {
   SmsTwilioData,
+  SmsTwilioResponseData,
   SmsTwilioService,
 } from 'src/modules/providers/sms-twilio/sms-twilio.service';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DeliveryStatus, ProviderDeliveryStatus } from 'src/common/constants/notifications';
 
 @Injectable()
 export class SmsTwilioNotificationsConsumer extends NotificationConsumer {
@@ -30,6 +32,30 @@ export class SmsTwilioNotificationsConsumer extends NotificationConsumer {
         notification.data as unknown as SmsTwilioData,
         notification.providerId,
       );
+    });
+  }
+
+  async processSmsTwilioNotificationConfirmationQueue(id: number): Promise<void> {
+    return super.processAwaitingConfirmationNotificationQueue(id, async () => {
+      const notification = (await this.notificationsService.getNotificationById(id))[0];
+      const result = await this.smsTwilioService.getDeliveryStatus(
+        (notification.result.result as SmsTwilioResponseData).sid as string,
+        notification.providerId,
+      );
+      const deliveryStatus = result.status;
+
+      if (ProviderDeliveryStatus.SMS_TWILIO.FAILURE_STATES.includes(deliveryStatus)) {
+        return { result, deliveryStatus: DeliveryStatus.PENDING };
+      }
+
+      if (ProviderDeliveryStatus.SMS_TWILIO.SUCCESS_STATES.includes(deliveryStatus)) {
+        return { result, deliveryStatus: DeliveryStatus.SUCCESS };
+      }
+
+      return {
+        result,
+        deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
+      };
     });
   }
 }

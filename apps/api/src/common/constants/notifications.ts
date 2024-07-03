@@ -24,6 +24,10 @@ export const QueueAction = {
 };
 
 export const ProviderDeliveryStatus = {
+  MAILGUN: {
+    SUCCESS_STATES: ['delivered', 'opened', 'clicked'],
+    FAILURE_STATES: ['failed', 'rejected'],
+  },
   WA_TWILIO: {
     SUCCESS_STATES: ['sent', 'delivered', 'read'],
     FAILURE_STATES: ['failed', 'undelivered'],
@@ -32,6 +36,25 @@ export const ProviderDeliveryStatus = {
     SUCCESS_STATES: ['sent', 'delivered'],
     FAILURE_STATES: ['failed', 'undelivered', 'rejected'],
   },
+  SMS_TWILIO: {
+    SUCCESS_STATES: ['sent', 'delivered'],
+    FAILURE_STATES: ['failed', 'undelivered'],
+  },
+  WA_TWILIO_BUSINESS: {
+    SUCCESS_STATES: ['sent', 'delivered', 'read'],
+    FAILURE_STATES: ['failed', 'undelivered'],
+  },
+  WA_360_DAILOG: {
+    SUCCESS_STATES: ['sent', 'delivered', 'read'],
+    FAILURE_STATES: ['failed'],
+  },
+  SMS_KAPSYSTEM: {
+    SUCCESS_STATES: ['DELIVRD'],
+    FAILURE_STATES: ['EXPIRED', 'UNDELIV', 'FAILED'],
+  },
 };
 
-export const SkipProviderConfirmationChannels = [];
+export const SkipProviderConfirmationChannels = [
+  ChannelType.SMS_KAPSYSTEM,
+  ChannelType.WA_360_DAILOG,
+];

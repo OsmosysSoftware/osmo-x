@@ -5,6 +5,8 @@ import { MailgunService } from 'src/modules/providers/mailgun/mailgun.service';
 import { MailgunMessageData } from 'mailgun.js';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
+import { DeliveryStatus, ProviderDeliveryStatus } from 'src/common/constants/notifications';
+import { MessagesSendResult } from 'mailgun.js';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -31,6 +33,33 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
         formattedNotificationData as MailgunMessageData,
         notification.providerId,
       );
+    });
+  }
+
+  async processMailgunNotificationConfirmationQueue(id: number): Promise<void> {
+    return super.processAwaitingConfirmationNotificationQueue(id, async () => {
+      const notification = (await this.notificationsService.getNotificationById(id))[0];
+      const notificationSendResponse = notification.result.result as MessagesSendResult;
+
+      const result = await this.mailgunService.getDeliveryStatus(
+        notificationSendResponse.id,
+        notification.providerId,
+      );
+      const deliveryStatus = result.event;
+      notificationSendResponse.message = result.event;
+
+      if (ProviderDeliveryStatus.MAILGUN.FAILURE_STATES.includes(deliveryStatus)) {
+        return { result: notificationSendResponse, deliveryStatus: DeliveryStatus.PENDING };
+      }
+
+      if (ProviderDeliveryStatus.MAILGUN.SUCCESS_STATES.includes(deliveryStatus)) {
+        return { result: notificationSendResponse, deliveryStatus: DeliveryStatus.SUCCESS };
+      }
+
+      return {
+        result: notificationSendResponse,
+        deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
+      };
     });
   }
 }
