@@ -28,6 +28,10 @@ export const ProviderDeliveryStatus = {
     SUCCESS_STATES: ['sent', 'delivered', 'read'],
     FAILURE_STATES: ['failed', 'undelivered'],
   },
+  WA_TWILIO_BUSINESS: {
+    SUCCESS_STATES: ['sent', 'delivered', 'read'],
+    FAILURE_STATES: ['failed', 'undelivered'],
+  },
   SMS_KAPSYSTEM: {
     SUCCESS_STATES: ['DELIVRD'],
     FAILURE_STATES: ['EXPIRED', 'UNDELIV', 'FAILED'],
