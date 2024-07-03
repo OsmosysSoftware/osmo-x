@@ -39,7 +39,7 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
   async processMailgunNotificationConfirmationQueue(id: number): Promise<void> {
     return super.processAwaitingConfirmationNotificationQueue(id, async () => {
       const notification = (await this.notificationsService.getNotificationById(id))[0];
-      let notificationSendResponse = notification.result.result as MessagesSendResult;
+      const notificationSendResponse = notification.result.result as MessagesSendResult;
 
       const result = await this.mailgunService.getDeliveryStatus(
         notificationSendResponse.id,
