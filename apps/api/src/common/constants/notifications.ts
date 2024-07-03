@@ -24,6 +24,10 @@ export const QueueAction = {
 };
 
 export const ProviderDeliveryStatus = {
+  MAILGUN: {
+    SUCCESS_STATES: ['delivered', 'opened', 'clicked'],
+    FAILURE_STATES: ['failed', 'rejected'],
+  },
   WA_TWILIO: {
     SUCCESS_STATES: ['sent', 'delivered', 'read'],
     FAILURE_STATES: ['failed', 'undelivered'],

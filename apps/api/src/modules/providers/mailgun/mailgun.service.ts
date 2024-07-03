@@ -37,8 +37,12 @@ export class MailgunService {
     mailgunNotificationData: MailgunMessageData,
     providerId: number,
   ): Promise<MessagesSendResult> {
-    await this.assignClient(providerId);
-    return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
+    try {
+      await this.assignClient(providerId);
+      return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
+    } catch (error) {
+      throw new Error(`Failed to send message: ${error.message}`);
+    }
   }
 
   async formatNotificationData(
@@ -87,10 +91,14 @@ export class MailgunService {
   }
 
   async getDeliverStatus(messageId: string, providerId: number): Promise<DomainEvent> {
-    await this.assignClient(providerId);
-    const response = await this.mailgunClient.events.get(this.mailgunDomain, {
-      'message-id': messageId,
-    });
-    return response.items[0];
+    try {
+      await this.assignClient(providerId);
+      const response = await this.mailgunClient.events.get(this.mailgunDomain, {
+        'message-id': messageId,
+      });
+      return response.items[0];
+    } catch (error) {
+      throw new Error(`Failed to fetch delivery status: ${error.message}`);
+    }
   }
 }

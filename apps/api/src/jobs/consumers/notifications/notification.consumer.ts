@@ -97,6 +97,13 @@ export abstract class NotificationConsumer {
       );
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {
+      if (notification.retryCount > this.maxRetryCount) {
+        this.logger.log(
+          `Notification with ID ${notification.id} has attempted max allowed retries (provider confirmation), setting delivery status to ${DeliveryStatus.FAILED}`,
+        );
+        notification.deliveryStatus = DeliveryStatus.FAILED;
+      }
+
       await this.notificationRepository.save(notification);
     }
   }

@@ -5,7 +5,7 @@ import { MailgunService } from 'src/modules/providers/mailgun/mailgun.service';
 import { MailgunMessageData } from 'mailgun.js';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationConsumer } from './notification.consumer';
-import { DeliveryStatus } from 'src/common/constants/notifications';
+import { DeliveryStatus, ProviderDeliveryStatus } from 'src/common/constants/notifications';
 import { MessagesSendResult } from 'mailgun.js';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -39,36 +39,25 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
   async processMailgunNotificationConfirmationQueue(id: number): Promise<void> {
     return super.processAwaitingConfirmationNotificationQueue(id, async () => {
       const notification = (await this.notificationsService.getNotificationById(id))[0];
+      const notificationSendResponse = notification.result.result as MessagesSendResult;
+      const result = await this.mailgunService.getDeliverStatus(
+        notificationSendResponse.id,
+        notification.providerId,
+      );
+      const deliveryStatus = result.event;
 
-      if (notification.deliveryStatus === DeliveryStatus.PENDING) {
-        return super.processNotificationQueue(job, async () => {
-          const formattedNotificationData = await this.mailgunService.formatNotificationData(
-            notification.data,
-          );
-          return this.mailgunService.sendEmail(
-            formattedNotificationData as MailgunMessageData,
-            notification.providerId,
-          );
-        });
+      if (ProviderDeliveryStatus.MAILGUN.FAILURE_STATES.includes(deliveryStatus)) {
+        return { result, deliveryStatus: DeliveryStatus.PENDING };
       }
 
-      if (notification.deliveryStatus === DeliveryStatus.AWAITING_CONFIRMATION) {
-        return super.processAwaitingConfirmationNotificationQueue(job, async () => {
-          const notificationSendResponse = notification.result.result as MessagesSendResult;
-          const result = await this.mailgunService.getDeliverStatus(
-            notificationSendResponse.id,
-            notification.providerId,
-          );
-
-          const deliveryStatus = result.event;
-
-          if (deliveryStatus === 'failed' || deliveryStatus === 'rejected') {
-            return { result, deliveryStatus: DeliveryStatus.PENDING };
-          }
-
-          return { result, deliveryStatus: DeliveryStatus.SUCCESS };
-        });
+      if (ProviderDeliveryStatus.MAILGUN.SUCCESS_STATES.includes(deliveryStatus)) {
+        return { result, deliveryStatus: DeliveryStatus.SUCCESS };
       }
+
+      return {
+        result,
+        deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
+      };
     });
   }
 }
