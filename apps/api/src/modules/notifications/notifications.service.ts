@@ -12,7 +12,6 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -27,10 +26,8 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
     private readonly providersService: ProvidersService,
-    private readonly configService: ConfigService,
   ) {
     super(notificationRepository);
-    this.maxRetryCount = parseInt(this.configService.get('MAX_RETRY_COUNT', '3'));
   }
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {

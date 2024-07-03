@@ -10,7 +10,7 @@ export interface SmsPlivoData {
 export interface SmsPlivoResponseData {
   api_id: string;
   message: string;
-  messageUuid: string[];
+  messageUuid: string;
 }
 
 export interface PlivoMessageStatusResponse {
@@ -18,7 +18,7 @@ export interface PlivoMessageStatusResponse {
   error_code: string;
   from_number: string;
   message_direction: string;
-  message_state: string;
+  messageState: string;
   message_time: string;
   message_type: string;
   message_uuid: string;
@@ -45,26 +45,34 @@ export class SmsPlivoService {
   }
 
   async sendMessage(body: SmsPlivoData, providerId: number): Promise<SmsPlivoResponseData> {
-    await this.assignTransport(providerId);
-    const smsPlivoConfig = await this.providersService.getConfigById(providerId);
-    const fromNumber = smsPlivoConfig.PLIVO_SMS_NUMBER as string;
+    try {
+      await this.assignTransport(providerId);
+      const smsPlivoConfig = await this.providersService.getConfigById(providerId);
+      const fromNumber = smsPlivoConfig.PLIVO_SMS_NUMBER as string;
 
-    const response = await this.plivoClient.messages.create({
-      src: fromNumber,
-      dst: body.to,
-      text: body.message,
-    });
+      const response = await this.plivoClient.messages.create({
+        src: fromNumber,
+        dst: body.to,
+        text: body.message,
+      });
 
-    return response;
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to send message: ${error.message}`);
+    }
   }
   async getDeliveryStatus(
     messageUuid: string,
     providerId: number,
   ): Promise<PlivoMessageStatusResponse> {
-    await this.assignTransport(providerId);
+    try {
+      await this.assignTransport(providerId);
 
-    const response = await this.plivoClient.messages.get(messageUuid);
-    //console.log(response);
-    return response;
+      const response = await this.plivoClient.messages.get(messageUuid);
+      //throw new Error(`Custom error for response: ${JSON.stringify(response)}`);
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to fetch delivery status: ${error.message}`);
+    }
   }
 }

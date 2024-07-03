@@ -107,6 +107,11 @@ export class QueueService {
         case `${QueueAction.SEND}-${ChannelType.SMS_PLIVO}`:
           await this.smsPlivoNotificationConsumer.processSmsPlivoNotificationQueue(job.data.id);
           break;
+        case `${QueueAction.DELIVERY_STATUS}-${ChannelType.SMS_PLIVO}`:
+          await this.smsPlivoNotificationConsumer.processSmsPlivoNotificationConfirmationQueue(
+            job.data.id,
+          );
+          break;
         case `${QueueAction.SEND}-${ChannelType.WA_TWILIO_BUSINESS}`:
           await this.waTwilioBusinessNotificationConsumer.processWaTwilioBusinessNotificationQueue(
             job.data.id,
