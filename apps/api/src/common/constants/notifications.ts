@@ -28,6 +28,10 @@ export const ProviderDeliveryStatus = {
     SUCCESS_STATES: ['sent', 'delivered', 'read'],
     FAILURE_STATES: ['failed', 'undelivered'],
   },
+  SMS_TWILIO: {
+    SUCCESS_STATES: ['sent', 'delivered'],
+    FAILURE_STATES: ['failed', 'undelivered'],
+  },
 };
 
 export const SkipProviderConfirmationChannels = [];
