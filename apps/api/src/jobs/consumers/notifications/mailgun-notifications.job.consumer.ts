@@ -39,19 +39,21 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
   async processMailgunNotificationConfirmationQueue(id: number): Promise<void> {
     return super.processAwaitingConfirmationNotificationQueue(id, async () => {
       const notification = (await this.notificationsService.getNotificationById(id))[0];
-      const notificationSendResponse = notification.result.result as MessagesSendResult;
-      const result = await this.mailgunService.getDeliverStatus(
+      let notificationSendResponse = notification.result.result as MessagesSendResult;
+
+      const result = await this.mailgunService.getDeliveryStatus(
         notificationSendResponse.id,
         notification.providerId,
       );
       const deliveryStatus = result.event;
+      notificationSendResponse.message = result.event;
 
       if (ProviderDeliveryStatus.MAILGUN.FAILURE_STATES.includes(deliveryStatus)) {
-        return { result, deliveryStatus: DeliveryStatus.PENDING };
+        return { result: notificationSendResponse, deliveryStatus: DeliveryStatus.PENDING };
       }
 
       if (ProviderDeliveryStatus.MAILGUN.SUCCESS_STATES.includes(deliveryStatus)) {
-        return { result, deliveryStatus: DeliveryStatus.SUCCESS };
+        return { result: notificationSendResponse, deliveryStatus: DeliveryStatus.SUCCESS };
       }
 
       return {

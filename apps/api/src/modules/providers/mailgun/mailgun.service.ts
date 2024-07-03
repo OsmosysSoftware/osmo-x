@@ -90,7 +90,7 @@ export class MailgunService {
     );
   }
 
-  async getDeliverStatus(messageId: string, providerId: number): Promise<DomainEvent> {
+  async getDeliveryStatus(messageId: string, providerId: number): Promise<DomainEvent> {
     try {
       await this.assignClient(providerId);
       const response = await this.mailgunClient.events.get(this.mailgunDomain, {
