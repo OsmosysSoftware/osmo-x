@@ -57,7 +57,7 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
       }
 
       return {
-        result,
+        result: notificationSendResponse,
         deliveryStatus: DeliveryStatus.AWAITING_CONFIRMATION,
       };
     });
