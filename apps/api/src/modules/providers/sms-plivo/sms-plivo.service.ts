@@ -8,27 +8,42 @@ export interface SmsPlivoData {
 }
 
 export interface SmsPlivoResponseData {
-  api_id: string;
+  apiId: string;
   message: string;
   messageUuid: string;
 }
 
 export interface PlivoMessageStatusResponse {
-  api_id: string;
-  error_code: string;
-  from_number: string;
-  message_direction: string;
+  apiId: string;
+  errorCode: string;
+  fromNumber: string;
+  messageDirection: string;
   messageState: string;
-  message_time: string;
-  message_type: string;
-  message_uuid: string;
-  resource_uri: string;
-  to_number: string;
-  total_amount: string;
-  total_rate: string;
+  messageTime: string;
+  messageType: string;
+  messageUuid: string;
+  resourceUri: string;
+  toNumber: string;
+  totalAmount: string;
+  totalRate: string;
   units: number;
-  status: string;
-  // add any other fields you expect in the response
+  powerpackID: string;
+  tendlcCampaignId: string;
+  tendlcRegistrationStatus: string;
+  destinationCountryIso2: string;
+  requesterIP: string;
+  isDomestic: boolean;
+  replacedSender: string;
+  conversationId: string;
+  conversationOrigin: string;
+  conversationExpirationTimestamp: string;
+  dltEntityID: string;
+  dltTemplateID: string;
+  dltTemplateCategory: string;
+  destinationNetwork: string;
+  carrierFees: string;
+  carrierFeesRate: string;
+  log: string;
 }
 
 @Injectable()
@@ -67,9 +82,7 @@ export class SmsPlivoService {
   ): Promise<PlivoMessageStatusResponse> {
     try {
       await this.assignTransport(providerId);
-
       const response = await this.plivoClient.messages.get(messageUuid);
-      //throw new Error(`Custom error for response: ${JSON.stringify(response)}`);
       return response;
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);
