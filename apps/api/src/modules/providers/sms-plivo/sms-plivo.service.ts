@@ -8,9 +8,42 @@ export interface SmsPlivoData {
 }
 
 export interface SmsPlivoResponseData {
-  api_id: string;
+  apiId: string;
   message: string;
-  message_uuid: string[];
+  messageUuid: string;
+}
+
+export interface PlivoMessageStatusResponse {
+  apiId: string;
+  errorCode: string;
+  fromNumber: string;
+  messageDirection: string;
+  messageState: string;
+  messageTime: string;
+  messageType: string;
+  messageUuid: string;
+  resourceUri: string;
+  toNumber: string;
+  totalAmount: string;
+  totalRate: string;
+  units: number;
+  powerpackID: string;
+  tendlcCampaignId: string;
+  tendlcRegistrationStatus: string;
+  destinationCountryIso2: string;
+  requesterIP: string;
+  isDomestic: boolean;
+  replacedSender: string;
+  conversationId: string;
+  conversationOrigin: string;
+  conversationExpirationTimestamp: string;
+  dltEntityID: string;
+  dltTemplateID: string;
+  dltTemplateCategory: string;
+  destinationNetwork: string;
+  carrierFees: string;
+  carrierFeesRate: string;
+  log: string;
 }
 
 @Injectable()
@@ -27,16 +60,32 @@ export class SmsPlivoService {
   }
 
   async sendMessage(body: SmsPlivoData, providerId: number): Promise<SmsPlivoResponseData> {
-    await this.assignTransport(providerId);
-    const smsPlivoConfig = await this.providersService.getConfigById(providerId);
-    const fromNumber = smsPlivoConfig.PLIVO_SMS_NUMBER as string;
+    try {
+      await this.assignTransport(providerId);
+      const smsPlivoConfig = await this.providersService.getConfigById(providerId);
+      const fromNumber = smsPlivoConfig.PLIVO_SMS_NUMBER as string;
 
-    const response = await this.plivoClient.messages.create({
-      src: fromNumber,
-      dst: body.to,
-      text: body.message,
-    });
+      const response = await this.plivoClient.messages.create({
+        src: fromNumber,
+        dst: body.to,
+        text: body.message,
+      });
 
-    return response;
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to send message: ${error.message}`);
+    }
+  }
+  async getDeliveryStatus(
+    messageUuid: string,
+    providerId: number,
+  ): Promise<PlivoMessageStatusResponse> {
+    try {
+      await this.assignTransport(providerId);
+      const response = await this.plivoClient.messages.get(messageUuid);
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to fetch delivery status: ${error.message}`);
+    }
   }
 }
