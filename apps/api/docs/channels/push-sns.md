@@ -50,4 +50,4 @@ Here's a sample request body:
 
 | Package Name       | Version    | Description                                                                                                                                                |
 | --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| aws-sdk          | ^2.814.0   | AWS SDK for JavaScript, used to interact with AWS services including SNS.     |
+| aws-sdk          | ^2.1654.0  | AWS SDK for JavaScript, used to interact with AWS services including SNS.     |
