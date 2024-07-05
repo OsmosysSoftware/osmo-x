@@ -33,6 +33,8 @@ import { SmsKapsystemModule } from '../providers/sms-kapsystem/sms-kapsystem.mod
 import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
 import { QueueService } from './queues/queue.service';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
+import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
+import { PushSnsModule } from '../providers/push-sns/push-sns.module';
 
 const providerModules = [
   MailgunModule,
@@ -43,6 +45,7 @@ const providerModules = [
   SmsPlivoModule,
   WaTwilioBusinessModule,
   SmsKapsystemModule,
+  PushSnsModule,
   ServerApiKeysModule,
   ApplicationsModule,
   UsersModule,
@@ -58,6 +61,7 @@ const consumers = [
   SmsPlivoNotificationsConsumer,
   WaTwilioBusinessNotificationsConsumer,
   SmsKapsystemNotificationsConsumer,
+  PushSnsNotificationConsumer,
 ];
 
 @Module({

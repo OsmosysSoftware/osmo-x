@@ -13,6 +13,7 @@ export const ProviderType = {
   EMAIL: 1,
   SMS: 2,
   WHATSAPP: 3,
+  PUSH_NOTIFICATION: 4,
 };
 
 export const IsEnabledStatus = {

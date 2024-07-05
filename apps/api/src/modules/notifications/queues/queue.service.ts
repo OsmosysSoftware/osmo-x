@@ -4,6 +4,7 @@ import { Queue, Worker, QueueEvents } from 'bullmq';
 import ms = require('ms');
 import { ChannelType, QueueAction } from 'src/common/constants/notifications';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
+import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
 import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
 import { SmsTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/smsTwilio-notifications.job.consumer';
@@ -32,6 +33,7 @@ export class QueueService {
     private readonly smsPlivoNotificationConsumer: SmsPlivoNotificationsConsumer,
     private readonly waTwilioBusinessNotificationConsumer: WaTwilioBusinessNotificationsConsumer,
     private readonly smsKapsystemNotificationConsumer: SmsKapsystemNotificationsConsumer,
+    private readonly pushSnsNotificationConsumer: PushSnsNotificationConsumer,
   ) {
     this.redisConfig = {
       host: this.configService.get<string>('REDIS_HOST'),
@@ -139,6 +141,9 @@ export class QueueService {
           await this.smsKapsystemNotificationConsumer.processSmsKapsystemNotificationQueue(
             job.data.id,
           );
+          break;
+        case `${QueueAction.SEND}-${ChannelType.PUSH_SNS}`:
+          await this.pushSnsNotificationConsumer.processPushSnsNotificationQueue(job.data.id);
           break;
         default:
           this.logger.error(
