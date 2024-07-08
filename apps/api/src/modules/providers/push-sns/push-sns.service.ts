@@ -27,10 +27,25 @@ export class PushSnsService {
   async sendPushNotification(data: PushSnsData, providerId: number): Promise<SNS.PublishResponse> {
     await this.assignSnsConfig(providerId);
     const { title, body } = data;
-    const message = `${title}: ${body}`;
 
-    const params = {
-      Message: message,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const payload: any = {
+      GCM: {
+        notification: {},
+      },
+    };
+
+    // Conditionally add title and body to notification object
+    if (title) payload.GCM.notification.title = title;
+    if (body) payload.GCM.notification.body = body;
+
+    // Convert entire payload to JSON string
+    const messagePayload = JSON.stringify(payload);
+
+    // Prepare SNS publish parameters
+    const params: SNS.PublishInput = {
+      Message: messagePayload,
+      MessageStructure: 'json',
       TargetArn: data.target,
     };
 
