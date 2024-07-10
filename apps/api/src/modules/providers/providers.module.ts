@@ -12,7 +12,6 @@ import { UsersService } from '../users/users.service';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ServerApiKeysModule } from '../server-api-keys/server-api-keys.module';
 import { Logger } from '@nestjs/common';
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([Provider]),
