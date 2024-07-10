@@ -75,6 +75,6 @@ These options allow you to customize the email message according to your needs. 
 
 | Package Name       | Version    | Description                                                                                                                                                |
 | --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| nodemailer      | ^6.9.13  | Nodemailer library for sending emails using SMTP, SMTP pool, sendmail, or direct transport.     |
+| nodemailer      | ^6.9.14  | Nodemailer library for sending emails using SMTP, SMTP pool, sendmail, or direct transport.     |
 
 Reference: https://nodemailer.com/message/
