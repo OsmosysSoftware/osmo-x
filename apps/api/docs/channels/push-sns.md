@@ -36,7 +36,7 @@ Here's a sample request body:
 
 ```jsonc
 {
-    // Set your respective providerId. ChannelType associated with providerId should be 10 (Push Notification SNS)
+    // Set your respective providerId. ChannelType associated with providerId should be 9 (Push Notification SNS)
     "providerId": 10,
     "data": {
         "title": "Test Notification",
