@@ -5,8 +5,5 @@ export class PushSnsDataDto {
   target: string;
 
   @IsNotEmpty()
-  title: string;
-
-  @IsNotEmpty()
-  body: string;
+  message: object;
 }

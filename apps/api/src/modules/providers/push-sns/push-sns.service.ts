@@ -4,8 +4,7 @@ import { ProvidersService } from '../providers.service';
 
 export interface PushSnsData {
   target: string;
-  title: string;
-  body: string;
+  message: object;
 }
 
 @Injectable()
@@ -26,25 +25,10 @@ export class PushSnsService {
 
   async sendPushNotification(data: PushSnsData, providerId: number): Promise<SNS.PublishResponse> {
     await this.assignSnsConfig(providerId);
-    const { title, body } = data;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const payload: any = {
-      GCM: {
-        notification: {},
-      },
-    };
-
-    // Conditionally add title and body to notification object
-    if (title) payload.GCM.notification.title = title;
-    if (body) payload.GCM.notification.body = body;
-
-    // Convert entire payload to JSON string
-    const messagePayload = JSON.stringify(payload);
 
     // Prepare SNS publish parameters
     const params: SNS.PublishInput = {
-      Message: messagePayload,
+      Message: JSON.stringify(data.message),
       MessageStructure: 'json',
       TargetArn: data.target,
     };
