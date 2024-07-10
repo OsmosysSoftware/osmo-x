@@ -42,6 +42,7 @@
     "@nestjs/swagger": "^7.3.1",
     "@nestjs/typeorm": "^10.0.2",
     "@types/bcrypt": "^5.0.2",
+    "aws-sdk": "^2.1654.0",
     "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
     "bull": "^4.12.9",
