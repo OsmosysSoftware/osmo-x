@@ -36,15 +36,15 @@ Here's a sample request body:
 
 ```jsonc
 {
-    // Set your respective providerId. ChannelType associated with providerId should be 9 (Push Notification SNS)
     "providerId": 10,
     "data": {
-        "title": "Test Notification",
-        "body": "This is a Test Notification",
-        "target": "arn:aws:sns:us-west-2:505884080245:endpoint/GCM/Incident_Reporter_Android/30e25ece-c1fc-38a9-af85-a56a64baefb4"
+        "message": {
+            "GCM": "{\"notification\":{\"title\":\"Test Notification\",\"body\":\"This is a test notification\"}}"},
+        "target": "arn:aws:sns:us-west-2:505884080245:endpoint/GCM/Android/7fb080a5-..."
     }
 }
 ```
+For further payload information check here : [link](https://docs.aws.amazon.com/sns/latest/dg/sns-send-custom-platform-specific-payloads-mobile-devices.html)
 
 ### Dependencies
 
