@@ -59,4 +59,5 @@ export const SkipProviderConfirmationChannels = [
   ChannelType.SMS_KAPSYSTEM,
   ChannelType.WA_360_DAILOG,
   ChannelType.PUSH_SNS,
+  ChannelType.SMTP,
 ];
