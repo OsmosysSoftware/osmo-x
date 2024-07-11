@@ -1,6 +1,8 @@
 export const DeliveryStatus = {
   PENDING: 1,
   IN_PROGRESS: 2,
+  AWAITING_CONFIRMATION: 3,
+  QUEUED_CONFIRMATION: 4,
   SUCCESS: 5,
   FAILED: 6,
 };
