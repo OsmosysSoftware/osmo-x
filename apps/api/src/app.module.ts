@@ -10,8 +10,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { AuthModule } from './modules/auth/auth.module';
-import { WebhookController } from './webhook/webhook.controller';
-import { WebhookService } from './webhook/webhook.service';
+import { WebhookModule } from './modules/webhook/webhook.module';
 
 const configService = new ConfigService();
 @Module({
@@ -30,6 +29,7 @@ const configService = new ConfigService();
     }),
     ScheduleModule.forRoot(),
     NotificationsModule,
+    WebhookModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gpl'),
@@ -38,7 +38,7 @@ const configService = new ConfigService();
     }),
     AuthModule,
   ],
-  controllers: [AppController, WebhookController],
-  providers: [AppService, WebhookService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

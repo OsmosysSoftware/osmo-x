@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { WebhookController } from './webhook.controller';
 import { WebhookService } from './webhook.service';
 import { Webhook } from './entities/webhook.entity';
-import { Provider } from 'src/modules/providers/entities/provider.entity';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Webhook, Provider])],
+  imports: [TypeOrmModule.forFeature([Webhook]), HttpModule],
   controllers: [WebhookController],
   providers: [WebhookService],
 })

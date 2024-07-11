@@ -1,9 +1,8 @@
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ProvidersService } from 'src/modules/providers/providers.service';
 import { Webhook } from './entities/webhook.entity';
-import { HttpService } from '@nestjs/axios/dist/http.service';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class WebhookService {
@@ -11,30 +10,11 @@ export class WebhookService {
     @InjectRepository(Webhook)
     private readonly webhookRepository: Repository<Webhook>,
     private readonly httpService: HttpService,
-    private readonly providersService: ProvidersService,
   ) {}
 
   async registerWebhook(providerId: number, webhookUrl: string): Promise<void> {
     const webhook = this.webhookRepository.create({ providerId, webhookUrl });
     await this.webhookRepository.save(webhook);
-
-    // Optionally verify the webhook
-    await this.verifyWebhook(webhook);
-  }
-
-  async verifyWebhook(webhook: Webhook): Promise<boolean> {
-    const challenge = Math.random().toString(36).substring(2);
-    const verificationResponse = await this.httpService
-      .post(webhook.webhookUrl, { challenge })
-      .toPromise();
-    const isVerified = verificationResponse.data.challenge === challenge;
-
-    if (isVerified) {
-      webhook.isVerified = true;
-      await this.webhookRepository.save(webhook);
-    }
-
-    return isVerified;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
