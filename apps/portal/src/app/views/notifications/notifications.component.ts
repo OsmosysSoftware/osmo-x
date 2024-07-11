@@ -29,7 +29,7 @@ export class NotificationsComponent implements OnInit {
       style: 'awaiting-confirmation',
     },
     [DeliveryStatus.QUEUED_CONFIRMATION]: {
-      value: 'Queued confirmation',
+      value: 'Queued Confirmation',
       style: 'queued-confirmation',
     },
     [DeliveryStatus.SUCCESS]: { value: 'Success', style: 'success' },
