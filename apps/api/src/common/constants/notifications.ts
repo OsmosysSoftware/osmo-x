@@ -16,6 +16,7 @@ export const ChannelType = {
   SMS_PLIVO: 6,
   WA_TWILIO_BUSINESS: 7,
   SMS_KAPSYSTEM: 8,
+  PUSH_SNS: 9,
 };
 
 export const QueueAction = {
@@ -57,4 +58,5 @@ export const ProviderDeliveryStatus = {
 export const SkipProviderConfirmationChannels = [
   ChannelType.SMS_KAPSYSTEM,
   ChannelType.WA_360_DAILOG,
+  ChannelType.PUSH_SNS,
 ];
