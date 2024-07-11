@@ -12,13 +12,23 @@
 
 When sending push notifications through AWS SNS, the message payload varies based on the target platform. Below are the sample message structures for Android (GCM/FCM) and iOS (APNS).
 
+The payload consists of two fields: `message` and `target`.
+
+- `message` : This will contain the properly formatted actual notification payload
+- `target` : This will the targetArn on which you want to send push notification
+
 #### Android (GCM/FCM) Payload
 
-For Android devices, the payload should follow the GCM/FCM structure:
+For Android devices, the payload should follow the GCM/FCM structure. Here is the sample payload
 
 ```json
 {
-  "GCM": "{\"notification\":{\"title\":\"Test Notification\",\"body\":\"This is a test notification\",\"icon\":\"ic_notification\"}}"
+    "providerId": 10,
+    "data": {
+        "message": {
+            "GCM": "{\"notification\":{\"title\":\"Test Notification\",\"body\":\"This is a test notification\"}}"},
+        "target": "arn:aws:sns:us-west-2:505884080245:endpoint/GCM/OQSHA-Android/7fb080a5-..."
+    }
 }
 ```
 
@@ -28,11 +38,17 @@ For Android devices, the payload should follow the GCM/FCM structure:
 
 #### iOS (APNS) Payload
 
-For iOS devices, the payload should follow the APNS structure:
+For iOS devices, the payload should follow the APNS structure. Here is the Sample payload:
 
 ```json
 {
-  "APNS": "{\"aps\":{\"alert\":{\"title\":\"Test Notification\",\"body\":\"This is a test notification\"},\"sound\":\"default\"}}"
+    "providerId": 10,
+    "data": {
+        "message": {
+             "APNS_SANDBOX": "{\"aps\":{\"alert\":{\"title\":\"Hello World\",\"body\":\"This is a test message\"},\"sound\":\"default\"}}"
+        },
+        "target": "arn:aws:sns:us-west-2:505884080245:endpoint/APNS_SANDBOX/OQSHA-iOS-Dev/57711edf-..."
+    }
 }
 ```
 
