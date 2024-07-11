@@ -1,8 +1,8 @@
 export const DeliveryStatus = {
   PENDING: 1,
   IN_PROGRESS: 2,
-  SUCCESS: 3,
-  FAILED: 4,
+  SUCCESS: 5,
+  FAILED: 6,
 };
 
 export const ChannelType = {
@@ -14,6 +14,7 @@ export const ChannelType = {
   SMS_PLIVO: 6,
   WA_TWILIO_BUSINESS: 7,
   SMS_KAPSYSTEM: 8,
+  PUSH_SNS: 9,
 };
 
 export const ChannelTypeMap = {
@@ -72,5 +73,12 @@ export const ChannelTypeMap = {
     providerName: 'KAP System',
     providerIcon: 'assets/icons/kaps.png',
     style: 'sms',
+  },
+  [ChannelType.PUSH_SNS]: {
+    serviceIcon: 'assets/icons/pushnotification.svg',
+    altText: 'Push Notification',
+    providerName: 'AWS Push SNS',
+    providerIcon: 'assets/icons/aws.png',
+    style: 'pushsns',
   },
 };
