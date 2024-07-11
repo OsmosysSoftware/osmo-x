@@ -1,8 +1,10 @@
 export const DeliveryStatus = {
   PENDING: 1,
   IN_PROGRESS: 2,
-  SUCCESS: 3,
-  FAILED: 4,
+  AWAITING_CONFIRMATION: 3,
+  QUEUED_CONFIRMATION: 4,
+  SUCCESS: 5,
+  FAILED: 6,
 };
 
 export const ChannelType = {

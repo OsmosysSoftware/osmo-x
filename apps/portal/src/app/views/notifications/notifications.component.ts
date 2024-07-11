@@ -24,6 +24,14 @@ export class NotificationsComponent implements OnInit {
   deliveryStatusMap = {
     [DeliveryStatus.PENDING]: { value: 'Pending', style: 'pending' },
     [DeliveryStatus.IN_PROGRESS]: { value: 'In Progress', style: 'in-progress' },
+    [DeliveryStatus.AWAITING_CONFIRMATION]: {
+      value: 'Awaiting Confirmation',
+      style: 'awaiting-confirmation',
+    },
+    [DeliveryStatus.QUEUED_CONFIRMATION]: {
+      value: 'Queued Confirmation',
+      style: 'queued-confirmation',
+    },
     [DeliveryStatus.SUCCESS]: { value: 'Success', style: 'success' },
     [DeliveryStatus.FAILED]: { value: 'Failed', style: 'failed' },
   };
