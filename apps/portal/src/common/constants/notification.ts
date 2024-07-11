@@ -79,7 +79,7 @@ export const ChannelTypeMap = {
   [ChannelType.PUSH_SNS]: {
     serviceIcon: 'assets/icons/pushnotification.svg',
     altText: 'Push Notification',
-    providerName: 'AWS Push SNS',
+    providerName: 'AWS SNS',
     providerIcon: 'assets/icons/aws.png',
     style: 'pushsns',
   },
