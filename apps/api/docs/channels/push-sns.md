@@ -4,7 +4,7 @@ AWS Simple Notification Service (SNS) enables sending push notifications to mobi
 
 Refer to the SNS documentation to dive deeper into the features AWS SNS offers and understand how it all works.
 
-### Values to Update in Database
+## Values to Update in Database
 
 When using AWS SNS to send push notifications via their API/Client, you need to provide certain variables that hold the SNS configuration details. Here are the values you need to update in table `notify_providers`:
 
