@@ -14,7 +14,8 @@ export class WebhookController {
       await this.webhookService.registerWebhook(providerId, webhookUrl);
       return { status: 'success', message: 'Webhook registered successfully.' };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      console.error('Error registering webhook:', error);
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
