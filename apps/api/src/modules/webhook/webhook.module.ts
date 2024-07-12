@@ -9,5 +9,6 @@ import { HttpModule } from '@nestjs/axios';
   imports: [TypeOrmModule.forFeature([Webhook]), HttpModule],
   controllers: [WebhookController],
   providers: [WebhookService],
+  exports: [WebhookService],
 })
 export class WebhookModule {}

@@ -6,6 +6,7 @@ import { NotificationConsumer } from './notification.consumer';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PushSnsData, PushSnsService } from 'src/modules/providers/push-sns/push-sns.service';
+import { WebhookService } from 'src/modules/webhook/webhook.service';
 
 @Injectable()
 export class PushSnsNotificationConsumer extends NotificationConsumer {
@@ -16,8 +17,9 @@ export class PushSnsNotificationConsumer extends NotificationConsumer {
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
     configService: ConfigService,
+    webhookService: WebhookService,
   ) {
-    super(notificationRepository, notificationsService, configService);
+    super(notificationRepository, notificationsService, webhookService, configService);
   }
 
   async processPushSnsNotificationQueue(id: number): Promise<void> {

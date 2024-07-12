@@ -35,6 +35,8 @@ import { QueueService } from './queues/queue.service';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
 import { PushSnsModule } from '../providers/push-sns/push-sns.module';
+import { WebhookModule } from '../webhook/webhook.module';
+import { WebhookService } from '../webhook/webhook.service';
 
 const providerModules = [
   MailgunModule,
@@ -65,7 +67,7 @@ const consumers = [
 ];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Notification]), ...providerModules],
+  imports: [TypeOrmModule.forFeature([Notification]), ...providerModules, WebhookModule],
   providers: [
     NotificationsService,
     NotificationQueueProducer,
