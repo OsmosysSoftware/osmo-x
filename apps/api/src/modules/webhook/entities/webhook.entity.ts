@@ -6,23 +6,23 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('webhooks')
+@Entity('notify_webhooks')
 export class Webhook {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ name: 'provider_id' })
   providerId: number;
 
   @Column()
   webhookUrl: string;
 
-  @Column({ default: false })
-  isVerified: boolean;
+  @Column({ name: 'is_verified', default: false })
+  isVerified: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_on' })
   createdOn: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_on' })
   updatedOn: Date;
 }

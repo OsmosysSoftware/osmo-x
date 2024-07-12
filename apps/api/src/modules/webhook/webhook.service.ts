@@ -13,7 +13,10 @@ export class WebhookService {
   ) {}
 
   async registerWebhook(providerId: number, webhookUrl: string): Promise<void> {
-    const webhook = this.webhookRepository.create({ providerId, webhookUrl });
+    const webhook = new Webhook();
+    webhook.providerId = providerId;
+    webhook.webhookUrl = webhookUrl;
+
     await this.webhookRepository.save(webhook);
   }
 
