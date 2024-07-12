@@ -36,7 +36,6 @@ import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifi
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
 import { PushSnsModule } from '../providers/push-sns/push-sns.module';
 import { WebhookModule } from '../webhook/webhook.module';
-import { WebhookService } from '../webhook/webhook.service';
 
 const providerModules = [
   MailgunModule,

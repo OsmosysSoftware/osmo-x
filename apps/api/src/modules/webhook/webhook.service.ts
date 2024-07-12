@@ -1,4 +1,4 @@
-import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Webhook } from './entities/webhook.entity';
@@ -7,6 +7,8 @@ import axios from 'axios';
 
 @Injectable()
 export class WebhookService {
+  protected readonly logger = new Logger(WebhookService.name);
+
   constructor(
     @InjectRepository(Webhook)
     private readonly webhookRepository: Repository<Webhook>,
@@ -25,7 +27,9 @@ export class WebhookService {
     const maxRetries = 5;
     let attempts = 0;
 
-    console.log(`Triggering webhook for notification with providerId: ${notification.providerId}`);
+    this.logger.log(
+      `Triggering webhook for notification with providerId: ${notification.providerId}`,
+    );
 
     while (attempts < maxRetries) {
       try {
@@ -34,7 +38,7 @@ export class WebhookService {
         });
 
         if (!webhook) {
-          console.error(`Webhook not found for providerId: ${notification.providerId}`);
+          this.logger.log(`Webhook not found for providerId: ${notification.providerId}`);
           break;
         }
 
@@ -43,17 +47,17 @@ export class WebhookService {
             'Content-Type': 'application/json',
           },
         });
-        console.log('Webhook sent successfully:', response.data);
+        this.logger.log('Webhook sent successfully:', response.data);
         return;
       } catch (error) {
         attempts++;
-        console.error(`Attempt ${attempts}: Webhook request failed: ${error.message}`);
+        this.logger.log(`Attempt ${attempts}: Webhook request failed: ${error.message}`);
 
         if (attempts >= maxRetries) {
-          console.error(`Failed to deliver webhook after multiple attempts`);
+          this.logger.log(`Failed to deliver webhook after multiple attempts`);
         }
 
-        console.log(`Exponential backoff: Waiting for ${attempts * 1000} milliseconds`);
+        this.logger.log(`Exponential backoff: Waiting for ${attempts * 1000} milliseconds`);
         const waitTime = Math.pow(2, attempts) * 1000; // Exponential backoff
 
         await this.sleep(waitTime);
