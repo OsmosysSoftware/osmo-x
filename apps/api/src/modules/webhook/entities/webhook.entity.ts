@@ -1,3 +1,6 @@
+import { IsEnum } from 'class-validator';
+import { Status } from 'src/common/constants/database';
+import { Field } from '@nestjs/graphql';
 import {
   Entity,
   Column,
@@ -25,4 +28,13 @@ export class Webhook {
 
   @UpdateDateColumn({ name: 'updated_on' })
   updatedOn: Date;
+
+  @Column({
+    type: 'tinyint',
+    width: 1,
+    default: Status.ACTIVE,
+  })
+  @IsEnum(Status)
+  @Field()
+  status: number;
 }

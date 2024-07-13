@@ -39,6 +39,11 @@ export class AddWebhookTable1720458965605 implements MigrationInterface {
             default: 'CURRENT_TIMESTAMP',
             onUpdate: 'CURRENT_TIMESTAMP',
           },
+          {
+            name: 'status',
+            type: 'tinyint',
+            default: 1,
+          },
         ],
       }),
     );

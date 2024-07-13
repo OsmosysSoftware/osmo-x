@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Webhook } from './entities/webhook.entity';
 import { Notification } from '../notifications/entities/notification.entity';
 import axios from 'axios';
+import { CreateWebhookInput } from './dto/create-webhook.input';
+import { Status } from 'src/common/constants/database';
 
 @Injectable()
 export class WebhookService {
@@ -14,19 +16,27 @@ export class WebhookService {
     private readonly webhookRepository: Repository<Webhook>,
   ) {}
 
-  async registerWebhook(providerId: number, webhookUrl: string): Promise<void> {
-    const webhook = new Webhook();
-    webhook.providerId = providerId;
-    webhook.webhookUrl = webhookUrl;
+  async registerWebhook(webhookInput: CreateWebhookInput): Promise<Webhook> {
+    // Check if there is an active webhook with the same provider_id
+    const existingWebhook = await this.webhookRepository.findOne({
+      where: {
+        providerId: webhookInput.providerId,
+        status: Status.ACTIVE,
+      },
+    });
 
-    await this.webhookRepository.save(webhook);
+    if (existingWebhook) {
+      throw new Error('This provider webhook exist');
+    }
+
+    const webhook = this.webhookRepository.create(webhookInput);
+    return await this.webhookRepository.save(webhook);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async triggerWebhook(notification: Notification): Promise<void> {
     const maxRetries = 5;
     let attempts = 0;
-
     this.logger.log(
       `Triggering webhook for notification with providerId: ${notification.providerId}`,
     );
@@ -35,6 +45,7 @@ export class WebhookService {
       try {
         const webhook = await this.webhookRepository.findOneBy({
           providerId: notification.providerId,
+          status: Status.ACTIVE,
         });
 
         if (!webhook) {
