@@ -48,62 +48,72 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
     };
 
     switch (channelTypeFromProviderId) {
-      case ChannelType.SMTP:
+      case ChannelType.SMTP: {
         const smtpData = new SMTPDataDto();
         Object.assign(smtpData, value);
         await validateAndThrowError(smtpData);
         return true;
+      }
 
-      case ChannelType.MAILGUN:
+      case ChannelType.MAILGUN: {
         const mailgunData = new MailgunDataDto();
         Object.assign(mailgunData, value);
         await validateAndThrowError(mailgunData);
         return true;
+      }
 
-      case ChannelType.WA_360_DAILOG:
+      case ChannelType.WA_360_DAILOG: {
         const wa360DialogData = new Wa360DialogDataDto();
         Object.assign(wa360DialogData, value);
         await validateAndThrowError(wa360DialogData);
         return true;
+      }
 
-      case ChannelType.WA_TWILIO:
+      case ChannelType.WA_TWILIO: {
         const waTwilioData = new WaTwilioDataDto();
         Object.assign(waTwilioData, value);
         await validateAndThrowError(waTwilioData);
         return true;
+      }
 
-      case ChannelType.SMS_TWILIO:
+      case ChannelType.SMS_TWILIO: {
         const smsTwilioData = new SmsTwilioDataDto();
         Object.assign(smsTwilioData, value);
         await validateAndThrowError(smsTwilioData);
         return true;
+      }
 
-      case ChannelType.SMS_PLIVO:
+      case ChannelType.SMS_PLIVO: {
         const smsPlivoData = new SmsPlivoDataDto();
         Object.assign(smsPlivoData, value);
         await validateAndThrowError(smsPlivoData);
         return true;
+      }
 
-      case ChannelType.WA_TWILIO_BUSINESS:
+      case ChannelType.WA_TWILIO_BUSINESS: {
         const waTwilioBusinessData = new WaTwilioBusinessDataDto();
         Object.assign(waTwilioBusinessData, value);
         await validateAndThrowError(waTwilioBusinessData);
         return true;
+      }
 
-      case ChannelType.SMS_KAPSYSTEM:
+      case ChannelType.SMS_KAPSYSTEM: {
         const kapsystemData = new SmsKapsystemDataDto();
         Object.assign(kapsystemData, value);
         await validateAndThrowError(kapsystemData);
         return true;
+      }
 
-      case ChannelType.PUSH_SNS:
+      case ChannelType.PUSH_SNS: {
         const pushSnsData = new PushSnsDataDto();
         Object.assign(pushSnsData, value);
         await validateAndThrowError(pushSnsData);
         return true;
+      }
 
-      default:
+      default: {
         return false;
+      }
     }
   }
 }
