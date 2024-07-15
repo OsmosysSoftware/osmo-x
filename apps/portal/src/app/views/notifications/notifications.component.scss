@@ -113,6 +113,16 @@ tr:hover {
   color: #1558be;
 }
 
+.badge.status-awaiting-confirmation {
+  background: #d7d7d7;
+  color: #424242;
+}
+
+.badge.status-queued-confirmation {
+  background: #f9ffa4;
+  color: #8e78fd;
+}
+
 :host ::ng-deep {
   .channel-type-email {
     background: #d2e2ff;
@@ -124,6 +134,10 @@ tr:hover {
 
   .channel-type-sms {
     background: #ecea7f;
+  }
+
+  .channel-type-pushsns {
+    background: #dcbaf9;
   }
 
   .channel-type-text {
