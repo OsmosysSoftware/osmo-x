@@ -1,8 +1,10 @@
 {
 	"info": {
 		"_postman_id": "8254490e-876a-4634-b836-3a35201489e4",
+		"_postman_id": "8254490e-876a-4634-b836-3a35201489e4",
 		"name": "OsmoX",
 		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "20654268"
 	},
@@ -50,17 +52,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "e8772941-f8c1-473a-b5d4-f79b3acbf5da"
+								"uuid": "08720fa5-470d-492b-b88c-73a710d8e733"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "c8e15ea5-91ee-4881-8bfc-ba3701124266"
+								"uuid": "30d67db4-8302-4f5b-9e4b-9a6e096f99d3"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 1 also has channelType 1\n    \"providerId\": 1,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -116,17 +128,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "6855b47e-eb14-4949-a990-8b3325152e24"
+								"uuid": "b17b6c99-d95c-482d-9640-6df9b34f9268"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "e516fa15-9a57-413e-b4bd-68787d3f0251"
+								"uuid": "2f50bcdd-4960-4034-aae2-f924376de603"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 1\n    \"providerId\": 6,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -169,17 +191,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "c546c968-5a3e-4a43-882e-26b7191caf77"
+								"uuid": "88013aeb-cc3d-4d41-a42f-5707ccdf3ab3"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "84fcaae1-2ba2-43ca-a306-a7bee4237a3a"
+								"uuid": "1fdbe911-0096-4cad-a067-46e7827da169"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -223,17 +255,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "401d6ec2-8de4-47d7-98fa-251ec2fca2af"
+								"uuid": "cf2798ab-72d8-4994-b865-b2f9d80892d0"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "7cda822d-57ef-4d47-9c3f-54f74d044438"
+								"uuid": "89258637-0139-4c2b-8876-bf359153720a"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 1,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -295,17 +337,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "54f71f70-9751-40b5-a41f-d6e122abb06c"
+								"uuid": "2b6f0032-b829-4714-b8e7-90d5b2c8a882"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "eb433e5f-745e-47ed-9cc6-67e979b8fa01"
+								"uuid": "72836dc7-647d-4d35-803e-74ca63b3ef6b"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 2 also has channelType 2\n    \"providerId\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -361,17 +413,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "5ab98a32-4d77-4447-b546-cca57f46bf73"
+								"uuid": "b4dbade6-f2b7-42c1-99b7-e00ce105ec3c"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "bda3ccc1-a787-49dc-b210-a230e6400730"
+								"uuid": "1035c2e7-6486-437e-a6c1-2bab7504e818"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 2\n    \"providerId\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -414,17 +476,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "79836819-b4be-4c40-ba5d-ead587518ad0"
+								"uuid": "cf1e7655-a351-4f57-b0d9-a53370793c70"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "4589d0a4-9e94-4526-b6e9-fc81c15067f6"
+								"uuid": "d96aa0e1-6f94-4c76-a570-4adb0d5a9c1a"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -468,17 +540,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "7c01d4f7-ba43-4952-86c6-ba89ab4def9d"
+								"uuid": "78521fe5-564e-488c-afe7-4ba4ffc60701"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "8622b75e-bfa1-48d7-a9e2-246df61efd51"
+								"uuid": "308aebdd-4a4a-4c62-8941-98822dfa309e"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 2,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -540,17 +622,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "3b19dbc2-e355-417e-a56b-5a320af38aa7"
+								"uuid": "d285d5a3-6613-450d-b025-f598983bf172"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "e6bd47fd-4992-4a75-8e23-453ca046c413"
+								"uuid": "04957f56-c9fb-4e19-8808-231a590731d7"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 3 also has channelType 3\n    \"providerId\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -606,17 +698,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "dec1b3ef-4157-4d1b-bb00-3441373d3cf8"
+								"uuid": "3cc5d812-50f7-41d3-a979-fe6b5dbe3885"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "c7e720d6-c244-4748-99ea-c16f7aabf3cb"
+								"uuid": "9b003b0b-6d1b-419a-ba79-f2ea5578f17b"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 3\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -659,17 +761,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "e2d563b6-f984-4ac5-904b-240134c60902"
+								"uuid": "d0407ad5-8b90-4d82-8104-2122e07172da"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "bb065389-eaa6-414e-8d31-52cf1a6463bb"
+								"uuid": "b0f4bb8b-212f-42fd-90fd-19ae8d8f4a38"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 3,\n    \"data\": {\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -713,17 +825,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "4b6cc6c9-8486-42b2-881d-7bde4de9aac5"
+								"uuid": "36e3637e-194c-4c64-9e44-040cb7223d6d"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "d8e7f5c2-8903-4515-981f-a5a08569432c"
+								"uuid": "46ef4728-63e4-4c88-9453-6096ae676591"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -785,17 +907,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "9765c2dd-9c0f-4f98-8df8-c73c0db71ffc"
+								"uuid": "8fa1a23b-68da-4a12-bfb5-cb60539b061b"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "34859926-808c-4e7d-97a1-7f8c0b1afeac"
+								"uuid": "9cf814f0-4bfd-471e-958a-88aa57d0f825"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 4 also has channelType 4\n    \"providerId\": 4,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -851,17 +983,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "6d27576a-2413-46f0-99e3-6cc8b5f7a756"
+								"uuid": "fbe2f6f7-0ebd-4825-87bc-ec21cb33fdfc"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "b09e3ce2-a24f-4dd1-9ebb-b37b7b6dd7e3"
+								"uuid": "cf42943e-2987-4380-a3a1-0ff6f55c0feb"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 4\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -904,17 +1046,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "ef1cfaf1-65c2-46d1-b12d-01e8cc5073ff"
+								"uuid": "1f7ead69-2305-4f87-a463-347c6eb5bce0"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "5a32aed1-1c6b-4aca-9251-62e87f1c8467"
+								"uuid": "f1236755-edc7-46b5-b267-93ee49c257bb"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 4,\n    \"data\": {\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -958,17 +1110,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "c69b6cde-16fd-4ad2-8cb9-14e634ba33e7"
+								"uuid": "4c1a7a2e-acb0-488c-87b6-2fd4e2357460"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "e0fba4cc-19e2-4d67-8e6a-93a2e24ed679"
+								"uuid": "23d0a6d9-fc14-4c49-9af8-66be21c95c27"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 4,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1029,17 +1191,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "43c4a9ff-51d7-4b42-a2f9-5b7a48de8d0a"
+								"uuid": "c4c11efd-af6b-4dc5-9b69-621922efccce"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "9d79f462-26b4-4d99-b1b0-0b676dce8e37"
+								"uuid": "958c5a04-0082-4937-96ac-11e3fd06b06d"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1074,17 +1246,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "79b65c30-ba2c-4ed7-95b1-81cc73f59487"
+								"uuid": "06ce97d9-c71d-4e6f-bfe6-ac5135e7c0be"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "a73d1e14-827b-4fe6-94a9-f3e2159acb0e"
+								"uuid": "04754f58-3b86-4d78-ab97-3c370f907d03"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 77,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1126,17 +1308,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "cc3a5bb4-77b8-4d34-9c4d-de7b82331a46"
+								"uuid": "a5645959-cf2a-4292-877b-47adbd8b1df5"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "71aab2d8-9042-40b0-8d1a-6be99b6983db"
+								"uuid": "37b45f94-eb12-4627-8087-4faa73fff565"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1171,17 +1363,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "26b25ac1-5aaf-4497-825c-3ceeee9c987a"
+								"uuid": "98a7d699-14b9-4143-8b09-3b074a397c23"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer bad-api-key",
-								"uuid": "70acd729-715f-4976-b030-242f4d764dad"
+								"uuid": "d1a3a291-d827-4169-ba35-f752245c63a2"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1243,17 +1445,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "fad599dd-2217-4c7b-8a57-f84ae3001560"
+								"uuid": "8192d583-61d5-4862-b0f2-60cb06b79922"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "286c3715-2cb0-45d8-b804-1630c74e10fc"
+								"uuid": "c72cbda1-b101-437d-b77e-ad8ffbaf0d07"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 5 also has channelType 5\n    \"providerId\": 5,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1309,17 +1521,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "003bc66d-6815-4f95-bf09-5acaf5f39460"
+								"uuid": "517c3339-8abb-49d2-91bf-17f0beaea8d2"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "56e7de7a-0422-4729-9251-28c96d1dea3e"
+								"uuid": "32eccfac-34cd-4458-a491-72576aab8d9d"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 does not have channelType 5\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1362,17 +1584,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "65f2437f-4cb2-4970-9a90-46b99591ac92"
+								"uuid": "07a80d63-2140-472e-92bc-e3530864a3f7"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "e577930c-ad3a-4873-a80f-342b7ca8e3fa"
+								"uuid": "feb06591-b749-4f88-9e4f-1520f130d3ff"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 5,\n    \"data\": {\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1416,17 +1648,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "e9c945c7-71b3-4332-b626-bf7fa3d0aef2"
+								"uuid": "315f291d-fe39-493a-84b7-4bda5a4300a4"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "ae14c44d-1b25-4db6-98b2-068beeb24fbf"
+								"uuid": "0bb6400e-e597-4934-ad47-a5dd9919a95e"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 5,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1488,17 +1730,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "79ad3ef1-4d4b-4b6e-b149-d1e902a61b1e"
+								"uuid": "6f936359-3b26-4b44-aac8-bf909986ba6c"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "6584bbe2-f89a-43bc-a577-df28b6bea236"
+								"uuid": "9a33877a-3943-4a2c-85aa-b0bb8f1943bf"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 6 also has channelType 6\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1554,17 +1806,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "a7b5112e-a17c-45d0-84aa-15a2d997f676"
+								"uuid": "d0c3602b-3d9a-484f-8f07-38ebd956f6fa"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "a9819117-e3eb-4314-970d-fe4057114f66"
+								"uuid": "30f6d6c4-009a-4772-92e8-2c51b15832ad"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    // Assuming providerId 1 does not have channelType 6\n    \"providerId\": 1,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1607,17 +1869,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "c95ac4ed-5d03-418a-9207-52b833abb9a2"
+								"uuid": "2d889864-7caf-4160-9e5f-956482a8a562"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "3842547c-41ff-4ad0-b21e-fa767919d87b"
+								"uuid": "1b67f0ed-9b7d-4ea3-a898-aa77c37d9527"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 6,\n    \"data\": {\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1661,17 +1933,27 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "4e62effd-b6a5-4a31-bc59-07fb063ca7d5"
+								"uuid": "9a91d8a9-1d46-47e2-8445-2efef05a424e"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "6ff0ce5b-1853-43a7-8805-7e2f239c4fcf"
+								"uuid": "874a8450-6428-4e90-b075-b59de47b7545"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1728,7 +2010,7 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "778470f7-5985-4b48-8578-7f85edb33076"
+								"uuid": "7bcdc4dd-e1bb-4fac-b26f-2428c77145af"
 							}
 						],
 						"body": {
@@ -1738,6 +2020,17 @@
 								"operationName": "LoginUser",
 								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
 							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
 						},
 						"url": {
 							"raw": "http://localhost:3000/graphql",
@@ -1783,7 +2076,7 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "d48a9865-06dd-4d38-a7a5-becbdef345dc"
+								"uuid": "39e5751f-7a76-43fc-974a-46041da3f1ac"
 							}
 						],
 						"body": {
@@ -1793,6 +2086,17 @@
 								"operationName": "LoginUser",
 								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"abc{{adminPassword}}\"\n}"
 							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
 						},
 						"url": {
 							"raw": "http://localhost:3000/graphql",
@@ -1837,7 +2141,7 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "d64daeb6-5161-477b-b895-a9afdf7aef25"
+								"uuid": "c8e359ab-c569-49e0-afdf-cbaeb2d50262"
 							}
 						],
 						"body": {
@@ -1847,6 +2151,17 @@
 								"operationName": "LoginUser",
 								"variables": "{\n  \"username\": \"{{adminUsername}}\"\n}"
 							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
 						},
 						"url": {
 							"raw": "http://localhost:3000/graphql",
@@ -1891,7 +2206,7 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "3d0dc04a-8f43-4676-a052-c81f41ee0ec5"
+								"uuid": "fcd04ad7-5355-4b53-8eb8-faef0c42e1eb"
 							}
 						],
 						"body": {
@@ -1901,6 +2216,17 @@
 								"operationName": "LoginUser",
 								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
 							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
 						},
 						"url": {
 							"raw": "http://localhost:3000/graphql",
@@ -1958,12 +2284,12 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "4cd65a99-ae4b-4c47-bf92-3749481772a9"
+								"uuid": "f2c66371-34bd-4e30-aaab-5c0dc47e8f63"
 							},
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "4d3c208b-a0c1-47cb-a347-3eddb7c695f8"
+								"uuid": "5f139c25-a568-4f12-ac56-0511a3ba1582"
 							}
 						],
 						"body": {
@@ -1972,6 +2298,17 @@
 								"query": "query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
 						},
 						"url": {
 							"raw": "http://localhost:3000/graphql",
@@ -2016,12 +2353,12 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "ae0d24c8-b2e5-40ee-89e3-c4743f3ff32d"
+								"uuid": "f6906c5b-4c52-4bf0-8c47-07ec9602afb6"
 							},
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "cc4181a0-27f9-4fb3-986c-a2a4430d2013"
+								"uuid": "952a23c7-f200-472f-b49c-728f1681a518"
 							}
 						],
 						"body": {
@@ -2030,6 +2367,17 @@
 								"query": "query {\r\n  notifications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
 						},
 						"url": {
 							"raw": "http://localhost:3000/graphql",
@@ -2064,9 +2412,28 @@
 									"type": "string"
 								}
 							]
+							"bearer": [
+								{
+									"key": "token",
+									"value": "FoundationX-test-key",
+									"type": "string"
+								}
+							]
 						},
 						"method": "GET",
 						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/notifications/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications",
+								"1"
+							]
+						}
 						"url": {
 							"raw": "http://localhost:3000/notifications/1",
 							"protocol": "http",
@@ -2100,6 +2467,13 @@
 									"type": "string"
 								}
 							]
+							"bearer": [
+								{
+									"key": "token",
+									"value": "mysecretadminkey",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -2110,6 +2484,17 @@
 								"variables": ""
 							}
 						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
 						"url": {
 							"raw": "http://localhost:3000/graphql",
 							"protocol": "http",
@@ -2136,6 +2521,13 @@
 									"type": "string"
 								}
 							]
+							"bearer": [
+								{
+									"key": "token",
+									"value": "mysecretadminkey",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -2146,6 +2538,17 @@
 								"variables": ""
 							}
 						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
 						"url": {
 							"raw": "http://localhost:3000/graphql",
 							"protocol": "http",
@@ -2178,6 +2581,13 @@
 									"type": "string"
 								}
 							]
+							"bearer": [
+								{
+									"key": "token",
+									"value": "mysecretadminkey",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -2188,6 +2598,17 @@
 								"variables": ""
 							}
 						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
 						"url": {
 							"raw": "http://localhost:3000/graphql",
 							"protocol": "http",
@@ -2214,6 +2635,13 @@
 									"type": "string"
 								}
 							]
+							"bearer": [
+								{
+									"key": "token",
+									"value": "mysecretadminkey",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -2224,6 +2652,17 @@
 								"variables": ""
 							}
 						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
 						"url": {
 							"raw": "http://localhost:3000/graphql",
 							"protocol": "http",
@@ -2256,6 +2695,13 @@
 									"type": "string"
 								}
 							]
+							"bearer": [
+								{
+									"key": "token",
+									"value": "OsmoX-test-key",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -2266,6 +2712,17 @@
 								"variables": ""
 							}
 						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
 						"url": {
 							"raw": "http://localhost:3000/graphql",
 							"protocol": "http",
@@ -2292,6 +2749,13 @@
 									"type": "string"
 								}
 							]
+							"bearer": [
+								{
+									"key": "token",
+									"value": "mysecretadminkey",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -2302,6 +2766,17 @@
 								"variables": ""
 							}
 						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
 						"url": {
 							"raw": "http://localhost:3000/graphql",
 							"protocol": "http",
@@ -2334,6 +2809,13 @@
 									"type": "string"
 								}
 							]
+							"bearer": [
+								{
+									"key": "token",
+									"value": "OsmoX-test-key",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -2355,6 +2837,17 @@
 								"graphql"
 							]
 						}
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
 					},
 					"response": []
 				},
@@ -2363,6 +2856,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "OsmoX-test-key",
+									"type": "string"
+								}
+							]
 							"bearer": [
 								{
 									"key": "token",
@@ -2391,7 +2891,17 @@
 								"graphql"
 							]
 						}
-<<<<<<< HEAD
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
 					},
 					"response": []
 				}
@@ -2408,12 +2918,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "781a9d80-3b08-4149-8d07-c348bca08bf3"
+								"uuid": "6e100b36-f1e6-4ce4-99f2-dcf166ccc744"
 							},
 							{
 								"key": "x-api-key",
 								"value": "OsmoX-test-key",
-								"uuid": "2ad1dbf3-89a0-4fa1-8b67-9dce6f2c524f"
+								"uuid": "ffafb692-ea30-4913-b704-3e3a461c9728"
 							}
 						],
 						"body": {
@@ -2441,12 +2951,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "90889547-1c38-4be2-a6db-fc03bb0f489f"
+								"uuid": "cfc4cde4-d491-404e-afe4-23be9005fba6"
 							},
 							{
 								"key": "x-api-key",
 								"value": "OsmoX-test-key",
-								"uuid": "09ca413e-4431-4474-87e5-dbca43da369e"
+								"uuid": "684e4bc1-66c9-40f5-a097-b5b5056e98f3"
 							}
 						],
 						"body": {
@@ -2490,12 +3000,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "ed891341-a3f0-47c6-ab21-411854882e7d"
+								"uuid": "29e6ba0c-f664-4ada-8b15-293af94f520e"
 							},
 							{
 								"key": "x-api-key",
 								"value": "OsmoX-test-key",
-								"uuid": "21780551-3bf5-40a2-82eb-a5b98404e227"
+								"uuid": "d2c931af-0b82-4d9e-9645-c777baa8e0e8"
 							}
 						],
 						"body": {
