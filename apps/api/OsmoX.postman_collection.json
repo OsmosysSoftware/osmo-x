@@ -50,12 +50,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "08720fa5-470d-492b-b88c-73a710d8e733"
+=======
+								"uuid": "c1b98bda-791c-4afe-975b-8271b44885c5"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "30d67db4-8302-4f5b-9e4b-9a6e096f99d3"
+=======
+								"uuid": "bd18e8b1-4870-4608-8159-296c7e423270"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -116,12 +124,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "b17b6c99-d95c-482d-9640-6df9b34f9268"
+=======
+								"uuid": "29a6efc5-1e62-4a79-9a83-420599844cfc"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "2f50bcdd-4960-4034-aae2-f924376de603"
+=======
+								"uuid": "972a9b0c-546d-4e69-abfa-884b6e5998c3"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -169,12 +185,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "88013aeb-cc3d-4d41-a42f-5707ccdf3ab3"
+=======
+								"uuid": "8bbe60c5-f8f1-42e4-9ea6-3453b896c502"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "1fdbe911-0096-4cad-a067-46e7827da169"
+=======
+								"uuid": "31d371a8-8278-4e46-8f02-0181401b2cec"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -223,12 +247,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "cf2798ab-72d8-4994-b865-b2f9d80892d0"
+=======
+								"uuid": "8bc9dca8-55c7-4059-9884-5f7a57429161"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
+<<<<<<< HEAD
 								"uuid": "89258637-0139-4c2b-8876-bf359153720a"
+=======
+								"uuid": "a1048fb4-0d89-436b-a1bb-da9d8b6f02b2"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -295,12 +327,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "2b6f0032-b829-4714-b8e7-90d5b2c8a882"
+=======
+								"uuid": "9fe42ddc-a1a2-4d71-b079-304732fc4a01"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "72836dc7-647d-4d35-803e-74ca63b3ef6b"
+=======
+								"uuid": "1928738d-7310-425a-8826-74aaa52d4f72"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -361,12 +401,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "b4dbade6-f2b7-42c1-99b7-e00ce105ec3c"
+=======
+								"uuid": "949051ca-f2ce-4d0a-89cc-c56403e961e3"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "1035c2e7-6486-437e-a6c1-2bab7504e818"
+=======
+								"uuid": "36adcf20-8766-41ed-83ae-e76cd302dd6e"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -414,12 +462,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "cf1e7655-a351-4f57-b0d9-a53370793c70"
+=======
+								"uuid": "46d534d7-80a3-417d-8e43-a0b43c2a9d7d"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "d96aa0e1-6f94-4c76-a570-4adb0d5a9c1a"
+=======
+								"uuid": "c22a3b02-7c16-4f8d-ae2b-eacfdd064677"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -468,12 +524,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "78521fe5-564e-488c-afe7-4ba4ffc60701"
+=======
+								"uuid": "bb1fa870-7662-4a2e-a3f8-d003cd00e7fa"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
+<<<<<<< HEAD
 								"uuid": "308aebdd-4a4a-4c62-8941-98822dfa309e"
+=======
+								"uuid": "66dc3098-a7f0-4fea-afe5-72569ee64895"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -540,12 +604,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "d285d5a3-6613-450d-b025-f598983bf172"
+=======
+								"uuid": "664db212-06d9-4e50-a3b7-3f8555df0cad"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "04957f56-c9fb-4e19-8808-231a590731d7"
+=======
+								"uuid": "e7230be9-a6a0-4668-b3d5-6ca82338feaa"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -606,12 +678,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "3cc5d812-50f7-41d3-a979-fe6b5dbe3885"
+=======
+								"uuid": "1d60b458-bb8d-4940-86e9-265a60e867f8"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "9b003b0b-6d1b-419a-ba79-f2ea5578f17b"
+=======
+								"uuid": "748020d5-d7a9-469b-ae5a-d19bb4d04886"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -659,12 +739,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "d0407ad5-8b90-4d82-8104-2122e07172da"
+=======
+								"uuid": "f7b05f3d-8633-4468-af6d-8b82b7be7700"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "b0f4bb8b-212f-42fd-90fd-19ae8d8f4a38"
+=======
+								"uuid": "de5767ba-aeed-43b9-94c4-fbe27c2d4aff"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -713,12 +801,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "36e3637e-194c-4c64-9e44-040cb7223d6d"
+=======
+								"uuid": "79e200a9-582f-46d7-ab99-61c0875ab62f"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
+<<<<<<< HEAD
 								"uuid": "46ef4728-63e4-4c88-9453-6096ae676591"
+=======
+								"uuid": "9cac08e5-dfbb-41f0-b7b7-ce423f94162f"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -785,12 +881,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "8fa1a23b-68da-4a12-bfb5-cb60539b061b"
+=======
+								"uuid": "11886eec-bdca-4e1e-8fac-2a15d5955f93"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "9cf814f0-4bfd-471e-958a-88aa57d0f825"
+=======
+								"uuid": "4c4fe8e7-b003-4ddc-abbd-8d2a56ef9830"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -851,12 +955,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "fbe2f6f7-0ebd-4825-87bc-ec21cb33fdfc"
+=======
+								"uuid": "f3691e86-163b-4e14-8387-69756457b4ec"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "cf42943e-2987-4380-a3a1-0ff6f55c0feb"
+=======
+								"uuid": "06d06391-67b2-43fd-9874-a20dd5be84c5"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -904,12 +1016,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "1f7ead69-2305-4f87-a463-347c6eb5bce0"
+=======
+								"uuid": "0aaa342a-9ff3-4f7f-97e5-5d64d429f65f"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "f1236755-edc7-46b5-b267-93ee49c257bb"
+=======
+								"uuid": "644c27a0-ec1e-4d04-86e9-facb4c81b448"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -958,12 +1078,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "4c1a7a2e-acb0-488c-87b6-2fd4e2357460"
+=======
+								"uuid": "7b3d8ac7-f687-4a70-8b66-7d133f1297cb"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
+<<<<<<< HEAD
 								"uuid": "23d0a6d9-fc14-4c49-9af8-66be21c95c27"
+=======
+								"uuid": "359fecb5-5e5a-45b3-8366-86866d450575"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1029,12 +1157,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "c4c11efd-af6b-4dc5-9b69-621922efccce"
+=======
+								"uuid": "ca46f026-7f6e-457d-b904-9dda12e0c87e"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "958c5a04-0082-4937-96ac-11e3fd06b06d"
+=======
+								"uuid": "72122add-026c-4702-99fa-67b5e484343d"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1074,12 +1210,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "06ce97d9-c71d-4e6f-bfe6-ac5135e7c0be"
+=======
+								"uuid": "3a50d6a2-7a0b-416d-a136-602a808c95ed"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "04754f58-3b86-4d78-ab97-3c370f907d03"
+=======
+								"uuid": "c18842b2-3c7b-4893-bf2d-1c830fbc255a"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1126,12 +1270,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "a5645959-cf2a-4292-877b-47adbd8b1df5"
+=======
+								"uuid": "e2b1c384-078e-4d1a-9bfa-2509b0ac1581"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "37b45f94-eb12-4627-8087-4faa73fff565"
+=======
+								"uuid": "bf997e97-2650-43f0-9c78-14b147919a66"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1171,12 +1323,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "98a7d699-14b9-4143-8b09-3b074a397c23"
+=======
+								"uuid": "8ce1188b-d140-46de-92a1-9b12f68b10ce"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer bad-api-key",
+<<<<<<< HEAD
 								"uuid": "d1a3a291-d827-4169-ba35-f752245c63a2"
+=======
+								"uuid": "46705832-b785-4aa3-b161-6600dbc17990"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1243,12 +1403,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "8192d583-61d5-4862-b0f2-60cb06b79922"
+=======
+								"uuid": "ea15d594-a6a5-4b88-bb5c-b949bfca3dbf"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "c72cbda1-b101-437d-b77e-ad8ffbaf0d07"
+=======
+								"uuid": "9525bbec-bee3-4575-bb60-449026082740"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1309,12 +1477,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "517c3339-8abb-49d2-91bf-17f0beaea8d2"
+=======
+								"uuid": "a8840fec-b490-498d-a25f-34c5fbe8909b"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "32eccfac-34cd-4458-a491-72576aab8d9d"
+=======
+								"uuid": "4a9723b0-3f61-4434-b9b6-4fff6fc76116"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1362,12 +1538,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "07a80d63-2140-472e-92bc-e3530864a3f7"
+=======
+								"uuid": "62a589a8-b3be-46b6-afa6-5482ff27e0d4"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "feb06591-b749-4f88-9e4f-1520f130d3ff"
+=======
+								"uuid": "2147ac32-41b0-471d-88cd-e8a98dce3667"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1416,12 +1600,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "315f291d-fe39-493a-84b7-4bda5a4300a4"
+=======
+								"uuid": "faf4c499-f716-4e15-89c3-d72431e6e688"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
+<<<<<<< HEAD
 								"uuid": "0bb6400e-e597-4934-ad47-a5dd9919a95e"
+=======
+								"uuid": "cb6b3e54-c6f0-4d49-b5e8-7eb07977c76d"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1488,12 +1680,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "6f936359-3b26-4b44-aac8-bf909986ba6c"
+=======
+								"uuid": "d774a94c-f3d1-47fa-93b4-fa78a81ad628"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "9a33877a-3943-4a2c-85aa-b0bb8f1943bf"
+=======
+								"uuid": "2a769c05-c0c1-4fa5-b782-5fd531d00f6b"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1554,12 +1754,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "d0c3602b-3d9a-484f-8f07-38ebd956f6fa"
+=======
+								"uuid": "deb135d0-e3dd-4985-9d02-03742650e9cd"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "30f6d6c4-009a-4772-92e8-2c51b15832ad"
+=======
+								"uuid": "8cded3e6-a096-42aa-8d58-ddee6c9dee6a"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1607,12 +1815,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "2d889864-7caf-4160-9e5f-956482a8a562"
+=======
+								"uuid": "aa3e6082-5b98-4714-b0b3-feb48923a91a"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "1b67f0ed-9b7d-4ea3-a898-aa77c37d9527"
+=======
+								"uuid": "644ee7a5-e904-4385-874e-ffef457fd586"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1661,12 +1877,20 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "9a91d8a9-1d46-47e2-8445-2efef05a424e"
+=======
+								"uuid": "5ee0b9c0-eb59-4e95-a44c-d8d5cecf156f"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
+<<<<<<< HEAD
 								"uuid": "874a8450-6428-4e90-b075-b59de47b7545"
+=======
+								"uuid": "e0d5c72c-1dbd-491e-be9b-9145de829156"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1728,7 +1952,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "7bcdc4dd-e1bb-4fac-b26f-2428c77145af"
+=======
+								"uuid": "53104364-acc4-4270-a684-9e34f7b75ba0"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1783,7 +2011,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "39e5751f-7a76-43fc-974a-46041da3f1ac"
+=======
+								"uuid": "4a060333-9383-40a4-9c82-e01f82178b92"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1837,7 +2069,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "c8e359ab-c569-49e0-afdf-cbaeb2d50262"
+=======
+								"uuid": "c3fc5c95-a328-4880-9995-21e9b22e7cd0"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1891,7 +2127,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "fcd04ad7-5355-4b53-8eb8-faef0c42e1eb"
+=======
+								"uuid": "f2879ae4-245f-4b37-a155-de38051afa8c"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -1958,12 +2198,20 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "f2c66371-34bd-4e30-aaab-5c0dc47e8f63"
+=======
+								"uuid": "2020842f-be12-4546-862a-bbc799e1d34c"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "5f139c25-a568-4f12-ac56-0511a3ba1582"
+=======
+								"uuid": "792e6175-b167-4985-929f-7b3bf0932cfe"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -2016,12 +2264,20 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
+<<<<<<< HEAD
 								"uuid": "f6906c5b-4c52-4bf0-8c47-07ec9602afb6"
+=======
+								"uuid": "bd59054d-4560-41fc-8dc6-d5f244b6a7f6"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							},
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+<<<<<<< HEAD
 								"uuid": "952a23c7-f200-472f-b49c-728f1681a518"
+=======
+								"uuid": "8cc7080c-cee5-4881-8502-c7453bb2a9af"
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 							}
 						],
 						"body": {
@@ -2391,6 +2647,7 @@
 								"graphql"
 							]
 						}
+<<<<<<< HEAD
 					},
 					"response": []
 				}
@@ -2515,6 +2772,8 @@
 								"graphql"
 							]
 						}
+=======
+>>>>>>> da5e3d6 (docs: update document for push notification support  (#270))
 					},
 					"response": []
 				}
