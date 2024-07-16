@@ -33,7 +33,6 @@ export class WebhookService {
     return await this.webhookRepository.save(webhook);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async triggerWebhook(notification: Notification): Promise<void> {
     const maxRetries = 5;
     let attempts = 0;

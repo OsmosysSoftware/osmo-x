@@ -14,6 +14,10 @@ export class WebhookResolver {
   async registerWebhook(
     @Args('createWebhookInput') createWebhookInput: CreateWebhookInput,
   ): Promise<Webhook> {
-    return await this.webhookService.registerWebhook(createWebhookInput);
+    try {
+      return await this.webhookService.registerWebhook(createWebhookInput);
+    } catch (error) {
+      throw new Error(`Failed to register webhook: ${error.message}`);
+    }
   }
 }
