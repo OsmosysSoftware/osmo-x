@@ -74,4 +74,14 @@ export class VcTwilioService {
       throw new Error(`Failed to send voice call: ${error.message}`);
     }
   }
+
+  async getDeliveryStatus(sid: string, providerId: number): Promise<VcTwilioResponseData> {
+    try {
+      await this.assignTransport(providerId);
+      const message = await this.twilioClient.calls(sid).fetch();
+      return message;
+    } catch (error) {
+      throw new Error(`Failed to fetch delivery status: ${error.message}`);
+    }
+  }
 }

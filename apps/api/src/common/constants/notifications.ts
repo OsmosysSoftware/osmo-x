@@ -55,8 +55,8 @@ export const ProviderDeliveryStatus = {
     FAILURE_STATES: ['EXPIRED', 'UNDELIV', 'FAILED'],
   },
   VC_TWILIO: {
-    SUCCESS_STATES: ['sent', 'delivered'],
-    FAILURE_STATES: ['failed', 'undelivered'],
+    SUCCESS_STATES: ['completed'],
+    FAILURE_STATES: ['queued', 'ringing', 'in-progress', 'canceled', 'busy', 'no-answer', 'failed'],
   },
 };
 
@@ -65,5 +65,4 @@ export const SkipProviderConfirmationChannels = [
   ChannelType.WA_360_DAILOG,
   ChannelType.PUSH_SNS,
   ChannelType.SMTP,
-  ChannelType.VC_TWILIO,
 ];

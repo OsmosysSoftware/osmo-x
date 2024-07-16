@@ -85,6 +85,7 @@ export class QueueService {
   private createWorker(action: string, providerType: string, queueName: string): void {
     const processJob = async (job): Promise<void> => {
       switch (`${action}-${providerType}`) {
+        // SMTP cases
         case `${QueueAction.SEND}-${ChannelType.SMTP}`:
           await this.smtpNotificationConsumer.processSmtpNotificationQueue(job.data.id);
           break;
@@ -97,6 +98,7 @@ export class QueueService {
             job.data.id,
           );
           break;
+        // WA_360_DAILOG cases
         case `${QueueAction.SEND}-${ChannelType.WA_360_DAILOG}`:
           await this.wa360dialogNotificationConsumer.processWa360dialogNotificationQueue(
             job.data.id,
@@ -120,6 +122,7 @@ export class QueueService {
             job.data.id,
           );
           break;
+        // SMS_PLIVO cases
         case `${QueueAction.SEND}-${ChannelType.SMS_PLIVO}`:
           await this.smsPlivoNotificationConsumer.processSmsPlivoNotificationQueue(job.data.id);
           break;
@@ -139,6 +142,7 @@ export class QueueService {
             job.data.id,
           );
           break;
+        // SMS_KAPSYSTEM cases
         case `${QueueAction.SEND}-${ChannelType.SMS_KAPSYSTEM}`:
           await this.smsKapsystemNotificationConsumer.processSmsKapsystemNotificationQueue(
             job.data.id,
@@ -152,6 +156,10 @@ export class QueueService {
         case `${QueueAction.SEND}-${ChannelType.VC_TWILIO}`:
           await this.vcTwilioNotificationsConsumer.processVcTwilioNotificationQueue(job.data.id);
           break;
+        case `${QueueAction.DELIVERY_STATUS}-${ChannelType.VC_TWILIO}`:
+          await this.vcTwilioNotificationsConsumer.processVcTwilioNotificationConfirmationQueue(
+            job.data.id,
+          );
         default:
           this.logger.error(
             `Unsupported action-providerType combination: ${action}-${providerType}`,
