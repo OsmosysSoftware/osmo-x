@@ -17,6 +17,7 @@ export const ChannelType = {
   WA_TWILIO_BUSINESS: 7,
   SMS_KAPSYSTEM: 8,
   PUSH_SNS: 9,
+  VC_TWILIO: 10,
 };
 
 export const QueueAction = {
@@ -53,6 +54,10 @@ export const ProviderDeliveryStatus = {
     SUCCESS_STATES: ['DELIVRD'],
     FAILURE_STATES: ['EXPIRED', 'UNDELIV', 'FAILED'],
   },
+  VC_TWILIO: {
+    SUCCESS_STATES: ['sent', 'delivered'],
+    FAILURE_STATES: ['failed', 'undelivered'],
+  },
 };
 
 export const SkipProviderConfirmationChannels = [
@@ -60,4 +65,5 @@ export const SkipProviderConfirmationChannels = [
   ChannelType.WA_360_DAILOG,
   ChannelType.PUSH_SNS,
   ChannelType.SMTP,
+  ChannelType.VC_TWILIO,
 ];

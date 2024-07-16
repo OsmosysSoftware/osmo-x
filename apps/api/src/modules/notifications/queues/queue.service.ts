@@ -9,6 +9,7 @@ import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notificati
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
 import { SmsTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/smsTwilio-notifications.job.consumer';
 import { SmtpNotificationConsumer } from 'src/jobs/consumers/notifications/smtp-notifications.job.consumer';
+import { VcTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/vcTwilio-notifications.job.consumer';
 import { Wa360dialogNotificationsConsumer } from 'src/jobs/consumers/notifications/wa360dialog-notifications.job.consumer';
 import { WaTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilio-notifications.job.consumer';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
@@ -34,6 +35,7 @@ export class QueueService {
     private readonly waTwilioBusinessNotificationConsumer: WaTwilioBusinessNotificationsConsumer,
     private readonly smsKapsystemNotificationConsumer: SmsKapsystemNotificationsConsumer,
     private readonly pushSnsNotificationConsumer: PushSnsNotificationConsumer,
+    private readonly vcTwilioNotificationsConsumer: VcTwilioNotificationsConsumer,
   ) {
     this.redisConfig = {
       host: this.configService.get<string>('REDIS_HOST'),
@@ -142,8 +144,13 @@ export class QueueService {
             job.data.id,
           );
           break;
+        // PUSH_SNS cases
         case `${QueueAction.SEND}-${ChannelType.PUSH_SNS}`:
           await this.pushSnsNotificationConsumer.processPushSnsNotificationQueue(job.data.id);
+          break;
+        // VC_TWILIO cases
+        case `${QueueAction.SEND}-${ChannelType.VC_TWILIO}`:
+          await this.vcTwilioNotificationsConsumer.processVcTwilioNotificationQueue(job.data.id);
           break;
         default:
           this.logger.error(
