@@ -83,7 +83,7 @@ export interface VcTwilioResponseData {
 @Injectable()
 export class VcTwilioService {
   private twilioClient;
-  private twilioVoiceCallObject: Partial<VcTwilioData> = {};
+  private twilioVoiceCallObject: Partial<VcTwilioData>;
 
   constructor(private readonly providersService: ProvidersService) {}
 
@@ -148,6 +148,7 @@ export class VcTwilioService {
     try {
       await this.assignTransport(providerId);
       // Function to create correct object for twilioClient and verify if one of url, twiml exist in request body
+      this.twilioVoiceCallObject = {};
       await this.filterRequestBody(body);
       const voiceCall = await this.twilioClient.calls.create(this.twilioVoiceCallObject);
       return voiceCall;
