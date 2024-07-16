@@ -7,6 +7,8 @@ export class VcTwilioDataDto {
   @IsNotEmpty()
   to: string;
 
-  @IsNotEmpty()
-  url: string;
+  // Need atleast one of url, twiml for successful request
+  url?: string;
+
+  twiml?: string;
 }

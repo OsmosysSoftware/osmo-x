@@ -115,6 +115,11 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
       case ChannelType.VC_TWILIO: {
         const vcTwilioData = new VcTwilioDataDto();
         Object.assign(vcTwilioData, value);
+
+        if (!vcTwilioData.url && !vcTwilioData.twiml) {
+          throw new BadRequestException('Twilio VC body should have either url or twiml parameter');
+        }
+
         await validateAndThrowError(vcTwilioData);
         return true;
       }
