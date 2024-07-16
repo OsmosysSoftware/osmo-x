@@ -7,6 +7,7 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { NotificationConsumer } from './notification.consumer';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { WebhookService } from 'src/modules/webhook/webhook.service';
 
 @Injectable()
 export class SmtpNotificationConsumer extends NotificationConsumer {
@@ -16,9 +17,10 @@ export class SmtpNotificationConsumer extends NotificationConsumer {
     private readonly smtpService: SmtpService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    webhookService: WebhookService,
     configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService, configService);
+    super(notificationRepository, notificationsService, webhookService, configService);
   }
 
   async processSmtpNotificationQueue(id: number): Promise<void> {

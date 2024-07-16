@@ -11,6 +11,7 @@ import {
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { DeliveryStatus, ProviderDeliveryStatus } from 'src/common/constants/notifications';
 import { ConfigService } from '@nestjs/config';
+import { WebhookService } from 'src/modules/webhook/webhook.service';
 
 @Injectable()
 export class SmsPlivoNotificationsConsumer extends NotificationConsumer {
@@ -20,9 +21,10 @@ export class SmsPlivoNotificationsConsumer extends NotificationConsumer {
     private readonly smsPlivoService: SmsPlivoService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    webhookService: WebhookService,
     configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService, configService);
+    super(notificationRepository, notificationsService, webhookService, configService);
   }
 
   async processSmsPlivoNotificationQueue(id: number): Promise<void> {

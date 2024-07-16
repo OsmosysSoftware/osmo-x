@@ -8,6 +8,7 @@ import {
 } from 'src/common/constants/notifications';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { ConfigService } from '@nestjs/config';
+import { WebhookService } from 'src/modules/webhook/webhook.service';
 
 @Injectable()
 export abstract class NotificationConsumer {
@@ -18,6 +19,7 @@ export abstract class NotificationConsumer {
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
     protected readonly notificationsService: NotificationsService,
+    protected readonly webhookService: WebhookService,
     private readonly configService: ConfigService,
   ) {
     this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
@@ -35,6 +37,7 @@ export abstract class NotificationConsumer {
 
       if (SkipProviderConfirmationChannels.includes(notification.channelType)) {
         notification.deliveryStatus = DeliveryStatus.SUCCESS;
+        this.webhookService.triggerWebhook(notification);
       } else {
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
       }
@@ -81,6 +84,10 @@ export abstract class NotificationConsumer {
         this.logger.log('Provider response: ' + JSON.stringify(response.result));
         notification.retryCount++;
       }
+
+      if (notification.deliveryStatus === DeliveryStatus.SUCCESS) {
+        this.webhookService.triggerWebhook(notification);
+      }
     } catch (error) {
       if (notification.retryCount < this.maxRetryCount) {
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
@@ -90,6 +97,7 @@ export abstract class NotificationConsumer {
           `Notification with ID ${notification.id} has attempted max allowed retries (provider confirmation), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
+        this.webhookService.triggerWebhook(notification);
       }
 
       this.logger.error(
