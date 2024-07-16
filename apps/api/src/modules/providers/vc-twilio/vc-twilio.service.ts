@@ -1,11 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as Twilio from 'twilio';
 import { ProvidersService } from '../providers.service';
 
 export interface VcTwilioData {
   from: string;
   to: string;
-  url: string;
+  method?: string;
+  fallbackUrl?: string;
+  fallbackMethod?: string;
+  statusCallback?: string;
+  statusCallbackEvent?: Array<string>;
+  statusCallbackMethod?: string;
+  sendDigits?: string;
+  timeout?: number;
+  record?: boolean;
+  recordingChannels?: string;
+  recordingStatusCallback?: string;
+  recordingStatusCallbackMethod?: string;
+  sipAuthUsername?: string;
+  sipAuthPassword?: string;
+  machineDetection?: string;
+  machineDetectionTimeout?: number;
+  recordingStatusCallbackEvent?: Array<string>;
+  trim?: string;
+  callerId?: string;
+  machineDetectionSpeechThreshold?: number;
+  machineDetectionSpeechEndThreshold?: number;
+  machineDetectionSilenceTimeout?: number;
+  asyncAmd?: string;
+  asyncAmdStatusCallback?: string;
+  asyncAmdStatusCallbackMethod?: string;
+  byoc?: string;
+  callReason?: string;
+  callToken?: string;
+  recordingTrack?: string;
+  timeLimit?: number;
+  url?: string;
+  twiml?: string;
+  applicationSid?: string;
 }
 
 export interface VcTwilioResponseData {
@@ -51,6 +83,7 @@ export interface VcTwilioResponseData {
 @Injectable()
 export class VcTwilioService {
   private twilioClient;
+  private twilioVoiceCallObject: Partial<VcTwilioData> = {};
 
   constructor(private readonly providersService: ProvidersService) {}
 
@@ -61,14 +94,62 @@ export class VcTwilioService {
     this.twilioClient = Twilio(accountSid, authToken);
   }
 
+  async filterRequestBody(requestBody: Partial<VcTwilioData>): Promise<void> {
+    const allowedKeys = [
+      'from',
+      'to',
+      'method',
+      'fallbackUrl',
+      'fallbackMethod',
+      'statusCallback',
+      'statusCallbackEvent',
+      'statusCallbackMethod',
+      'sendDigits',
+      'timeout',
+      'record',
+      'recordingChannels',
+      'recordingStatusCallback',
+      'recordingStatusCallbackMethod',
+      'sipAuthUsername',
+      'sipAuthPassword',
+      'machineDetection',
+      'machineDetectionTimeout',
+      'recordingStatusCallbackEvent',
+      'trim',
+      'callerId',
+      'machineDetectionSpeechThreshold',
+      'machineDetectionSpeechEndThreshold',
+      'machineDetectionSilenceTimeout',
+      'asyncAmd',
+      'asyncAmdStatusCallback',
+      'asyncAmdStatusCallbackMethod',
+      'byoc',
+      'callReason',
+      'callToken',
+      'recordingTrack',
+      'timeLimit',
+      'url',
+      'twiml',
+      'applicationSid',
+    ];
+
+    if (requestBody.url === undefined && requestBody.twiml === undefined) {
+      throw new BadRequestException('Twilio VC body should have either url or twiml parameter');
+    }
+
+    for (const key of allowedKeys) {
+      if (requestBody[key] !== undefined) {
+        this.twilioVoiceCallObject[key] = requestBody[key];
+      }
+    }
+  }
+
   async sendVoiceCall(body: VcTwilioData, providerId: number): Promise<VcTwilioResponseData> {
     try {
       await this.assignTransport(providerId);
-      const voiceCall = await this.twilioClient.calls.create({
-        from: body.from,
-        to: body.to,
-        url: body.url,
-      });
+      // Function to create correct object for twilioClient and verify if one of url, twiml exist in request body
+      await this.filterRequestBody(body);
+      const voiceCall = await this.twilioClient.calls.create(this.twilioVoiceCallObject);
       return voiceCall;
     } catch (error) {
       throw new Error(`Failed to send voice call: ${error.message}`);
