@@ -50,12 +50,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "c1b98bda-791c-4afe-975b-8271b44885c5"
+								"uuid": "e8772941-f8c1-473a-b5d4-f79b3acbf5da"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "bd18e8b1-4870-4608-8159-296c7e423270"
+								"uuid": "c8e15ea5-91ee-4881-8bfc-ba3701124266"
 							}
 						],
 						"body": {
@@ -116,12 +116,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "29a6efc5-1e62-4a79-9a83-420599844cfc"
+								"uuid": "6855b47e-eb14-4949-a990-8b3325152e24"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "972a9b0c-546d-4e69-abfa-884b6e5998c3"
+								"uuid": "e516fa15-9a57-413e-b4bd-68787d3f0251"
 							}
 						],
 						"body": {
@@ -169,12 +169,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "8bbe60c5-f8f1-42e4-9ea6-3453b896c502"
+								"uuid": "c546c968-5a3e-4a43-882e-26b7191caf77"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "31d371a8-8278-4e46-8f02-0181401b2cec"
+								"uuid": "84fcaae1-2ba2-43ca-a306-a7bee4237a3a"
 							}
 						],
 						"body": {
@@ -223,12 +223,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "8bc9dca8-55c7-4059-9884-5f7a57429161"
+								"uuid": "401d6ec2-8de4-47d7-98fa-251ec2fca2af"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "a1048fb4-0d89-436b-a1bb-da9d8b6f02b2"
+								"uuid": "7cda822d-57ef-4d47-9c3f-54f74d044438"
 							}
 						],
 						"body": {
@@ -295,12 +295,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "9fe42ddc-a1a2-4d71-b079-304732fc4a01"
+								"uuid": "54f71f70-9751-40b5-a41f-d6e122abb06c"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "1928738d-7310-425a-8826-74aaa52d4f72"
+								"uuid": "eb433e5f-745e-47ed-9cc6-67e979b8fa01"
 							}
 						],
 						"body": {
@@ -361,12 +361,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "949051ca-f2ce-4d0a-89cc-c56403e961e3"
+								"uuid": "5ab98a32-4d77-4447-b546-cca57f46bf73"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "36adcf20-8766-41ed-83ae-e76cd302dd6e"
+								"uuid": "bda3ccc1-a787-49dc-b210-a230e6400730"
 							}
 						],
 						"body": {
@@ -414,12 +414,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "46d534d7-80a3-417d-8e43-a0b43c2a9d7d"
+								"uuid": "79836819-b4be-4c40-ba5d-ead587518ad0"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "c22a3b02-7c16-4f8d-ae2b-eacfdd064677"
+								"uuid": "4589d0a4-9e94-4526-b6e9-fc81c15067f6"
 							}
 						],
 						"body": {
@@ -468,12 +468,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "bb1fa870-7662-4a2e-a3f8-d003cd00e7fa"
+								"uuid": "7c01d4f7-ba43-4952-86c6-ba89ab4def9d"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "66dc3098-a7f0-4fea-afe5-72569ee64895"
+								"uuid": "8622b75e-bfa1-48d7-a9e2-246df61efd51"
 							}
 						],
 						"body": {
@@ -540,12 +540,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "664db212-06d9-4e50-a3b7-3f8555df0cad"
+								"uuid": "3b19dbc2-e355-417e-a56b-5a320af38aa7"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "e7230be9-a6a0-4668-b3d5-6ca82338feaa"
+								"uuid": "e6bd47fd-4992-4a75-8e23-453ca046c413"
 							}
 						],
 						"body": {
@@ -606,12 +606,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "1d60b458-bb8d-4940-86e9-265a60e867f8"
+								"uuid": "dec1b3ef-4157-4d1b-bb00-3441373d3cf8"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "748020d5-d7a9-469b-ae5a-d19bb4d04886"
+								"uuid": "c7e720d6-c244-4748-99ea-c16f7aabf3cb"
 							}
 						],
 						"body": {
@@ -659,12 +659,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "f7b05f3d-8633-4468-af6d-8b82b7be7700"
+								"uuid": "e2d563b6-f984-4ac5-904b-240134c60902"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "de5767ba-aeed-43b9-94c4-fbe27c2d4aff"
+								"uuid": "bb065389-eaa6-414e-8d31-52cf1a6463bb"
 							}
 						],
 						"body": {
@@ -713,12 +713,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "79e200a9-582f-46d7-ab99-61c0875ab62f"
+								"uuid": "4b6cc6c9-8486-42b2-881d-7bde4de9aac5"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "9cac08e5-dfbb-41f0-b7b7-ce423f94162f"
+								"uuid": "d8e7f5c2-8903-4515-981f-a5a08569432c"
 							}
 						],
 						"body": {
@@ -785,12 +785,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "11886eec-bdca-4e1e-8fac-2a15d5955f93"
+								"uuid": "9765c2dd-9c0f-4f98-8df8-c73c0db71ffc"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "4c4fe8e7-b003-4ddc-abbd-8d2a56ef9830"
+								"uuid": "34859926-808c-4e7d-97a1-7f8c0b1afeac"
 							}
 						],
 						"body": {
@@ -851,12 +851,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "f3691e86-163b-4e14-8387-69756457b4ec"
+								"uuid": "6d27576a-2413-46f0-99e3-6cc8b5f7a756"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "06d06391-67b2-43fd-9874-a20dd5be84c5"
+								"uuid": "b09e3ce2-a24f-4dd1-9ebb-b37b7b6dd7e3"
 							}
 						],
 						"body": {
@@ -904,12 +904,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "0aaa342a-9ff3-4f7f-97e5-5d64d429f65f"
+								"uuid": "ef1cfaf1-65c2-46d1-b12d-01e8cc5073ff"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "644c27a0-ec1e-4d04-86e9-facb4c81b448"
+								"uuid": "5a32aed1-1c6b-4aca-9251-62e87f1c8467"
 							}
 						],
 						"body": {
@@ -958,12 +958,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "7b3d8ac7-f687-4a70-8b66-7d133f1297cb"
+								"uuid": "c69b6cde-16fd-4ad2-8cb9-14e634ba33e7"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "359fecb5-5e5a-45b3-8366-86866d450575"
+								"uuid": "e0fba4cc-19e2-4d67-8e6a-93a2e24ed679"
 							}
 						],
 						"body": {
@@ -1029,12 +1029,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "ca46f026-7f6e-457d-b904-9dda12e0c87e"
+								"uuid": "43c4a9ff-51d7-4b42-a2f9-5b7a48de8d0a"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "72122add-026c-4702-99fa-67b5e484343d"
+								"uuid": "9d79f462-26b4-4d99-b1b0-0b676dce8e37"
 							}
 						],
 						"body": {
@@ -1074,12 +1074,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "3a50d6a2-7a0b-416d-a136-602a808c95ed"
+								"uuid": "79b65c30-ba2c-4ed7-95b1-81cc73f59487"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "c18842b2-3c7b-4893-bf2d-1c830fbc255a"
+								"uuid": "a73d1e14-827b-4fe6-94a9-f3e2159acb0e"
 							}
 						],
 						"body": {
@@ -1126,12 +1126,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "e2b1c384-078e-4d1a-9bfa-2509b0ac1581"
+								"uuid": "cc3a5bb4-77b8-4d34-9c4d-de7b82331a46"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "bf997e97-2650-43f0-9c78-14b147919a66"
+								"uuid": "71aab2d8-9042-40b0-8d1a-6be99b6983db"
 							}
 						],
 						"body": {
@@ -1171,12 +1171,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "8ce1188b-d140-46de-92a1-9b12f68b10ce"
+								"uuid": "26b25ac1-5aaf-4497-825c-3ceeee9c987a"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer bad-api-key",
-								"uuid": "46705832-b785-4aa3-b161-6600dbc17990"
+								"uuid": "70acd729-715f-4976-b030-242f4d764dad"
 							}
 						],
 						"body": {
@@ -1243,12 +1243,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "ea15d594-a6a5-4b88-bb5c-b949bfca3dbf"
+								"uuid": "fad599dd-2217-4c7b-8a57-f84ae3001560"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "9525bbec-bee3-4575-bb60-449026082740"
+								"uuid": "286c3715-2cb0-45d8-b804-1630c74e10fc"
 							}
 						],
 						"body": {
@@ -1309,12 +1309,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "a8840fec-b490-498d-a25f-34c5fbe8909b"
+								"uuid": "003bc66d-6815-4f95-bf09-5acaf5f39460"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "4a9723b0-3f61-4434-b9b6-4fff6fc76116"
+								"uuid": "56e7de7a-0422-4729-9251-28c96d1dea3e"
 							}
 						],
 						"body": {
@@ -1362,12 +1362,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "62a589a8-b3be-46b6-afa6-5482ff27e0d4"
+								"uuid": "65f2437f-4cb2-4970-9a90-46b99591ac92"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "2147ac32-41b0-471d-88cd-e8a98dce3667"
+								"uuid": "e577930c-ad3a-4873-a80f-342b7ca8e3fa"
 							}
 						],
 						"body": {
@@ -1416,12 +1416,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "faf4c499-f716-4e15-89c3-d72431e6e688"
+								"uuid": "e9c945c7-71b3-4332-b626-bf7fa3d0aef2"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "cb6b3e54-c6f0-4d49-b5e8-7eb07977c76d"
+								"uuid": "ae14c44d-1b25-4db6-98b2-068beeb24fbf"
 							}
 						],
 						"body": {
@@ -1488,12 +1488,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "d774a94c-f3d1-47fa-93b4-fa78a81ad628"
+								"uuid": "79ad3ef1-4d4b-4b6e-b149-d1e902a61b1e"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "2a769c05-c0c1-4fa5-b782-5fd531d00f6b"
+								"uuid": "6584bbe2-f89a-43bc-a577-df28b6bea236"
 							}
 						],
 						"body": {
@@ -1554,12 +1554,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "deb135d0-e3dd-4985-9d02-03742650e9cd"
+								"uuid": "a7b5112e-a17c-45d0-84aa-15a2d997f676"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "8cded3e6-a096-42aa-8d58-ddee6c9dee6a"
+								"uuid": "a9819117-e3eb-4314-970d-fe4057114f66"
 							}
 						],
 						"body": {
@@ -1607,12 +1607,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "aa3e6082-5b98-4714-b0b3-feb48923a91a"
+								"uuid": "c95ac4ed-5d03-418a-9207-52b833abb9a2"
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "644ee7a5-e904-4385-874e-ffef457fd586"
+								"uuid": "3842547c-41ff-4ad0-b21e-fa767919d87b"
 							}
 						],
 						"body": {
@@ -1661,12 +1661,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "5ee0b9c0-eb59-4e95-a44c-d8d5cecf156f"
+								"uuid": "4e62effd-b6a5-4a31-bc59-07fb063ca7d5"
 							},
 							{
 								"key": "Authorization",
 								"value": "bad-api-key",
-								"uuid": "e0d5c72c-1dbd-491e-be9b-9145de829156"
+								"uuid": "6ff0ce5b-1853-43a7-8805-7e2f239c4fcf"
 							}
 						],
 						"body": {
@@ -1728,7 +1728,7 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "53104364-acc4-4270-a684-9e34f7b75ba0"
+								"uuid": "778470f7-5985-4b48-8578-7f85edb33076"
 							}
 						],
 						"body": {
@@ -1783,7 +1783,7 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "4a060333-9383-40a4-9c82-e01f82178b92"
+								"uuid": "d48a9865-06dd-4d38-a7a5-becbdef345dc"
 							}
 						],
 						"body": {
@@ -1837,7 +1837,7 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "c3fc5c95-a328-4880-9995-21e9b22e7cd0"
+								"uuid": "d64daeb6-5161-477b-b895-a9afdf7aef25"
 							}
 						],
 						"body": {
@@ -1891,7 +1891,7 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "f2879ae4-245f-4b37-a155-de38051afa8c"
+								"uuid": "3d0dc04a-8f43-4676-a052-c81f41ee0ec5"
 							}
 						],
 						"body": {
@@ -1958,12 +1958,12 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "2020842f-be12-4546-862a-bbc799e1d34c"
+								"uuid": "4cd65a99-ae4b-4c47-bf92-3749481772a9"
 							},
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "792e6175-b167-4985-929f-7b3bf0932cfe"
+								"uuid": "4d3c208b-a0c1-47cb-a347-3eddb7c695f8"
 							}
 						],
 						"body": {
@@ -2016,12 +2016,12 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{apikey}}",
-								"uuid": "bd59054d-4560-41fc-8dc6-d5f244b6a7f6"
+								"uuid": "ae0d24c8-b2e5-40ee-89e3-c4743f3ff32d"
 							},
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "8cc7080c-cee5-4881-8502-c7453bb2a9af"
+								"uuid": "cc4181a0-27f9-4fb3-986c-a2a4430d2013"
 							}
 						],
 						"body": {
@@ -2377,6 +2377,130 @@
 							"mode": "graphql",
 							"graphql": {
 								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        unknownValue: \"Some unknown parameter\",\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Push Notification",
+			"item": [
+				{
+					"name": "PushNotifiation_Android",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"uuid": "781a9d80-3b08-4149-8d07-c348bca08bf3"
+							},
+							{
+								"key": "x-api-key",
+								"value": "OsmoX-test-key",
+								"uuid": "2ad1dbf3-89a0-4fa1-8b67-9dce6f2c524f"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n    \"providerId\": 10,\n    \"data\": {\n        \"message\": {\n            \"GCM\": \"{\\\"notification\\\":{\\\"title\\\":\\\"Test Notification\\\",\\\"body\\\":\\\"This is a test notification\\\"}}\"},\n        \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/GCM/OQSHA-Android/7fb080a5-a5e9-38f0-98fe-ebd0396e0076\" \n        \n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PushNotification_IOS",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"uuid": "90889547-1c38-4be2-a6db-fc03bb0f489f"
+							},
+							{
+								"key": "x-api-key",
+								"value": "OsmoX-test-key",
+								"uuid": "09ca413e-4431-4474-87e5-dbca43da369e"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 10 also has channelType 4\n    \"providerId\": 10,\n    \"data\": {\n        \"message\": {\n             \"APNS_SANDBOX\": \"{\\\"aps\\\":{\\\"alert\\\":{\\\"title\\\":\\\"Hello World\\\",\\\"body\\\":\\\"This is a test message\\\"},\\\"sound\\\":\\\"default\\\"}}\"\n        },\n        // \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/GCM/OQSHA-Android/7fb080a5-a5e9-38f0-98fe-ebd0396e0076\" \n        \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/APNS_SANDBOX/OQSHA-iOS-Dev/57711edf-6265-32fc-be15-1a0cfdcad72e\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Request to add push notification"
+		},
+		{
+			"name": "Webhook",
+			"item": [
+				{
+					"name": "Register Webhook",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "OsmoX-test-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"uuid": "ed891341-a3f0-47c6-ab21-411854882e7d"
+							},
+							{
+								"key": "x-api-key",
+								"value": "OsmoX-test-key",
+								"uuid": "21780551-3bf5-40a2-82eb-a5b98404e227"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation RegisterWebhook {\n    webhook(createWebhookInput: {\n        providerId: 10,\n        webhookUrl: \"http://localhost:4200/webhook\",\n    }) {\n        webhookUrl\n        providerId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},
