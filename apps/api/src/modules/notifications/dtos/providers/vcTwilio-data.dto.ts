@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 
 export class VcTwilioDataDto {
   @IsNotEmpty()
@@ -13,6 +13,12 @@ export class VcTwilioDataDto {
 
   @IsOptional()
   twiml?: string;
+
+  @ValidateIf((obj: VcTwilioDataDto) => !obj.url && !obj.twiml)
+  @IsNotEmpty({
+    message: 'Request must include either a "url" or "twiml" parameter for Twilio voice calls',
+  })
+  validateUrlOrTwiml: string; // This is a dummy property to apply the custom validation logic
 
   // Remaining parameters
   @IsOptional()
