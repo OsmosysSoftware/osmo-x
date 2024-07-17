@@ -160,6 +160,7 @@ export class QueueService {
           await this.vcTwilioNotificationsConsumer.processVcTwilioNotificationConfirmationQueue(
             job.data.id,
           );
+          break;
         default:
           this.logger.error(
             `Unsupported action-providerType combination: ${action}-${providerType}`,
