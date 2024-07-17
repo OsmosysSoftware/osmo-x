@@ -117,7 +117,9 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
         Object.assign(vcTwilioData, value);
 
         if (!vcTwilioData.url && !vcTwilioData.twiml) {
-          throw new BadRequestException('Twilio VC body should have either url or twiml parameter');
+          throw new BadRequestException(
+            'Request must include either a "url" or "twiml" parameter for Twilio voice calls.',
+          );
         }
 
         await validateAndThrowError(vcTwilioData);

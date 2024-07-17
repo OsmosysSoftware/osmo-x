@@ -134,7 +134,9 @@ export class VcTwilioService {
     ];
 
     if (requestBody.url === undefined && requestBody.twiml === undefined) {
-      throw new BadRequestException('Twilio VC body should have either url or twiml parameter');
+      throw new BadRequestException(
+        'Request must include either a "url" or "twiml" parameter for Twilio voice calls.',
+      );
     }
 
     for (const key of allowedKeys) {
