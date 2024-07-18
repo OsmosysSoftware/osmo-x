@@ -56,7 +56,7 @@ export const ProviderDeliveryStatus = {
   },
   VC_TWILIO: {
     SUCCESS_STATES: ['completed'],
-    FAILURE_STATES: ['queued', 'ringing', 'in-progress', 'canceled', 'busy', 'no-answer', 'failed'],
+    FAILURE_STATES: ['canceled', 'busy', 'no-answer', 'failed'],
   },
 };
 

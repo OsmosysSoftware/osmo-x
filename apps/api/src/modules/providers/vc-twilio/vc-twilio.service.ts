@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as Twilio from 'twilio';
 import { ProvidersService } from '../providers.service';
 
@@ -132,12 +132,6 @@ export class VcTwilioService {
       'twiml',
       'applicationSid',
     ];
-
-    if (requestBody.url === undefined && requestBody.twiml === undefined) {
-      throw new BadRequestException(
-        'Request must include either a "url" or "twiml" parameter for Twilio voice calls',
-      );
-    }
 
     for (const key of allowedKeys) {
       if (requestBody[key] !== undefined) {

@@ -8,17 +8,13 @@ export class VcTwilioDataDto {
   to: string;
 
   // Need atleast one of url, twiml for successful request
-  @IsOptional()
-  url?: string;
+  @IsNotEmpty({ message: 'Must provide url or twiml paramater' })
+  @ValidateIf((obj) => !obj.twiml, { message: 'Must provide url or twiml paramater' })
+  url: string;
 
-  @IsOptional()
-  twiml?: string;
-
-  @ValidateIf((obj: VcTwilioDataDto) => !obj.url && !obj.twiml)
-  @IsNotEmpty({
-    message: 'Request must include either a "url" or "twiml" parameter for Twilio voice calls',
-  })
-  validateUrlOrTwiml: string; // This is a dummy property to apply the custom validation logic
+  @IsNotEmpty({ message: 'Must provide url or twiml paramater' })
+  @ValidateIf((obj) => !obj.url, { message: 'Must provide url or twiml paramater' })
+  twiml: string;
 
   // Remaining parameters
   @IsOptional()
