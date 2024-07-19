@@ -23,7 +23,6 @@ export abstract class NotificationConsumer {
     private readonly configService: ConfigService,
   ) {
     this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
-    // this.maxRetryCount = parseInt(this.configService.get('MAX_RETRY_COUNT', '3'));
   }
 
   async processNotificationQueue(
