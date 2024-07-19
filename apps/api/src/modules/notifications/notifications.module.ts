@@ -36,6 +36,8 @@ import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifi
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
 import { PushSnsModule } from '../providers/push-sns/push-sns.module';
 import { WebhookModule } from '../webhook/webhook.module';
+import { VcTwilioModule } from '../providers/vc-twilio/vc-twilio.module';
+import { VcTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/vcTwilio-notifications.job.consumer';
 
 const providerModules = [
   MailgunModule,
@@ -47,6 +49,7 @@ const providerModules = [
   WaTwilioBusinessModule,
   SmsKapsystemModule,
   PushSnsModule,
+  VcTwilioModule,
   ServerApiKeysModule,
   ApplicationsModule,
   UsersModule,
@@ -63,6 +66,7 @@ const consumers = [
   WaTwilioBusinessNotificationsConsumer,
   SmsKapsystemNotificationsConsumer,
   PushSnsNotificationConsumer,
+  VcTwilioNotificationsConsumer,
 ];
 
 @Module({
