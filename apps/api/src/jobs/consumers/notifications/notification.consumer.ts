@@ -23,6 +23,7 @@ export abstract class NotificationConsumer {
     private readonly configService: ConfigService,
   ) {
     this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
+    // this.maxRetryCount = parseInt(this.configService.get('MAX_RETRY_COUNT', '3'));
   }
 
   async processNotificationQueue(
@@ -82,6 +83,16 @@ export abstract class NotificationConsumer {
           `Notification with ID ${id} was not sent correctly as per provider. Another attempt will be made to send the notification`,
         );
         this.logger.log('Provider response: ' + JSON.stringify(response.result));
+
+        // Check to prevent program to constantly keep checking for confirmation status
+        if (notification.retryCount >= this.maxRetryCount) {
+          notification.deliveryStatus = DeliveryStatus.FAILED;
+          await this.notificationRepository.save(notification);
+          throw new Error(
+            `Max retry count threshold reached by Notification ID: ${notification.id}`,
+          );
+        }
+
         notification.retryCount++;
       }
 
