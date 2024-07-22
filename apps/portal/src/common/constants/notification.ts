@@ -8,6 +8,7 @@ export const DeliveryStatus = {
 };
 
 export const ChannelType = {
+  UNKNOWN: -1,
   SMTP: 1,
   MAILGUN: 2,
   WA_360_DAILOG: 3,
@@ -90,5 +91,12 @@ export const ChannelTypeMap = {
     providerName: 'Twilio',
     providerIcon: 'assets/icons/twilio.svg',
     style: 'voicecall',
+  },
+  [ChannelType.UNKNOWN]: {
+    serviceIcon: 'assets/icons/unknown.svg',
+    altText: 'Unknown Channel',
+    providerName: 'Unknown Provider',
+    providerIcon: 'assets/icons/unknown.svg',
+    style: 'unknown',
   },
 };
