@@ -85,7 +85,6 @@ export abstract class NotificationConsumer {
 
         // Check to prevent program to constantly keep checking for confirmation status
         if (notification.retryCount >= this.maxRetryCount) {
-          notification.deliveryStatus = DeliveryStatus.FAILED;
           throw new Error(
             `Max retry count threshold reached by Notification ID: ${notification.id}`,
           );
