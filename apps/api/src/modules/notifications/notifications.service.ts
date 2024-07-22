@@ -102,7 +102,7 @@ export class NotificationsService extends CoreService<Notification> {
     } catch (error) {
       this.isProcessingQueue = false;
       this.logger.error('Error fetching pending notifications');
-      this.logger.error(JSON.stringify(error, null, 2));
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       return;
     }
 
@@ -114,9 +114,9 @@ export class NotificationsService extends CoreService<Notification> {
         await this.notificationQueueService.addNotificationToQueue(QueueAction.SEND, notification);
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.PENDING;
-        notification.result = { result: error };
+        notification.result = { result: { message: error.message, stack: error.stack } };
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
-        this.logger.error(JSON.stringify(error, null, 2));
+        this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       } finally {
         await this.notificationRepository.save(notification);
       }
@@ -145,7 +145,7 @@ export class NotificationsService extends CoreService<Notification> {
     } catch (error) {
       this.isProcessingConfirmationQueue = false;
       this.logger.error('Error fetching awaiting confirmation notifications');
-      this.logger.error(JSON.stringify(error, null, 2));
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       return;
     }
 
@@ -163,7 +163,7 @@ export class NotificationsService extends CoreService<Notification> {
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
-        this.logger.error(JSON.stringify(error, null, 2));
+        this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
         await this.notificationRepository.save(notification);
       }
     }
