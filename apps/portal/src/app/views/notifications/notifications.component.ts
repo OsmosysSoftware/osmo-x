@@ -19,6 +19,8 @@ export class NotificationsComponent implements OnInit {
 
   allApplicationsList = [];
 
+  allPortalChannelTypes = ChannelType;
+
   channelTypeMap = ChannelTypeMap;
 
   deliveryStatusMap = {
