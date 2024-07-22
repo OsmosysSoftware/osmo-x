@@ -111,6 +111,7 @@ export class NotificationsService extends CoreService<Notification> {
     for (const notification of allPendingNotifications) {
       try {
         notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
+        await this.notificationRepository.save(notification);
         await this.notificationQueueService.addNotificationToQueue(QueueAction.SEND, notification);
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.PENDING;
@@ -156,6 +157,7 @@ export class NotificationsService extends CoreService<Notification> {
     for (const notification of allAwaitingConfirmationNotifications) {
       try {
         notification.deliveryStatus = DeliveryStatus.QUEUED_CONFIRMATION;
+        await this.notificationRepository.save(notification);
         await this.notificationQueueService.addNotificationToQueue(
           QueueAction.DELIVERY_STATUS,
           notification,
