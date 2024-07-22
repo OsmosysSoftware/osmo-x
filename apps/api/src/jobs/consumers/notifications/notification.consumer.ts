@@ -82,6 +82,14 @@ export abstract class NotificationConsumer {
           `Notification with ID ${id} was not sent correctly as per provider. Another attempt will be made to send the notification`,
         );
         this.logger.log('Provider response: ' + JSON.stringify(response.result));
+
+        // Check to prevent program to constantly keep checking for confirmation status
+        if (notification.retryCount >= this.maxRetryCount) {
+          throw new Error(
+            `Max retry count threshold reached by Notification ID: ${notification.id}`,
+          );
+        }
+
         notification.retryCount++;
       }
 
