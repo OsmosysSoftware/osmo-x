@@ -17,6 +17,7 @@ export const ChannelType = {
   WA_TWILIO_BUSINESS: 7,
   SMS_KAPSYSTEM: 8,
   PUSH_SNS: 9,
+  VC_TWILIO: 10,
 };
 
 export const QueueAction = {
@@ -52,6 +53,10 @@ export const ProviderDeliveryStatus = {
   SMS_KAPSYSTEM: {
     SUCCESS_STATES: ['DELIVRD'],
     FAILURE_STATES: ['EXPIRED', 'UNDELIV', 'FAILED'],
+  },
+  VC_TWILIO: {
+    SUCCESS_STATES: ['completed'],
+    FAILURE_STATES: ['canceled', 'busy', 'no-answer', 'failed'],
   },
 };
 

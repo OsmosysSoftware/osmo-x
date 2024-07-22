@@ -46,7 +46,7 @@ Here's a sample request body:
     "subject": "Test subject",                      // Email subject
     "text": "This is a test notification",          // Plain text version of the email
     "html": "<b>This is a test notification</b>",   // HTML version of the email
-    "attachment": [                                 // Attachments (optional)
+    "attachments": [                                 // Attachments (optional)
       {
         "filename": "names.txt",
         "content": "John Doe\nJane Doe",
@@ -61,7 +61,7 @@ In addition to the provided fields, there are several other options you can incl
 - **to:** An array or comma-separated string of email addresses to send mail.
 - **cc:** An array or comma-separated string of CC email addresses.
 - **bcc:** An array or comma-separated string of BCC email addresses.
-- **attachment:** An array of attachment objects, each containing `filename` and `data`. Now we support multiple MIME types with Buffer from base64.
+- **attachments:** An array of attachment objects, each containing `filename` and `content`. Now we support multiple MIME types with Buffer from base64.
 
 To create a base64 string from a file, you can use the following Node.js code:
 

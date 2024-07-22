@@ -21,6 +21,7 @@ import { Injectable } from '@nestjs/common';
 import { ProvidersService } from 'src/modules/providers/providers.service';
 import { SmsKapsystemDataDto } from 'src/modules/notifications/dtos/providers/smsKapsystem-data.dto';
 import { PushSnsDataDto } from 'src/modules/notifications/dtos/providers/pushSns-data.dto';
+import { VcTwilioDataDto } from 'src/modules/notifications/dtos/providers/vcTwilio-data.dto';
 
 @ValidatorConstraint({ name: 'isDataValidConstraint', async: true })
 @Injectable()
@@ -108,6 +109,13 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
         const pushSnsData = new PushSnsDataDto();
         Object.assign(pushSnsData, value);
         await validateAndThrowError(pushSnsData);
+        return true;
+      }
+
+      case ChannelType.VC_TWILIO: {
+        const vcTwilioData = new VcTwilioDataDto();
+        Object.assign(vcTwilioData, value);
+        await validateAndThrowError(vcTwilioData);
         return true;
       }
 
