@@ -128,11 +128,26 @@ export class NotificationsComponent implements OnInit {
     const variables = { filters: [] };
 
     if (this.selectedChannelType) {
-      variables.filters.push({
-        field: 'channelType',
-        operator: 'eq',
-        value: this.selectedChannelType.toString(),
-      });
+      if (this.selectedChannelType === this.allPortalChannelTypes.UNKNOWN) {
+        // Condition to filter all notifications with unknown channel type
+        const existingChannelTypes = Object.keys(ChannelTypeMap).filter(
+          (value) => value !== this.allPortalChannelTypes.UNKNOWN.toString(),
+        );
+        existingChannelTypes.forEach((key) => {
+          variables.filters.push({
+            field: 'channelType',
+            operator: 'ne',
+            value: key.toString(),
+          });
+        });
+      } else {
+        // Default behavior
+        variables.filters.push({
+          field: 'channelType',
+          operator: 'eq',
+          value: this.selectedChannelType.toString(),
+        });
+      }
     }
 
     if (this.selectedDeliveryStatus) {
