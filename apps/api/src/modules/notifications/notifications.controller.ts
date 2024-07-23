@@ -32,13 +32,15 @@ export class NotificationsController {
       this.logger.log('Notification created successfully.');
       return this.jsend.success({ notification: createdNotification });
     } catch (error) {
-      if (!(error instanceof HttpException)) {
-        error = new InternalServerErrorException(error.message);
+      let handledError = error;
+
+      if (!(handledError instanceof HttpException)) {
+        handledError = new InternalServerErrorException(handledError.message);
       }
 
       this.logger.error('Error while creating notification');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      throw error;
+      this.logger.error(JSON.stringify(handledError, ['message', 'stack'], 2));
+      throw handledError;
     }
   }
 }
