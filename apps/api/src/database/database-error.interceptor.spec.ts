@@ -31,7 +31,7 @@ describe('DatabaseErrorInterceptor', () => {
       .pipe(
         catchError((error) => {
           expect(error).toBeInstanceOf(InternalServerErrorException);
-          expect(error.message).toBe('Database error occurred');
+          expect(error.message).toBe(`Database error occurred: ${error.message}`);
           done();
           return of(null); // Prevent further propagation
         }),
@@ -50,7 +50,7 @@ describe('DatabaseErrorInterceptor', () => {
       .pipe(
         catchError((error) => {
           expect(error).toBeInstanceOf(Error);
-          expect(error.message).toBe('Other error');
+          expect(error.message).toBe(`Other error: ${error.message}`);
           done();
           return of(null); // Prevent further propagation
         }),
