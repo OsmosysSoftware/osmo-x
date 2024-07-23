@@ -14,7 +14,9 @@ export class DatabaseErrorInterceptor implements NestInterceptor {
     return next.handle().pipe(
       catchError((error) => {
         if (error.code === 'ER_BAD_FIELD_ERROR') {
-          return throwError(() => new InternalServerErrorException('Database error occurred'));
+          return throwError(
+            () => new InternalServerErrorException(`Database error occurred: ${error.message}`),
+          );
         }
 
         return throwError(() => error);

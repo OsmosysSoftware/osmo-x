@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Logger,
-  HttpException,
-  UseGuards,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Controller, Post, Body, Logger, HttpException, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { JsendFormatter } from 'src/common/jsend-formatter';
@@ -32,15 +24,13 @@ export class NotificationsController {
       this.logger.log('Notification created successfully.');
       return this.jsend.success({ notification: createdNotification });
     } catch (error) {
-      let handledError = error;
-
-      if (!(handledError instanceof HttpException)) {
-        handledError = new InternalServerErrorException(handledError.message);
+      if (error instanceof HttpException) {
+        throw error;
       }
 
       this.logger.error('Error while creating notification');
-      this.logger.error(JSON.stringify(handledError, ['message', 'stack'], 2));
-      throw handledError;
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+      throw error;
     }
   }
 }
