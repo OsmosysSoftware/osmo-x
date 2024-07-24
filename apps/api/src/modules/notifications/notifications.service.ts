@@ -115,7 +115,7 @@ export class NotificationsService extends CoreService<Notification> {
         await this.notificationQueueService.addNotificationToQueue(QueueAction.SEND, notification);
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.PENDING;
-        notification.result = { result: error };
+        notification.result = { result: { message: error.message, stack: error.stack } };
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
         this.logger.error(JSON.stringify(error, null, 2));
       } finally {
