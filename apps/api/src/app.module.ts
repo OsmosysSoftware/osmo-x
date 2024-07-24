@@ -11,6 +11,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { AuthModule } from './modules/auth/auth.module';
 import { WebhookModule } from './modules/webhook/webhook.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { DatabaseErrorInterceptor } from './database/database-error.interceptor';
 
 const configService = new ConfigService();
 @Module({
@@ -39,6 +41,12 @@ const configService = new ConfigService();
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DatabaseErrorInterceptor,
+    },
+  ],
 })
 export class AppModule {}

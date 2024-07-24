@@ -30,7 +30,7 @@ export class NotificationsController {
 
       this.logger.error('Error while creating notification');
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      return this.jsend.error(error.message);
+      throw error;
     }
   }
 }
