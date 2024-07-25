@@ -9,6 +9,4 @@ export interface Notification {
   createdBy: string;
   updatedBy: string;
   status: number;
-  applicationId?: number;
-  providerId?: number;
 }
