@@ -1,5 +1,10 @@
 <div class="p-grid p-justify-center container">
-  <h2 class="p-col-12">Notifications</h2>
+  <div class="controlbar">
+    <h2 class="p-col-12">Notifications</h2>
+    <p-button (onClick)="loadMoreNotifications()" [disabled]="!isNewRecordButtonEnabled"
+      >Load more entries</p-button
+    >
+  </div>
 
   <p-toast key="tst"></p-toast>
 
@@ -27,6 +32,8 @@
         placeholder="Select an Application"
         class="grid-dropdown"
         [showClear]="false"
+        (onChange)="isNewRecordButtonEnabled = true"
+        (onChange)="currentLimit = maxSizeLimitMap"
         (onChange)="loadNotifications()"
         *ngIf="allApplicationsList.length !== 0"
       ></p-dropdown>
@@ -40,7 +47,6 @@
         [rows]="pageSize"
         [paginator]="true"
         [totalRecords]="totalRecords"
-        (onPage)="onPageChange($event)"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         [rowsPerPageOptions]="pageSizeOptions"

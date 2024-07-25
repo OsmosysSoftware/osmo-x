@@ -67,6 +67,14 @@ export class NotificationsComponent implements OnInit {
 
   totalRecords = 0;
 
+  oldTotalRecords = 0;
+
+  maxSizeLimitMap = 28;
+
+  currentLimit = this.maxSizeLimitMap;
+
+  isNewRecordButtonEnabled = true;
+
   displayedNotifications: Notification[] = [];
 
   jsonDialogData: Record<string, unknown>;
@@ -125,7 +133,7 @@ export class NotificationsComponent implements OnInit {
 
   loadNotifications() {
     this.loading = true;
-    const variables = { filters: [] };
+    const variables = { filters: [], limit: this.currentLimit };
 
     if (this.selectedChannelType) {
       if (this.selectedChannelType === this.allPortalChannelTypes.UNKNOWN) {
@@ -196,6 +204,33 @@ export class NotificationsComponent implements OnInit {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.displayedNotifications = this.filteredNotifications.slice(startIndex, endIndex);
+    this.updateButtonEnableOrDisable();
+  }
+
+  // load more notifications when pressed
+  loadMoreNotifications() {
+    this.oldTotalRecords = this.totalRecords;
+
+    if (this.totalRecords % this.maxSizeLimitMap === 0) {
+      this.currentLimit += this.maxSizeLimitMap;
+    }
+
+    this.loadNotifications();
+  }
+
+  updateButtonEnableOrDisable() {
+    // Handle disabling button after all entries have been loaded
+    if (this.totalRecords % this.maxSizeLimitMap !== 0 || this.totalRecords === 0) {
+      this.isNewRecordButtonEnabled = false;
+    } else {
+      this.isNewRecordButtonEnabled = true;
+    }
+
+    // Edge case when total records = current limit
+    // Also handle abnormal cases
+    if (this.oldTotalRecords >= this.totalRecords) {
+      this.isNewRecordButtonEnabled = false;
+    }
   }
 
   // Handle page change event

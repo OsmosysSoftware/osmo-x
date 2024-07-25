@@ -6,6 +6,12 @@ h2 {
   margin-top: 20px;
 }
 
+.controlbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .row {
   margin-bottom: 15px;
 }
