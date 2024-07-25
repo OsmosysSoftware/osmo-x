@@ -19,11 +19,11 @@ export class QueryOptionsDto {
   @Min(0)
   offset?: number = 0;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int, { defaultValue: 10, nullable: true })
   @IsOptional()
   @IsInt()
   @Min(1)
-  limit?: number;
+  limit?: number = 10;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
