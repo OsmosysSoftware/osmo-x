@@ -4,14 +4,12 @@ export const GetNotifications = gql`
   query GetNotifications($filters: [UniversalFilter!]) {
     notifications(options: { sortBy: "createdOn", sortOrder: DESC, filters: $filters }) {
       notifications {
-        applicationId
         channelType
         createdBy
         createdOn
         data
         deliveryStatus
         id
-        providerId
         result
         status
         updatedBy
