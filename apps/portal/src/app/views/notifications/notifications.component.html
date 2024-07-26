@@ -50,8 +50,6 @@
           <tr>
             <th>Notification ID</th>
             <th>Channel Type</th>
-            <th>Application Id</th>
-            <th>Provider Id</th>
             <th>Created By</th>
             <th>Created On</th>
             <th>Updated By</th>
@@ -67,34 +65,66 @@
             <td>
               <div class="flex align-items-center gap-2">
                 <p-tag
-                  [styleClass]="'channel-type-' + channelTypeMap[notification.channelType].style"
+                  [styleClass]="
+                    'channel-type-' +
+                    (
+                      channelTypeMap[notification.channelType] ||
+                      channelTypeMap[allPortalChannelTypes.UNKNOWN]
+                    ).style
+                  "
                   [rounded]="true"
                 >
                   <img
-                    [alt]="channelTypeMap[notification.channelType].altText"
-                    [src]="channelTypeMap[notification.channelType].serviceIcon"
+                    [alt]="
+                      (
+                        channelTypeMap[notification.channelType] ||
+                        channelTypeMap[allPortalChannelTypes.UNKNOWN]
+                      ).altText
+                    "
+                    [src]="
+                      (
+                        channelTypeMap[notification.channelType] ||
+                        channelTypeMap[allPortalChannelTypes.UNKNOWN]
+                      ).serviceIcon
+                    "
                     class="channel-type-icon"
                   />
                 </p-tag>
                 <p-tag
                   [styleClass]="
                     'channel-type-text channel-type-' +
-                    channelTypeMap[notification.channelType].style
+                    (
+                      channelTypeMap[notification.channelType] ||
+                      channelTypeMap[allPortalChannelTypes.UNKNOWN]
+                    ).style
                   "
                 >
                   <div class="flex align-items-center gap-2">
-                    {{ channelTypeMap[notification.channelType].providerName }}
+                    {{
+                      (
+                        channelTypeMap[notification.channelType] ||
+                        channelTypeMap[allPortalChannelTypes.UNKNOWN]
+                      ).providerName
+                    }}
                     <img
-                      [alt]="channelTypeMap[notification.channelType].providerName"
-                      [src]="channelTypeMap[notification.channelType].providerIcon"
+                      [alt]="
+                        (
+                          channelTypeMap[notification.channelType] ||
+                          channelTypeMap[allPortalChannelTypes.UNKNOWN]
+                        ).providerName
+                      "
+                      [src]="
+                        (
+                          channelTypeMap[notification.channelType] ||
+                          channelTypeMap[allPortalChannelTypes.UNKNOWN]
+                        ).providerIcon
+                      "
                       class="channel-type-icon"
                     />
                   </div>
                 </p-tag>
               </div>
             </td>
-            <td>{{ notification.applicationId }}</td>
-            <td>{{ notification.providerId }}</td>
             <td>{{ notification.createdBy }}</td>
             <td>{{ notification.createdOn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
             <td>{{ notification.updatedBy }}</td>

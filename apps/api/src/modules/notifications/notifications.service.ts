@@ -111,10 +111,11 @@ export class NotificationsService extends CoreService<Notification> {
     for (const notification of allPendingNotifications) {
       try {
         notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
+        await this.notificationRepository.save(notification);
         await this.notificationQueueService.addNotificationToQueue(QueueAction.SEND, notification);
       } catch (error) {
         notification.deliveryStatus = DeliveryStatus.PENDING;
-        notification.result = { result: error };
+        notification.result = { result: { message: error.message, stack: error.stack } };
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
         this.logger.error(JSON.stringify(error, null, 2));
       } finally {
@@ -156,6 +157,7 @@ export class NotificationsService extends CoreService<Notification> {
     for (const notification of allAwaitingConfirmationNotifications) {
       try {
         notification.deliveryStatus = DeliveryStatus.QUEUED_CONFIRMATION;
+        await this.notificationRepository.save(notification);
         await this.notificationQueueService.addNotificationToQueue(
           QueueAction.DELIVERY_STATUS,
           notification,

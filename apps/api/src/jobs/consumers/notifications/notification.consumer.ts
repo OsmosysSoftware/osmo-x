@@ -54,7 +54,7 @@ export abstract class NotificationConsumer {
         notification.deliveryStatus = DeliveryStatus.FAILED;
       }
 
-      notification.result = { result: error };
+      notification.result = { result: { message: error.message, stack: error.stack } };
       this.logger.error(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {
@@ -82,6 +82,14 @@ export abstract class NotificationConsumer {
           `Notification with ID ${id} was not sent correctly as per provider. Another attempt will be made to send the notification`,
         );
         this.logger.log('Provider response: ' + JSON.stringify(response.result));
+
+        // Check to prevent program to constantly keep checking for confirmation status
+        if (notification.retryCount >= this.maxRetryCount) {
+          throw new Error(
+            `Max retry count threshold reached by Notification ID: ${notification.id}`,
+          );
+        }
+
         notification.retryCount++;
       }
 

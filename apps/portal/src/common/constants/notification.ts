@@ -8,6 +8,7 @@ export const DeliveryStatus = {
 };
 
 export const ChannelType = {
+  UNKNOWN: -1,
   SMTP: 1,
   MAILGUN: 2,
   WA_360_DAILOG: 3,
@@ -17,6 +18,7 @@ export const ChannelType = {
   WA_TWILIO_BUSINESS: 7,
   SMS_KAPSYSTEM: 8,
   PUSH_SNS: 9,
+  VC_TWILIO: 10,
 };
 
 export const ChannelTypeMap = {
@@ -82,5 +84,19 @@ export const ChannelTypeMap = {
     providerName: 'AWS SNS',
     providerIcon: 'assets/icons/aws.png',
     style: 'pushsns',
+  },
+  [ChannelType.VC_TWILIO]: {
+    serviceIcon: 'assets/icons/voicecall.svg',
+    altText: 'Voice Call',
+    providerName: 'Twilio',
+    providerIcon: 'assets/icons/twilio.svg',
+    style: 'voicecall',
+  },
+  [ChannelType.UNKNOWN]: {
+    serviceIcon: 'assets/icons/unknown.svg',
+    altText: 'Unknown Channel',
+    providerName: 'Unknown Provider',
+    providerIcon: 'assets/icons/unknown.svg',
+    style: 'unknown',
   },
 };
