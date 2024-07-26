@@ -234,37 +234,6 @@ export class NotificationsComponent implements OnInit {
       });
   }
 
-  // Logic to append notifications
-  appendNotifications() {
-    this.loading = true;
-    const variables = { limit: this.fixedChunkSize, offset: this.currentOffset, filters: [] };
-
-    // set the token based on selected application
-    const tokenForSelectedApplication = this.setTokenForSelectedApplication();
-
-    // Fetch notifications and handle errors
-    this.notificationService
-      .getNotifications(variables, tokenForSelectedApplication)
-      .pipe(
-        // catchError operator to handle errors
-        catchError((error) => {
-          this.messageService.add({
-            key: 'tst',
-            severity: 'error',
-            summary: 'Error',
-            detail: `There was an error while appending notifications. Reason: ${error.message}`,
-          });
-          return of([]);
-        }),
-      )
-      .subscribe((appendedNotifications: Notification[]) => {
-        this.notifications.push(...appendedNotifications);
-        // Apply filters to the merged array of notifications
-        this.applyFilters();
-        this.loading = false;
-      });
-  }
-
   // Handle page change event
   onPageChange(event) {
     this.currentPage = event.page;
@@ -274,19 +243,18 @@ export class NotificationsComponent implements OnInit {
     const currentPageTab = parseInt(event.first, 10) + parseInt(event.rows, 10);
 
     if (
-      currentPageTab % this.fixedChunkSize === 0 && // selected page is multiple of chunksize
+      this.totalRecords < this.totalRecordsForCurrentApplication &&
+      this.totalRecords % this.fixedChunkSize === 0 &&
       this.totalRecords > this.currentOffset &&
-      this.totalRecords === currentPageTab &&
+      this.totalRecords <= currentPageTab &&
       this.totalRecords !== 0
     ) {
-      if (this.totalRecords < this.totalRecordsForCurrentApplication) {
-        this.currentOffset += this.fixedChunkSize;
-        console.log(
-          `total records = ${this.totalRecords} current app total = ${this.totalRecordsForCurrentApplication}`,
-        );
-        console.log(`current offset = ${this.currentOffset}`);
-        this.appendNotifications();
-      }
+      this.currentOffset += this.fixedChunkSize;
+      console.log(
+        `total records = ${this.totalRecords} current app total = ${this.totalRecordsForCurrentApplication}`,
+      );
+      console.log(`current offset = ${this.currentOffset}`);
+      this.loadNotifications();
     } else {
       this.updateDisplayedNotifications();
     }

@@ -30,7 +30,7 @@ export class NotificationsService {
     );
   }
 
-  getTotalRecords(variables, inputToken): Observable<Number> {
+  getTotalRecords(variables, inputToken): Observable<number> {
     return this.graphqlService.query(GetTotalNumberOfRecords, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetNotificationsResponse>) => {
         const totalRecords = response.data?.notifications.total;
