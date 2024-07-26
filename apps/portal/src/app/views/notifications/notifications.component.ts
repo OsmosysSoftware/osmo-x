@@ -67,6 +67,12 @@ export class NotificationsComponent implements OnInit {
 
   totalRecords = 0;
 
+  totalRecordsForCurrentApplication = -1;
+
+  fixedChunkSize = 100;
+
+  currentOffset = 0;
+
   displayedNotifications: Notification[] = [];
 
   jsonDialogData: Record<string, unknown>;
@@ -83,7 +89,7 @@ export class NotificationsComponent implements OnInit {
   ngOnInit(): void {
     this.applications = this.getApplications();
     this.selectedApplication = this.setApplicationOnInit();
-    this.loadNotifications();
+    this.handleApplicationChange();
   }
 
   getApplications() {
@@ -125,7 +131,9 @@ export class NotificationsComponent implements OnInit {
 
   loadNotifications() {
     this.loading = true;
-    const variables = { filters: [] };
+    const setCurrentLimit = this.fixedChunkSize + this.currentOffset;
+    console.log(`currentLimit = ${setCurrentLimit}`);
+    const variables = { limit: setCurrentLimit, offset: 0, filters: [] };
 
     if (this.selectedChannelType) {
       if (this.selectedChannelType === this.allPortalChannelTypes.UNKNOWN) {
@@ -198,10 +206,99 @@ export class NotificationsComponent implements OnInit {
     this.displayedNotifications = this.filteredNotifications.slice(startIndex, endIndex);
   }
 
+  // Get the total number of records for current application
+  getTotalRecordsForCurrentApplication() {
+    const totalRecordvariables = { limit: 1, offset: 0 };
+
+    // set the token based on selected application
+    const tokenForSelectedApplication = this.setTokenForSelectedApplication();
+
+    // Fetch number of total records for current application and handle errors
+    this.notificationService
+      .getTotalRecords(totalRecordvariables, tokenForSelectedApplication)
+      .pipe(
+        // catchError operator to handle errors
+        catchError((error) => {
+          this.messageService.add({
+            key: 'tst',
+            severity: 'error',
+            summary: 'Error',
+            detail: `There was an error while fetching total number of records. Reason: ${error.message}`,
+          });
+          return of([]);
+        }),
+      )
+      .subscribe((totalResponse: number) => {
+        this.totalRecordsForCurrentApplication = -1;
+        this.totalRecordsForCurrentApplication = totalResponse;
+      });
+  }
+
+  // Logic to append notifications
+  appendNotifications() {
+    this.loading = true;
+    const variables = { limit: this.fixedChunkSize, offset: this.currentOffset, filters: [] };
+
+    // set the token based on selected application
+    const tokenForSelectedApplication = this.setTokenForSelectedApplication();
+
+    // Fetch notifications and handle errors
+    this.notificationService
+      .getNotifications(variables, tokenForSelectedApplication)
+      .pipe(
+        // catchError operator to handle errors
+        catchError((error) => {
+          this.messageService.add({
+            key: 'tst',
+            severity: 'error',
+            summary: 'Error',
+            detail: `There was an error while appending notifications. Reason: ${error.message}`,
+          });
+          return of([]);
+        }),
+      )
+      .subscribe((appendedNotifications: Notification[]) => {
+        this.notifications.push(...appendedNotifications);
+        // Apply filters to the merged array of notifications
+        this.applyFilters();
+        this.loading = false;
+      });
+  }
+
   // Handle page change event
   onPageChange(event) {
     this.currentPage = event.page;
-    this.updateDisplayedNotifications();
+    console.log(event);
+
+    // Logic to append values when user goes to last tab
+    const currentPageTab = parseInt(event.first, 10) + parseInt(event.rows, 10);
+
+    if (
+      currentPageTab % this.fixedChunkSize === 0 && // selected page is multiple of chunksize
+      this.totalRecords > this.currentOffset &&
+      this.totalRecords === currentPageTab &&
+      this.totalRecords !== 0
+    ) {
+      if (this.totalRecords < this.totalRecordsForCurrentApplication) {
+        this.currentOffset += this.fixedChunkSize;
+        console.log(
+          `total records = ${this.totalRecords} current app total = ${this.totalRecordsForCurrentApplication}`,
+        );
+        console.log(`current offset = ${this.currentOffset}`);
+        this.appendNotifications();
+      }
+    } else {
+      this.updateDisplayedNotifications();
+    }
+  }
+
+  handleApplicationChange() {
+    this.totalRecords = 0;
+    this.totalRecordsForCurrentApplication = -1;
+    this.notifications = [];
+    this.currentOffset = 0;
+    this.getTotalRecordsForCurrentApplication();
+    this.loadNotifications();
   }
 
   // Handle page size change event

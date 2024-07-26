@@ -27,7 +27,7 @@
         placeholder="Select an Application"
         class="grid-dropdown"
         [showClear]="false"
-        (onChange)="loadNotifications()"
+        (onChange)="handleApplicationChange()"
         *ngIf="allApplicationsList.length !== 0"
       ></p-dropdown>
     </div>
