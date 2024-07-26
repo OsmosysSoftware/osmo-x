@@ -132,7 +132,6 @@ export class NotificationsComponent implements OnInit {
   loadNotifications() {
     this.loading = true;
     const setCurrentLimit = this.fixedChunkSize + this.currentOffset;
-    console.log(`currentLimit = ${setCurrentLimit}`);
     const variables = { limit: setCurrentLimit, offset: 0, filters: [] };
 
     if (this.selectedChannelType) {
@@ -237,7 +236,6 @@ export class NotificationsComponent implements OnInit {
   // Handle page change event
   onPageChange(event) {
     this.currentPage = event.page;
-    console.log(event);
 
     // Logic to append values when user goes to last tab
     const currentPageTab = parseInt(event.first, 10) + parseInt(event.rows, 10);
@@ -250,10 +248,6 @@ export class NotificationsComponent implements OnInit {
       this.totalRecords !== 0
     ) {
       this.currentOffset += this.fixedChunkSize;
-      console.log(
-        `total records = ${this.totalRecords} current app total = ${this.totalRecordsForCurrentApplication}`,
-      );
-      console.log(`current offset = ${this.currentOffset}`);
       this.loadNotifications();
     } else {
       this.updateDisplayedNotifications();
