@@ -26,4 +26,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Command to start your NestJS application
-CMD ["node", "dist/src/main.js"]
+CMD src/modules/notifications/schedule/scheduler.sh & node dist/src/main.js

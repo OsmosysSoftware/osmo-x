@@ -12,6 +12,16 @@ export class NotificationsController {
     private logger: Logger,
   ) {}
 
+  @Post('queue')
+  async addNotificationsToQueue(): Promise<void> {
+    this.notificationService.addNotificationsToQueue();
+  }
+
+  @Post('confirm')
+  async getProviderConfirmation(): Promise<void> {
+    this.notificationService.getProviderConfirmation();
+  }
+
   @Post()
   @UseGuards(ApiKeyGuard)
   async addNotification(
