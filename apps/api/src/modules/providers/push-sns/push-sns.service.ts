@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SNS } from 'aws-sdk';
 import { ProvidersService } from '../providers.service';
 
@@ -10,10 +10,12 @@ export interface PushSnsData {
 @Injectable()
 export class PushSnsService {
   private sns: SNS;
+  private logger: Logger;
 
   constructor(private readonly providersService: ProvidersService) {}
 
   async assignSnsConfig(providerId: number): Promise<void> {
+    this.logger.debug('Started assigning SNS client');
     const snsConfig = await this.providersService.getConfigById(providerId);
 
     this.sns = new SNS({
@@ -33,6 +35,7 @@ export class PushSnsService {
       TargetArn: data.target,
     };
 
+    this.logger.debug('Sending SNS push notification');
     return this.sns.publish(params).promise();
   }
 }

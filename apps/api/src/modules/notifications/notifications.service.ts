@@ -211,6 +211,7 @@ export class NotificationsService extends CoreService<Notification> {
 
     // Get the applicationId currently being used for filtering data based on api key
     const filterApplicationId = await this.getApplicationIdFromApiKey(authorizationHeader);
+    this.logger.debug(`Fetch notifications with applicationId: ${filterApplicationId}`);
 
     const baseConditions = [
       { field: 'status', value: Status.ACTIVE },

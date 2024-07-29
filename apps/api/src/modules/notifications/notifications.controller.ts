@@ -19,6 +19,7 @@ export class NotificationsController {
   ): Promise<Record<string, unknown>> {
     try {
       // ApiKeyGuard checks if requested providerId is valid, correct channelType and applicationId present
+      this.logger.debug(`Notification Request Data: ${JSON.stringify(notificationData)}`);
       const createdNotification =
         await this.notificationService.createNotification(notificationData);
       this.logger.log('Notification created successfully.');

@@ -26,10 +26,16 @@ export class ApiKeyGuard implements CanActivate {
 
   async validateRequest(execContext: ExecutionContext): Promise<boolean> {
     const request = execContext.switchToHttp().getRequest();
+    this.logger.debug(
+      `Request validation started for request body: ${JSON.stringify(request.body)}`,
+    );
 
     // Get api key header incase of http request
     if (request && request.headers) {
+      this.logger.debug('HTTP Request was issued');
+      this.logger.debug('Fetching request header');
       const serverApiKeyHeader = request.headers['x-api-key'];
+      this.logger.debug('Fetching provider Id');
       const requestProviderId = request.body.providerId;
       const validationResult = await this.validateApiKeyHeader(
         serverApiKeyHeader,
@@ -44,7 +50,10 @@ export class ApiKeyGuard implements CanActivate {
     // Get api key header incase of graphql request
     const ctx = GqlExecutionContext.create(execContext);
     const req = ctx.getContext().req;
+    this.logger.debug('GraphQL Request was issued');
+    this.logger.debug('Fetching request header for GraphQL');
     const serverApiKeyHeader = req.headers['x-api-key'];
+    this.logger.debug('Fetching provider Id for GraphQL');
     const requestProviderId = request.body.providerId;
     const validationResult = await this.validateApiKeyHeader(serverApiKeyHeader, requestProviderId);
 
@@ -59,6 +68,7 @@ export class ApiKeyGuard implements CanActivate {
     serverApiKeyHeader: string,
     requestProviderId: number,
   ): Promise<boolean> {
+    this.logger.debug('validateApiKeyHeader started');
     let apiKeyToken = null;
 
     if (serverApiKeyHeader) {
@@ -69,6 +79,7 @@ export class ApiKeyGuard implements CanActivate {
     }
 
     const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
+    this.logger.debug(`Fetching Server API Key from request token: ${JSON.stringify(apiKeyEntry)}`);
 
     if (!apiKeyEntry) {
       //this.logger.error('Invalid x-api-key');
@@ -77,6 +88,7 @@ export class ApiKeyGuard implements CanActivate {
 
     // Get channel type from providerId & Set the channelType based on providerEntry
     const providerEntry = await this.providersService.getById(requestProviderId);
+    this.logger.debug(`Fetching provider by request providerId: ${JSON.stringify(providerEntry)}`);
 
     if (!providerEntry) {
       this.logger.error('Provider does not exist');
@@ -91,6 +103,9 @@ export class ApiKeyGuard implements CanActivate {
 
     // Set correct ApplicationId after verifying
     const inputApplicationId = await this.getApplicationIdFromApiKey(apiKeyToken);
+    this.logger.debug(
+      `Set correct ApplicationId for request: ${JSON.stringify(inputApplicationId)}`,
+    );
 
     if (inputApplicationId != providerEntry.applicationId) {
       this.logger.error('The applicationId for Server Key and Provider do not match.');
@@ -98,6 +113,9 @@ export class ApiKeyGuard implements CanActivate {
     }
 
     if (apiKeyToken && apiKeyToken === apiKeyEntry.apiKey) {
+      this.logger.debug(
+        'Requested providerId is valid. The applicationId for Server Key and Provider match. Valid Request.',
+      );
       return true;
     }
 

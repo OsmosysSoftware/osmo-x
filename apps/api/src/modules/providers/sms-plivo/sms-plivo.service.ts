@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as plivo from 'plivo';
 import { ProvidersService } from '../providers.service';
 
@@ -49,10 +49,12 @@ export interface PlivoMessageStatusResponse {
 @Injectable()
 export class SmsPlivoService {
   private plivoClient;
+  private logger: Logger;
 
   constructor(private readonly providersService: ProvidersService) {}
 
   async assignTransport(providerId: number): Promise<void> {
+    this.logger.debug('Started assigning transport for SMS Plivo');
     const smsPlivoConfig = await this.providersService.getConfigById(providerId);
     const authId = smsPlivoConfig.PLIVO_SMS_AUTH_ID as string;
     const authToken = smsPlivoConfig.PLIVO_SMS_AUTH_TOKEN as string;
@@ -65,6 +67,7 @@ export class SmsPlivoService {
       const smsPlivoConfig = await this.providersService.getConfigById(providerId);
       const fromNumber = smsPlivoConfig.PLIVO_SMS_NUMBER as string;
 
+      this.logger.debug('Sending Plivo SMS');
       const response = await this.plivoClient.messages.create({
         src: fromNumber,
         dst: body.to,
@@ -81,8 +84,10 @@ export class SmsPlivoService {
     providerId: number,
   ): Promise<PlivoMessageStatusResponse> {
     try {
+      this.logger.debug('Fetching delivery status from Plivo SMS');
       await this.assignTransport(providerId);
       const response = await this.plivoClient.messages.get(messageUuid);
+      this.logger.debug(`Delivery status: ${response}`);
       return response;
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);
