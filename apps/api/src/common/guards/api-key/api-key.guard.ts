@@ -88,7 +88,9 @@ export class ApiKeyGuard implements CanActivate {
 
     // Get channel type from providerId & Set the channelType based on providerEntry
     const providerEntry = await this.providersService.getById(requestProviderId);
-    this.logger.debug(`Fetching provider by request providerId: ${JSON.stringify(providerEntry)}`);
+    this.logger.debug(
+      `Fetched providerEntry from DB (using request providerId): ${JSON.stringify(providerEntry)}`,
+    );
 
     if (!providerEntry) {
       this.logger.error('Provider does not exist');
@@ -104,7 +106,7 @@ export class ApiKeyGuard implements CanActivate {
     // Set correct ApplicationId after verifying
     const inputApplicationId = await this.getApplicationIdFromApiKey(apiKeyToken);
     this.logger.debug(
-      `Set correct ApplicationId for request: ${JSON.stringify(inputApplicationId)}`,
+      `Fetched ApplicationId from DB using APIKeyToken: ${JSON.stringify(inputApplicationId)}`,
     );
 
     if (inputApplicationId != providerEntry.applicationId) {

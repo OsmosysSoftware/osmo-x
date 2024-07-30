@@ -15,7 +15,7 @@ export class NotificationQueueProducer {
   async addNotificationToQueue(queueType: string, notification: Notification): Promise<void> {
     const provider = await this.providersService.getById(notification.providerId);
     this.logger.debug(
-      `Fetched provider ${provider.providerId} from notification ${notification.id}`,
+      `Fetched provider ${JSON.stringify(provider)} from notification ${JSON.stringify(notification)}`,
     );
     const queue = this.queueService.getOrCreateQueue(
       queueType,
