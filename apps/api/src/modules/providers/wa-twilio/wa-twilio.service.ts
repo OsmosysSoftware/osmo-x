@@ -33,9 +33,11 @@ export interface WaTwilioResponseData {
 @Injectable()
 export class WaTwilioService {
   private twilioClient;
-  private logger: Logger;
 
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {}
 
   async assignTransport(providerId: number): Promise<void> {
     this.logger.debug('Started assigning transport for Whatsapp Twilio');

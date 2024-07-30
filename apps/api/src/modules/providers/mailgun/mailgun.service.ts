@@ -18,9 +18,11 @@ export class MailgunService {
   private mailgun: Mailgun;
   private mailgunClient: ReturnType<Mailgun['client']>;
   private mailgunDomain: string;
-  private logger: Logger;
 
-  constructor(private readonly providersService: ProvidersService) {
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {
     this.mailgun = new Mailgun(FormData);
   }
 

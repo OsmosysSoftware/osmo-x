@@ -10,9 +10,11 @@ export interface PushSnsData {
 @Injectable()
 export class PushSnsService {
   private sns: SNS;
-  private logger: Logger;
 
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {}
 
   async assignSnsConfig(providerId: number): Promise<void> {
     this.logger.debug('Started assigning SNS client');

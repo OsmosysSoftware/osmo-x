@@ -5,9 +5,11 @@ import { ProvidersService } from '../providers.service';
 @Injectable()
 export class SmtpService {
   private transporter: nodemailer.Transporter;
-  private logger: Logger;
 
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {}
 
   async assignTransport(providerId: number): Promise<void> {
     this.logger.debug('Started assigning smtp transport');

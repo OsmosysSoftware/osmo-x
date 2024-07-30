@@ -49,9 +49,11 @@ export interface PlivoMessageStatusResponse {
 @Injectable()
 export class SmsPlivoService {
   private plivoClient;
-  private logger: Logger;
 
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {}
 
   async assignTransport(providerId: number): Promise<void> {
     this.logger.debug('Started assigning transport for SMS Plivo');

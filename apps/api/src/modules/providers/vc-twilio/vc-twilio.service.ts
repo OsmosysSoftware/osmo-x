@@ -84,9 +84,11 @@ export interface VcTwilioResponseData {
 export class VcTwilioService {
   private twilioClient;
   private twilioVoiceCallObject: Partial<VcTwilioData>;
-  private logger: Logger;
 
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {}
 
   async assignTransport(providerId: number): Promise<void> {
     this.logger.debug('Started assigning transport for VC Twilio');
