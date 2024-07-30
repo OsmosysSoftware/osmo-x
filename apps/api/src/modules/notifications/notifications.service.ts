@@ -89,12 +89,17 @@ export class NotificationsService extends CoreService<Notification> {
   async addNotificationsToQueue(): Promise<void> {
     this.logger.log('Starting CRON job to add pending notifications to queue');
 
+    this.logger.debug(`isProcessingQueue value: ${this.isProcessingQueue}`);
+
     if (this.isProcessingQueue) {
       this.logger.log('Notifications are already being added to queue, skipping this CRON job');
       return;
     }
 
     this.isProcessingQueue = true;
+    this.logger.debug(
+      `isProcessingQueue value before initializing allPendingNotifications: ${this.isProcessingQueue}`,
+    );
     let allPendingNotifications: Notification[] = [];
 
     try {
@@ -103,6 +108,10 @@ export class NotificationsService extends CoreService<Notification> {
       this.isProcessingQueue = false;
       this.logger.error('Error fetching pending notifications');
       this.logger.error(JSON.stringify(error, null, 2));
+      this.logger.debug(
+        `isProcessingQueue value when error fetching pending notifications: ${this.isProcessingQueue}`,
+      );
+
       return;
     }
 
@@ -118,18 +127,26 @@ export class NotificationsService extends CoreService<Notification> {
         notification.result = { result: { message: error.message, stack: error.stack } };
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
         this.logger.error(JSON.stringify(error, null, 2));
+        this.logger.debug(
+          `isProcessingQueue value while adding notification with id: ${notification.id} to queue: ${this.isProcessingQueue}`,
+        );
       } finally {
         await this.notificationRepository.save(notification);
       }
     }
 
     this.isProcessingQueue = false;
+    this.logger.debug(
+      `isProcessingQueue value after adding ${allPendingNotifications.length} pending notifications to queue: ${this.isProcessingQueue}`,
+    );
   }
 
   async getProviderConfirmation(): Promise<void> {
     this.logger.log(
       'Starting CRON job to add notifications to queue for confirmation from provider',
     );
+
+    this.logger.debug(`isProcessingConfirmationQueue value: ${this.isProcessingConfirmationQueue}`);
 
     if (this.isProcessingConfirmationQueue) {
       this.logger.log(
@@ -139,6 +156,9 @@ export class NotificationsService extends CoreService<Notification> {
     }
 
     this.isProcessingConfirmationQueue = true;
+    this.logger.debug(
+      `isProcessingConfirmationQueue value before initializing allAwaitingConfirmationNotifications: ${this.isProcessingConfirmationQueue}`,
+    );
     let allAwaitingConfirmationNotifications: Notification[] = [];
 
     try {
@@ -147,6 +167,9 @@ export class NotificationsService extends CoreService<Notification> {
       this.isProcessingConfirmationQueue = false;
       this.logger.error('Error fetching awaiting confirmation notifications');
       this.logger.error(JSON.stringify(error, null, 2));
+      this.logger.debug(
+        `isProcessingConfirmationQueue value when error fetching awaiting confirmation notifications: ${this.isProcessingConfirmationQueue}`,
+      );
       return;
     }
 
@@ -166,11 +189,17 @@ export class NotificationsService extends CoreService<Notification> {
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
         this.logger.error(JSON.stringify(error, null, 2));
+        this.logger.debug(
+          `isProcessingConfirmationQueue value while adding notification with id: ${notification.id} to queue: ${this.isProcessingConfirmationQueue}`,
+        );
         await this.notificationRepository.save(notification);
       }
     }
 
     this.isProcessingConfirmationQueue = false;
+    this.logger.debug(
+      `isProcessingConfirmationQueue value after adding ${allAwaitingConfirmationNotifications.length} awaiting confirmation notifications to queue: ${this.isProcessingConfirmationQueue}`,
+    );
   }
 
   getPendingNotifications(): Promise<Notification[]> {
