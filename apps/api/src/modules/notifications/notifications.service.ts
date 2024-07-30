@@ -44,6 +44,9 @@ export class NotificationsService extends CoreService<Notification> {
     // Set correct application name using applicationId
     notification.createdBy = await this.getApplicationNameFromId(notification.applicationId);
     notification.updatedBy = await this.getApplicationNameFromId(notification.applicationId);
+    this.logger.debug(
+      `New Notification created. Saving notification in DB: ${JSON.stringify(notification)}`,
+    );
     return this.notificationRepository.save(notification);
   }
 
@@ -119,10 +122,19 @@ export class NotificationsService extends CoreService<Notification> {
 
     for (const notification of allPendingNotifications) {
       try {
+        this.logger.debug(
+          `NotificationId: ${notification.id}, DeliveryStatus: ${notification.deliveryStatus}`,
+        );
         notification.deliveryStatus = DeliveryStatus.IN_PROGRESS;
+        this.logger.debug(
+          `Updated deliveryStatus to ${DeliveryStatus.IN_PROGRESS}. Saving notification in DB: ${JSON.stringify(notification)}`,
+        );
         await this.notificationRepository.save(notification);
         await this.notificationQueueService.addNotificationToQueue(QueueAction.SEND, notification);
       } catch (error) {
+        this.logger.debug(
+          `Error encountered. NotificationId: ${notification.id}, DeliveryStatus: ${notification.deliveryStatus}`,
+        );
         notification.deliveryStatus = DeliveryStatus.PENDING;
         notification.result = { result: { message: error.message, stack: error.stack } };
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
@@ -131,6 +143,7 @@ export class NotificationsService extends CoreService<Notification> {
           `isProcessingQueue value while adding notification with id: ${notification.id} to queue: ${this.isProcessingQueue}`,
         );
       } finally {
+        this.logger.debug(`Saving notification in DB: ${JSON.stringify(notification)}`);
         await this.notificationRepository.save(notification);
       }
     }
@@ -179,18 +192,30 @@ export class NotificationsService extends CoreService<Notification> {
 
     for (const notification of allAwaitingConfirmationNotifications) {
       try {
+        this.logger.debug(
+          `NotificationId: ${notification.id}, DeliveryStatus: ${notification.deliveryStatus}`,
+        );
         notification.deliveryStatus = DeliveryStatus.QUEUED_CONFIRMATION;
+        this.logger.debug(
+          `Updated deliveryStatus to ${DeliveryStatus.QUEUED_CONFIRMATION}. Saving notification in DB: ${JSON.stringify(notification)}`,
+        );
         await this.notificationRepository.save(notification);
         await this.notificationQueueService.addNotificationToQueue(
           QueueAction.DELIVERY_STATUS,
           notification,
         );
       } catch (error) {
+        this.logger.debug(
+          `Error encountered. NotificationId: ${notification.id}, DeliveryStatus: ${notification.deliveryStatus}`,
+        );
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
         this.logger.error(JSON.stringify(error, null, 2));
         this.logger.debug(
           `isProcessingConfirmationQueue value while adding notification with id: ${notification.id} to queue: ${this.isProcessingConfirmationQueue}`,
+        );
+        this.logger.debug(
+          `Updated Delivery status to ${DeliveryStatus.AWAITING_CONFIRMATION}. Saving notification in DB: ${JSON.stringify(notification)}`,
         );
         await this.notificationRepository.save(notification);
       }

@@ -71,6 +71,9 @@ export abstract class NotificationConsumer {
       this.logger.error(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {
+      this.logger.debug(
+        `processNotificationQueue completed. Saving notification in DB: ${JSON.stringify(notification)}`,
+      );
       await this.notificationRepository.save(notification);
     }
   }
@@ -129,7 +132,9 @@ export abstract class NotificationConsumer {
       );
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {
-      this.logger.debug('Saving notification data in DB');
+      this.logger.debug(
+        `processAwaitingConfirmationNotificationQueue completed. Saving notification in DB: ${JSON.stringify(notification)}`,
+      );
       await this.notificationRepository.save(notification);
     }
   }

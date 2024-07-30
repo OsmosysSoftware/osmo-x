@@ -13,6 +13,7 @@ export class NotificationQueueProducer {
   ) {}
 
   async addNotificationToQueue(queueType: string, notification: Notification): Promise<void> {
+    this.logger.debug('Started addNotificationToQueue');
     const provider = await this.providersService.getById(notification.providerId);
     this.logger.debug(
       `Fetched provider ${JSON.stringify(provider)} from notification ${JSON.stringify(notification)}`,
