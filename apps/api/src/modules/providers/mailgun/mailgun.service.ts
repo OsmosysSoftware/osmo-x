@@ -37,12 +37,8 @@ export class MailgunService {
     mailgunNotificationData: MailgunMessageData,
     providerId: number,
   ): Promise<MessagesSendResult> {
-    try {
-      await this.assignClient(providerId);
-      return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
-    } catch (error) {
-      throw new Error(`Failed to send message: ${error.message}`);
-    }
+    await this.assignClient(providerId);
+    return this.mailgunClient.messages.create(this.mailgunDomain, mailgunNotificationData);
   }
 
   async formatNotificationData(
