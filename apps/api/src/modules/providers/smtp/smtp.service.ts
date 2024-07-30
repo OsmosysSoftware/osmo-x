@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ProvidersService } from '../providers.service';
 
@@ -6,9 +6,13 @@ import { ProvidersService } from '../providers.service';
 export class SmtpService {
   private transporter: nodemailer.Transporter;
 
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {}
 
   async assignTransport(providerId: number): Promise<void> {
+    this.logger.debug('Started assigning smtp transport');
     const smtpConfig = await this.providersService.getConfigById(providerId);
     this.transporter = nodemailer.createTransport({
       host: smtpConfig.SMTP_HOST as string,
@@ -25,6 +29,7 @@ export class SmtpService {
     providerId: number,
   ): Promise<string> {
     await this.assignTransport(providerId);
+    this.logger.debug('Sending SMTP email');
     return this.transporter.sendMail(smtpNotificationData);
   }
 }

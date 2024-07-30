@@ -58,11 +58,13 @@ export class ProvidersService extends CoreService<Provider> {
   }
 
   async getConfigById(providerId: number): Promise<Record<string, unknown> | null> {
+    this.logger.debug(`Fetching config for provider with id: ${providerId}`);
     const configEntity = await this.providerRepository.findOne({
       where: { providerId, status: Status.ACTIVE },
     });
 
     if (configEntity) {
+      this.logger.debug('config entry fetched successfully');
       return configEntity.configuration as unknown as Record<string, unknown>;
     }
 
