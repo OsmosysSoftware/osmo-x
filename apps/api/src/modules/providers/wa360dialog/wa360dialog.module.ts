@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { Wa360dialogService } from './wa360dialog.service';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
@@ -7,7 +7,7 @@ import { ProvidersService } from '../providers.service';
 
 @Module({
   imports: [HttpModule, ConfigModule, ProvidersModule],
-  providers: [Wa360dialogService, ProvidersService],
+  providers: [Wa360dialogService, ProvidersService, Logger],
   exports: [Wa360dialogService],
 })
 export class Wa360dialogModule {}

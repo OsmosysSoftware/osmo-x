@@ -3,6 +3,9 @@ import { transports, format } from 'winston';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import 'winston-daily-rotate-file';
+import { ConfigService } from '@nestjs/config';
+
+const configService = new ConfigService();
 
 const logDir = 'logs';
 const logFormat = format.combine(
@@ -57,5 +60,6 @@ const transportsConfig = [
 ];
 
 export const loggerConfig = WinstonModule.createLogger({
+  level: configService.get('LOG_LEVEL', 'info'),
   transports: transportsConfig,
 });

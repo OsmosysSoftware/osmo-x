@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ProvidersService } from '../providers.service';
 
 export interface Wa360DialogData {
@@ -50,9 +50,11 @@ export class Wa360dialogService {
   constructor(
     private httpService: HttpService,
     private readonly providersService: ProvidersService,
+    private logger: Logger,
   ) {}
 
   async assignWA360Values(providerId: number): Promise<void> {
+    this.logger.debug('Started assigning 360Dialog Whatsapp values');
     const wa360Config = await this.providersService.getConfigById(providerId);
     this.apiUrl = wa360Config.WA_360_DIALOG_URL as string;
     this.apiKey = wa360Config.WA_360_DIALOG_API_KEY as string;
@@ -64,6 +66,7 @@ export class Wa360dialogService {
       'D360-API-KEY': this.apiKey,
       'Content-Type': 'application/json',
     };
+    this.logger.debug('Sending 360Dialog Whatsapp');
     const response = await this.httpService.post(this.apiUrl, body, { headers }).toPromise();
     return response.data;
   }

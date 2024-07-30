@@ -33,18 +33,31 @@ export abstract class NotificationConsumer {
 
     try {
       this.logger.log(`Sending notification with id: ${id}`);
+      this.logger.debug(
+        `Processing notification queue for channel type: ${notification.channelType}`,
+      );
       const result = await sendNotification();
 
       if (SkipProviderConfirmationChannels.includes(notification.channelType)) {
+        this.logger.debug(
+          `Channel type: ${notification.channelType} is included in skip queue. Provider confirmation skipped for notification id ${notification.id}`,
+        );
         notification.deliveryStatus = DeliveryStatus.SUCCESS;
         this.webhookService.triggerWebhook(notification);
       } else {
+        this.logger.debug(
+          `Notification id ${notification.id} is awaiting confirmation from provider`,
+        );
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
       }
 
+      this.logger.debug(`Updating result of notification with id ${notification.id}`);
       notification.result = { result };
     } catch (error) {
       if (notification.retryCount < this.maxRetryCount) {
+        this.logger.debug(
+          `Some error occured while sendiing Notification with ID ${notification.id}. Retry Count ${notification.retryCount}/${this.maxRetryCount}. Sending notification again`,
+        );
         notification.deliveryStatus = DeliveryStatus.PENDING;
         notification.retryCount++;
       } else {
@@ -54,10 +67,14 @@ export abstract class NotificationConsumer {
         notification.deliveryStatus = DeliveryStatus.FAILED;
       }
 
+      this.logger.debug(`Updating result of notification with id ${notification.id}`);
       notification.result = { result: { message: error.message, stack: error.stack } };
       this.logger.error(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {
+      this.logger.debug(
+        `processNotificationQueue completed. Saving notification in DB: ${JSON.stringify(notification)}`,
+      );
       await this.notificationRepository.save(notification);
     }
   }
@@ -73,7 +90,11 @@ export abstract class NotificationConsumer {
 
     try {
       this.logger.log(`Checking delivery status from provider for notification with id: ${id}`);
+      this.logger.debug(
+        `Processing awaiting confirmation notification queue for channel type: ${notification.channelType}`,
+      );
       const response = await getNotificationStatus();
+      this.logger.debug(`Updating result of notification with id ${notification.id}`);
       notification.result = { result: response.result as Record<string, unknown> };
       notification.deliveryStatus = response.deliveryStatus;
 
@@ -113,6 +134,9 @@ export abstract class NotificationConsumer {
       );
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
     } finally {
+      this.logger.debug(
+        `processAwaitingConfirmationNotificationQueue completed. Saving notification in DB: ${JSON.stringify(notification)}`,
+      );
       await this.notificationRepository.save(notification);
     }
   }
