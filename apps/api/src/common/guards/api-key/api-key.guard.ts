@@ -32,8 +32,7 @@ export class ApiKeyGuard implements CanActivate {
 
     // Get api key header incase of http request
     if (request && request.headers) {
-      this.logger.debug('HTTP Request was issued');
-      this.logger.debug('Fetching request header');
+      this.logger.debug(`Fetching request header and provider ID: ${request.body.providerId}`);
       const serverApiKeyHeader = request.headers['x-api-key'];
       this.logger.debug('Fetching provider Id');
       const requestProviderId = request.body.providerId;
@@ -50,8 +49,9 @@ export class ApiKeyGuard implements CanActivate {
     // Get api key header incase of graphql request
     const ctx = GqlExecutionContext.create(execContext);
     const req = ctx.getContext().req;
-    this.logger.debug('GraphQL Request was issued');
-    this.logger.debug('Fetching request header for GraphQL');
+    this.logger.debug(
+      `Fetching request header and provider ID for GraphQL: ${req.body.providerId}`,
+    );
     const serverApiKeyHeader = req.headers['x-api-key'];
     this.logger.debug('Fetching provider Id for GraphQL');
     const requestProviderId = request.body.providerId;
