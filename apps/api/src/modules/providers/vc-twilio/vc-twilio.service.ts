@@ -141,16 +141,12 @@ export class VcTwilioService {
   }
 
   async sendVoiceCall(body: VcTwilioData, providerId: number): Promise<VcTwilioResponseData> {
-    try {
-      await this.assignTransport(providerId);
-      // Function to create correct object for twilioClient and verify if one of url, twiml exist in request body
-      this.twilioVoiceCallObject = {};
-      await this.filterRequestBody(body);
-      const voiceCall = await this.twilioClient.calls.create(this.twilioVoiceCallObject);
-      return voiceCall;
-    } catch (error) {
-      throw new Error(`Failed to send voice call: ${error.message}`);
-    }
+    await this.assignTransport(providerId);
+    // Function to create correct object for twilioClient and verify if one of url, twiml exist in request body
+    this.twilioVoiceCallObject = {};
+    await this.filterRequestBody(body);
+    const voiceCall = await this.twilioClient.calls.create(this.twilioVoiceCallObject);
+    return voiceCall;
   }
 
   async getDeliveryStatus(sid: string, providerId: number): Promise<VcTwilioResponseData> {
