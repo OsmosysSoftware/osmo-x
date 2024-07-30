@@ -67,6 +67,7 @@ export abstract class NotificationConsumer {
         notification.deliveryStatus = DeliveryStatus.FAILED;
       }
 
+      this.logger.debug(`Updating result of notification with id ${notification.id}`);
       notification.result = { result: { message: error.message, stack: error.stack } };
       this.logger.error(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
@@ -93,6 +94,7 @@ export abstract class NotificationConsumer {
         `Processing awaiting confirmation notification queue for channel type: ${notification.channelType}`,
       );
       const response = await getNotificationStatus();
+      this.logger.debug(`Updating result of notification with id ${notification.id}`);
       notification.result = { result: response.result as Record<string, unknown> };
       notification.deliveryStatus = response.deliveryStatus;
 

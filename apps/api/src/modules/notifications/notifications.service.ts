@@ -136,6 +136,7 @@ export class NotificationsService extends CoreService<Notification> {
           `Error encountered. NotificationId: ${notification.id}, DeliveryStatus: ${notification.deliveryStatus}`,
         );
         notification.deliveryStatus = DeliveryStatus.PENDING;
+        this.logger.debug(`Updating result of notification with id ${notification.id}`);
         notification.result = { result: { message: error.message, stack: error.stack } };
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
         this.logger.error(JSON.stringify(error, null, 2));
