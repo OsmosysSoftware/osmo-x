@@ -72,7 +72,9 @@ export class QueueService {
 
   getOrCreateQueue(action: string, providerType: string, providerId: string): Queue {
     const queueName = `${action}-${providerType}-${providerId}`;
-    this.logger.debug(`Started process getOrCreateQueue for ${queueName}`);
+    this.logger.debug(
+      `Started process getOrCreateQueue for (action-providerType-providerId): ${queueName}`,
+    );
 
     if (!this.queues.has(queueName)) {
       this.logger.log(`Creating new queue and worker for ${queueName}`);

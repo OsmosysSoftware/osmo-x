@@ -53,7 +53,6 @@ export class ApiKeyGuard implements CanActivate {
       `Fetching request header and provider ID for GraphQL: ${req.body.providerId}`,
     );
     const serverApiKeyHeader = req.headers['x-api-key'];
-    this.logger.debug('Fetching provider Id for GraphQL');
     const requestProviderId = request.body.providerId;
     const validationResult = await this.validateApiKeyHeader(serverApiKeyHeader, requestProviderId);
 
