@@ -72,6 +72,9 @@ export class QueueService {
 
   getOrCreateQueue(action: string, providerType: string, providerId: string): Queue {
     const queueName = `${action}-${providerType}-${providerId}`;
+    this.logger.debug(
+      `Started process getOrCreateQueue for (action-providerType-providerId): ${queueName}`,
+    );
 
     if (!this.queues.has(queueName)) {
       this.logger.log(`Creating new queue and worker for ${queueName}`);
@@ -84,6 +87,10 @@ export class QueueService {
 
   private createWorker(action: string, providerType: string, queueName: string): void {
     const processJob = async (job): Promise<void> => {
+      this.logger.debug(
+        `Processing notification ${JSON.stringify(job.data)}. Searching for action ${action} for channel type ${providerType}`,
+      );
+
       switch (`${action}-${providerType}`) {
         // SMTP cases
         case `${QueueAction.SEND}-${ChannelType.SMTP}`:

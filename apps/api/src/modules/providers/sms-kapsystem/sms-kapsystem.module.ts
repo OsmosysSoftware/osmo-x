@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { SmsKapsystemService } from './sms-kapsystem.service';
 import { ConfigModule } from '@nestjs/config';
 import { ProvidersModule } from '../providers.module';
@@ -7,7 +7,7 @@ import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [HttpModule, ConfigModule, ProvidersModule],
-  providers: [SmsKapsystemService, ProvidersService],
+  providers: [SmsKapsystemService, ProvidersService, Logger],
   exports: [SmsKapsystemService],
 })
 export class SmsKapsystemModule {}

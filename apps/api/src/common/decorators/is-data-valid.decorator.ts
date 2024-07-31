@@ -11,7 +11,7 @@ import { ChannelType } from 'src/common/constants/notifications';
 import { SMTPDataDto } from 'src/modules/notifications/dtos/providers/smtp-data.dto';
 import { MailgunDataDto } from 'src/modules/notifications/dtos/providers/mailgun-data.dto';
 import { Wa360DialogDataDto } from 'src/modules/notifications/dtos/providers/wa360Dialog-data.dto';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import { CreateNotificationDto } from 'src/modules/notifications/dtos/create-notification.dto';
 import { WaTwilioDataDto } from 'src/modules/notifications/dtos/providers/waTwilio-data.dto';
 import { SmsTwilioDataDto } from 'src/modules/notifications/dtos/providers/smsTwilio-data.dto';
@@ -26,20 +26,28 @@ import { VcTwilioDataDto } from 'src/modules/notifications/dtos/providers/vcTwil
 @ValidatorConstraint({ name: 'isDataValidConstraint', async: true })
 @Injectable()
 export class IsDataValidConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {}
 
   async validate(value: object, args: ValidationArguments): Promise<boolean> {
+    this.logger.debug('Request data validation started');
     const object = args.object as { providerId: number; data: object };
     let channelTypeFromProviderId = null;
 
     try {
       channelTypeFromProviderId = (await this.providersService.getById(object.providerId))
         .channelType;
+      this.logger.debug(
+        `Fetched channel type: ${channelTypeFromProviderId} from provider Id: ${object.providerId}`,
+      );
     } catch (error) {
       throw new Error(`Error while fetching channelType from ProviderId: ${error}`);
     }
 
     const validateAndThrowError = async (validationData: object): Promise<void> => {
+      this.logger.debug('Awaiting Validation of request data as per request channel type');
       const errors: ValidationError[] = await validate(validationData);
 
       if (errors.length > 0) {
