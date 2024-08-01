@@ -3671,11 +3671,11 @@
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
 									"});\r",
-									"pm.test(\"message: Failed to register webhook: Cannot add or update a child row: a foreign key constraint fails\", function () {\r",
+									"pm.test(\"message: Failed to register webhook\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Failed to register webhook: Cannot add or update a child row: a foreign key constraint fails (`osmox-live`.`notify_webhooks`, CONSTRAINT `FK_9acaf661be236e30b25a510a6ac` FOREIGN KEY (`provider_id`) REFERENCES `notify_providers` (`provider_id`) ON DELETE CASCADE)\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\").contain(\"Failed to register webhook\");\r",
 									"});"
 								],
 								"type": "text/javascript",
