@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SNS } from 'aws-sdk';
+import { PublishCommandInput, PublishCommandOutput, SNS } from '@aws-sdk/client-sns';
 import { ProvidersService } from '../providers.service';
 
 export interface PushSnsData {
@@ -21,23 +21,25 @@ export class PushSnsService {
     const snsConfig = await this.providersService.getConfigById(providerId);
 
     this.sns = new SNS({
-      accessKeyId: snsConfig.AWS_ACCESS_KEY_ID as string,
-      secretAccessKey: snsConfig.AWS_SECRET_ACCESS_KEY as string,
+      credentials: {
+        accessKeyId: snsConfig.AWS_ACCESS_KEY_ID as string,
+        secretAccessKey: snsConfig.AWS_SECRET_ACCESS_KEY as string,
+      },
       region: snsConfig.AWS_REGION as string,
     });
   }
 
-  async sendPushNotification(data: PushSnsData, providerId: number): Promise<SNS.PublishResponse> {
+  async sendPushNotification(data: PushSnsData, providerId: number): Promise<PublishCommandOutput> {
     await this.assignSnsConfig(providerId);
 
     // Prepare SNS publish parameters
-    const params: SNS.PublishInput = {
+    const params: PublishCommandInput = {
       Message: JSON.stringify(data.message),
       MessageStructure: 'json',
       TargetArn: data.target,
     };
 
     this.logger.debug('Sending SNS push notification');
-    return this.sns.publish(params).promise();
+    return this.sns.publish(params);
   }
 }
