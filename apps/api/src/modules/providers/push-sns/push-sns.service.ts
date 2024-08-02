@@ -17,7 +17,7 @@ export class PushSnsService {
   ) {}
 
   async assignSnsConfig(providerId: number): Promise<void> {
-    this.logger.debug('Started assigning SNS client');
+    this.logger.debug('Started assigning SNS push notification client');
     const snsConfig = await this.providersService.getConfigById(providerId);
 
     this.sns = new SNS({
