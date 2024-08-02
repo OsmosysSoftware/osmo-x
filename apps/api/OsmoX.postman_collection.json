@@ -2260,10 +2260,10 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
-									"pm.test(\"Response for Invalid Data (Must provide url or twiml paramater)\", function () {",
+									"pm.test(\"Response for Invalid Data (Must provide url or twiml parameter)\", function () {",
 									"    pm.expect(pm.response.code).to.equal(400);",
 									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data[0]).to.equal(\"Must provide url or twiml paramater\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"Must provide url or twiml parameter\");",
 									"});"
 								],
 								"type": "text/javascript",
