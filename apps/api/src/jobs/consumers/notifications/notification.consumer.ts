@@ -56,7 +56,7 @@ export abstract class NotificationConsumer {
     } catch (error) {
       if (notification.retryCount < this.maxRetryCount) {
         this.logger.debug(
-          `Some error occured while sendiing Notification with ID ${notification.id}. Retry Count ${notification.retryCount}/${this.maxRetryCount}. Sending notification again`,
+          `Some error occurred while sending Notification with ID ${notification.id}. Retry Count ${notification.retryCount}/${this.maxRetryCount}. Sending notification again`,
         );
         notification.deliveryStatus = DeliveryStatus.PENDING;
         notification.retryCount++;
