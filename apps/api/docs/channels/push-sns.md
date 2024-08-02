@@ -50,4 +50,4 @@ For further payload information check here : [link](https://docs.aws.amazon.com/
 
 | Package Name       | Version    | Description                                                                                                                                                |
 | --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| aws-sdk          | ^2.1654.0  | AWS SDK for JavaScript, used to interact with AWS services including SNS.     |
+| @aws-sdk/client-sns    | ^3.621.0  | AWS SDK for JavaScript, used to interact with AWS services including SNS.     |
