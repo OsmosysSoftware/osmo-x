@@ -7,13 +7,13 @@ export class VcTwilioDataDto {
   @IsNotEmpty()
   to: string;
 
-  // Need atleast one of url, twiml for successful request
-  @IsNotEmpty({ message: 'Must provide url or twiml paramater' })
-  @ValidateIf((obj) => !obj.twiml, { message: 'Must provide url or twiml paramater' })
+  // Need at least one of url, twiml for successful request
+  @IsNotEmpty({ message: 'Must provide url or twiml parameter' })
+  @ValidateIf((obj) => !obj.twiml, { message: 'Must provide url or twiml parameter' })
   url: string;
 
-  @IsNotEmpty({ message: 'Must provide url or twiml paramater' })
-  @ValidateIf((obj) => !obj.url, { message: 'Must provide url or twiml paramater' })
+  @IsNotEmpty({ message: 'Must provide url or twiml parameter' })
+  @ValidateIf((obj) => !obj.url, { message: 'Must provide url or twiml parameter' })
   twiml: string;
 
   // Remaining parameters
