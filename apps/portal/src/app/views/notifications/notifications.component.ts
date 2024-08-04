@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ChannelType, ChannelTypeMap, DeliveryStatus } from 'src/common/constants/notification';
-import { MessageService } from 'primeng/api';
+import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { catchError, of } from 'rxjs';
 import { NotificationsService } from './notifications.service';
-import { Notification } from './notification.model';
+import { Notification, NotificationResponse } from './notification.model';
 
 @Component({
   selector: 'app-notifications',
@@ -12,8 +12,6 @@ import { Notification } from './notification.model';
 })
 export class NotificationsComponent implements OnInit {
   notifications: Notification[] = [];
-
-  filteredNotifications: Notification[] = [];
 
   allServerApiKeysList = [];
 
@@ -67,14 +65,6 @@ export class NotificationsComponent implements OnInit {
 
   totalRecords = 0;
 
-  totalRecordsForCurrentApplication = -1;
-
-  fixedChunkSize = 100;
-
-  currentOffset = 0;
-
-  displayedNotifications: Notification[] = [];
-
   jsonDialogData: Record<string, unknown>;
 
   jsonDialogVisible: Boolean = false;
@@ -89,7 +79,7 @@ export class NotificationsComponent implements OnInit {
   ngOnInit(): void {
     this.applications = this.getApplications();
     this.selectedApplication = this.setApplicationOnInit();
-    this.handleApplicationChange();
+    this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
   }
 
   getApplications() {
@@ -129,14 +119,16 @@ export class NotificationsComponent implements OnInit {
     return this.mapApplicationAndKeys.get(this.selectedApplication);
   }
 
-  loadNotifications() {
+  loadNotificationsLazy(event: LazyLoadEvent) {
     this.loading = true;
-    const setCurrentLimit = this.fixedChunkSize + this.currentOffset;
-    const variables = { limit: setCurrentLimit, offset: 0, filters: [] };
+    const variables = {
+      filters: [],
+      offset: event.first,
+      limit: event.rows,
+    };
 
     if (this.selectedChannelType) {
       if (this.selectedChannelType === this.allPortalChannelTypes.UNKNOWN) {
-        // Condition to filter all notifications with unknown channel type
         const existingChannelTypes = Object.keys(ChannelTypeMap).filter(
           (value) => value !== this.allPortalChannelTypes.UNKNOWN.toString(),
         );
@@ -148,7 +140,6 @@ export class NotificationsComponent implements OnInit {
           });
         });
       } else {
-        // Default behavior
         variables.filters.push({
           field: 'channelType',
           operator: 'eq',
@@ -165,14 +156,11 @@ export class NotificationsComponent implements OnInit {
       });
     }
 
-    // set the token based on selected application
     const tokenForSelectedApplication = this.setTokenForSelectedApplication();
 
-    // Fetch notifications and handle errors
     this.notificationService
       .getNotifications(variables, tokenForSelectedApplication)
       .pipe(
-        // catchError operator to handle errors
         catchError((error) => {
           this.messageService.add({
             key: 'tst',
@@ -183,89 +171,11 @@ export class NotificationsComponent implements OnInit {
           return of([]);
         }),
       )
-      .subscribe((notifications: Notification[]) => {
-        this.notifications = [];
-        this.notifications.push(...notifications);
-        // Apply filters to the merged array of notifications
-        this.applyFilters();
+      .subscribe((notificationResponse: NotificationResponse) => {
+        this.notifications = notificationResponse.notifications;
+        this.totalRecords = notificationResponse.total;
         this.loading = false;
       });
-  }
-
-  applyFilters() {
-    this.filteredNotifications = this.notifications;
-    this.totalRecords = this.notifications.length;
-    this.updateDisplayedNotifications();
-  }
-
-  // Update displayed notifications based on pagination
-  updateDisplayedNotifications() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.displayedNotifications = this.filteredNotifications.slice(startIndex, endIndex);
-  }
-
-  // Get the total number of records for current application
-  getTotalRecordsForCurrentApplication() {
-    const totalRecordvariables = { limit: 1, offset: 0 };
-
-    // set the token based on selected application
-    const tokenForSelectedApplication = this.setTokenForSelectedApplication();
-
-    // Fetch number of total records for current application and handle errors
-    this.notificationService
-      .getTotalRecords(totalRecordvariables, tokenForSelectedApplication)
-      .pipe(
-        // catchError operator to handle errors
-        catchError((error) => {
-          this.messageService.add({
-            key: 'tst',
-            severity: 'error',
-            summary: 'Error',
-            detail: `There was an error while fetching total number of records. Reason: ${error.message}`,
-          });
-          return of([]);
-        }),
-      )
-      .subscribe((totalResponse: number) => {
-        this.totalRecordsForCurrentApplication = -1;
-        this.totalRecordsForCurrentApplication = totalResponse;
-      });
-  }
-
-  // Handle page change event
-  onPageChange(event) {
-    this.currentPage = event.page;
-
-    // Logic to append values when user goes to last tab
-    const currentPageTab = parseInt(event.first, 10) + parseInt(event.rows, 10);
-
-    if (
-      this.totalRecords < this.totalRecordsForCurrentApplication &&
-      this.totalRecords % this.fixedChunkSize === 0 &&
-      this.totalRecords > this.currentOffset &&
-      this.totalRecords <= currentPageTab &&
-      this.totalRecords !== 0
-    ) {
-      this.currentOffset += this.fixedChunkSize;
-      this.loadNotifications();
-    } else {
-      this.updateDisplayedNotifications();
-    }
-  }
-
-  handleApplicationChange() {
-    this.totalRecords = 0;
-    this.totalRecordsForCurrentApplication = -1;
-    this.notifications = [];
-    this.currentOffset = 0;
-    this.getTotalRecordsForCurrentApplication();
-    this.loadNotifications();
-  }
-
-  // Handle page size change event
-  onPageSizeChange() {
-    this.updateDisplayedNotifications();
   }
 
   showJsonObject(json: Record<string, unknown>): void {

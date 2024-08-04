@@ -23,19 +23,9 @@ export const GetNotifications = gql`
         updatedBy
         updatedOn
       }
-    }
-  }
-`;
-
-export const GetTotalNumberOfRecords = gql`
-  query GetNotifications($limit: Int!, $offset: Int!) {
-    notifications(
-      options: { limit: $limit, offset: $offset, sortBy: "createdOn", sortOrder: DESC }
-    ) {
-      notifications {
-        id
-      }
       total
+      offset
+      limit
     }
   }
 `;

@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Observable, catchError, map } from 'rxjs';
 import { GraphqlService } from 'src/app/graphql/graphql.service';
-import { GetNotifications, GetTotalNumberOfRecords } from 'src/app/graphql/graphql.queries';
+import { GetNotifications } from 'src/app/graphql/graphql.queries';
 import { ApolloQueryResult } from '@apollo/client/core';
-import { Notification } from './notification.model';
+import { Notification, NotificationResponse } from './notification.model';
 
 interface GetNotificationsResponse {
   notifications: {
     notifications?: Notification[];
     total?: number;
+    offset?: number;
+    limit?: number;
   };
 }
 @Injectable({
@@ -17,24 +19,18 @@ interface GetNotificationsResponse {
 export class NotificationsService {
   constructor(private graphqlService: GraphqlService) {}
 
-  getNotifications(variables, inputToken): Observable<Notification[]> {
+  getNotifications(variables, inputToken): Observable<NotificationResponse> {
     return this.graphqlService.query(GetNotifications, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetNotificationsResponse>) => {
-        const notifications = response.data?.notifications.notifications;
-        return [...notifications];
-      }),
-      catchError((error) => {
-        const errorMessage: string = error.message;
-        throw new Error(errorMessage);
-      }),
-    );
-  }
+        const notificationArray = response.data?.notifications.notifications;
 
-  getTotalRecords(variables, inputToken): Observable<number> {
-    return this.graphqlService.query(GetTotalNumberOfRecords, variables, inputToken).pipe(
-      map((response: ApolloQueryResult<GetNotificationsResponse>) => {
-        const totalRecords = response.data?.notifications.total;
-        return totalRecords;
+        const notificationResponseObject: NotificationResponse = {
+          notifications: [...notificationArray],
+          total: response.data?.notifications.total,
+          offset: response.data?.notifications.offset,
+          limit: response.data?.notifications.limit,
+        };
+        return notificationResponseObject;
       }),
       catchError((error) => {
         const errorMessage: string = error.message;
