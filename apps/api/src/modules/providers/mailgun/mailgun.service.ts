@@ -27,7 +27,7 @@ export class MailgunService {
   }
 
   async assignClient(providerId: number): Promise<void> {
-    this.logger.debug('Started assigning mailgun client');
+    this.logger.debug('Started assigning Mailgun email client');
     const mailgunConfig = await this.providersService.getConfigById(providerId);
     this.mailgunClient = this.mailgun.client({
       username: 'api',
@@ -53,7 +53,7 @@ export class MailgunService {
   async formatNotificationData(
     notificationData: Record<string, unknown>,
   ): Promise<Record<string, unknown>> {
-    this.logger.debug('Formatting notification data for mailgun');
+    this.logger.debug('Formatting notification data for Mailgun');
 
     if (notificationData.attachments) {
       const formattedNotificationData = { ...notificationData };
@@ -72,7 +72,7 @@ export class MailgunService {
   private async formatAttachments(
     attachments: CreateNotificationAttachmentDto[],
   ): Promise<{ filename: string; data: Buffer; contentType: string }[]> {
-    this.logger.debug('Formatting attachments for mailgun');
+    this.logger.debug('Formatting attachments for Mailgun');
     return Promise.all(
       attachments.map(async (attachment) => {
         let data: Buffer | string | Stream = attachment.content;
@@ -100,12 +100,12 @@ export class MailgunService {
 
   async getDeliveryStatus(messageId: string, providerId: number): Promise<DomainEvent> {
     try {
-      this.logger.debug('Fetching delivery status from mailgun');
+      this.logger.debug('Fetching delivery status from Mailgun email');
       await this.assignClient(providerId);
       const response = await this.mailgunClient.events.get(this.mailgunDomain, {
         'message-id': messageId,
       });
-      this.logger.debug(`Delivery status: ${response.items[0]}`);
+      this.logger.debug(`Mailgun email Delivery status: ${response.items[0]}`);
       return response.items[0];
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);
