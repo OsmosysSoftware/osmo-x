@@ -12,7 +12,7 @@ export class SmtpService {
   ) {}
 
   async assignTransport(providerId: number): Promise<void> {
-    this.logger.debug('Started assigning smtp transport');
+    this.logger.debug('Started assigning SMTP email transport');
     const smtpConfig = await this.providersService.getConfigById(providerId);
     this.transporter = nodemailer.createTransport({
       host: smtpConfig.SMTP_HOST as string,

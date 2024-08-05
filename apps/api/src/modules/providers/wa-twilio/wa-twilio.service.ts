@@ -40,7 +40,7 @@ export class WaTwilioService {
   ) {}
 
   async assignTransport(providerId: number): Promise<void> {
-    this.logger.debug('Started assigning transport for Whatsapp Twilio');
+    this.logger.debug('Started assigning transport for Twilio Whatsapp');
     const waTwilioConfig = await this.providersService.getConfigById(providerId);
     const accountSid = waTwilioConfig.TWILIO_WA_ACCOUNT_SID as string;
     const authToken = waTwilioConfig.TWILIO_WA_AUTH_TOKEN as string;
@@ -67,10 +67,10 @@ export class WaTwilioService {
 
   async getDeliveryStatus(sid: string, providerId: number): Promise<WaTwilioResponseData> {
     try {
-      this.logger.debug('Fetching delivery status from twilio SMS');
+      this.logger.debug('Fetching delivery status from Twilio Whatsapp');
       await this.assignTransport(providerId);
       const message = await this.twilioClient.messages(sid).fetch();
-      this.logger.debug(`Delivery status: ${message}`);
+      this.logger.debug(`Twilio Whatsapp Delivery status: ${message}`);
       return message;
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);

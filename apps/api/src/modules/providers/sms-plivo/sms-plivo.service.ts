@@ -56,7 +56,7 @@ export class SmsPlivoService {
   ) {}
 
   async assignTransport(providerId: number): Promise<void> {
-    this.logger.debug('Started assigning transport for SMS Plivo');
+    this.logger.debug('Started assigning transport for Plivo SMS');
     const smsPlivoConfig = await this.providersService.getConfigById(providerId);
     const authId = smsPlivoConfig.PLIVO_SMS_AUTH_ID as string;
     const authToken = smsPlivoConfig.PLIVO_SMS_AUTH_TOKEN as string;
@@ -89,7 +89,7 @@ export class SmsPlivoService {
       this.logger.debug('Fetching delivery status from Plivo SMS');
       await this.assignTransport(providerId);
       const response = await this.plivoClient.messages.get(messageUuid);
-      this.logger.debug(`Delivery status: ${response}`);
+      this.logger.debug(`Plivo SMS Delivery status: ${response}`);
       return response;
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);

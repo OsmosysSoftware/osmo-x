@@ -38,7 +38,7 @@ export class SmsKapsystemService {
   ) {}
 
   async assignKAPSystemValues(providerId: number): Promise<void> {
-    this.logger.debug('Started assigning KAPSystem values');
+    this.logger.debug('Started assigning KAPSystem SMS values');
     const smsKapsystemConfig = await this.providersService.getConfigById(providerId);
     this.apiUrl = smsKapsystemConfig.KAP_SMS_BASE_API_URL as string;
     this.username = smsKapsystemConfig.KAP_SMS_ACCOUNT_USERNAME as string;
