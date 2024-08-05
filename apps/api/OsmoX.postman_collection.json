@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "8254490e-876a-4634-b836-3a35201489e4",
+		"_postman_id": "c2243c60-46c3-488b-a822-72f0ad11f2d8",
 		"name": "OsmoX",
 		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "20654268"
+		"_exporter_id": "27217372"
 	},
 	"item": [
 		{
@@ -50,12 +50,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "e8772941-f8c1-473a-b5d4-f79b3acbf5da"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "c8e15ea5-91ee-4881-8bfc-ba3701124266"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -86,22 +86,17 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
+									"pm.test(\"Response code is 400 Bad Request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"});",
 									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
 									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 1);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
 									""
 								],
@@ -116,17 +111,17 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "6855b47e-eb14-4949-a990-8b3325152e24"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "e516fa15-9a57-413e-b4bd-68787d3f0251"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 6 does not have channelType 1\n    \"providerId\": 6,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 111 does not have channelType 1\n    \"providerId\": 111,\n    \"data\": {\n        \"from\": \"jacuzisplot@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -169,12 +164,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "c546c968-5a3e-4a43-882e-26b7191caf77"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "84fcaae1-2ba2-43ca-a306-a7bee4237a3a"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -205,10 +200,10 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
-									"pm.test(\"Failed request with invalid API key\", function () {",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {",
 									"    pm.expect(pm.response.code).to.equal(401);",
 									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
 									"});",
 									""
 								],
@@ -223,12 +218,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "401d6ec2-8de4-47d7-98fa-251ec2fca2af"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
+								"key": "x-api-key",
 								"value": "bad-api-key",
-								"uuid": "7cda822d-57ef-4d47-9c3f-54f74d044438"
+								"type": "text"
 							}
 						],
 						"body": {
@@ -295,12 +290,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "54f71f70-9751-40b5-a41f-d6e122abb06c"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "eb433e5f-745e-47ed-9cc6-67e979b8fa01"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -331,22 +326,17 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
+									"pm.test(\"Response code is 400 Bad Request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"});",
 									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
 									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 2\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 2);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
 									""
 								],
@@ -361,17 +351,17 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "5ab98a32-4d77-4447-b546-cca57f46bf73"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "bda3ccc1-a787-49dc-b210-a230e6400730"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 6 does not have channelType 2\n    \"providerId\": 6,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 600 does not have channelType 2\n    \"providerId\": 600,\n    \"data\": {\n        \"from\": \"vikaskyatannawar@gmail.com\",\n        \"to\": \"vikas.k@osmosys.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -414,12 +404,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "79836819-b4be-4c40-ba5d-ead587518ad0"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "4589d0a4-9e94-4526-b6e9-fc81c15067f6"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -450,10 +440,10 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
-									"pm.test(\"Failed request with invalid API key\", function () {",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {",
 									"    pm.expect(pm.response.code).to.equal(401);",
 									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
 									"});",
 									""
 								],
@@ -468,12 +458,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "7c01d4f7-ba43-4952-86c6-ba89ab4def9d"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
+								"key": "x-api-key",
 								"value": "bad-api-key",
-								"uuid": "8622b75e-bfa1-48d7-a9e2-246df61efd51"
+								"type": "text"
 							}
 						],
 						"body": {
@@ -540,12 +530,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "3b19dbc2-e355-417e-a56b-5a320af38aa7"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "e6bd47fd-4992-4a75-8e23-453ca046c413"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -576,22 +566,17 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
+									"pm.test(\"Response code is 400 Bad Request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"});",
 									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
 									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 3\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
 									""
 								],
@@ -606,12 +591,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "dec1b3ef-4157-4d1b-bb00-3441373d3cf8"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "c7e720d6-c244-4748-99ea-c16f7aabf3cb"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -659,12 +644,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "e2d563b6-f984-4ac5-904b-240134c60902"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "bb065389-eaa6-414e-8d31-52cf1a6463bb"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -695,10 +680,10 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
-									"pm.test(\"Failed request with invalid API key\", function () {",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {",
 									"    pm.expect(pm.response.code).to.equal(401);",
 									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
 									"});",
 									""
 								],
@@ -713,12 +698,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "4b6cc6c9-8486-42b2-881d-7bde4de9aac5"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
+								"key": "x-api-key",
 								"value": "bad-api-key",
-								"uuid": "d8e7f5c2-8903-4515-981f-a5a08569432c"
+								"type": "text"
 							}
 						],
 						"body": {
@@ -764,9 +749,9 @@
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
-									"pm.test(\"Response 'channelType' is 3\", function () {",
+									"pm.test(\"Response 'channelType' is 4\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\",4);",
 									"});",
 									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
 									"    var jsonData = pm.response.json();",
@@ -785,12 +770,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "9765c2dd-9c0f-4f98-8df8-c73c0db71ffc"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "34859926-808c-4e7d-97a1-7f8c0b1afeac"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -821,22 +806,17 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
+									"pm.test(\"Response code is 400 Bad Request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"});",
 									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
 									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 3\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 3);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
 									""
 								],
@@ -851,17 +831,17 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "6d27576a-2413-46f0-99e3-6cc8b5f7a756"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "b09e3ce2-a24f-4dd1-9ebb-b37b7b6dd7e3"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 6 does not have channelType 4\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 10 does not have channelType 4\n    \"providerId\": 10,\n    \"data\": {\n        \"to\": \"+919004812051\",\n        \"message\": \"Your appointment is coming up on July 21 at 3PM\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -904,12 +884,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "ef1cfaf1-65c2-46d1-b12d-01e8cc5073ff"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "5a32aed1-1c6b-4aca-9251-62e87f1c8467"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -940,10 +920,10 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
-									"pm.test(\"Failed request with invalid API key\", function () {",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {",
 									"    pm.expect(pm.response.code).to.equal(401);",
 									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
 									"});",
 									""
 								],
@@ -958,12 +938,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "c69b6cde-16fd-4ad2-8cb9-14e634ba33e7"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
+								"key": "x-api-key",
 								"value": "bad-api-key",
-								"uuid": "e0fba4cc-19e2-4d67-8e6a-93a2e24ed679"
+								"type": "text"
 							}
 						],
 						"body": {
@@ -986,219 +966,6 @@
 				}
 			],
 			"description": "Collection of requests pertaining to creating notifications for the Twilio WhatsApp channel type."
-		},
-		{
-			"name": "Twilio WhatsApp (Business) Notifications",
-			"item": [
-				{
-					"name": "Send Twilio WhatsApp (Business) Notification - Success",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 7\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 7);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "43c4a9ff-51d7-4b42-a2f9-5b7a48de8d0a"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "9d79f462-26b4-4d99-b1b0-0b676dce8e37"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
-					},
-					"response": []
-				},
-				{
-					"name": "Send Twilio WhatsApp (Business) Notification - Invalid Provider ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "79b65c30-ba2c-4ed7-95b1-81cc73f59487"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "a73d1e14-827b-4fe6-94a9-f3e2159acb0e"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 77,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
-					},
-					"response": []
-				},
-				{
-					"name": "Send Twilio WhatsApp (Business) Notification - Missing To Field",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "cc3a5bb4-77b8-4d34-9c4d-de7b82331a46"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "71aab2d8-9042-40b0-8d1a-6be99b6983db"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    }\n  }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
-					},
-					"response": []
-				},
-				{
-					"name": "Send Twilio WhatsApp (Business) Notification - Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "26b25ac1-5aaf-4497-825c-3ceeee9c987a"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer bad-api-key",
-								"uuid": "70acd729-715f-4976-b030-242f4d764dad"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
-					},
-					"response": []
-				}
-			],
-			"description": "Collection of requests pertaining to creating notifications for the Twilio WhatsApp channel type using templates."
 		},
 		{
 			"name": "Twilio SMS Notifications",
@@ -1243,12 +1010,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "fad599dd-2217-4c7b-8a57-f84ae3001560"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "286c3715-2cb0-45d8-b804-1630c74e10fc"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -1277,24 +1044,19 @@
 							"script": {
 								"exec": [
 									"pm.test(\"Response is valid JSON\", function () {",
-									"  pm.response.to.be.json;",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code is 400 Bad Request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
 									"});",
 									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"  pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
 									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 5\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 5);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
 									""
 								],
@@ -1309,17 +1071,17 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "003bc66d-6815-4f95-bf09-5acaf5f39460"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "56e7de7a-0422-4729-9251-28c96d1dea3e"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 6 does not have channelType 5\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 10 does not have channelType 5\n    \"providerId\": 10,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"Your appointment is coming up on March 21 at 2PM\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -1348,7 +1110,9 @@
 									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
 									"  pm.expect(pm.response.code).to.equal(400);",
 									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"  pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"  pm.expect(pm.response.json().data[0]).to.equal(",
+									"    \"to must be shorter than or equal to 16 characters\",",
+									"    \"to should not be empty\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1362,12 +1126,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "65f2437f-4cb2-4970-9a90-46b99591ac92"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "e577930c-ad3a-4873-a80f-342b7ca8e3fa"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -1398,10 +1162,10 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"  pm.response.to.be.json;",
 									"});",
-									"pm.test(\"Failed request with invalid API key\", function () {",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {",
 									"  pm.expect(pm.response.code).to.equal(401);",
 									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"  pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"  pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
 									"});",
 									""
 								],
@@ -1416,12 +1180,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "e9c945c7-71b3-4332-b626-bf7fa3d0aef2"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
+								"key": "x-api-key",
 								"value": "bad-api-key",
-								"uuid": "ae14c44d-1b25-4db6-98b2-068beeb24fbf"
+								"type": "text"
 							}
 						],
 						"body": {
@@ -1467,9 +1231,9 @@
 									"  var jsonData = pm.response.json();",
 									"  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
-									"pm.test(\"Response 'channelType' is 5\", function () {",
+									"pm.test(\"Response 'channelType' is 6\", function () {",
 									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 5);",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 6);",
 									"});",
 									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
 									"  var jsonData = pm.response.json();",
@@ -1488,12 +1252,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "79ad3ef1-4d4b-4b6e-b149-d1e902a61b1e"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "6584bbe2-f89a-43bc-a577-df28b6bea236"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -1522,24 +1286,19 @@
 							"script": {
 								"exec": [
 									"pm.test(\"Response is valid JSON\", function () {",
-									"  pm.response.to.be.json;",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code is 400 Bad Request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
 									"});",
 									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"  pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
 									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 5\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 5);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
 									""
 								],
@@ -1554,12 +1313,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "a7b5112e-a17c-45d0-84aa-15a2d997f676"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "a9819117-e3eb-4314-970d-fe4057114f66"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -1593,7 +1352,9 @@
 									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
 									"  pm.expect(pm.response.code).to.equal(400);",
 									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"  pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"  pm.expect(pm.response.json().data[0]).to.equal(",
+									"    \"to must be shorter than or equal to 14 characters\",",
+									"    \"to should not be empty\");",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1607,12 +1368,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "c95ac4ed-5d03-418a-9207-52b833abb9a2"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "3842547c-41ff-4ad0-b21e-fa767919d87b"
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -1643,10 +1404,10 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"  pm.response.to.be.json;",
 									"});",
-									"pm.test(\"Failed request with invalid API key\", function () {",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {",
 									"  pm.expect(pm.response.code).to.equal(401);",
 									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"  pm.expect(pm.response.json().data).to.equal(\"Invalid API key\");",
+									"  pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
 									"});",
 									""
 								],
@@ -1661,12 +1422,12 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "4e62effd-b6a5-4a31-bc59-07fb063ca7d5"
+								"type": "text"
 							},
 							{
-								"key": "Authorization",
+								"key": "x-api-key",
 								"value": "bad-api-key",
-								"uuid": "6ff0ce5b-1853-43a7-8805-7e2f239c4fcf"
+								"type": "text"
 							}
 						],
 						"body": {
@@ -1689,6 +1450,915 @@
 				}
 			],
 			"description": "Collection of requests pertaining to creating notifications for the Plivo SMS channel type."
+		},
+		{
+			"name": "Twilio WhatsApp (Business) Notifications",
+			"item": [
+				{
+					"name": "Send Twilio WhatsApp (Business) Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 7\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 7);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp (Business) Notification - Invalid Provider ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response code is 400 Bad Request\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(400);\r",
+									"});\r",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"});\r",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  // // Assuming providerId 77 does not have channelType 7\n  \"providerId\": 77,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp (Business) Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio WhatsApp (Business) Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(401);\r",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");\r",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the Twilio WhatsApp channel type using templates."
+		},
+		{
+			"name": "KAPS SMS Notifications",
+			"item": [
+				{
+					"name": "Send KAPS SMS Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"  pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 8\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 8);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 8 also has channelType 8\n    \"providerId\": 8,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\":\"1601100000000005964\",\n        \"to\": \"+918900100002,+918900100003\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send KAPS SMS Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code is 400 Bad Request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 100 does not have channelType 8\n    \"providerId\": 100,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\":\"1601100000000005964\",\n        \"to\": \"+918900100002,+918900100003\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send KAPS SMS Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"  pm.expect(pm.response.code).to.equal(400);",
+									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"  pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 8,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\":\"1601100000000005964\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send KAPS SMS Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {",
+									"  pm.expect(pm.response.code).to.equal(401);",
+									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"  pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 8,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\": \"1601100000000005964\",\n        \"to\": \"+918900100002,+918900100003\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the KAPS SMS channel type."
+		},
+		{
+			"name": "Push Notification",
+			"item": [
+				{
+					"name": "PushNotifiation_Android",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response 'channelType' is 9\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 9);\r",
+									"});\r",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 9 also has channelType 9\n    \"providerId\": 9,\n    \"data\": {\n        \"message\": {\n            \"GCM\": \"{\\\"notification\\\":{\\\"title\\\":\\\"Test Notification\\\",\\\"body\\\":\\\"This is a test notification\\\"}}\"\n        },\n        \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/GCM/OQSHA-Android/7fb080a5-a5e9-38f0-98fe-ebd0396e0076\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PushNotification_IOS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response 'channelType' is 9\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 9);\r",
+									"});\r",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 9 also has channelType 9\n    \"providerId\": 9,\n    \"data\": {\n        \"message\": {\n            \"APNS_SANDBOX\": \"{\\\"aps\\\":{\\\"alert\\\":{\\\"title\\\":\\\"Hello World\\\",\\\"body\\\":\\\"This is a test message\\\"},\\\"sound\\\":\\\"default\\\"}}\"\n        },\n        // \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/GCM/OQSHA-Android/7fb080a5-a5e9-38f0-98fe-ebd0396e0076\" \n        \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/APNS_SANDBOX/OQSHA-iOS-Dev/57711edf-6265-32fc-be15-1a0cfdcad72e\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Request to add push notification"
+		},
+		{
+			"name": "Twilio Voice Call Notifications",
+			"item": [
+				{
+					"name": "Send Twilio Voice Call Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 10\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 10);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 10 also has channelType 10\n    \"providerId\": 10,\n    \"data\": {\n        \"from\": \"+15005550006\",\n        \"to\": \"+91xxxxxxxxxx\",\n        \"url\": \"http://your-server-url/calls/message\",\n        \"twiml\": \"<Response><Say>Hello there!</Say></Response>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio Voice Call Notification - Invalid Provider ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response code is 400 Bad Request\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(400);\r",
+									"});\r",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"});\r",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 100 does not have channelType 10\n    \"providerId\": 100,\n    \"data\": {\n        \"from\": \"+15005550006\",\n        \"to\": \"+91xxxxxxxxxx\",\n        \"url\": \"http://your-server-url/calls/message\",\n        \"twiml\": \"<Response><Say>Hello there!</Say></Response>\",\n        \"fallbackUrl\": \"http://fallback-server-url/calls/message\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio Voice Call Notification - Missing To Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 10 also has channelType 10\n    \"providerId\": 10,\n    \"data\": {\n        \"from\": \"+15005550006\",\n        \"url\": \"http://your-server-url/calls/message\",\n        \"twiml\": \"<Response><Say>Hello there!</Say></Response>\",\n        \"fallbackUrl\": \"http://fallback-server-url/calls/message\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio Voice Call Notification - Missing both url and twiml fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Must provide url or twiml parameter)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"Must provide url or twiml parameter\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 10 also has channelType 10\n    \"providerId\": 10,\n    \"data\": {\n        \"from\": \"+15005550006\",\n        \"to\": \"+91xxxxxxxxxx\",\n        \"fallbackUrl\": \"http://fallback-server-url/calls/message\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Twilio Voice Call Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(401);\r",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");\r",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 10 also has channelType 10\n    \"providerId\": 10,\n    \"data\": {\n        \"from\": \"+15005550006\",\n        \"to\": \"+91xxxxxxxxxx\",\n        \"url\": \"http://your-server-url/calls/message\",\n        \"twiml\": \"<Response><Say>Hello there!</Say></Response>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the Twilio Voice Call channel type using templates."
 		},
 		{
 			"name": "Authentication",
@@ -1727,8 +2397,7 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "778470f7-5985-4b48-8578-7f85edb33076"
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -1782,8 +2451,7 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "d48a9865-06dd-4d38-a7a5-becbdef345dc"
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -1836,8 +2504,7 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "d64daeb6-5161-477b-b895-a9afdf7aef25"
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -1890,8 +2557,7 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "3d0dc04a-8f43-4676-a052-c81f41ee0ec5"
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -1957,13 +2623,11 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "4cd65a99-ae4b-4c47-bf92-3749481772a9"
+								"value": "Bearer {{auth-token}}"
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "4d3c208b-a0c1-47cb-a347-3eddb7c695f8"
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -2015,13 +2679,11 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer {{apikey}}",
-								"uuid": "ae0d24c8-b2e5-40ee-89e3-c4743f3ff32d"
+								"value": "Bearer {{auth-token}}"
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "cc4181a0-27f9-4fb3-986c-a2a4430d2013"
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -2050,63 +2712,117 @@
 			"description": "Collection of requests pertaining to fetching all notifications."
 		},
 		{
-			"name": "Notification by Id",
+			"name": "All Applications",
 			"item": [
 				{
-					"name": "Fetch Notification by ID - Success",
+					"name": "Fetch all Applications - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'data' property\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'applications' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.have.property(\"applications\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'applications' array\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data.applications).to.have.property(\"applications\").to.be.an(\"array\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "FoundationX-test-key",
-									"type": "string"
-								}
-							]
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"Pinestem\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
 						},
-						"method": "GET",
-						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/notifications/1",
+							"raw": "http://localhost:3000/graphql",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3000",
 							"path": [
-								"notifications",
-								"1"
+								"graphql"
 							]
 						}
 					},
 					"response": []
-				}
-			],
-			"description": "Collection of requests pertaining to fetching single notification by Id"
-		},
-		{
-			"name": "All Applications",
-			"item": [
+				},
 				{
-					"name": "Fetch all Applications - Success",
+					"name": "Fetch all Applications - Error - Non Admin user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"});\r",
+									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "mysecretadminkey",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"key\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    #   search: \"Pinestem\"\r\n    #   filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -2126,19 +2842,40 @@
 				},
 				{
 					"name": "Fetch all Applications - Bad Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response for fetching notifications with bad request\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(400);\r",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");\r",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "mysecretadminkey",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
@@ -2168,23 +2905,109 @@
 			"item": [
 				{
 					"name": "Create new Application - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'data' property\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'application' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.have.property(\"application\").to.be.an(\"object\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "mysecretadminkey",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleFoundationXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Application - Error - Non Admin user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"});\r",
+									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -2204,19 +3027,40 @@
 				},
 				{
 					"name": "Create new Application - Bad Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response for creating new application with bad request\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(400);\r",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");\r",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "mysecretadminkey",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
@@ -2246,19 +3090,109 @@
 			"item": [
 				{
 					"name": "Fetch all Providers - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'data' property\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'providers' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.have.property(\"providers\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'providers' array\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data.providers).to.have.property(\"providers\").to.be.an(\"array\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "OsmoX-test-key",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  providers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providers {\r\n        providerId\r\n        name\r\n        channelType\r\n        configuration\r\n        isEnabled\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch all Providers - Error - Non Admin user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"});\r",
+									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
@@ -2282,19 +3216,40 @@
 				},
 				{
 					"name": "Fetch all Providers - Bad Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response for creating new application with bad request\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(400);\r",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");\r",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "mysecretadminkey",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
@@ -2324,19 +3279,167 @@
 			"item": [
 				{
 					"name": "Create new Provider - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'data' property\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'provider' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.have.property(\"provider\").to.be.an(\"object\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "OsmoX-test-key",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 2,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Provider - Error - Invalid ApplicationId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"});\r",
+									"pm.test(\"message: Invalid applicationId.\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Invalid applicationId.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        # Assuming applicationId 500 is invalid\n        applicationId: 500,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Provider - Error - Non Admin user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"});\r",
+									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
@@ -2360,19 +3463,40 @@
 				},
 				{
 					"name": "Create new Provider - Bad Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response for creating new application with bad request\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(400);\r",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");\r",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "OsmoX-test-key",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
@@ -2394,107 +3518,54 @@
 					},
 					"response": []
 				}
-			]
-		},
-		{
-			"name": "Push Notification",
-			"item": [
-				{
-					"name": "PushNotifiation_Android",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "781a9d80-3b08-4149-8d07-c348bca08bf3"
-							},
-							{
-								"key": "x-api-key",
-								"value": "OsmoX-test-key",
-								"uuid": "2ad1dbf3-89a0-4fa1-8b67-9dce6f2c524f"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \n    \"providerId\": 10,\n    \"data\": {\n        \"message\": {\n            \"GCM\": \"{\\\"notification\\\":{\\\"title\\\":\\\"Test Notification\\\",\\\"body\\\":\\\"This is a test notification\\\"}}\"},\n        \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/GCM/OQSHA-Android/7fb080a5-a5e9-38f0-98fe-ebd0396e0076\" \n        \n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "PushNotification_IOS",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"uuid": "90889547-1c38-4be2-a6db-fc03bb0f489f"
-							},
-							{
-								"key": "x-api-key",
-								"value": "OsmoX-test-key",
-								"uuid": "09ca413e-4431-4474-87e5-dbca43da369e"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 10 also has channelType 4\n    \"providerId\": 10,\n    \"data\": {\n        \"message\": {\n             \"APNS_SANDBOX\": \"{\\\"aps\\\":{\\\"alert\\\":{\\\"title\\\":\\\"Hello World\\\",\\\"body\\\":\\\"This is a test message\\\"},\\\"sound\\\":\\\"default\\\"}}\"\n        },\n        // \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/GCM/OQSHA-Android/7fb080a5-a5e9-38f0-98fe-ebd0396e0076\" \n        \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/APNS_SANDBOX/OQSHA-iOS-Dev/57711edf-6265-32fc-be15-1a0cfdcad72e\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						}
-					},
-					"response": []
-				}
 			],
-			"description": "Request to add push notification"
+			"description": "Collection of requests pertaining to creation of a new provider."
 		},
 		{
 			"name": "Webhook",
 			"item": [
 				{
-					"name": "Register Webhook",
+					"name": "Register Webhook - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'data' and 'webhook' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response 'data' has valid 'webhook' property\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"        pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"webhook\").to.be.an(\"object\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "OsmoX-test-key",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [
 							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"uuid": "ed891341-a3f0-47c6-ab21-411854882e7d"
+								"type": "text"
 							},
 							{
 								"key": "x-api-key",
-								"value": "OsmoX-test-key",
-								"uuid": "21780551-3bf5-40a2-82eb-a5b98404e227"
+								"value": "{{x-api-key}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -2517,8 +3588,143 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Register Webhook - Error - provider already exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"});\r",
+									"pm.test(\"message: Failed to register webhook: This provider webhook exist\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Failed to register webhook: This provider webhook exist\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation RegisterWebhook {\n    webhook(createWebhookInput: {\n        providerId: 10,\n        webhookUrl: \"http://localhost:4200/webhook\",\n    }) {\n        webhookUrl\n        providerId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Webhook - Error - unknown provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"});\r",
+									"pm.test(\"message: Failed to register webhook\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\").contain(\"Failed to register webhook\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation RegisterWebhook {\n    webhook(createWebhookInput: {\n        providerId: 100,\n        webhookUrl: \"http://localhost:4200/webhook\",\n    }) {\n        webhookUrl\n        providerId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
 				}
-			]
+			],
+			"description": "Collection of requests pertaining to webhook registration."
 		}
 	]
 }
