@@ -121,6 +121,8 @@ export class NotificationsComponent implements OnInit {
 
   loadNotificationsLazy(event: LazyLoadEvent) {
     this.loading = true;
+    // event.first indicates how many records should be skipped from the beginning of the dataset
+    // event.rows represents the number of records to be displayed on the current page
     const variables = {
       filters: [],
       offset: event.first,
