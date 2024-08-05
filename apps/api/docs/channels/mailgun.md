@@ -100,7 +100,7 @@ These options allow you to customize the email message according to your needs. 
 
 | Package Name  | Version | Description                                     |
 |---------------|---------|-------------------------------------------------|
-| mailgun.js    | ^10.2.1 | A Mailgun client for JavaScript                 |
+| mailgun.js    | ^10.2.3 | A Mailgun client for JavaScript                 |
 | form-data     | ^4.0.0  | Used by mailgun.js to handle form data for HTTP requests |
 
 Reference: [Mailgun API Documentation](https://documentation.mailgun.com/en/latest/api-sending.html)
