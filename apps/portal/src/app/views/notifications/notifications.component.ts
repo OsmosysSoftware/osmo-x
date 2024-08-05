@@ -129,6 +129,7 @@ export class NotificationsComponent implements OnInit {
 
     if (this.selectedChannelType) {
       if (this.selectedChannelType === this.allPortalChannelTypes.UNKNOWN) {
+        // Condition to filter all notifications with unknown channel type
         const existingChannelTypes = Object.keys(ChannelTypeMap).filter(
           (value) => value !== this.allPortalChannelTypes.UNKNOWN.toString(),
         );
@@ -140,6 +141,7 @@ export class NotificationsComponent implements OnInit {
           });
         });
       } else {
+        // Default behavior when we are sorting on known channelType
         variables.filters.push({
           field: 'channelType',
           operator: 'eq',
@@ -156,11 +158,14 @@ export class NotificationsComponent implements OnInit {
       });
     }
 
+    // set the token based on selected application
     const tokenForSelectedApplication = this.setTokenForSelectedApplication();
 
+    // Fetch notifications and handle errors
     this.notificationService
       .getNotifications(variables, tokenForSelectedApplication)
       .pipe(
+        // catchError operator to handle errors
         catchError((error) => {
           this.messageService.add({
             key: 'tst',
@@ -172,6 +177,7 @@ export class NotificationsComponent implements OnInit {
         }),
       )
       .subscribe((notificationResponse: NotificationResponse) => {
+        // pagination is handled by p-table component of primeng
         this.notifications = notificationResponse.notifications;
         this.totalRecords = notificationResponse.total;
         this.loading = false;
