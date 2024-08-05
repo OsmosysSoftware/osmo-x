@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ChannelType, ChannelTypeMap, DeliveryStatus } from 'src/common/constants/notification';
-import { MessageService } from 'primeng/api';
+import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { catchError, of } from 'rxjs';
 import { NotificationsService } from './notifications.service';
-import { Notification } from './notification.model';
+import { Notification, NotificationResponse } from './notification.model';
 
 @Component({
   selector: 'app-notifications',
@@ -12,8 +12,6 @@ import { Notification } from './notification.model';
 })
 export class NotificationsComponent implements OnInit {
   notifications: Notification[] = [];
-
-  filteredNotifications: Notification[] = [];
 
   allServerApiKeysList = [];
 
@@ -67,8 +65,6 @@ export class NotificationsComponent implements OnInit {
 
   totalRecords = 0;
 
-  displayedNotifications: Notification[] = [];
-
   jsonDialogData: Record<string, unknown>;
 
   jsonDialogVisible: Boolean = false;
@@ -83,7 +79,7 @@ export class NotificationsComponent implements OnInit {
   ngOnInit(): void {
     this.applications = this.getApplications();
     this.selectedApplication = this.setApplicationOnInit();
-    this.loadNotifications();
+    this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
   }
 
   getApplications() {
@@ -123,9 +119,15 @@ export class NotificationsComponent implements OnInit {
     return this.mapApplicationAndKeys.get(this.selectedApplication);
   }
 
-  loadNotifications() {
+  loadNotificationsLazy(event: LazyLoadEvent) {
     this.loading = true;
-    const variables = { filters: [] };
+    // event.first indicates how many records should be skipped from the beginning of the dataset
+    // event.rows represents the number of records to be displayed on the current page
+    const variables = {
+      filters: [],
+      offset: event.first,
+      limit: event.rows,
+    };
 
     if (this.selectedChannelType) {
       if (this.selectedChannelType === this.allPortalChannelTypes.UNKNOWN) {
@@ -141,7 +143,7 @@ export class NotificationsComponent implements OnInit {
           });
         });
       } else {
-        // Default behavior
+        // Default behavior when we are sorting on known channelType
         variables.filters.push({
           field: 'channelType',
           operator: 'eq',
@@ -176,37 +178,12 @@ export class NotificationsComponent implements OnInit {
           return of([]);
         }),
       )
-      .subscribe((notifications: Notification[]) => {
-        this.notifications = [];
-        this.notifications.push(...notifications);
-        // Apply filters to the merged array of notifications
-        this.applyFilters();
+      .subscribe((notificationResponse: NotificationResponse) => {
+        // pagination is handled by p-table component of primeng
+        this.notifications = notificationResponse.notifications;
+        this.totalRecords = notificationResponse.total;
         this.loading = false;
       });
-  }
-
-  applyFilters() {
-    this.filteredNotifications = this.notifications;
-    this.totalRecords = this.notifications.length;
-    this.updateDisplayedNotifications();
-  }
-
-  // Update displayed notifications based on pagination
-  updateDisplayedNotifications() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.displayedNotifications = this.filteredNotifications.slice(startIndex, endIndex);
-  }
-
-  // Handle page change event
-  onPageChange(event) {
-    this.currentPage = event.page;
-    this.updateDisplayedNotifications();
-  }
-
-  // Handle page size change event
-  onPageSizeChange() {
-    this.updateDisplayedNotifications();
   }
 
   showJsonObject(json: Record<string, unknown>): void {
