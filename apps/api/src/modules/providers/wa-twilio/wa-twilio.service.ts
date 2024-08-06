@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as Twilio from 'twilio';
 import { ProvidersService } from '../providers.service';
 
@@ -34,9 +34,13 @@ export interface WaTwilioResponseData {
 export class WaTwilioService {
   private twilioClient;
 
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {}
 
   async assignTransport(providerId: number): Promise<void> {
+    this.logger.debug('Started assigning transport for Twilio Whatsapp');
     const waTwilioConfig = await this.providersService.getConfigById(providerId);
     const accountSid = waTwilioConfig.TWILIO_WA_ACCOUNT_SID as string;
     const authToken = waTwilioConfig.TWILIO_WA_AUTH_TOKEN as string;
@@ -54,6 +58,7 @@ export class WaTwilioService {
         from: `whatsapp:${fromWhatsAppNumber}`,
         to: `whatsapp:${body.to}`,
       });
+      this.logger.debug('Sending Twilio Whatsapp');
       return message;
     } catch (error) {
       throw new Error(`Failed to send message: ${error.message}`);
@@ -62,8 +67,10 @@ export class WaTwilioService {
 
   async getDeliveryStatus(sid: string, providerId: number): Promise<WaTwilioResponseData> {
     try {
+      this.logger.debug('Fetching delivery status from Twilio Whatsapp');
       await this.assignTransport(providerId);
       const message = await this.twilioClient.messages(sid).fetch();
+      this.logger.debug(`Twilio Whatsapp Delivery status: ${message}`);
       return message;
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as Twilio from 'twilio';
 import { ProvidersService } from '../providers.service';
 
@@ -85,9 +85,13 @@ export class VcTwilioService {
   private twilioClient;
   private twilioVoiceCallObject: Partial<VcTwilioData>;
 
-  constructor(private readonly providersService: ProvidersService) {}
+  constructor(
+    private readonly providersService: ProvidersService,
+    private logger: Logger,
+  ) {}
 
   async assignTransport(providerId: number): Promise<void> {
+    this.logger.debug('Started assigning transport for Twilio VC');
     const vcTwilioConfig = await this.providersService.getConfigById(providerId);
     const accountSid = vcTwilioConfig.TWILIO_VC_ACCOUNT_SID as string;
     const authToken = vcTwilioConfig.TWILIO_VC_AUTH_TOKEN as string;
@@ -146,6 +150,7 @@ export class VcTwilioService {
       // Function to create correct object for twilioClient and verify if one of url, twiml exist in request body
       this.twilioVoiceCallObject = {};
       await this.filterRequestBody(body);
+      this.logger.debug('Sending Twilio VC');
       const voiceCall = await this.twilioClient.calls.create(this.twilioVoiceCallObject);
       return voiceCall;
     } catch (error) {
@@ -155,8 +160,10 @@ export class VcTwilioService {
 
   async getDeliveryStatus(sid: string, providerId: number): Promise<VcTwilioResponseData> {
     try {
+      this.logger.debug('Fetching delivery status from Twilio VC');
       await this.assignTransport(providerId);
       const message = await this.twilioClient.calls(sid).fetch();
+      this.logger.debug(`Twilio VC Delivery status: ${message}`);
       return message;
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);

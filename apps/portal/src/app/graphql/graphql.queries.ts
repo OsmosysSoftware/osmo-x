@@ -1,9 +1,15 @@
 import { gql } from 'apollo-angular';
 
 export const GetNotifications = gql`
-  query GetNotifications($filters: [UniversalFilter!]) {
+  query GetNotifications($limit: Int!, $offset: Int!, $filters: [UniversalFilter!]) {
     notifications(
-      options: { limit: 100, sortBy: "createdOn", sortOrder: DESC, filters: $filters }
+      options: {
+        limit: $limit
+        offset: $offset
+        sortBy: "createdOn"
+        sortOrder: DESC
+        filters: $filters
+      }
     ) {
       notifications {
         channelType
@@ -17,6 +23,9 @@ export const GetNotifications = gql`
         updatedBy
         updatedOn
       }
+      total
+      offset
+      limit
     }
   }
 `;

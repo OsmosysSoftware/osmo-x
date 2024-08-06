@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ProvidersService } from '../providers.service';
 import { firstValueFrom } from 'rxjs';
 
@@ -34,9 +34,11 @@ export class SmsKapsystemService {
   constructor(
     private httpService: HttpService,
     private readonly providersService: ProvidersService,
+    private logger: Logger,
   ) {}
 
   async assignKAPSystemValues(providerId: number): Promise<void> {
+    this.logger.debug('Started assigning KAPSystem SMS values');
     const smsKapsystemConfig = await this.providersService.getConfigById(providerId);
     this.apiUrl = smsKapsystemConfig.KAP_SMS_BASE_API_URL as string;
     this.username = smsKapsystemConfig.KAP_SMS_ACCOUNT_USERNAME as string;
@@ -66,6 +68,7 @@ export class SmsKapsystemService {
       `?username=${this.username}&password=${this.password}&from=${this.from}&` +
       objToQueryString(body);
 
+    this.logger.debug('Sending KAPSystem SMS');
     const response = await this.httpService.get(this.apiUrl);
     const res = await firstValueFrom(response);
 

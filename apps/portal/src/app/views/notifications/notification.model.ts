@@ -10,3 +10,10 @@ export interface Notification {
   updatedBy: string;
   status: number;
 }
+
+export interface NotificationResponse {
+  notifications: Notification[];
+  total: number;
+  offset: number;
+  limit: number;
+}
