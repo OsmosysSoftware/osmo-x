@@ -103,7 +103,7 @@ export class SeedData1692870736646 implements MigrationInterface {
     const table = await queryRunner.getTable('notify_notifications');
 
     // Find the foreign key based on the column it references
-    const foreignKey = table.foreignKeys.find(
+    const foreignKey = table?.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('channel_type') !== -1,
     );
 

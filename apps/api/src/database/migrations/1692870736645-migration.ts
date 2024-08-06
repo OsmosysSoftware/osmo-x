@@ -279,7 +279,7 @@ export class Migration1692870736645 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     // To drop the auto generated foreign key for notify_notifications
     const notify_notifications_table = await queryRunner.getTable('notify_notifications');
-    const notify_notifications_foreignKey = notify_notifications_table.foreignKeys.find(
+    const notify_notifications_foreignKey = notify_notifications_table?.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('provider_id') !== -1,
     );
 
@@ -289,7 +289,7 @@ export class Migration1692870736645 implements MigrationInterface {
 
     // To drop the auto generated foreign key for notify_server_api_keys
     const notify_server_api_keys_table = await queryRunner.getTable('notify_server_api_keys');
-    const notify_server_api_keys_foreignKey = notify_server_api_keys_table.foreignKeys.find(
+    const notify_server_api_keys_foreignKey = notify_server_api_keys_table?.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('application_id') !== -1,
     );
 
