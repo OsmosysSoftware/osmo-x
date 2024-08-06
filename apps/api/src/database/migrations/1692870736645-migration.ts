@@ -277,8 +277,27 @@ export class Migration1692870736645 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey('notify_notifications', 'provider_id');
-    await queryRunner.dropForeignKey('notify_server_api_keys', 'application_id');
+    // To drop the auto generated foreign key for notify_notifications
+    const notify_notifications_table = await queryRunner.getTable('notify_notifications');
+    const notify_notifications_foreignKey = notify_notifications_table.foreignKeys.find(
+      (fk) => fk.columnNames.indexOf('provider_id') !== -1,
+    );
+
+    if (notify_notifications_foreignKey) {
+      await queryRunner.dropForeignKey('notify_notifications', notify_notifications_foreignKey);
+    }
+
+    // To drop the auto generated foreign key for notify_server_api_keys
+    const notify_server_api_keys_table = await queryRunner.getTable('notify_server_api_keys');
+    const notify_server_api_keys_foreignKey = notify_server_api_keys_table.foreignKeys.find(
+      (fk) => fk.columnNames.indexOf('application_id') !== -1,
+    );
+
+    if (notify_server_api_keys_foreignKey) {
+      await queryRunner.dropForeignKey('notify_server_api_keys', notify_server_api_keys_foreignKey);
+    }
+
+    // Rest of the drop commands
     await queryRunner.dropColumn('notify_notifications', 'provider_id');
     await queryRunner.dropColumn('notify_notifications', 'application_id');
     await queryRunner.query(`DROP TABLE \`notify_server_api_keys\``);

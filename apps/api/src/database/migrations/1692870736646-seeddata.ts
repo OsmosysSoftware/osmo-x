@@ -99,7 +99,19 @@ export class SeedData1692870736646 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey('notify_notifications', 'channel_type');
+    // To drop the auto generated foreign key for notify_notifications
+    const table = await queryRunner.getTable('notify_notifications');
+
+    // Find the foreign key based on the column it references
+    const foreignKey = table.foreignKeys.find(
+      (fk) => fk.columnNames.indexOf('channel_type') !== -1,
+    );
+
+    // If the foreign key exists, drop it
+    if (foreignKey) {
+      await queryRunner.dropForeignKey('notify_notifications', foreignKey);
+    }
+
     // Queries for deleting records from notify_master_providers
     await queryRunner.query(`
       DELETE FROM notify_master_providers
@@ -129,6 +141,7 @@ export class SeedData1692870736646 implements MigrationInterface {
       DELETE FROM notify_master_providers
       WHERE name = 'SMTP' AND provider_type = 1;
     `);
+
     // Queries for deleting records from other tables
     await queryRunner.query(`
       DELETE FROM notify_server_api_keys
