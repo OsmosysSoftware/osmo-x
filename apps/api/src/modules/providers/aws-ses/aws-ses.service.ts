@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SESClient } from '@aws-sdk/client-ses';
+import { SendEmailCommandOutput, SESClient } from '@aws-sdk/client-ses';
 import { SendEmailCommand } from '@aws-sdk/client-ses';
 import { ProvidersService } from '../providers.service';
 
@@ -35,7 +35,10 @@ export class AwsSesService {
     });
   }
 
-  async sendPushNotification(data: AwsSesData, providerId: number): Promise<unknown> {
+  async sendPushNotification(
+    data: AwsSesData,
+    providerId: number,
+  ): Promise<SendEmailCommandOutput> {
     await this.assignAwsSesConfig(providerId);
 
     // Prepare AWS SES publish parameters
@@ -72,7 +75,7 @@ export class AwsSesService {
       if (error instanceof Error && error.name === 'MessageRejected') {
         /** @type { import('@aws-sdk/client-ses').MessageRejected} */
         const messageRejectedError = error;
-        return messageRejectedError;
+        throw messageRejectedError;
       }
 
       throw new Error(`Failed to send message: ${error.message}`);
