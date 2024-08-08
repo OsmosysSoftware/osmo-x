@@ -21,6 +21,24 @@
         [showClear]="true"
         (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
       ></p-dropdown>
+      <p-calendar
+        [(ngModel)]="selectedFromDate"
+        [iconDisplay]="'input'"
+        [showIcon]="true"
+        [showButtonBar]="true"
+        placeholder="Select Date From"
+        class="grid-dropdown"
+        (onSelect)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
+      ></p-calendar>
+      <p-calendar
+        [(ngModel)]="selectedToDate"
+        [iconDisplay]="'input'"
+        [showIcon]="true"
+        [showButtonBar]="true"
+        [maxDate]=""
+        placeholder="Select Date To"
+        (onSelect)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
+      ></p-calendar>
       <p-dropdown
         [options]="applications"
         [(ngModel)]="selectedApplication"

@@ -55,6 +55,10 @@ export class NotificationsComponent implements OnInit {
 
   selectedApplication = null;
 
+  selectedFromDate = null;
+
+  selectedToDate = null;
+
   mapApplicationAndKeys = null;
 
   pageSizeOptions: number[] = [5, 10, 25, 50];
@@ -159,6 +163,24 @@ export class NotificationsComponent implements OnInit {
         value: this.selectedDeliveryStatus.toString(),
       });
     }
+
+    if (this.selectedFromDate) {
+      variables.filters.push({
+        field: 'createdOn',
+        operator: 'gt',
+        value: this.selectedFromDate.toString(),
+      });
+    }
+
+    if (this.selectedToDate) {
+      variables.filters.push({
+        field: 'createdOn',
+        operator: 'lt',
+        value: this.selectedToDate.toString(),
+      });
+    }
+
+    console.log(variables);
 
     // set the token based on selected application
     const tokenForSelectedApplication = this.setTokenForSelectedApplication();
