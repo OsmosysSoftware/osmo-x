@@ -48,7 +48,7 @@ Here's a sample request body:
     }
 }
 ```
-For further payload information check the following link:
+For further payload information check the following link: [AWS SDK SendEmailCommand](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/ses/command/SendEmailCommand/)
 
 ### Documentation links
 
