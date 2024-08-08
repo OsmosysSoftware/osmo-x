@@ -2430,7 +2430,7 @@
 					"response": []
 				},
 				{
-					"name": "Send SMTP Notification - Missing To Field Copy",
+					"name": "Send AWS SES Notification - Missing To Field",
 					"event": [
 						{
 							"listen": "test",
@@ -2483,7 +2483,7 @@
 					"response": []
 				},
 				{
-					"name": "Send SMTP Notification - Mismatch in ChannelType Copy",
+					"name": "Send AWS SES Notification - Mismatch in ChannelType",
 					"event": [
 						{
 							"listen": "test",
@@ -2544,7 +2544,7 @@
 					"response": []
 				},
 				{
-					"name": "Send SMTP Notification - Invalid API Key Copy",
+					"name": "Send AWS SES Notification - Invalid API Key",
 					"event": [
 						{
 							"listen": "test",
