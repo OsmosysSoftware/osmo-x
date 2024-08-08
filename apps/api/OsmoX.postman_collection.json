@@ -2413,7 +2413,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 12 also has channelType 12\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 12 also has channelType 12\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2527,7 +2527,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 111 does not have channelType 12\n    \"providerId\": 111,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 111 does not have channelType 12\n    \"providerId\": 111,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2581,7 +2581,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
