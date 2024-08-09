@@ -43,7 +43,7 @@ export abstract class NotificationConsumer {
           `Channel type: ${notification.channelType} is included in skip queue. Provider confirmation skipped for notification id ${notification.id}`,
         );
         notification.deliveryStatus = DeliveryStatus.SUCCESS;
-        this.webhookService.triggerWebhook(notification);
+        await this.webhookService.triggerWebhook(notification);
       } else {
         this.logger.debug(
           `Notification id ${notification.id} is awaiting confirmation from provider`,
@@ -115,7 +115,7 @@ export abstract class NotificationConsumer {
       }
 
       if (notification.deliveryStatus === DeliveryStatus.SUCCESS) {
-        this.webhookService.triggerWebhook(notification);
+        await this.webhookService.triggerWebhook(notification);
       }
     } catch (error) {
       if (notification.retryCount < this.maxRetryCount) {
@@ -126,7 +126,7 @@ export abstract class NotificationConsumer {
           `Notification with ID ${notification.id} has attempted max allowed retries (provider confirmation), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
-        this.webhookService.triggerWebhook(notification);
+        await this.webhookService.triggerWebhook(notification);
       }
 
       this.logger.error(

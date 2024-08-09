@@ -14,8 +14,8 @@ export class VoiceCallTwilioData1721088347000 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-        DELETE FROM notify_master_providers
-        WHERE id IN (10);
-      `);
+      DELETE FROM notify_master_providers
+      WHERE name = 'VC_TWILIO' AND provider_type = 5;
+    `);
   }
 }
