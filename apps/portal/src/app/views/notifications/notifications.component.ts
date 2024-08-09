@@ -204,8 +204,6 @@ export class NotificationsComponent implements OnInit {
       });
     }
 
-    console.log(variables);
-
     // set the token based on selected application
     const tokenForSelectedApplication = this.setTokenForSelectedApplication();
 
