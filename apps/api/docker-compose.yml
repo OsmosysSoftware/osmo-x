@@ -13,6 +13,8 @@ services:
       - osmox-redis
     environment:
       NODE_ENV: production
+    volumes:
+      - osmox-api-logs:/app/logs
 
   osmox-mariadb:
     container_name: osmox-mariadb
@@ -37,3 +39,9 @@ services:
 
 volumes:
   osmox-mariadb-data: ~
+  osmox-api-logs:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./logs
