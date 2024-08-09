@@ -2,13 +2,16 @@ import { IsNotEmpty, IsOptional, IsString, ValidateIf } from 'class-validator';
 
 export class AwsSesDataDto {
   @IsNotEmpty()
-  fromAddress: string | string[];
+  from: string | string[];
 
   @IsNotEmpty()
-  toAddresses: string | string[];
+  to: string | string[];
 
   @IsOptional()
-  ccAddresses?: string | string[];
+  cc?: string | string[];
+
+  @IsOptional()
+  bcc?: string | string[];
 
   @IsNotEmpty()
   @IsString()

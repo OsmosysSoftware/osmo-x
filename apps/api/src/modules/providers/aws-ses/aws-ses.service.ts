@@ -4,9 +4,10 @@ import { SendEmailCommand } from '@aws-sdk/client-ses';
 import { ProvidersService } from '../providers.service';
 
 export interface AwsSesData {
-  fromAddress: string;
-  toAddresses: string;
-  ccAddresses?: string;
+  from: string;
+  to: string;
+  cc?: string;
+  bcc?: string;
   subject: string;
   text?: string;
   html?: string;
@@ -44,8 +45,9 @@ export class AwsSesService {
     // Prepare AWS SES publish parameters
     const sendEmailCommandParams = new SendEmailCommand({
       Destination: {
-        CcAddresses: [data.ccAddresses],
-        ToAddresses: [data.toAddresses],
+        BccAddresses: [data.bcc],
+        CcAddresses: [data.cc],
+        ToAddresses: [data.to],
       },
       Message: {
         Body: {
@@ -63,7 +65,7 @@ export class AwsSesService {
           Data: data.subject,
         },
       },
-      Source: data.fromAddress,
+      Source: data.from,
       ReplyToAddresses: [data.replyToAddresses],
     });
 
