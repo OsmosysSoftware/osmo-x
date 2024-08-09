@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Queue, Worker, QueueEvents } from 'bullmq';
 import ms = require('ms');
 import { ChannelType, QueueAction } from 'src/common/constants/notifications';
+import { AwsSesNotificationConsumer } from 'src/jobs/consumers/notifications/awsSes-notifications.job.consumer';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
 import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
@@ -36,6 +37,7 @@ export class QueueService {
     private readonly smsKapsystemNotificationConsumer: SmsKapsystemNotificationsConsumer,
     private readonly pushSnsNotificationConsumer: PushSnsNotificationConsumer,
     private readonly vcTwilioNotificationsConsumer: VcTwilioNotificationsConsumer,
+    private readonly awsSesNotificationConsumer: AwsSesNotificationConsumer,
   ) {
     this.redisConfig = {
       host: this.configService.get<string>('REDIS_HOST'),
@@ -168,6 +170,11 @@ export class QueueService {
             job.data.id,
           );
           break;
+        // AWS_SES cases
+        case `${QueueAction.SEND}-${ChannelType.AWS_SES}`:
+          await this.awsSesNotificationConsumer.processAwsSesNotificationQueue(job.data.id);
+          break;
+        // Default cases
         default:
           this.logger.error(
             `Unsupported action-providerType combination: ${action}-${providerType}`,
