@@ -1274,7 +1274,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+						"description": "Allows successfully creating new notification for the Plivo SMS channel type."
 					},
 					"response": []
 				},
@@ -1335,7 +1335,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+						"description": "Allows successfully creating new notification for the Plivo SMS channel type."
 					},
 					"response": []
 				},
@@ -1390,7 +1390,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the Plivo SMS channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -1444,7 +1444,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the Plivo SMS channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -1516,7 +1516,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp (Business) channel type."
 					},
 					"response": []
 				},
@@ -1577,7 +1577,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp (Business) channel type."
 					},
 					"response": []
 				},
@@ -1630,7 +1630,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp (Business) channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -1684,7 +1684,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp (Business) channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -1756,7 +1756,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+						"description": "Allows successfully creating new notification for the KAPS SMS channel type."
 					},
 					"response": []
 				},
@@ -1817,7 +1817,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+						"description": "Allows successfully creating new notification for the KAPS SMS channel type."
 					},
 					"response": []
 				},
@@ -1870,7 +1870,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the KAPS SMS channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -1924,7 +1924,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the KAPS SMS channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -1995,12 +1995,13 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows successfully creating new notification for the SES Push Notification channel type for Android."
 					},
 					"response": []
 				},
 				{
-					"name": "PushNotification_IOS",
+					"name": "PushNotification_iOS",
 					"event": [
 						{
 							"listen": "test",
@@ -2060,7 +2061,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows successfully creating new notification for the SES Push Notification channel type for iOS."
 					},
 					"response": []
 				}
@@ -2132,7 +2134,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+						"description": "Allows successfully creating new notification for the Twilio Voice Call channel type."
 					},
 					"response": []
 				},
@@ -2193,7 +2195,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+						"description": "Allows successfully creating new notification for the Twilio Voice Call channel type."
 					},
 					"response": []
 				},
@@ -2246,7 +2248,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the Twilio Voice Call channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -2299,7 +2301,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the Twilio Voice Call channel type when missing both `url` and `twiml` fields."
 					},
 					"response": []
 				},
@@ -2353,7 +2355,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the Twilio Voice Call channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -2413,7 +2415,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 12 also has channelType 12\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 12 also has channelType 12\n    \"providerId\": 12,\n    \"data\": {\n        \"from\": \"fromtestmail@gmail.com\",\n        \"to\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2425,7 +2427,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
+						"description": "Allows successfully creating new notification for the AWS SES channel type."
 					},
 					"response": []
 				},
@@ -2466,7 +2468,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"from\": \"fromtestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2478,7 +2480,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the AWS SES channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -2527,7 +2529,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 111 does not have channelType 12\n    \"providerId\": 111,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 111 does not have channelType 12\n    \"providerId\": 111,\n    \"data\": {\n        \"from\": \"fromtestmail@gmail.com\",\n        \"to\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2539,7 +2541,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
+						"description": "Allows successfully creating new notification for the AWS SES channel type."
 					},
 					"response": []
 				},
@@ -2581,7 +2583,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"from\": \"fromtestmail@gmail.com\",\n        \"to\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2593,7 +2595,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the AWS SES channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -3014,7 +3016,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully fetching all applications based on the options passed."
 					},
 					"response": []
 				},
@@ -3076,7 +3079,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when fetching all applications when using a NON ADMIN user for triggering request."
 					},
 					"response": []
 				},
@@ -3133,7 +3137,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when fetching all applications when using invalid/bad request."
 					},
 					"response": []
 				}
@@ -3199,7 +3204,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully creating an application based on the options passed."
 					},
 					"response": []
 				},
@@ -3261,7 +3267,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating an application when using a NON ADMIN user for triggering request."
 					},
 					"response": []
 				},
@@ -3318,7 +3325,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating an application when using invalid/bad request."
 					},
 					"response": []
 				}
@@ -3388,7 +3396,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully fetching all providers based on the options passed."
 					},
 					"response": []
 				},
@@ -3450,7 +3459,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when fetching all providers when using a NON ADMIN user for triggering request."
 					},
 					"response": []
 				},
@@ -3507,12 +3517,13 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when fetching all providers when using invalid/bad request."
 					},
 					"response": []
 				}
 			],
-			"description": "Collection of requests pertaining to fetching all applications."
+			"description": "Collection of requests pertaining to fetching all providers."
 		},
 		{
 			"name": "New Provider",
@@ -3573,7 +3584,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
 					},
 					"response": []
 				},
@@ -3635,7 +3647,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating a provider when using an invalid applicationId for triggering request."
 					},
 					"response": []
 				},
@@ -3697,7 +3710,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating a provider when using a NON ADMIN user for triggering request."
 					},
 					"response": []
 				},
@@ -3754,7 +3768,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating a provider when using invalid/bad request."
 					},
 					"response": []
 				}
@@ -3825,7 +3840,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully registering a webhook based on the options passed."
 					},
 					"response": []
 				},
@@ -3892,7 +3908,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when registering a webhook when using already existing provider for request."
 					},
 					"response": []
 				},
@@ -3959,7 +3976,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when registering a webhook when using unknown provider for request."
 					},
 					"response": []
 				}

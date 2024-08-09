@@ -38,13 +38,14 @@ Here's a sample request body:
 {
     "providerId": 12,
     "data": {
-        // placeholder
-        "fromAddress": "fromtestmail@gmail.com",
-        "toAddresses": "totestmail@gmail.co",
-        "subject": "Test subject",
-        "text": "This is a test notification",
-        "html": "<b>This is a test notification</b>",
-        "replyToAddresses": "replytestmail@gmail.com"
+        "from": "sender@example.com",                  // Sender's email address
+        "to": "recipient@example.com",                 // Recipient's email address
+        "cc": "cc@example.com",                        // CC email address (optional)
+        "bcc": "bcc@example.com",                      // BCC email address (optional)
+        "subject": "Test subject",                     // Email subject
+        "text": "This is a test notification",         // Plain text version of the email
+        "html": "<b>This is a test notification</b>",  // HTML version of the email
+        "replyToAddresses": "replytestmail@gmail.com"  // If the recipient replies to the message, each reply-to address receives the reply (optional)
     }
 }
 ```
