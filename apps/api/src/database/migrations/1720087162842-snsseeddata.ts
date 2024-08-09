@@ -14,8 +14,8 @@ export class SnsSeedData1720087162842 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-        DELETE FROM notify_master_providers
-        WHERE id IN (9);
-      `);
+      DELETE FROM notify_master_providers
+      WHERE name = 'PUSH_SNS' AND provider_type = 4;
+    `);
   }
 }

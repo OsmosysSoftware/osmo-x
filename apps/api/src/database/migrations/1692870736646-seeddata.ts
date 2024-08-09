@@ -99,22 +99,61 @@ export class SeedData1692870736646 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey('notify_notifications', 'channel_type');
+    // To drop the auto generated foreign key for notify_notifications
+    const table = await queryRunner.getTable('notify_notifications');
+
+    // Find the foreign key based on the column it references
+    const foreignKey = table?.foreignKeys.find(
+      (fk) => fk.columnNames.indexOf('channel_type') !== -1,
+    );
+
+    // If the foreign key exists, drop it
+    if (foreignKey) {
+      await queryRunner.dropForeignKey('notify_notifications', foreignKey);
+    }
+
+    // Queries for deleting records from notify_master_providers
     await queryRunner.query(`
       DELETE FROM notify_master_providers
-      WHERE id IN (1, 2, 3, 4, 5, 6, 7);
+      WHERE name = 'WA_TWILIO_BUSINESS' AND provider_type = 3;
     `);
     await queryRunner.query(`
+      DELETE FROM notify_master_providers
+      WHERE name = 'SMS_PLIVO' AND provider_type = 2;
+    `);
+    await queryRunner.query(`
+      DELETE FROM notify_master_providers
+      WHERE name = 'SMS_TWILIO' AND provider_type = 2;
+    `);
+    await queryRunner.query(`
+      DELETE FROM notify_master_providers
+      WHERE name = 'WA_TWILIO' AND provider_type = 3;
+    `);
+    await queryRunner.query(`
+      DELETE FROM notify_master_providers
+      WHERE name = 'WA_360_DAILOG' AND provider_type = 3;
+    `);
+    await queryRunner.query(`
+      DELETE FROM notify_master_providers
+      WHERE name = 'MAILGUN' AND provider_type = 1;
+    `);
+    await queryRunner.query(`
+      DELETE FROM notify_master_providers
+      WHERE name = 'SMTP' AND provider_type = 1;
+    `);
+
+    // Queries for deleting records from other tables
+    await queryRunner.query(`
       DELETE FROM notify_server_api_keys
-      WHERE id IN (1);
+      WHERE api_key = 'OsmoX-test-key' AND application_id = 1;
     `);
     await queryRunner.query(`
       DELETE FROM notify_applications
-      WHERE id IN (1);
+      WHERE name = 'sampleOsmoXApp' AND user_id = 1;
     `);
     await queryRunner.query(`
       DELETE FROM notify_users
-      WHERE id IN (1);
+      WHERE username = 'Admin' AND role = 1;
     `);
   }
 }
