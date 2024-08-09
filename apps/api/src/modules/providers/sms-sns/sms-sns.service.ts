@@ -18,15 +18,20 @@ export class SmsSnsService {
 
   async assignSnsConfig(providerId: number): Promise<void> {
     this.logger.debug('Started assigning SNS sms client');
-    const snsConfig = await this.providersService.getConfigById(providerId);
 
-    this.sns = new SNS({
-      credentials: {
-        accessKeyId: snsConfig.AWS_ACCESS_KEY_ID as string,
-        secretAccessKey: snsConfig.AWS_SECRET_ACCESS_KEY as string,
-      },
-      region: snsConfig.AWS_REGION as string,
-    });
+    try {
+      const snsConfig = await this.providersService.getConfigById(providerId);
+      this.sns = new SNS({
+        credentials: {
+          accessKeyId: snsConfig.AWS_ACCESS_KEY_ID as string,
+          secretAccessKey: snsConfig.AWS_SECRET_ACCESS_KEY as string,
+        },
+        region: snsConfig.AWS_REGION as string,
+      });
+    } catch (error) {
+      this.logger.error('Error assigning SNS configuration', error);
+      throw error;
+    }
   }
 
   async sendMessage(data: SmsSnsData, providerId: number): Promise<PublishCommandOutput> {
@@ -38,7 +43,12 @@ export class SmsSnsService {
       PhoneNumber: data.phoneNumber,
     };
 
-    this.logger.debug('Sending SNS Sms ');
-    return this.sns.publish(params);
+    try {
+      this.logger.debug('Sending SNS Sms');
+      return await this.sns.publish(params);
+    } catch (error) {
+      this.logger.error('Error sending SNS SMS', error);
+      throw error;
+    }
   }
 }
