@@ -75,6 +75,12 @@ export class NotificationsComponent implements OnInit {
 
   loading: Boolean = true;
 
+  maxDateFrom = new Date();
+
+  maxDateTo = new Date();
+
+  minDateTo = null;
+
   constructor(
     private notificationService: NotificationsService,
     private messageService: MessageService,
@@ -113,6 +119,24 @@ export class NotificationsComponent implements OnInit {
     }
 
     return this.allApplicationsList[0];
+  }
+
+  onToDateChange() {
+    this.maxDateFrom = this.selectedToDate;
+  }
+
+  onFromDateChange() {
+    this.minDateTo = new Date(
+      new Date(this.selectedFromDate).setDate(this.selectedFromDate.getDate() + 1),
+    );
+  }
+
+  onFromDateClear() {
+    this.minDateTo = null;
+  }
+
+  onToDateClear() {
+    this.maxDateFrom = new Date();
   }
 
   setTokenForSelectedApplication() {

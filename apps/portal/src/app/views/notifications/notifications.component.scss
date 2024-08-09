@@ -24,6 +24,11 @@ h2 {
   margin-right: 1%;
 }
 
+::ng-deep .p-calendar .p-calendar-clear-icon {
+  margin-right: 1.5rem;
+  margin-top: 0;
+}
+
 .table-container {
   position: relative;
   margin-top: 1%;
