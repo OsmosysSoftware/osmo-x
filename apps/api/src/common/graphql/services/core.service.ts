@@ -68,7 +68,10 @@ export abstract class CoreService<TEntity> {
         } catch (error) {
           throw new Error(`Error parsing value for 'in' operator: ${error.message}`);
         }
-      } else if (this.isDateField(field) && (operator === 'gt' || operator === 'lt')) {
+      } else if (
+        this.isDateField(field) &&
+        (operator === 'gt' || operator === 'lt' || operator === 'gte' || operator === 'lte')
+      ) {
         value = new Date(value) as unknown as string;
       }
 

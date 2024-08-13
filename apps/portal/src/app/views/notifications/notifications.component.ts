@@ -126,9 +126,7 @@ export class NotificationsComponent implements OnInit {
   }
 
   onFromDateChange() {
-    this.minDateTo = new Date(
-      new Date(this.selectedFromDate).setDate(this.selectedFromDate.getDate() + 1),
-    );
+    this.minDateTo = this.selectedFromDate;
   }
 
   onFromDateClear() {
@@ -191,7 +189,7 @@ export class NotificationsComponent implements OnInit {
     if (this.selectedFromDate) {
       variables.filters.push({
         field: 'createdOn',
-        operator: 'gt',
+        operator: 'gte',
         value: this.selectedFromDate.toString(),
       });
     }
@@ -199,8 +197,10 @@ export class NotificationsComponent implements OnInit {
     if (this.selectedToDate) {
       variables.filters.push({
         field: 'createdOn',
-        operator: 'lt',
-        value: this.selectedToDate.toString(),
+        operator: 'lte',
+        value: new Date(
+          new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
+        ).toString(),
       });
     }
 
