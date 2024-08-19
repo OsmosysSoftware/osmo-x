@@ -36,18 +36,15 @@ export class AwsSesService {
     });
   }
 
-  async sendPushNotification(
-    data: AwsSesData,
-    providerId: number,
-  ): Promise<SendEmailCommandOutput> {
+  async sendAwsSes(data: AwsSesData, providerId: number): Promise<SendEmailCommandOutput> {
     await this.assignAwsSesConfig(providerId);
 
     // Prepare AWS SES publish parameters
     const sendEmailCommandParams = new SendEmailCommand({
       Destination: {
-        BccAddresses: [data.bcc],
-        CcAddresses: [data.cc],
-        ToAddresses: [data.to],
+        BccAddresses: data.bcc?.split(',') || [],
+        CcAddresses: data.cc?.split(',') || [],
+        ToAddresses: data.to.split(','),
       },
       Message: {
         Body: {
@@ -66,7 +63,7 @@ export class AwsSesService {
         },
       },
       Source: data.from,
-      ReplyToAddresses: [data.replyToAddresses],
+      ReplyToAddresses: data.replyToAddresses?.split(',') || [],
     });
 
     this.logger.debug('Sending AWS SES email');
