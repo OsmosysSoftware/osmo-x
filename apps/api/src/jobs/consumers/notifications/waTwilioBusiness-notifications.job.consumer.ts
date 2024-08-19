@@ -12,19 +12,28 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ProviderDeliveryStatus, DeliveryStatus } from 'src/common/constants/notifications';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
+import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 
 @Injectable()
 export class WaTwilioBusinessNotificationsConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
+    @InjectRepository(RetryNotification)
+    protected readonly notificationRetryRepository: Repository<RetryNotification>,
     private readonly waTwilioBusinessService: WaTwilioBusinessService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
     webhookService: WebhookService,
     configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService, webhookService, configService);
+    super(
+      notificationRepository,
+      notificationRetryRepository,
+      notificationsService,
+      webhookService,
+      configService,
+    );
   }
 
   async processWaTwilioBusinessNotificationQueue(id: number): Promise<void> {

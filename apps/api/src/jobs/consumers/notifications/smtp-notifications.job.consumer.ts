@@ -8,19 +8,28 @@ import { NotificationConsumer } from './notification.consumer';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
+import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 
 @Injectable()
 export class SmtpNotificationConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
+    @InjectRepository(RetryNotification)
+    protected readonly notificationRetryRepository: Repository<RetryNotification>,
     private readonly smtpService: SmtpService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
     webhookService: WebhookService,
     configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService, webhookService, configService);
+    super(
+      notificationRepository,
+      notificationRetryRepository,
+      notificationsService,
+      webhookService,
+      configService,
+    );
   }
 
   async processSmtpNotificationQueue(id: number): Promise<void> {

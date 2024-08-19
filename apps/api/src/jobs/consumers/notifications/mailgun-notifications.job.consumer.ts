@@ -10,19 +10,28 @@ import { MessagesSendResult } from 'mailgun.js';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
+import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 
 @Injectable()
 export class MailgunNotificationConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
+    @InjectRepository(RetryNotification)
+    protected readonly notificationRetryRepository: Repository<RetryNotification>,
     private readonly mailgunService: MailgunService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
     webhookService: WebhookService,
     configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService, webhookService, configService);
+    super(
+      notificationRepository,
+      notificationRetryRepository,
+      notificationsService,
+      webhookService,
+      configService,
+    );
   }
 
   async processMailgunNotificationQueue(id: number): Promise<void> {
@@ -51,11 +60,11 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
       notificationSendResponse.message = result.event;
 
       if (ProviderDeliveryStatus.MAILGUN.FAILURE_STATES.includes(deliveryStatus)) {
-        return { result: notificationSendResponse, deliveryStatus: DeliveryStatus.PENDING };
+        return { result: result, deliveryStatus: DeliveryStatus.PENDING };
       }
 
       if (ProviderDeliveryStatus.MAILGUN.SUCCESS_STATES.includes(deliveryStatus)) {
-        return { result: notificationSendResponse, deliveryStatus: DeliveryStatus.SUCCESS };
+        return { result: result, deliveryStatus: DeliveryStatus.SUCCESS };
       }
 
       return {
