@@ -55,6 +55,10 @@ export class NotificationsComponent implements OnInit {
 
   selectedApplication = null;
 
+  selectedFromDate = null;
+
+  selectedToDate = null;
+
   mapApplicationAndKeys = null;
 
   pageSizeOptions: number[] = [5, 10, 25, 50];
@@ -70,6 +74,12 @@ export class NotificationsComponent implements OnInit {
   jsonDialogVisible: Boolean = false;
 
   loading: Boolean = true;
+
+  maxDateFrom = new Date();
+
+  maxDateTo = new Date();
+
+  minDateTo = null;
 
   constructor(
     private notificationService: NotificationsService,
@@ -109,6 +119,22 @@ export class NotificationsComponent implements OnInit {
     }
 
     return this.allApplicationsList[0];
+  }
+
+  onToDateChange() {
+    this.maxDateFrom = this.selectedToDate;
+  }
+
+  onFromDateChange() {
+    this.minDateTo = this.selectedFromDate;
+  }
+
+  onFromDateClear() {
+    this.minDateTo = null;
+  }
+
+  onToDateClear() {
+    this.maxDateFrom = new Date();
   }
 
   setTokenForSelectedApplication() {
@@ -157,6 +183,26 @@ export class NotificationsComponent implements OnInit {
         field: 'deliveryStatus',
         operator: 'eq',
         value: this.selectedDeliveryStatus.toString(),
+      });
+    }
+
+    if (this.selectedFromDate) {
+      variables.filters.push({
+        field: 'createdOn',
+        operator: 'gt',
+        value: new Date(
+          new Date(this.selectedFromDate).setTime(this.selectedFromDate.getTime() - 1000),
+        ).toString(),
+      });
+    }
+
+    if (this.selectedToDate) {
+      variables.filters.push({
+        field: 'createdOn',
+        operator: 'lt',
+        value: new Date(
+          new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
+        ).toString(),
       });
     }
 
