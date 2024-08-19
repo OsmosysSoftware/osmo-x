@@ -189,15 +189,17 @@ export class NotificationsComponent implements OnInit {
     if (this.selectedFromDate) {
       variables.filters.push({
         field: 'createdOn',
-        operator: 'gte',
-        value: this.selectedFromDate.toString(),
+        operator: 'gt',
+        value: new Date(
+          new Date(this.selectedFromDate).setTime(this.selectedFromDate.getTime() - 1000),
+        ).toString(),
       });
     }
 
     if (this.selectedToDate) {
       variables.filters.push({
         field: 'createdOn',
-        operator: 'lte',
+        operator: 'lt',
         value: new Date(
           new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
         ).toString(),
