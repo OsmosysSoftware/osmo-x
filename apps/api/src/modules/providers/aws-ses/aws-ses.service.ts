@@ -72,6 +72,7 @@ export class AwsSesService {
       return await this.awsSesClient.send(sendEmailCommandParams);
     } catch (error) {
       if (error instanceof Error && error.name === 'MessageRejected') {
+        this.logger.error('Error sending AWS SES email: messageRejectedError', { error });
         /** @type { import('@aws-sdk/client-ses').MessageRejected} */
         const messageRejectedError = error;
         throw messageRejectedError;
