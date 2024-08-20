@@ -10,6 +10,7 @@ import { NotificationConsumer } from './notification.consumer';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
+import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 
 @Injectable()
 export class Wa360dialogNotificationsConsumer extends NotificationConsumer {
@@ -19,10 +20,18 @@ export class Wa360dialogNotificationsConsumer extends NotificationConsumer {
     private readonly wa360dialogService: Wa360dialogService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    @Inject(forwardRef(() => NotificationQueueProducer))
+    notificationsQueueService: NotificationQueueProducer,
     webhookService: WebhookService,
     configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService, webhookService, configService);
+    super(
+      notificationRepository,
+      notificationsService,
+      notificationsQueueService,
+      webhookService,
+      configService,
+    );
   }
 
   async processWa360dialogNotificationQueue(id: number): Promise<void> {

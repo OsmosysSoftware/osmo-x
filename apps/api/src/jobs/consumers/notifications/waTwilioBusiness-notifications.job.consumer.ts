@@ -12,6 +12,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ProviderDeliveryStatus, DeliveryStatus } from 'src/common/constants/notifications';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
+import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 
 @Injectable()
 export class WaTwilioBusinessNotificationsConsumer extends NotificationConsumer {
@@ -21,10 +22,18 @@ export class WaTwilioBusinessNotificationsConsumer extends NotificationConsumer 
     private readonly waTwilioBusinessService: WaTwilioBusinessService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    @Inject(forwardRef(() => NotificationQueueProducer))
+    notificationsQueueService: NotificationQueueProducer,
     webhookService: WebhookService,
     configService: ConfigService,
   ) {
-    super(notificationRepository, notificationsService, webhookService, configService);
+    super(
+      notificationRepository,
+      notificationsService,
+      notificationsQueueService,
+      webhookService,
+      configService,
+    );
   }
 
   async processWaTwilioBusinessNotificationQueue(id: number): Promise<void> {
