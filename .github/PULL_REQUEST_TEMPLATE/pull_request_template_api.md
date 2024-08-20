@@ -2,7 +2,7 @@
 
 ### Pre-requisites
 
-- [ ] I have gone through the Contributing guidelines for [Submitting a Pull Request (PR)](https://github.com/OsmosysSoftware/osmo-x/blob/main/CONTRIBUTING.md#submitting-a-pull-request-pr) and ensured that this is not a duplicate PR.
+- [ ] I have gone through the Contributing guidelines for [Submitting a Pull Request (PR)](https://github.com/OsmosysSoftware/osmo-x/blob/main/CONTRIBUTING.md#-submitting-a-pull-request-pr) and ensured that this is not a duplicate PR.
 - [ ] I have performed unit testing for the new feature added or updated to ensure the new features added are working as expected.
 - [ ] I have added/updated test cases to the [test suite](https://github.com/OsmosysSoftware/osmo-x/blob/main/apps/api/OsmoX.postman_collection.json) as applicable.
 - [ ] I have performed preliminary testing using the [test suite](https://github.com/OsmosysSoftware/osmo-x/blob/main/apps/api/OsmoX.postman_collection.json) to ensure that any existing features are not impacted and any new features are working as expected as a whole.
