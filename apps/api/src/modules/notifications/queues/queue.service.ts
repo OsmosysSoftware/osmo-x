@@ -13,6 +13,7 @@ import { VcTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/
 import { Wa360dialogNotificationsConsumer } from 'src/jobs/consumers/notifications/wa360dialog-notifications.job.consumer';
 import { WaTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilio-notifications.job.consumer';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
+import { WebhookService } from 'src/modules/webhook/webhook.service';
 
 @Injectable()
 export class QueueService {
@@ -36,6 +37,7 @@ export class QueueService {
     private readonly smsKapsystemNotificationConsumer: SmsKapsystemNotificationsConsumer,
     private readonly pushSnsNotificationConsumer: PushSnsNotificationConsumer,
     private readonly vcTwilioNotificationsConsumer: VcTwilioNotificationsConsumer,
+    protected readonly webhookService: WebhookService,
   ) {
     this.redisConfig = {
       host: this.configService.get<string>('REDIS_HOST'),
@@ -167,6 +169,19 @@ export class QueueService {
           await this.vcTwilioNotificationsConsumer.processVcTwilioNotificationConfirmationQueue(
             job.data.id,
           );
+          break;
+        // WEBHOOK
+        case `${QueueAction.WEBHOOK}-${ChannelType.SMTP}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.MAILGUN}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.WA_360_DAILOG}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.WA_TWILIO}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.SMS_TWILIO}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.SMS_PLIVO}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.WA_TWILIO_BUSINESS}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.SMS_KAPSYSTEM}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.PUSH_SNS}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.VC_TWILIO}`:
+          await this.webhookService.triggerWebhook(job.data.id);
           break;
         default:
           this.logger.error(

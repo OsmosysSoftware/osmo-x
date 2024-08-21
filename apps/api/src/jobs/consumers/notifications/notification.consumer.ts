@@ -4,11 +4,13 @@ import { Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import {
   DeliveryStatus,
+  QueueAction,
   SkipProviderConfirmationChannels,
 } from 'src/common/constants/notifications';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
+import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 
 @Injectable()
 export abstract class NotificationConsumer {
@@ -19,6 +21,7 @@ export abstract class NotificationConsumer {
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
     protected readonly notificationsService: NotificationsService,
+    private readonly notificationQueueService: NotificationQueueProducer,
     protected readonly webhookService: WebhookService,
     private readonly configService: ConfigService,
   ) {
@@ -43,7 +46,11 @@ export abstract class NotificationConsumer {
           `Channel type: ${notification.channelType} is included in skip queue. Provider confirmation skipped for notification id ${notification.id}`,
         );
         notification.deliveryStatus = DeliveryStatus.SUCCESS;
-        await this.webhookService.triggerWebhook(notification);
+        await this.notificationRepository.save(notification);
+        await this.notificationQueueService.addNotificationToQueue(
+          QueueAction.WEBHOOK,
+          notification,
+        );
       } else {
         this.logger.debug(
           `Notification id ${notification.id} is awaiting confirmation from provider`,
@@ -115,7 +122,11 @@ export abstract class NotificationConsumer {
       }
 
       if (notification.deliveryStatus === DeliveryStatus.SUCCESS) {
-        await this.webhookService.triggerWebhook(notification);
+        await this.notificationRepository.save(notification);
+        await this.notificationQueueService.addNotificationToQueue(
+          QueueAction.WEBHOOK,
+          notification,
+        );
       }
     } catch (error) {
       if (notification.retryCount < this.maxRetryCount) {
@@ -126,7 +137,11 @@ export abstract class NotificationConsumer {
           `Notification with ID ${notification.id} has attempted max allowed retries (provider confirmation), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
-        await this.webhookService.triggerWebhook(notification);
+        await this.notificationRepository.save(notification);
+        await this.notificationQueueService.addNotificationToQueue(
+          QueueAction.WEBHOOK,
+          notification,
+        );
       }
 
       this.logger.error(
