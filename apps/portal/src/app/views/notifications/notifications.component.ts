@@ -59,6 +59,8 @@ export class NotificationsComponent implements OnInit {
 
   selectedToDate = null;
 
+  searchValue = null;
+
   mapApplicationAndKeys = null;
 
   pageSizeOptions: number[] = [5, 10, 25, 50];
@@ -137,6 +139,10 @@ export class NotificationsComponent implements OnInit {
     this.maxDateFrom = new Date();
   }
 
+  onSearchClear() {
+    this.searchValue = null;
+  }
+
   setTokenForSelectedApplication() {
     if (this.allApplicationsList.length === 0) {
       return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
@@ -203,6 +209,14 @@ export class NotificationsComponent implements OnInit {
         value: new Date(
           new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
         ).toString(),
+      });
+    }
+
+    if (this.searchValue) {
+      variables.filters.push({
+        field: 'data',
+        operator: 'contains',
+        value: this.searchValue,
       });
     }
 

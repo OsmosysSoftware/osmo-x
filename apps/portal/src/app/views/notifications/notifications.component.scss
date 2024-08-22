@@ -20,8 +20,14 @@ h2 {
   width: 100%;
 }
 
-.grid-dropdown {
+.grid-dropdown,
+.grid-input,
+.grid-button {
   margin-right: 1%;
+}
+
+.filter-row {
+  margin-bottom: 1%;
 }
 
 ::ng-deep .p-calendar .p-calendar-clear-icon {
