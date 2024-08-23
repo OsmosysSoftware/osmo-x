@@ -4,6 +4,7 @@ import { MutationResult } from 'apollo-angular';
 import { GraphqlService } from '../graphql/graphql.service';
 import { LoginUser } from '../graphql/graphql.queries';
 import { LoginRequestBody } from './auth.interface';
+import { JSEncryptService } from '../jsencrypt/jsencrypt.service';
 
 const SESSION_EXPIRATION_DAYS = 30;
 
@@ -13,16 +14,23 @@ const SESSION_EXPIRATION_DAYS = 30;
 export class AuthService {
   userData = null;
 
-  constructor(private graphqlService: GraphqlService) {}
+  constructor(
+    private graphqlService: GraphqlService,
+    private jsEncryptService: JSEncryptService,
+  ) {}
 
   isLoggedIn(): boolean {
-    this.userData = JSON.parse(localStorage.getItem('osmoXUserData'));
+    const lsData = localStorage.getItem('osmoXUserData');
+    const decryptedLsData = this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData'));
+    this.userData = decryptedLsData ? JSON.parse(decryptedLsData) : null;
+
+    console.log(null);
 
     if (!this.userData) {
       return false;
     }
 
-    const loggedAt = localStorage.getItem('osmoXLoggedAt');
+    const loggedAt = this.jsEncryptService.decrypt(localStorage.getItem('osmoXLoggedAt'));
 
     if (loggedAt) {
       const expirationDate = new Date(loggedAt);

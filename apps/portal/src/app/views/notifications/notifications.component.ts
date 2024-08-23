@@ -4,6 +4,7 @@ import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { catchError, of } from 'rxjs';
 import { NotificationsService } from './notifications.service';
 import { Notification, NotificationResponse } from './notification.model';
+import { JSEncryptService } from 'src/app/jsencrypt/jsencrypt.service';
 
 @Component({
   selector: 'app-notifications',
@@ -84,6 +85,7 @@ export class NotificationsComponent implements OnInit {
   constructor(
     private notificationService: NotificationsService,
     private messageService: MessageService,
+    private jsEncryptService: JSEncryptService,
   ) {}
 
   ngOnInit(): void {
@@ -94,11 +96,18 @@ export class NotificationsComponent implements OnInit {
 
   getApplications() {
     this.allServerApiKeysList = [];
-    const allKeysFromLocalStorage = JSON.parse(localStorage.getItem('osmoXUserData'))?.allKeys;
+    const allKeysFromLocalStorage = JSON.parse(
+      this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString(),
+    )?.allKeys;
 
     if (!allKeysFromLocalStorage) {
-      this.allServerApiKeysList.push(JSON.parse(localStorage.getItem('osmoXUserData'))?.token);
-      return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
+      this.allServerApiKeysList.push(
+        JSON.parse(this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString())
+          ?.token,
+      );
+      return JSON.parse(
+        this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString(),
+      )?.token;
     }
 
     this.allServerApiKeysList = allKeysFromLocalStorage.map((item) => item.apiKey);
@@ -115,7 +124,9 @@ export class NotificationsComponent implements OnInit {
 
   setApplicationOnInit() {
     if (this.allApplicationsList.length === 0) {
-      return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
+      return JSON.parse(
+        this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString(),
+      )?.token;
     }
 
     return this.allApplicationsList[0];
@@ -139,7 +150,9 @@ export class NotificationsComponent implements OnInit {
 
   setTokenForSelectedApplication() {
     if (this.allApplicationsList.length === 0) {
-      return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
+      return JSON.parse(
+        this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString(),
+      )?.token;
     }
 
     return this.mapApplicationAndKeys.get(this.selectedApplication);

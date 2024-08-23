@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ErrorResponse, LoginRequestBody } from '../auth.interface';
 import { AuthService } from '../auth.service';
+import { JSEncryptService } from 'src/app/jsencrypt/jsencrypt.service';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private messageService: MessageService,
+    private jsEncryptService: JSEncryptService,
   ) {}
 
   ngOnInit(): void {
@@ -70,8 +72,19 @@ export class LoginComponent implements OnInit {
             detail: errorMessage,
           });
         } else {
-          localStorage.setItem('osmoXUserData', JSON.stringify(resp.data.login));
-          localStorage.setItem('osmoXLoggedAt', new Date().toISOString());
+          console.log(
+            'osmoxuserdata',
+            JSON.stringify(resp.data.login),
+            this.jsEncryptService.encrypt(JSON.stringify(resp.data.login)),
+          );
+          localStorage.setItem(
+            'osmoXUserData',
+            this.jsEncryptService.encrypt(JSON.stringify(resp.data.login)).toString(),
+          );
+          localStorage.setItem(
+            'osmoXLoggedAt',
+            this.jsEncryptService.encrypt(new Date().toISOString()).toString(),
+          );
 
           if (this.router.url !== '/notifications') {
             this.router.navigate(['notifications']);

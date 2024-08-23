@@ -12,6 +12,7 @@ import { NotificationsService } from './views/notifications/notifications.servic
 import { JsonDialogComponent } from './views/notifications/json-dialog/json-dialog.component';
 import { PrimeNgModule } from './primeng.module';
 import { LoginComponent } from './auth/login/login.component';
+import { JSEncryptService } from './jsencrypt/jsencrypt.service';
 
 @NgModule({
   declarations: [AppComponent, NotificationsComponent, JsonDialogComponent, LoginComponent],
