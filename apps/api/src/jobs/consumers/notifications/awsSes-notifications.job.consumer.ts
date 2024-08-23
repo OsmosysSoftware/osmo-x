@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { AwsSesData, AwsSesService } from 'src/modules/providers/aws-ses/aws-ses.service';
+import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 
 @Injectable()
 export class AwsSesNotificationConsumer extends NotificationConsumer {
@@ -17,10 +18,18 @@ export class AwsSesNotificationConsumer extends NotificationConsumer {
     private readonly awsSesService: AwsSesService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    @Inject(forwardRef(() => NotificationQueueProducer))
+    notificationsQueueService: NotificationQueueProducer,
     configService: ConfigService,
     webhookService: WebhookService,
   ) {
-    super(notificationRepository, notificationsService, webhookService, configService);
+    super(
+      notificationRepository,
+      notificationsService,
+      notificationsQueueService,
+      webhookService,
+      configService,
+    );
   }
 
   async processAwsSesNotificationQueue(id: number): Promise<void> {

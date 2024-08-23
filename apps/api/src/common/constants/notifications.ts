@@ -24,6 +24,7 @@ export const ChannelType = {
 export const QueueAction = {
   SEND: 'send',
   DELIVERY_STATUS: 'delivery-status',
+  WEBHOOK: 'webhook',
 };
 
 export const ProviderDeliveryStatus = {

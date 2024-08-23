@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { CalendarModule } from 'primeng/calendar';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NotificationsComponent } from './views/notifications/notifications.component';
@@ -14,7 +15,14 @@ import { LoginComponent } from './auth/login/login.component';
 
 @NgModule({
   declarations: [AppComponent, NotificationsComponent, JsonDialogComponent, LoginComponent],
-  imports: [BrowserModule, AppRoutingModule, FormsModule, PrimeNgModule, HttpClientModule],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    PrimeNgModule,
+    HttpClientModule,
+    CalendarModule,
+  ],
   providers: [NotificationsService, MessageService],
   bootstrap: [AppComponent],
 })

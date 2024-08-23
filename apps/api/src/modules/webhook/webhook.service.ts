@@ -1,11 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Webhook } from './entities/webhook.entity';
-import { Notification } from '../notifications/entities/notification.entity';
 import axios from 'axios';
 import { CreateWebhookInput } from './dto/create-webhook.input';
 import { Status } from 'src/common/constants/database';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class WebhookService {
@@ -14,6 +14,8 @@ export class WebhookService {
   constructor(
     @InjectRepository(Webhook)
     private readonly webhookRepository: Repository<Webhook>,
+    @Inject(forwardRef(() => NotificationsService))
+    protected readonly notificationsService: NotificationsService,
   ) {}
 
   async registerWebhook(webhookInput: CreateWebhookInput): Promise<Webhook> {
@@ -33,9 +35,10 @@ export class WebhookService {
     return await this.webhookRepository.save(webhook);
   }
 
-  async triggerWebhook(notification: Notification): Promise<void> {
+  async triggerWebhook(id: number): Promise<void> {
     const maxRetries = 5;
     let attempts = 0;
+    const notification = (await this.notificationsService.getNotificationById(id))[0];
     this.logger.log(
       `Triggering webhook for notification with providerId: ${notification.providerId}`,
     );
