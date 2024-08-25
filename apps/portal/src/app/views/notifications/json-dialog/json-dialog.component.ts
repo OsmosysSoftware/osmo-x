@@ -25,13 +25,22 @@ export class JsonDialogComponent {
   }
 
   copyToClipboard(): void {
-    this.clipboard.copy(JSON.stringify(this.jsonData));
-    // Display info message toast on notifications.component.html
-    this.messageService.add({
-      key: 'tst',
-      severity: 'info',
-      summary: 'Info',
-      detail: 'JSON data copied to clipboard!',
-    });
+    try {
+      this.clipboard.copy(JSON.stringify(this.jsonData));
+      // Display info message toast on notifications.component.html
+      this.messageService.add({
+        key: 'tst',
+        severity: 'info',
+        summary: 'Info',
+        detail: 'JSON data copied to clipboard!',
+      });
+    } catch (error) {
+      this.messageService.add({
+        key: 'tst',
+        severity: 'error',
+        summary: 'Error',
+        detail: `There was an error copying JSON data. Reason: ${error.message}`,
+      });
+    }
   }
 }
