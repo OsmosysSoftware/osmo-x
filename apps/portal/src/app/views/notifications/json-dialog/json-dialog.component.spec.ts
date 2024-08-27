@@ -9,14 +9,11 @@ describe('JsonDialogComponent', () => {
   let messageServiceSpy: jasmine.SpyObj<MessageService>;
 
   beforeEach(() => {
-    const clipboard = jasmine.createSpyObj('Clipboard', ['copy']);
-    const messageService = jasmine.createSpyObj('MessageService', ['add']);
-
     TestBed.configureTestingModule({
       declarations: [JsonDialogComponent],
       providers: [
-        { provide: Clipboard, useValue: clipboard },
-        { provide: MessageService, useValue: messageService },
+        { provide: Clipboard, useValue: jasmine.createSpyObj('Clipboard', ['copy']) },
+        { provide: MessageService, useValue: jasmine.createSpyObj('MessageService', ['add']) },
       ],
     });
 
