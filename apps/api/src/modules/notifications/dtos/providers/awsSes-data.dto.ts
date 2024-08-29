@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsOptional, IsString, ValidateIf } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsOptional, IsString, ValidateIf, ValidateNested } from 'class-validator';
+import {
+  AttachmentValidation,
+  CreateNotificationAttachmentDto,
+} from '../create-notification-attachment.dto';
 
 export class AwsSesDataDto {
   @IsNotEmpty()
@@ -26,5 +31,11 @@ export class AwsSesDataDto {
   html: string;
 
   @IsOptional()
-  replyToAddresses?: string | string[];
+  replyTo?: string | string[];
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateNotificationAttachmentDto)
+  @AttachmentValidation()
+  attachments: CreateNotificationAttachmentDto[];
 }

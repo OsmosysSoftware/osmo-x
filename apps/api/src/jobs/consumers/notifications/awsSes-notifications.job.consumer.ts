@@ -35,8 +35,11 @@ export class AwsSesNotificationConsumer extends NotificationConsumer {
   async processAwsSesNotificationQueue(id: number): Promise<void> {
     return super.processNotificationQueue(id, async () => {
       const notification = (await this.notificationsService.getNotificationById(id))[0];
+      const formattedNotificationData = await this.awsSesService.formatNotificationData(
+        notification.data,
+      );
       return this.awsSesService.sendAwsSes(
-        notification.data as unknown as AwsSesData,
+        formattedNotificationData as unknown as AwsSesData,
         notification.providerId,
       );
     });

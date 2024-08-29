@@ -18,7 +18,7 @@ export const ChannelType = {
   SMS_KAPSYSTEM: 8,
   PUSH_SNS: 9,
   VC_TWILIO: 10,
-  AWS_SES: 12,
+  AWS_SES: 11,
 };
 
 export const QueueAction = {
