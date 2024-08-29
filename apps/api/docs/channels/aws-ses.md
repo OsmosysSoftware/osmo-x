@@ -36,17 +36,23 @@ Here's a sample request body:
 
 ```jsonc
 {
-    "providerId": 12,
-    "data": {
-        "from": "sender@example.com",                  // Sender's email address
-        "to": "recipient@example.com",                 // Recipient's email address
-        "cc": "cc@example.com",                        // CC email address (optional)
-        "bcc": "bcc@example.com",                      // BCC email address (optional)
-        "subject": "Test subject",                     // Email subject
-        "text": "This is a test notification",         // Plain text version of the email
-        "html": "<b>This is a test notification</b>",  // HTML version of the email
-        "replyToAddresses": "replytestmail@gmail.com"  // If the recipient replies to the message, each reply-to address receives the reply (optional)
-    }
+  "providerId": 11,
+  "data": {
+    "from": "sender@example.com",                  // Sender's email address
+    "to": "recipient@example.com",                 // Recipient's email address
+    "cc": "cc@example.com",                        // CC email address (optional)
+    "bcc": "bcc@example.com",                      // BCC email address (optional)
+    "subject": "Test subject",                     // Email subject
+    "text": "This is a test notification",         // Plain text version of the email
+    "html": "<b>This is a test notification</b>",  // HTML version of the email
+    "replyTo": "replytestmail@gmail.com",          // If the recipient replies to the message, each address receives the reply (optional)
+    "attachments": [                               // Attachments (optional)
+      {
+        "filename": "names.txt",
+        "content": "John Doe\nJane Doe",
+      },
+    ],
+  }
 }
 ```
 For further payload information check the following link: [AWS SDK SendEmailCommand](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/ses/command/SendEmailCommand/)
@@ -55,6 +61,8 @@ For further payload information check the following link: [AWS SDK SendEmailComm
 
 - [What is AWS SES](https://docs.aws.amazon.com/ses/latest/dg/Welcome.html)
 - [Official AWS documentation for SES integration](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/ses-examples-sending-email.html#ses-examples-sending-emails-prerequisites)
+- [Official AWS documentation for sendRawEmailCommand](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/ses/command/SendRawEmailCommand/)
+- [SES Transport using Nodemailer](https://nodemailer.com/transports/ses/)
 
 ### Dependencies
 

@@ -103,19 +103,19 @@ OsmoX supports multiple channel types, allowing you to choose the most suitable 
 |             SMS - Twilio             |     5     |             [SMS - Twilio](channels/sms-Twilio.md)             |
 |             SMS - Plivo              |     6     |              [SMS - Plivo](channels/sms-Plivo.md)              |
 |     WhatsApp - Twilio (Business)     |     7     | [WhatsApp - Twilio (Business)](channels/wa-Twilio-Business.md) |
-|           SMS - KAPSystem            |     8     |           [SMS - KAPSystem](channels/sms-kapsystem.md)         |
-|    PushNotification - SNS            |     9     |           [Push Notification - SNS](channels/push-sns.md)      |
-
+|           SMS - KAPSystem            |     8     |          [SMS - KAPSystem](channels/sms-kapsystem.md)          |
+|        PushNotification - SNS        |     9     |        [Push Notification - SNS](channels/push-sns.md)         |
+|           Email - AWS SES            |    11     |                 [AWS SES](channels/aws-ses.md)                 |
 
 ## 6. Delivery Status Information
 
 OsmoX provides different delivery status options to reflect the state of your notifications:
 
-| **Status**            |               **Description**                     | **Value** |
-| :---------:           | :-----------------------------------------------: | :-------: |
-|   PENDING             |   The notification is awaiting processing.        |     1     |
-| IN PROGRESS           |  The notification is currently being sent         |     2     |
-| AWAITING_CONFIRMATION | The notification is awaiting confirmation         |     3     |
-| QUEUED_CONFIRMATION   | The notification is added to confirmation queue.  |     4     |
-|   SUCCESS             | The notification was successfully delivered.      |     5     |
-|   FAILED              |      The notification delivery failed.            |     6     |
+|      **Status**       |                 **Description**                  | **Value** |
+| :-------------------: | :----------------------------------------------: | :-------: |
+|        PENDING        |     The notification is awaiting processing.     |     1     |
+|      IN PROGRESS      |     The notification is currently being sent     |     2     |
+| AWAITING_CONFIRMATION |    The notification is awaiting confirmation     |     3     |
+|  QUEUED_CONFIRMATION  | The notification is added to confirmation queue. |     4     |
+|        SUCCESS        |   The notification was successfully delivered.   |     5     |
+|        FAILED         |        The notification delivery failed.         |     6     |
