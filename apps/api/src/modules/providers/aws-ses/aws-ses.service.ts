@@ -49,6 +49,8 @@ export class AwsSesService {
       // create Nodemailer SES transporter
       const transporter = nodemailer.createTransport({
         SES: { ses, aws },
+        sendingRate: 1,
+        maxConnections: 1,
       });
 
       // Prepare mail option parameters
