@@ -7,6 +7,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { SmsSnsData, SmsSnsService } from 'src/modules/providers/sms-sns/sms-sns.service';
+import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 
 @Injectable()
 export class SmsSnsNotificationConsumer extends NotificationConsumer {
@@ -16,10 +17,18 @@ export class SmsSnsNotificationConsumer extends NotificationConsumer {
     private readonly smsSnsService: SmsSnsService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
+    @Inject(forwardRef(() => NotificationQueueProducer))
+    notificationsQueueService: NotificationQueueProducer,
     configService: ConfigService,
     webhookService: WebhookService,
   ) {
-    super(notificationRepository, notificationsService, webhookService, configService);
+    super(
+      notificationRepository,
+      notificationsService,
+      notificationsQueueService,
+      webhookService,
+      configService,
+    );
   }
 
   async processSmsSnsNotificationQueue(id: number): Promise<void> {
