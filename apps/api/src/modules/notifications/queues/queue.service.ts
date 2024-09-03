@@ -175,6 +175,7 @@ export class QueueService {
         // SMS_SNS cases
         case `${QueueAction.SEND}-${ChannelType.SMS_SNS}`:
           await this.smsSnsNotificationConsumer.processSmsSnsNotificationQueue(job.data.id);
+          break;
         // WEBHOOK
         case `${QueueAction.WEBHOOK}-${ChannelType.SMTP}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.MAILGUN}`:
