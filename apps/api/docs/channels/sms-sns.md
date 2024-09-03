@@ -36,10 +36,10 @@ Here's a sample request body:
 
 ```jsonc
 {
-    "providerId": 11,
+    "providerId": 12,
     "data": {
 
-        "phoneNumber": "+1234567890",
+        "to": "+919234567890",
         "message": "This is a test notification",
     }
 }

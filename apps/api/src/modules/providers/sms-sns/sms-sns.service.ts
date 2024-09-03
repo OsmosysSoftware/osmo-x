@@ -3,7 +3,7 @@ import { PublishCommandInput, PublishCommandOutput, SNS } from '@aws-sdk/client-
 import { ProvidersService } from '../providers.service';
 
 export interface SmsSnsData {
-  phoneNumber: string;
+  to: string;
   message: string;
 }
 
@@ -40,7 +40,7 @@ export class SmsSnsService {
     // Prepare SNS publish parameters
     const params: PublishCommandInput = {
       Message: data.message,
-      PhoneNumber: data.phoneNumber,
+      PhoneNumber: data.to,
     };
 
     try {

@@ -1,9 +1,9 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
 
 export class SmsSnsDataDto {
-  @IsString()
   @IsNotEmpty()
-  phoneNumber: string;
+  @MaxLength(16)
+  to: string;
 
   @IsString()
   @IsNotEmpty()

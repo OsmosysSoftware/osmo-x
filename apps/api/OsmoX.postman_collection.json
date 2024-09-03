@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "82b7edbd-b320-46a8-bdc2-5fcb85d3bc4c",
+		"_postman_id": "8e75fe81-d5b4-4fda-bb05-a1c9e9224fce",
 		"name": "OsmoX",
 		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -1274,7 +1274,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+						"description": "Allows successfully creating new notification for the Plivo SMS channel type."
 					},
 					"response": []
 				},
@@ -1335,7 +1335,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+						"description": "Allows successfully creating new notification for the Plivo SMS channel type."
 					},
 					"response": []
 				},
@@ -1390,7 +1390,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the Plivo SMS channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -1444,7 +1444,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the Plivo SMS channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -1516,7 +1516,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp (Business) channel type."
 					},
 					"response": []
 				},
@@ -1577,7 +1577,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp (Business) channel type."
 					},
 					"response": []
 				},
@@ -1630,7 +1630,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp (Business) channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -1684,7 +1684,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp (Business) channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -1756,7 +1756,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+						"description": "Allows successfully creating new notification for the KAPS SMS channel type."
 					},
 					"response": []
 				},
@@ -1817,7 +1817,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+						"description": "Allows successfully creating new notification for the KAPS SMS channel type."
 					},
 					"response": []
 				},
@@ -1870,7 +1870,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the KAPS SMS channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -1924,7 +1924,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio SMS channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the KAPS SMS channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -1995,12 +1995,13 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows successfully creating new notification for the SES Push Notification channel type for Android."
 					},
 					"response": []
 				},
 				{
-					"name": "PushNotification_IOS",
+					"name": "PushNotification_iOS",
 					"event": [
 						{
 							"listen": "test",
@@ -2060,7 +2061,8 @@
 							"path": [
 								"notifications"
 							]
-						}
+						},
+						"description": "Allows successfully creating new notification for the SES Push Notification channel type for iOS."
 					},
 					"response": []
 				}
@@ -2132,7 +2134,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+						"description": "Allows successfully creating new notification for the Twilio Voice Call channel type."
 					},
 					"response": []
 				},
@@ -2193,7 +2195,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+						"description": "Allows successfully creating new notification for the Twilio Voice Call channel type."
 					},
 					"response": []
 				},
@@ -2246,7 +2248,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the Twilio Voice Call channel type when missing the `to` field."
 					},
 					"response": []
 				},
@@ -2299,7 +2301,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the Twilio Voice Call channel type when missing both `url` and `twiml` fields."
 					},
 					"response": []
 				},
@@ -2353,7 +2355,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the Twilio WhatsApp channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the Twilio Voice Call channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -2382,9 +2384,9 @@
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
 									"});",
-									"pm.test(\"Response 'channelType' is 12\", function () {",
+									"pm.test(\"Response 'channelType' is 11\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 12);",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 11);",
 									"});",
 									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
 									"    var jsonData = pm.response.json();",
@@ -2413,7 +2415,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 12 also has channelType 12\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 11 also has channelType 11\n    \"providerId\": 11,\n    \"data\": {\n        \"from\": \"fromtestmail@gmail.com\",\n        \"to\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyTo\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2425,12 +2427,12 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
+						"description": "Allows successfully creating new notification for the AWS SES channel type."
 					},
 					"response": []
 				},
 				{
-					"name": "Send SMTP Notification - Missing To Field Copy",
+					"name": "Send AWS SES Notification - Missing To Field",
 					"event": [
 						{
 							"listen": "test",
@@ -2466,7 +2468,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    \"providerId\": 11,\n    \"data\": {\n        \"from\": \"fromtestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyTo\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2478,12 +2480,12 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
+						"description": "Allows representing failure in creating new notification for the AWS SES channel type when missing the `to` field."
 					},
 					"response": []
 				},
 				{
-					"name": "Send SMTP Notification - Mismatch in ChannelType Copy",
+					"name": "Send AWS SES Notification - Mismatch in ChannelType",
 					"event": [
 						{
 							"listen": "test",
@@ -2527,7 +2529,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 111 does not have channelType 12\n    \"providerId\": 111,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    // Assuming providerId 111 does not have channelType 11\n    \"providerId\": 111,\n    \"data\": {\n        \"from\": \"fromtestmail@gmail.com\",\n        \"to\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyTo\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2539,12 +2541,12 @@
 								"notifications"
 							]
 						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
+						"description": "Allows successfully creating new notification for the AWS SES channel type."
 					},
 					"response": []
 				},
 				{
-					"name": "Send SMTP Notification - Invalid API Key Copy",
+					"name": "Send AWS SES Notification - Invalid API Key",
 					"event": [
 						{
 							"listen": "test",
@@ -2581,7 +2583,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
+							"raw": "{\n    \"providerId\": 11,\n    \"data\": {\n        \"from\": \"fromtestmail@gmail.com\",\n        \"to\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyTo\": \"replytestmail@gmail.com\"\n    }\n}"
 						},
 						"url": {
 							"raw": "localhost:3000/notifications",
@@ -2593,247 +2595,7 @@
 								"notifications"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
-					},
-					"response": []
-				}
-			],
-			"description": "Collection of requests pertaining to creating notifications for the AWS SES channel type."
-		},
-		{
-			"name": "SNS SMS Notification",
-			"item": [
-				{
-					"name": "Send SNS SMS Notification - Success",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 12\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 12);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 12 also has channelType 12\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
-					},
-					"response": []
-				},
-				{
-					"name": "Send SNS SMS Notification - Missing phoneNumber Field",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
-					},
-					"response": []
-				},
-				{
-					"name": "Send SNS SMS Notification - Mismatch in ChannelType",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response code is 400 Bad Request\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"});",
-									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
-									"    pm.expect(jsonData).to.have.property(\"data\");",
-									"});",
-									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 111 does not have channelType 12\n    \"providerId\": 111,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
-					},
-					"response": []
-				},
-				{
-					"name": "Send SNS SMS Notification - Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Failed request with invalid x-api-key\", function () {",
-									"    pm.expect(pm.response.code).to.equal(401);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "bad-api-key",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"fromAddress\": \"fromtestmail@gmail.com\",\n        \"toAddresses\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyToAddresses\": \"replytestmail@gmail.com\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
+						"description": "Allows representing failure in creating new notification for the AWS SES channel type when passing invalid API key."
 					},
 					"response": []
 				}
@@ -3254,7 +3016,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully fetching all applications based on the options passed."
 					},
 					"response": []
 				},
@@ -3316,7 +3079,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when fetching all applications when using a NON ADMIN user for triggering request."
 					},
 					"response": []
 				},
@@ -3373,7 +3137,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when fetching all applications when using invalid/bad request."
 					},
 					"response": []
 				}
@@ -3439,7 +3204,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully creating an application based on the options passed."
 					},
 					"response": []
 				},
@@ -3501,7 +3267,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating an application when using a NON ADMIN user for triggering request."
 					},
 					"response": []
 				},
@@ -3558,7 +3325,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating an application when using invalid/bad request."
 					},
 					"response": []
 				}
@@ -3628,7 +3396,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully fetching all providers based on the options passed."
 					},
 					"response": []
 				},
@@ -3690,7 +3459,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when fetching all providers when using a NON ADMIN user for triggering request."
 					},
 					"response": []
 				},
@@ -3747,12 +3517,13 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when fetching all providers when using invalid/bad request."
 					},
 					"response": []
 				}
 			],
-			"description": "Collection of requests pertaining to fetching all applications."
+			"description": "Collection of requests pertaining to fetching all providers."
 		},
 		{
 			"name": "New Provider",
@@ -3813,7 +3584,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
 					},
 					"response": []
 				},
@@ -3875,7 +3647,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating a provider when using an invalid applicationId for triggering request."
 					},
 					"response": []
 				},
@@ -3937,7 +3710,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating a provider when using a NON ADMIN user for triggering request."
 					},
 					"response": []
 				},
@@ -3994,7 +3768,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when creating a provider when using invalid/bad request."
 					},
 					"response": []
 				}
@@ -4065,7 +3840,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows successfully registering a webhook based on the options passed."
 					},
 					"response": []
 				},
@@ -4132,7 +3908,8 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when registering a webhook when using already existing provider for request."
 					},
 					"response": []
 				},
@@ -4199,18 +3976,253 @@
 							"path": [
 								"graphql"
 							]
-						}
+						},
+						"description": "Allows representing failure when registering a webhook when using unknown provider for request."
 					},
 					"response": []
 				}
 			],
 			"description": "Collection of requests pertaining to webhook registration."
-		}
-	],
-	"variable": [
+		},
 		{
-			"key": "x-api-key",
-			"value": "OsmoX-test-key"
+			"name": "SNS SMS Notification",
+			"item": [
+				{
+					"name": "Send SNS SMS Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 12\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 12);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SMTP channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SNS SMS Notification - Missing to Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"message\": \"This is a test notification\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SNS SMS Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code is 400 Bad Request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 121,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SMTP channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SNS SMS Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {",
+									"    pm.expect(pm.response.code).to.equal(401);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the AWS SES channel type."
 		}
 	]
 }
