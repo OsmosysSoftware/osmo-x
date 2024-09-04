@@ -97,16 +97,17 @@ export class NotificationsComponent implements OnInit {
   getApplications() {
     this.allServerApiKeysList = [];
     const allKeysFromLocalStorage = JSON.parse(
-      this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString(),
+      this.jsEncryptService.decryptLong(localStorage.getItem('osmoXUserData')).toString(),
     )?.allKeys;
 
     if (!allKeysFromLocalStorage) {
       this.allServerApiKeysList.push(
-        JSON.parse(this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString())
-          ?.token,
+        JSON.parse(
+          this.jsEncryptService.decryptLong(localStorage.getItem('osmoXUserData')).toString(),
+        )?.token,
       );
       return JSON.parse(
-        this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString(),
+        this.jsEncryptService.decryptLong(localStorage.getItem('osmoXUserData')).toString(),
       )?.token;
     }
 
@@ -125,7 +126,7 @@ export class NotificationsComponent implements OnInit {
   setApplicationOnInit() {
     if (this.allApplicationsList.length === 0) {
       return JSON.parse(
-        this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString(),
+        this.jsEncryptService.decryptLong(localStorage.getItem('osmoXUserData')).toString(),
       )?.token;
     }
 
@@ -151,7 +152,7 @@ export class NotificationsComponent implements OnInit {
   setTokenForSelectedApplication() {
     if (this.allApplicationsList.length === 0) {
       return JSON.parse(
-        this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData')).toString(),
+        this.jsEncryptService.decryptLong(localStorage.getItem('osmoXUserData')).toString(),
       )?.token;
     }
 

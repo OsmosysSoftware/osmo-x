@@ -21,7 +21,9 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     const lsData = localStorage.getItem('osmoXUserData');
-    const decryptedLsData = this.jsEncryptService.decrypt(localStorage.getItem('osmoXUserData'));
+    const decryptedLsData = this.jsEncryptService.decryptLong(
+      localStorage.getItem('osmoXUserData'),
+    );
     this.userData = decryptedLsData ? JSON.parse(decryptedLsData) : null;
 
     console.log(null);
@@ -30,7 +32,7 @@ export class AuthService {
       return false;
     }
 
-    const loggedAt = this.jsEncryptService.decrypt(localStorage.getItem('osmoXLoggedAt'));
+    const loggedAt = this.jsEncryptService.decryptLong(localStorage.getItem('osmoXLoggedAt'));
 
     if (loggedAt) {
       const expirationDate = new Date(loggedAt);

@@ -72,18 +72,13 @@ export class LoginComponent implements OnInit {
             detail: errorMessage,
           });
         } else {
-          console.log(
-            'osmoxuserdata',
-            JSON.stringify(resp.data.login),
-            this.jsEncryptService.encrypt(JSON.stringify(resp.data.login)),
-          );
           localStorage.setItem(
             'osmoXUserData',
-            this.jsEncryptService.encrypt(JSON.stringify(resp.data.login)).toString(),
+            this.jsEncryptService.encryptLong(JSON.stringify(resp.data.login)),
           );
           localStorage.setItem(
             'osmoXLoggedAt',
-            this.jsEncryptService.encrypt(new Date().toISOString()).toString(),
+            this.jsEncryptService.encryptLong(new Date().toISOString()),
           );
 
           if (this.router.url !== '/notifications') {

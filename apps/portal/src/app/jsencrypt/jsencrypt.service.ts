@@ -1,22 +1,46 @@
 import { Injectable } from '@angular/core';
 import JSEncrypt from 'jsencrypt';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class JSEncryptService {
-  constructor() {}
+  jsEncrypt;
+
+  constructor() {
+    this.jsEncrypt = new JSEncrypt();
+  }
 
   encrypt(text) {
-    const jsEncrypt = new JSEncrypt();
-    jsEncrypt.setPublicKey(environment.jsEncryptPublicKey);
-    return jsEncrypt.encrypt(text);
+    this.jsEncrypt.setPublicKey(process.env['JSENCRYPT_PUBLIC_KEY']);
+    return this.jsEncrypt.encrypt(text);
   }
 
   decrypt(cipher) {
-    const jsEncrypt = new JSEncrypt();
-    jsEncrypt.setPrivateKey(environment.jsEncryptPrivateKey);
-    return jsEncrypt.decrypt(cipher);
+    this.jsEncrypt.setPrivateKey(process.env['JSENCRYPT_PRIVATE_KEY']);
+    return this.jsEncrypt.decrypt(cipher);
+  }
+
+  encryptLong(text) {
+    const maxChunkLength = 100;
+    let output = '';
+    let inOffset = 0;
+    while (inOffset < text.length) {
+      output += this.encrypt(text.substring(inOffset, inOffset + maxChunkLength));
+      inOffset += maxChunkLength;
+    }
+    return output;
+  }
+
+  decryptLong(string) {
+    if (!string) return null;
+    var maxChunkLength = 172;
+    let output = '';
+    let inOffset = 0;
+    while (inOffset < string.length) {
+      output += this.decrypt(string.substring(inOffset, inOffset + maxChunkLength));
+      inOffset += maxChunkLength;
+    }
+    return output;
   }
 }
