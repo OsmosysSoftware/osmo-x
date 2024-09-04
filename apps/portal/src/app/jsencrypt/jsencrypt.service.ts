@@ -25,22 +25,26 @@ export class JSEncryptService {
     const maxChunkLength = 100;
     let output = '';
     let inOffset = 0;
+
     while (inOffset < text.length) {
       output += this.encrypt(text.substring(inOffset, inOffset + maxChunkLength));
       inOffset += maxChunkLength;
     }
+
     return output;
   }
 
   decryptLong(string) {
     if (!string) return null;
-    var maxChunkLength = 172;
+    let maxChunkLength = 172;
     let output = '';
     let inOffset = 0;
+
     while (inOffset < string.length) {
       output += this.decrypt(string.substring(inOffset, inOffset + maxChunkLength));
       inOffset += maxChunkLength;
     }
+
     return output;
   }
 }

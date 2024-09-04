@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ChannelType, ChannelTypeMap, DeliveryStatus } from 'src/common/constants/notification';
 import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { catchError, of } from 'rxjs';
+import { JSEncryptService } from 'src/app/jsencrypt/jsencrypt.service';
 import { NotificationsService } from './notifications.service';
 import { Notification, NotificationResponse } from './notification.model';
-import { JSEncryptService } from 'src/app/jsencrypt/jsencrypt.service';
 
 @Component({
   selector: 'app-notifications',

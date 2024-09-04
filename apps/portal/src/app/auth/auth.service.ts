@@ -21,12 +21,8 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     const lsData = localStorage.getItem('osmoXUserData');
-    const decryptedLsData = this.jsEncryptService.decryptLong(
-      localStorage.getItem('osmoXUserData'),
-    );
+    const decryptedLsData = this.jsEncryptService.decryptLong(lsData);
     this.userData = decryptedLsData ? JSON.parse(decryptedLsData) : null;
-
-    console.log(null);
 
     if (!this.userData) {
       return false;

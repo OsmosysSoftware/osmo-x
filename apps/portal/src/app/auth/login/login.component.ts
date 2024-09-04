@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { JSEncryptService } from 'src/app/jsencrypt/jsencrypt.service';
 import { ErrorResponse, LoginRequestBody } from '../auth.interface';
 import { AuthService } from '../auth.service';
-import { JSEncryptService } from 'src/app/jsencrypt/jsencrypt.service';
 
 @Component({
   selector: 'app-login',

@@ -24,7 +24,7 @@ import { JSEncryptService } from './jsencrypt/jsencrypt.service';
     HttpClientModule,
     CalendarModule,
   ],
-  providers: [NotificationsService, MessageService],
+  providers: [NotificationsService, MessageService, JSEncryptService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
