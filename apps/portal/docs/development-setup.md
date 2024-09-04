@@ -50,7 +50,24 @@ Please make sure to have these versions installed on your development server bef
 
    Updating .env file with `COMPOSE_PROJECT_NAME=osmox-portal` is needed to set the project name for Docker Compose, which helps in organizing and managing multiple Docker projects running on the same system
 
-5. Start the development server:
+5. Declare JSEncrypt private and public key in .env file
+
+   To generate private key, use command `openssl genrsa -out rsa_1024_priv.pem 1024` in your terminal (Unix based OS).
+
+   To get public key, use command `openssl rsa -pubout -in rsa_1024_priv.pem -out rsa_1024_pub.pem` in the same terminal.
+
+   You can check the private and public key using command `cat rsa_1024_priv.pem` and `cat rsa_1024_pub.pem` respectively.
+
+   Copy and paste the keys in .env file.
+
+   ```sh
+   JSENCRYPT_PRIVATE_KEY= # private key for jsencrypt library
+   JSENCRYPT_PUBLIC_KEY= # public key for jsencrypt library
+   ```
+
+   Updating .env file with private and public keys is needed to encrypt and decrypt the local storage data.
+
+6. Start the development server:
 
    ```sh
    npm run start
