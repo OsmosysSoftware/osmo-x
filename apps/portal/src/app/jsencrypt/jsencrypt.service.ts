@@ -12,12 +12,12 @@ export class JSEncryptService {
   }
 
   encrypt(text) {
-    this.jsEncrypt.setPublicKey(process.env['JSENCRYPT_PUBLIC_KEY']);
+    this.jsEncrypt.setPublicKey(process.env.JSENCRYPT_PUBLIC_KEY);
     return this.jsEncrypt.encrypt(text);
   }
 
   decrypt(cipher) {
-    this.jsEncrypt.setPrivateKey(process.env['JSENCRYPT_PRIVATE_KEY']);
+    this.jsEncrypt.setPrivateKey(process.env.JSENCRYPT_PRIVATE_KEY);
     return this.jsEncrypt.decrypt(cipher);
   }
 
@@ -36,7 +36,8 @@ export class JSEncryptService {
 
   decryptLong(string) {
     if (!string) return null;
-    let maxChunkLength = 172;
+
+    const maxChunkLength = 172;
     let output = '';
     let inOffset = 0;
 
