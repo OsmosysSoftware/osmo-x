@@ -31,6 +31,19 @@ export abstract class NotificationConsumer {
     this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-explicit-any
+  private async saveRetryAttempt(notification: Notification, result: any) {
+    await this.notificationRetryRepository.save({
+      notification,
+      notification_id: notification.id,
+      retryCount: notification.retryCount,
+      retryResult: JSON.stringify(result),
+      status: notification.deliveryStatus,
+      createdBy: 'system',
+      modifiedBy: 'system',
+    });
+  }
+
   async processNotificationQueue(
     id: number,
     sendNotification: () => Promise<unknown>,
@@ -83,15 +96,7 @@ export abstract class NotificationConsumer {
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
 
       // Save retry attempt record
-      await this.notificationRetryRepository.save({
-        notification,
-        notification_id: notification.id,
-        retryCount: notification.retryCount,
-        retryResult: JSON.stringify({ message: error.message, stack: error.stack }),
-        status: notification.deliveryStatus,
-        createdBy: 'system', // You can replace 'system' with the actual user if available
-        modifiedBy: 'system',
-      });
+      await this.saveRetryAttempt(notification, { message: error.message, stack: error.stack });
     } finally {
       this.logger.debug(
         `processNotificationQueue completed. Saving notification in DB: ${JSON.stringify(notification)}`,
@@ -100,15 +105,7 @@ export abstract class NotificationConsumer {
 
       // Save retry attempt record if retry count > 0
       if (notification.retryCount > 0) {
-        await this.notificationRetryRepository.save({
-          notification,
-          notification_id: notification.id,
-          retryCount: notification.retryCount,
-          retryResult: JSON.stringify(notification.result),
-          status: notification.deliveryStatus,
-          createdBy: 'system', // You can replace 'system' with the actual user if available
-          modifiedBy: 'system',
-        });
+        await this.saveRetryAttempt(notification, notification.result);
       }
     }
   }
@@ -177,15 +174,7 @@ export abstract class NotificationConsumer {
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
 
       // Save retry attempt record
-      await this.notificationRetryRepository.save({
-        notification,
-        notification_id: notification.id,
-        retryCount: notification.retryCount,
-        retryResult: JSON.stringify({ message: error.message, stack: error.stack }),
-        status: notification.deliveryStatus,
-        createdBy: 'system', // You can replace 'system' with the actual user if available
-        modifiedBy: 'system',
-      });
+      await this.saveRetryAttempt(notification, { message: error.message, stack: error.stack });
     } finally {
       this.logger.debug(
         `processAwaitingConfirmationNotificationQueue completed. Saving notification in DB: ${JSON.stringify(notification)}`,
@@ -194,15 +183,7 @@ export abstract class NotificationConsumer {
 
       // Save retry attempt record if retry count > 0
       if (notification.retryCount > 0) {
-        await this.notificationRetryRepository.save({
-          notification,
-          notification_id: notification.id,
-          retryCount: notification.retryCount,
-          retryResult: JSON.stringify(notification.result),
-          status: notification.deliveryStatus,
-          createdBy: 'system', // You can replace 'system' with the actual user if available
-          modifiedBy: 'system',
-        });
+        await this.saveRetryAttempt(notification, notification.result);
       }
     }
   }
