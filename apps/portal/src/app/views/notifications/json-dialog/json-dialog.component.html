@@ -7,4 +7,10 @@
 >
   <pre>{{ jsonData | json }}</pre>
   <button pButton label="Close" (click)="hideDialog()" class="p-button-text"></button>
+  <button
+    pButton
+    label="Copy JSON to Clipboard"
+    (click)="copyToClipboard()"
+    class="p-button-text"
+  ></button>
 </p-dialog>
