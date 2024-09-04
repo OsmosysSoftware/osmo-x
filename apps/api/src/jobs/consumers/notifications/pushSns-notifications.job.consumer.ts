@@ -10,7 +10,6 @@ import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 
-
 @Injectable()
 export class PushSnsNotificationConsumer extends NotificationConsumer {
   constructor(
