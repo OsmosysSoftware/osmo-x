@@ -9,12 +9,15 @@ import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { AwsSesData, AwsSesService } from 'src/modules/providers/aws-ses/aws-ses.service';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
+import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 
 @Injectable()
 export class AwsSesNotificationConsumer extends NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
+    @InjectRepository(RetryNotification)
+    protected readonly notificationRetryRepository: Repository<RetryNotification>,
     private readonly awsSesService: AwsSesService,
     @Inject(forwardRef(() => NotificationsService))
     notificationsService: NotificationsService,
@@ -25,6 +28,7 @@ export class AwsSesNotificationConsumer extends NotificationConsumer {
   ) {
     super(
       notificationRepository,
+      notificationRetryRepository,
       notificationsService,
       notificationsQueueService,
       webhookService,

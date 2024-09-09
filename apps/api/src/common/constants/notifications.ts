@@ -19,6 +19,7 @@ export const ChannelType = {
   PUSH_SNS: 9,
   VC_TWILIO: 10,
   AWS_SES: 11,
+  SMS_SNS: 12,
 };
 
 export const QueueAction = {
@@ -68,4 +69,5 @@ export const SkipProviderConfirmationChannels = [
   ChannelType.PUSH_SNS,
   ChannelType.SMTP,
   ChannelType.AWS_SES,
+  ChannelType.SMS_SNS,
 ];

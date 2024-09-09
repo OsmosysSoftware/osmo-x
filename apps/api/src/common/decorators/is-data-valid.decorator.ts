@@ -23,6 +23,7 @@ import { SmsKapsystemDataDto } from 'src/modules/notifications/dtos/providers/sm
 import { PushSnsDataDto } from 'src/modules/notifications/dtos/providers/pushSns-data.dto';
 import { VcTwilioDataDto } from 'src/modules/notifications/dtos/providers/vcTwilio-data.dto';
 import { AwsSesDataDto } from 'src/modules/notifications/dtos/providers/awsSes-data.dto';
+import { SmsSnsDataDto } from 'src/modules/notifications/dtos/providers/smsSns-data.dto';
 
 @ValidatorConstraint({ name: 'isDataValidConstraint', async: true })
 @Injectable()
@@ -132,6 +133,13 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
         const awsSesData = new AwsSesDataDto();
         Object.assign(awsSesData, value);
         await validateAndThrowError(awsSesData);
+        return true;
+      }
+
+      case ChannelType.SMS_SNS: {
+        const snsSmsData = new SmsSnsDataDto();
+        Object.assign(snsSmsData, value);
+        await validateAndThrowError(snsSmsData);
         return true;
       }
 

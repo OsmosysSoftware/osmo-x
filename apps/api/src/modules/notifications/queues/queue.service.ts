@@ -8,6 +8,7 @@ import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/ma
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
 import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
+import { SmsSnsNotificationConsumer } from 'src/jobs/consumers/notifications/smsSns-notifications.job.consumer';
 import { SmsTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/smsTwilio-notifications.job.consumer';
 import { SmtpNotificationConsumer } from 'src/jobs/consumers/notifications/smtp-notifications.job.consumer';
 import { VcTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/vcTwilio-notifications.job.consumer';
@@ -39,6 +40,7 @@ export class QueueService {
     private readonly pushSnsNotificationConsumer: PushSnsNotificationConsumer,
     private readonly vcTwilioNotificationsConsumer: VcTwilioNotificationsConsumer,
     private readonly awsSesNotificationConsumer: AwsSesNotificationConsumer,
+    private readonly smsSnsNotificationConsumer: SmsSnsNotificationConsumer,
     protected readonly webhookService: WebhookService,
   ) {
     this.redisConfig = {
@@ -175,6 +177,10 @@ export class QueueService {
         // AWS_SES cases
         case `${QueueAction.SEND}-${ChannelType.AWS_SES}`:
           await this.awsSesNotificationConsumer.processAwsSesNotificationQueue(job.data.id);
+          break;
+        // SMS_SNS cases
+        case `${QueueAction.SEND}-${ChannelType.SMS_SNS}`:
+          await this.smsSnsNotificationConsumer.processSmsSnsNotificationQueue(job.data.id);
           break;
         // WEBHOOK
         case `${QueueAction.WEBHOOK}-${ChannelType.SMTP}`:
