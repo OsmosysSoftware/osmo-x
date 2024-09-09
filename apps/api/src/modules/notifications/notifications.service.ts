@@ -12,6 +12,7 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
+import { RetryNotification } from './entities/retry-notification.entity';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -22,6 +23,8 @@ export class NotificationsService extends CoreService<Notification> {
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
+    @InjectRepository(RetryNotification)
+    private readonly retryNotificationRepository: Repository<RetryNotification>,
     private readonly notificationQueueService: NotificationQueueProducer,
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
@@ -138,6 +141,9 @@ export class NotificationsService extends CoreService<Notification> {
         notification.deliveryStatus = DeliveryStatus.PENDING;
         this.logger.debug(`Updating result of notification with id ${notification.id}`);
         notification.result = { result: { message: error.message, stack: error.stack } };
+
+        await this.createRetryEntry(notification, error.message, error.stack);
+
         this.logger.error(`Error adding notification with id: ${notification.id} to queue`);
         this.logger.error(JSON.stringify(error, null, 2));
         this.logger.debug(
@@ -281,5 +287,20 @@ export class NotificationsService extends CoreService<Notification> {
       baseConditions,
     );
     return new NotificationResponse(items, total, options.offset, options.limit);
+  }
+
+  async createRetryEntry(
+    notification: Notification,
+    message: string,
+    stack: string,
+  ): Promise<void> {
+    const retryEntry = new RetryNotification();
+    retryEntry.notification = notification;
+    retryEntry.notification_id = notification.id;
+    retryEntry.retryCount = (notification.retries ? notification.retries.length : 0) + 1;
+    retryEntry.retryResult = JSON.stringify({ message, stack });
+    retryEntry.status = 1; // Assuming 1 means active
+
+    await this.retryNotificationRepository.save(retryEntry);
   }
 }

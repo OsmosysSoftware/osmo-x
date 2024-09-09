@@ -10,6 +10,7 @@ import {
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
+import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 
 @Injectable()
@@ -20,12 +21,27 @@ export abstract class NotificationConsumer {
   constructor(
     @InjectRepository(Notification)
     protected readonly notificationRepository: Repository<Notification>,
+    @InjectRepository(RetryNotification)
+    protected readonly notificationRetryRepository: Repository<RetryNotification>,
     protected readonly notificationsService: NotificationsService,
     private readonly notificationQueueService: NotificationQueueProducer,
     protected readonly webhookService: WebhookService,
     private readonly configService: ConfigService,
   ) {
     this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-explicit-any
+  private async saveRetryAttempt(notification: Notification, result: any) {
+    await this.notificationRetryRepository.save({
+      notification,
+      notification_id: notification.id,
+      retryCount: notification.retryCount,
+      retryResult: JSON.stringify(result),
+      status: notification.deliveryStatus,
+      createdBy: 'system',
+      modifiedBy: 'system',
+    });
   }
 
   async processNotificationQueue(
@@ -78,11 +94,19 @@ export abstract class NotificationConsumer {
       notification.result = { result: { message: error.message, stack: error.stack } };
       this.logger.error(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+
+      // Save retry attempt record
+      await this.saveRetryAttempt(notification, { message: error.message, stack: error.stack });
     } finally {
       this.logger.debug(
         `processNotificationQueue completed. Saving notification in DB: ${JSON.stringify(notification)}`,
       );
       await this.notificationRepository.save(notification);
+
+      // Save retry attempt record if retry count > 0
+      if (notification.retryCount > 0) {
+        await this.saveRetryAttempt(notification, notification.result);
+      }
     }
   }
 
@@ -148,11 +172,19 @@ export abstract class NotificationConsumer {
         `Error getting delivery status from provider for notification with id: ${id}`,
       );
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+
+      // Save retry attempt record
+      await this.saveRetryAttempt(notification, { message: error.message, stack: error.stack });
     } finally {
       this.logger.debug(
         `processAwaitingConfirmationNotificationQueue completed. Saving notification in DB: ${JSON.stringify(notification)}`,
       );
       await this.notificationRepository.save(notification);
+
+      // Save retry attempt record if retry count > 0
+      if (notification.retryCount > 0) {
+        await this.saveRetryAttempt(notification, notification.result);
+      }
     }
   }
 }
