@@ -39,6 +39,8 @@ import { PushSnsModule } from '../providers/push-sns/push-sns.module';
 import { WebhookModule } from '../webhook/webhook.module';
 import { VcTwilioModule } from '../providers/vc-twilio/vc-twilio.module';
 import { VcTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/vcTwilio-notifications.job.consumer';
+import { SmsSnsNotificationConsumer } from 'src/jobs/consumers/notifications/smsSns-notifications.job.consumer';
+import { SmsSnsModule } from '../providers/sms-sns/sms-sns.module';
 
 const providerModules = [
   MailgunModule,
@@ -55,6 +57,7 @@ const providerModules = [
   ApplicationsModule,
   UsersModule,
   ProvidersModule,
+  SmsSnsModule,
 ];
 
 const consumers = [
@@ -68,6 +71,7 @@ const consumers = [
   SmsKapsystemNotificationsConsumer,
   PushSnsNotificationConsumer,
   VcTwilioNotificationsConsumer,
+  SmsSnsNotificationConsumer,
 ];
 
 @Module({
