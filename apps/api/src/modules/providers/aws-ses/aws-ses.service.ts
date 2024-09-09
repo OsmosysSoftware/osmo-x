@@ -29,22 +29,26 @@ export class AwsSesService {
     private logger: Logger,
   ) {}
 
+  private async getSesClient(providerId: number): Promise<aws.SES> {
+    const config = await this.providersService.getConfigById(providerId);
+    return new aws.SES({
+      apiVersion: '2010-12-01',
+      region: config.AWS_REGION as string,
+      credentials: {
+        accessKeyId: config.AWS_ACCESS_KEY_ID as string,
+        secretAccessKey: config.AWS_SECRET_ACCESS_KEY as string,
+      },
+    });
+  }
+
   async sendAwsSes(
     formattedData: AwsSesData,
     providerId: number,
   ): Promise<SESTransport.SentMessageInfo> {
     try {
       this.logger.debug('Started assigning AWS SES email client');
-      const awsSesConfig = await this.providersService.getConfigById(providerId);
 
-      const ses = new aws.SES({
-        apiVersion: '2010-12-01',
-        region: awsSesConfig.AWS_REGION as string,
-        credentials: {
-          accessKeyId: awsSesConfig.AWS_ACCESS_KEY_ID as string,
-          secretAccessKey: awsSesConfig.AWS_SECRET_ACCESS_KEY as string,
-        },
-      });
+      const ses = await this.getSesClient(providerId);
 
       // create Nodemailer SES transporter
       const transporter = nodemailer.createTransport({
@@ -93,7 +97,7 @@ export class AwsSesService {
       formattedNotificationData.attachment = await this.formatAttachments(
         notificationData.attachments as CreateNotificationAttachmentDto[],
       );
-      delete formattedNotificationData.attachments;
+      formattedNotificationData.attachments = undefined;
 
       return formattedNotificationData;
     }
@@ -101,29 +105,31 @@ export class AwsSesService {
     return notificationData;
   }
 
+  private async readFileContent(filepath: string): Promise<Buffer> {
+    try {
+      return await fs.readFile(filepath);
+    } catch (error) {
+      throw new BadRequestException(`Failed to read file at path: ${filepath}: ${error.message}`);
+    }
+  }
+
   private async formatAttachments(
     attachments: CreateNotificationAttachmentDto[],
-  ): Promise<{ filename: string; data: Buffer; contentType: string }[]> {
+  ): Promise<{ filename: string; content: Buffer | string; contentType: string }[]> {
     this.logger.debug('Formatting attachments for AWS SES');
     return Promise.all(
       attachments.map(async (attachment) => {
-        let data: Buffer | string | Stream = attachment.content;
+        let content: Buffer | string | Stream = attachment.content;
 
         if (attachment.path) {
-          try {
-            const filepath = path.resolve(attachment.path);
-            data = await fs.readFile(filepath);
-          } catch (error) {
-            throw new BadRequestException(
-              `Failed to read file at path: ${attachment.path}: ${error.message}`,
-            );
-          }
+          const filepath = path.resolve(attachment.path);
+          content = await this.readFileContent(filepath);
         }
 
         const contentType = mime.lookup(attachment.filename) || 'application/octet-stream';
         return {
           filename: attachment.filename,
-          data: Buffer.isBuffer(data) ? data : Buffer.from(data as string, 'base64'),
+          content: Buffer.isBuffer(content) ? content : Buffer.from(content as string, 'utf-8'),
           contentType,
         };
       }),

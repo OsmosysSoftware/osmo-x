@@ -193,6 +193,8 @@ export class QueueService {
         case `${QueueAction.WEBHOOK}-${ChannelType.SMS_KAPSYSTEM}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.PUSH_SNS}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.VC_TWILIO}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.AWS_SES}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.SMS_SNS}`:
           await this.webhookService.triggerWebhook(job.data.id);
           break;
         default:

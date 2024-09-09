@@ -7,15 +7,19 @@ import {
 
 export class AwsSesDataDto {
   @IsNotEmpty()
+  @IsString()
   from: string | string[];
 
   @IsNotEmpty()
+  @IsString()
   to: string | string[];
 
   @IsOptional()
+  @IsString()
   cc?: string | string[];
 
   @IsOptional()
+  @IsString()
   bcc?: string | string[];
 
   @IsNotEmpty()
@@ -31,6 +35,7 @@ export class AwsSesDataDto {
   html: string;
 
   @IsOptional()
+  @IsString()
   replyTo?: string | string[];
 
   @IsOptional()

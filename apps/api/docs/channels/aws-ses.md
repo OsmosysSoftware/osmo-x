@@ -49,7 +49,7 @@ Here's a sample request body:
     "attachments": [                               // Attachments (optional)
       {
         "filename": "names.txt",
-        "content": "John Doe\nJane Doe",
+        "content": "John Doe\nJane Doe"
       },
     ],
   }
