@@ -1,6 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Notification } from './entities/notification.entity';
+import { RetryNotification } from './entities/retry-notification.entity';
 import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
@@ -74,7 +75,11 @@ const consumers = [
 ];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Notification]), ...providerModules, WebhookModule],
+  imports: [
+    TypeOrmModule.forFeature([Notification, RetryNotification]),
+    ...providerModules,
+    WebhookModule,
+  ],
   providers: [
     NotificationsService,
     NotificationQueueProducer,

@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { IsEnum, IsOptional, IsObject } from 'class-validator';
 import { Status } from 'src/common/constants/database';
@@ -14,6 +15,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { Application } from 'src/modules/applications/entities/application.entity';
 import { Provider } from 'src/modules/providers/entities/provider.entity';
+import { RetryNotification } from './retry-notification.entity';
 
 @Entity({ name: 'notify_notifications' })
 @ObjectType()
@@ -94,6 +96,9 @@ export class Notification {
   @JoinColumn({ name: 'provider_id' })
   @Field(() => Provider)
   providerDetails: Provider;
+
+  @OneToMany(() => RetryNotification, (retry) => retry.notification)
+  retries: RetryNotification[];
 
   constructor(notification: Partial<Notification>) {
     Object.assign(this, notification);
