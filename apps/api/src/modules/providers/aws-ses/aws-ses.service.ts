@@ -12,13 +12,13 @@ import { Attachment } from 'nodemailer/lib/mailer';
 
 export interface AwsSesData {
   from: string;
-  to: string;
-  cc?: string;
-  bcc?: string;
+  to: string | string[];
+  cc?: string | string[];
+  bcc?: string | string[];
   subject: string;
   text?: string;
   html?: string;
-  replyTo?: string;
+  replyTo?: string | string[];
   attachment?: Attachment[] | undefined;
 }
 
@@ -60,13 +60,13 @@ export class AwsSesService {
       // Prepare mail option parameters
       const mailOptions = {
         from: formattedData.from,
-        to: formattedData.to.split(','),
+        to: this.normalizeEmails(formattedData.to),
         subject: formattedData.subject,
         text: formattedData.text,
         html: formattedData.html,
-        cc: formattedData.cc?.split(',') || [],
-        bcc: formattedData.bcc?.split(',') || [],
-        replyTo: formattedData.replyTo?.split(',') || [],
+        cc: formattedData.cc ? this.normalizeEmails(formattedData.cc) : [],
+        bcc: formattedData.bcc ? this.normalizeEmails(formattedData.bcc) : [],
+        replyTo: formattedData.replyTo ? this.normalizeEmails(formattedData.replyTo) : [],
         attachments: formattedData.attachment,
       };
 
@@ -84,6 +84,19 @@ export class AwsSesService {
 
       throw new Error(`Failed to send message: ${error.message}`);
     }
+  }
+
+  normalizeEmails(emails: string | string[]): string[] {
+    if (typeof emails === 'string') {
+      // Split comma-separated values, trim each email, and filter out any empty strings
+      return emails
+        .split(',')
+        .map((email) => email.trim())
+        .filter((email) => email !== '');
+    }
+
+    // If it's already an array, return the array with each email trimmed
+    return emails.map((email) => email.trim());
   }
 
   async formatNotificationData(

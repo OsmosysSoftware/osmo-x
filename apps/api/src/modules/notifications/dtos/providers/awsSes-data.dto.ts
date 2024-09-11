@@ -4,22 +4,29 @@ import {
   AttachmentValidation,
   CreateNotificationAttachmentDto,
 } from '../create-notification-attachment.dto';
+import { IsStringOrStringArray } from 'src/common/decorators/is-string-or-stringarray.decorator';
 
 export class AwsSesDataDto {
   @IsNotEmpty()
   @IsString()
-  from: string | string[];
+  from: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsStringOrStringArray({
+    message: 'The "to" field must be either a string or an array of strings',
+  })
   to: string | string[];
 
   @IsOptional()
-  @IsString()
+  @IsStringOrStringArray({
+    message: 'The "cc" field must be either a string or an array of strings',
+  })
   cc?: string | string[];
 
   @IsOptional()
-  @IsString()
+  @IsStringOrStringArray({
+    message: 'The "bcc" field must be either a string or an array of strings',
+  })
   bcc?: string | string[];
 
   @IsNotEmpty()
@@ -35,7 +42,9 @@ export class AwsSesDataDto {
   html: string;
 
   @IsOptional()
-  @IsString()
+  @IsStringOrStringArray({
+    message: 'The "replyTo" field must be either a string or an array of strings',
+  })
   replyTo?: string | string[];
 
   @IsOptional()
