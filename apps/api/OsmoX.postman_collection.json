@@ -1935,7 +1935,7 @@
 			"name": "Push Notification",
 			"item": [
 				{
-					"name": "PushNotifiation_Android",
+					"name": "PushNotification_Android",
 					"event": [
 						{
 							"listen": "test",
