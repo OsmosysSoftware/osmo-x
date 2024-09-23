@@ -1,6 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { IsEnum, IsObject } from 'class-validator';
-import { GraphQLJSONObject } from 'graphql-type-json';
+import { IsEnum } from 'class-validator';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { ChannelType } from 'src/common/constants/notifications';
 import {
@@ -39,9 +38,8 @@ export class Provider {
   @Field()
   isEnabled: number;
 
-  @Column({ name: 'configuration', type: 'json' })
-  @IsObject()
-  @Field(() => GraphQLJSONObject)
+  @Column({ name: 'configuration' })
+  @Field()
   configuration: string;
 
   @Column({ name: 'application_id' })
