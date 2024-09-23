@@ -43,9 +43,19 @@ sudo systemctl status mariadb
    ```env
    # Server
    SERVER_PORT=3000
+   REQUEST_MAX_SIZE=50mb # Max Size of Request, Default is 50mb
+   CLEANUP_IDLE_RESOURCES=false # Cleans up idle queues if inactive for the specified duration, default false
+   IDLE_TIMEOUT=30m # How long the queue should be idle before being considered for deletion, default 30m
+   CLEANUP_INTERVAL=7d # Frequency for running the cleanup, use formats from https://github.com/vercel/ms, default 7d
 
    # Node env
    NODE_ENV=development
+
+   # Notification configuration
+   MAX_RETRY_COUNT=3 # Max retry count, default is 3
+
+   # Log Level
+   LOG_LEVEL=info # Log level, default is info
 
    # Database configuration
    DB_TYPE=mysql
