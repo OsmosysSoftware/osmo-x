@@ -7,10 +7,10 @@ const configService = new ConfigService();
 
 const algorithm = configService.getOrThrow<string>('ALGORITHM');
 const key = Buffer.from(configService.getOrThrow<string>('KEY'), 'base64');
-const iv = Buffer.from(configService.getOrThrow<string>('IV'), 'base64');
 
 export function encrypt(text: string): string {
   try {
+    const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(algorithm, key, iv);
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
