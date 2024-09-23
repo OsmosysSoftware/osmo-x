@@ -102,10 +102,13 @@ export class MailgunService {
     try {
       this.logger.debug('Fetching delivery status from Mailgun email');
       await this.assignClient(providerId);
+
+      // Remove angle brackets from messageId
+      const sanitizedMessageId = messageId.replace(/[<>]/g, '');
       const response = await this.mailgunClient.events.get(this.mailgunDomain, {
-        'message-id': messageId,
+        'message-id': sanitizedMessageId,
       });
-      this.logger.debug(`Mailgun email Delivery status: ${response.items[0]}`);
+      this.logger.debug(`Mailgun email Delivery status: ${response}`);
       return response.items[0];
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);
