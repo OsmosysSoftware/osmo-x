@@ -1,0 +1,966 @@
+{
+	"info": {
+		"_postman_id": "42cdb5c9-74a1-4a4b-adbe-3dcb4fe9fb67",
+		"name": "OsmoX-API",
+		"description": "List of all APIs used in OsmoX",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27217372"
+	},
+	"item": [
+		{
+			"name": "Create Notification",
+			"item": [
+				{
+					"name": "SMTP - Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 1 also has channelType 1\n    \"providerId\": 1,\n    \"data\": {\n        \"from\": \"sender@example.com\",\n        \"to\": \"receiver@example.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SMTP channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Mailgun - Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 2 also has channelType 2\n    \"providerId\": 2,\n    \"data\": {\n        \"from\": \"sender@example.com\",\n        \"to\": \"receiver@example.com\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Mailgun channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "360Dialog - WhatsApp",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 3 also has channelType 3\n    \"providerId\": 3,\n    \"data\": {\n        \"to\": \"919004812051\",\n        \"type\": \"template\",\n        \"template\": {\n            \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n            \"name\": \"ir_incident_resolution\",\n            \"language\": {\n                \"policy\": \"deterministic\",\n                \"code\": \"en\"\n            },\n            \"components\": [\n                {\n                    \"type\": \"body\",\n                    \"parameters\": [\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Biswas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"WNK227\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Massive Earthquake\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Power Grid\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Bishal Mondal\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Vikas\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"Open\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"10\"\n                        },\n                        {\n                            \"type\": \"text\",\n                            \"text\": \"15755\"\n                        }\n                    ]\n                }\n            ]\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the 360Dialog WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio - WhatsApp",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 4 also has channelType 4\n    \"providerId\": 4,\n    \"data\": {\n        \"to\": \"+919999000012\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio - SMS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 5 also has channelType 5\n    \"providerId\": 5,\n    \"data\": {\n        \"to\": \"+15005550006\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio SMS channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Plivo - SMS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 6 also has channelType 6\n    \"providerId\": 6,\n    \"data\": {\n        \"to\": \"+918900100002\",\n        \"message\": \"This is a test message from OsmoX\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Plivo SMS channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio - WhatsApp (Business)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  // Set your respective providerId\n  \"providerId\": 7,\n  \"data\": {\n    \"contentSid\": \"HXxxxxxxxxxxxxxxxxxxxx\",\n    \"from\": \"MGxxxxxxxxxxxxxxxxxxx\",\n    \"contentVariables\": {\n      \"1\": \"Name\",\n      \"2\": \"2\",\n      \"3\": \"29-04-2024\",\n      \"4\": \"03-05-2024\",\n      \"5\": \"Sunday, 05-05-2024\"\n    },\n    \"to\": \"+91xxxxxxxxxxx\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio WhatsApp (Business) channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "KAPS - SMS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 8 also has channelType 8\n    \"providerId\": 8,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\":\"1601100000000005964\",\n        \"to\": \"+918900100002,+918900100003\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the KAPS SMS channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "AWS - PushNotification - Android",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 9 also has channelType 9\n    \"providerId\": 9,\n    \"data\": {\n        \"message\": {\n            \"GCM\": \"{\\\"notification\\\":{\\\"title\\\":\\\"Test Notification\\\",\\\"body\\\":\\\"This is a test notification\\\"}}\"\n        },\n        \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/GCM/OQSHA-Android/7fb080a5-a5e9-38f0-98fe-ebd0396e0076\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SES Push Notification channel type for Android."
+					},
+					"response": []
+				},
+				{
+					"name": "AWS - PushNotification - iOS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 9 also has channelType 9\n    \"providerId\": 9,\n    \"data\": {\n        \"message\": {\n            \"APNS_SANDBOX\": \"{\\\"aps\\\":{\\\"alert\\\":{\\\"title\\\":\\\"Hello World\\\",\\\"body\\\":\\\"This is a test message\\\"},\\\"sound\\\":\\\"default\\\"}}\"\n        },\n        \"target\": \"arn:aws:sns:us-west-2:505884080245:endpoint/APNS_SANDBOX/OQSHA-iOS-Dev/57711edf-6265-32fc-be15-1a0cfdcad72e\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SES Push Notification channel type for iOS."
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio - Voice Call",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 10 also has channelType 10\n    \"providerId\": 10,\n    \"data\": {\n        \"from\": \"+15005550006\",\n        \"to\": \"+91xxxxxxxxxx\",\n        \"url\": \"http://your-server-url/calls/message\",\n        \"twiml\": \"<Response><Say>Hello there!</Say></Response>\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the Twilio Voice Call channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "AWS SES - Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Assuming providerId 11 also has channelType 11\n    \"providerId\": 11,\n    \"data\": {\n        \"from\": \"fromtestmail@gmail.com\",\n        \"to\": \"totestmail@gmail.co\",\n        \"subject\": \"Test subject\",\n        \"text\": \"This is a test notification\",\n        \"html\": \"<b>This is a test notification</b>\",\n        \"replyTo\": \"replytestmail@gmail.com\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the AWS SES channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "AWS SNS - SMS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SNS SMS channel type."
+					},
+					"response": []
+				}
+			],
+			"description": "These API calls pertain to notification creation. It consists of list of APIs which allow you to create a notification of your desired Channel Type. OsmoX will process and send the created notifications."
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    user\n    allKeys {\n       apiKeyId\n       apiKey\n       applicationId\n       status\n    }\n    __typename\n  }\n}",
+								"operationName": "LoginUser",
+								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully logging in and obtaining the auth token from API."
+					},
+					"response": []
+				}
+			],
+			"description": "These API calls pertain to authentication actions, such as logging in as a specific user."
+		},
+		{
+			"name": "Notification",
+			"item": [
+				{
+					"name": "Fetch All Notifications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully fetching all notifications based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "These API calls are responsible for fetching notifications and related details."
+		},
+		{
+			"name": "Application",
+			"item": [
+				{
+					"name": "Create new Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating an application based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch all Applications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"Pinestem\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully fetching all applications based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "These API calls are responsible for all operations related to Applications such as creation, display etc."
+		},
+		{
+			"name": "Provider",
+			"item": [
+				{
+					"name": "Fetch all Providers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  providers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providers {\r\n        providerId\r\n        name\r\n        channelType\r\n        configuration\r\n        isEnabled\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully fetching all providers based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 2,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "These API calls are responsible for all operations related to Providers such as creation, display etc."
+		},
+		{
+			"name": "Webhook",
+			"item": [
+				{
+					"name": "Register Webhook",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation RegisterWebhook {\n    webhook(createWebhookInput: {\n        providerId: 10,\n        webhookUrl: \"http://localhost:4200/webhook\",\n    }) {\n        webhookUrl\n        providerId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully registering a webhook based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "These API calls are responsible for all operations related to Webhooks."
+		}
+	]
+}
