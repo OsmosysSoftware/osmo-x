@@ -10,16 +10,31 @@ const key = Buffer.from(configService.getOrThrow<string>('KEY'), 'base64');
 const iv = Buffer.from(configService.getOrThrow<string>('IV'), 'base64');
 
 export function encrypt(text: string): string {
-  const cipher = crypto.createCipheriv(algorithm, key, iv);
-  let encrypted = cipher.update(text, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return `${iv.toString('hex')}:${encrypted}`;
+  try {
+    const cipher = crypto.createCipheriv(algorithm, key, iv);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return `${iv.toString('hex')}:${encrypted}`;
+  } catch (error) {
+    // Log the error or handle it as appropriate for your application
+    throw new Error('Encryption failed');
+  }
 }
 
 export function decrypt(text: string): string {
-  const [ivText, encryptedText] = text.split(':');
-  const decipher = crypto.createDecipheriv(algorithm, key, Buffer.from(ivText, 'hex'));
-  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
+  try {
+    const [ivText, encryptedText] = text.split(':');
+
+    if (!ivText || !encryptedText) {
+      throw new Error('Invalid input format');
+    }
+
+    const decipher = crypto.createDecipheriv(algorithm, key, Buffer.from(ivText, 'hex'));
+    let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (error) {
+    // Log the error or handle it as appropriate for your application
+    throw new Error('Decryption failed');
+  }
 }
