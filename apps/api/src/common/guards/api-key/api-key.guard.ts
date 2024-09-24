@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { IsEnabledStatus } from 'src/common/constants/database';
 import { ProvidersService } from 'src/modules/providers/providers.service';
 import { ServerApiKeysService } from 'src/modules/server-api-keys/server-api-keys.service';
+import { compareApiKeys } from 'src/common/utils/bcrypt';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
@@ -77,14 +78,6 @@ export class ApiKeyGuard implements CanActivate {
       throw new UnauthorizedException('Header x-api-key was not provided');
     }
 
-    const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
-    this.logger.debug(`Fetching Server API Key from request token: ${JSON.stringify(apiKeyEntry)}`);
-
-    if (!apiKeyEntry) {
-      //this.logger.error('Invalid x-api-key');
-      throw new UnauthorizedException('Invalid x-api-key');
-    }
-
     // Get channel type from providerId & Set the channelType based on providerEntry
     const providerEntry = await this.providersService.getById(requestProviderId);
     this.logger.debug(
@@ -102,22 +95,18 @@ export class ApiKeyGuard implements CanActivate {
       throw new BadRequestException(`Provider ${providerEntry.name} is not enabled`);
     }
 
-    // Set correct ApplicationId after verifying
-    const inputApplicationId = await this.getApplicationIdFromApiKey(apiKeyToken);
-    this.logger.debug(
-      `Fetched ApplicationId from DB using APIKeyToken: ${JSON.stringify(inputApplicationId)}`,
+    const apiKeys = await this.serverApiKeysService.findByRelatedApplicationId(
+      providerEntry.applicationId,
     );
 
-    if (inputApplicationId != providerEntry.applicationId) {
-      this.logger.error('The applicationId for Server Key and Provider do not match.');
-      throw new BadRequestException('The applicationId for Server Key and Provider do not match.');
-    }
+    // Compare the provided API key with all stored API keys
+    for (const apiKeyEntry of apiKeys) {
+      const isMatch = await compareApiKeys(apiKeyToken, apiKeyEntry.apiKey);
 
-    if (apiKeyToken && apiKeyToken === apiKeyEntry.apiKey) {
-      this.logger.debug(
-        'Requested providerId is valid. The applicationId for Server Key and Provider match. Valid Request.',
-      );
-      return true;
+      if (isMatch) {
+        this.logger.debug('Valid API Key found for the application.');
+        return true;
+      }
     }
 
     return false;

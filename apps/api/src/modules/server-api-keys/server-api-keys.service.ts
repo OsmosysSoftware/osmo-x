@@ -5,6 +5,8 @@ import { ServerApiKey } from './entities/server-api-key.entity';
 import { Status } from 'src/common/constants/database';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
+import { encryptApiKey } from 'src/common/utils/bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ServerApiKeysService extends CoreService<ServerApiKey> {
@@ -19,8 +21,29 @@ export class ServerApiKeysService extends CoreService<ServerApiKey> {
     return this.serverApiKeyRepository.findOne({ where: { apiKey, status: Status.ACTIVE } });
   }
 
-  async findByRelatedApplicationId(applicationId: number): Promise<ServerApiKey | undefined> {
-    return this.serverApiKeyRepository.findOne({ where: { applicationId, status: Status.ACTIVE } });
+  async findByRelatedApplicationId(applicationId: number): Promise<ServerApiKey[]> {
+    return this.serverApiKeyRepository.find({
+      where: {
+        applicationId,
+        status: Status.ACTIVE,
+      },
+    });
+  }
+
+  async generateApiKey(applicationId: number): Promise<string> {
+    const originalApiKey = await bcrypt.genSalt();
+    const encryptedApiKey = await encryptApiKey(originalApiKey);
+    const maskedApiKey = `${originalApiKey.slice(0, 4)}****${originalApiKey.slice(-4)}`;
+
+    const serverApiKey = this.serverApiKeyRepository.create({
+      apiKey: encryptedApiKey,
+      maskedApiKey,
+      applicationId,
+    });
+
+    await this.serverApiKeyRepository.save(serverApiKey);
+
+    return originalApiKey;
   }
 
   async getAllServerApiKeys(options: QueryOptionsDto): Promise<ServerApiKey[]> {
