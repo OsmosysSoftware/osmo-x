@@ -13,5 +13,11 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
 
 export const CurrentUser = createParamDecorator((data: unknown, context: ExecutionContext) => {
   const ctx = GqlExecutionContext.create(context);
-  return ctx.getContext().req.user;
+  const user = ctx.getContext().req.user;
+
+  if (!user) {
+    throw new Error('User not found in request');
+  }
+
+  return user;
 });

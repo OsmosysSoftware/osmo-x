@@ -51,11 +51,16 @@ export class ApplicationsService extends CoreService<Application> {
 
   async checkAdminUser(authHeader: Request): Promise<boolean> {
     try {
-      const bearerToken = authHeader.toString();
-      const token = bearerToken.substring(7);
+      const bearerToken = authHeader.headers['authorization'];
+
+      if (!bearerToken || !bearerToken.startsWith('Bearer ')) {
+        throw new UnauthorizedException('Missing or malformed authorization header');
+      }
+
+      const token = bearerToken.slice(7).trim();
 
       // Decode the token to get the payload (which includes the user ID)
-      const decodedToken = this.jwtService.decode(token) as { userId: number };
+      const decodedToken = this.jwtService.verify(token) as { userId: number };
 
       if (!decodedToken || !decodedToken.userId) {
         throw new UnauthorizedException('Invalid token');

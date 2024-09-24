@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { LoginResponse } from './dto/login-response';
 import { UsersService } from '../users/users.service';
 import { comparePasswords } from 'src/common/utils/bcrypt';
@@ -18,7 +18,7 @@ export class AuthService {
     const user = await this.usersService.findByUsername(username);
 
     if (!user || !user.username) {
-      throw new Error('User does not exist');
+      throw new NotFoundException('User does not exist');
     }
 
     const adminPassword = user.password;
@@ -37,7 +37,9 @@ export class AuthService {
       const user = await this.validateUser(loginUserInput.username, loginUserInput.password);
 
       if (!user) {
-        throw new Error('Invalid credentials. Please provide valid username and password.');
+        throw new UnauthorizedException(
+          'Invalid credentials. Please provide valid username and password.',
+        );
       }
 
       const payload: JwtPayload = {
