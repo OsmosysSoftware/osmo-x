@@ -41,6 +41,7 @@ import { VcTwilioModule } from '../providers/vc-twilio/vc-twilio.module';
 import { VcTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/vcTwilio-notifications.job.consumer';
 import { SmsSnsNotificationConsumer } from 'src/jobs/consumers/notifications/smsSns-notifications.job.consumer';
 import { SmsSnsModule } from '../providers/sms-sns/sms-sns.module';
+import { JwtService } from '@nestjs/jwt';
 
 const providerModules = [
   MailgunModule,
@@ -89,6 +90,7 @@ const consumers = [
     Logger,
     NotificationsResolver,
     ServerApiKeysService,
+    JwtService,
     ApplicationsService,
     UsersService,
     ProvidersService,
@@ -98,6 +100,7 @@ const consumers = [
   exports: [
     NotificationsService,
     ServerApiKeysService,
+    JwtService,
     ApplicationsService,
     UsersService,
     ProvidersService,
