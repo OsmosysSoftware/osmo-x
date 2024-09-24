@@ -1,14 +1,14 @@
 import { Args, Context, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/common/guards/api-key/auth.guard';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { Provider } from './entities/provider.entity';
 import { ProvidersService } from './providers.service';
 import { CreateProviderInput } from './dto/create-provider.input';
 import { ProviderResponse } from './dto/provider-response.dto';
+import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
 
 @Resolver(() => Provider)
-@UseGuards(AuthGuard)
+@UseGuards(GqlAuthGuard)
 export class ProvidersResolver {
   constructor(private readonly providerService: ProvidersService) {}
 

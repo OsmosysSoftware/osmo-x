@@ -1,14 +1,14 @@
 import { Args, Context, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { ApplicationsService } from './applications.service';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/common/guards/api-key/auth.guard';
 import { CreateApplicationInput } from './dto/create-application.input';
 import { Application } from './entities/application.entity';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ApplicationResponse } from './dto/application-response.dto';
+import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
 
 @Resolver(() => Application)
-@UseGuards(AuthGuard)
+@UseGuards(GqlAuthGuard)
 export class ApplicationsResolver {
   constructor(private readonly applicationsService: ApplicationsService) {}
 
