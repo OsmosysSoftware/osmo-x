@@ -99,6 +99,11 @@ export class ApiKeyGuard implements CanActivate {
       providerEntry.applicationId,
     );
 
+    if (!apiKeys || apiKeys.length === 0) {
+      this.logger.error('No API keys found for the application.');
+      return false;
+    }
+
     // Compare the provided API key with all stored API keys
     for (const apiKeyEntry of apiKeys) {
       const isMatch = await compareApiKeys(apiKeyToken, apiKeyEntry.apiKey);

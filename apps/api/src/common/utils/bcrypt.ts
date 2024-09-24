@@ -17,7 +17,7 @@ export function comparePasswords(inputPassword: string, hash: string): boolean {
 }
 
 // Function to encrypt the API key
-export const encryptApiKey = async (originalApiKey: string): Promise<string> => {
+export const hashApiKey = async (originalApiKey: string): Promise<string> => {
   const keyToHash = `${originalApiKey}${SECRET}`;
   const salt = await bcrypt.genSalt(SALT_ROUNDS);
   const encryptedApiKey = await bcrypt.hash(keyToHash, salt);

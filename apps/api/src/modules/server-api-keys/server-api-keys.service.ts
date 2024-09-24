@@ -5,8 +5,8 @@ import { ServerApiKey } from './entities/server-api-key.entity';
 import { Status } from 'src/common/constants/database';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
-import { encryptApiKey } from 'src/common/utils/bcrypt';
-import * as bcrypt from 'bcrypt';
+import { hashApiKey } from 'src/common/utils/bcrypt';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class ServerApiKeysService extends CoreService<ServerApiKey> {
@@ -31,8 +31,8 @@ export class ServerApiKeysService extends CoreService<ServerApiKey> {
   }
 
   async generateApiKey(applicationId: number): Promise<string> {
-    const originalApiKey = await bcrypt.genSalt();
-    const encryptedApiKey = await encryptApiKey(originalApiKey);
+    const originalApiKey = crypto.randomBytes(32).toString('hex');
+    const encryptedApiKey = await hashApiKey(originalApiKey);
     const maskedApiKey = `${originalApiKey.slice(0, 4)}****${originalApiKey.slice(-4)}`;
 
     const serverApiKey = this.serverApiKeyRepository.create({
