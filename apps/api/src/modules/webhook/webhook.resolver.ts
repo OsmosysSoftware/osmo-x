@@ -2,11 +2,11 @@ import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { WebhookService } from './webhook.service';
 import { Webhook } from './entities/webhook.entity';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/common/guards/api-key/auth.guard';
 import { CreateWebhookInput } from './dto/create-webhook.input';
+import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
 
 @Resolver(() => Webhook)
-@UseGuards(AuthGuard)
+@UseGuards(GqlAuthGuard)
 export class WebhookResolver {
   constructor(private readonly webhookService: WebhookService) {}
 

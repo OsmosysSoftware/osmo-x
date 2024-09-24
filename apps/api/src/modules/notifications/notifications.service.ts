@@ -264,20 +264,10 @@ export class NotificationsService extends CoreService<Notification> {
     });
   }
 
-  async getAllNotifications(
-    options: QueryOptionsDto,
-    authorizationHeader: Request,
-  ): Promise<NotificationResponse> {
+  async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
     this.logger.log('Getting all notifications with options.');
 
-    // Get the applicationId currently being used for filtering data based on api key
-    const filterApplicationId = await this.getApplicationIdFromApiKey(authorizationHeader);
-    this.logger.debug(`Fetch notifications with applicationId: ${filterApplicationId}`);
-
-    const baseConditions = [
-      { field: 'status', value: Status.ACTIVE },
-      { field: 'applicationId', value: filterApplicationId },
-    ];
+    const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
     const searchableFields = ['createdBy', 'data', 'result'];
 
     const { items, total } = await super.findAll(
