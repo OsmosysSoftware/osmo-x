@@ -53,7 +53,7 @@
         class="grid-dropdown"
         [showClear]="false"
         (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
-        *ngIf="allApplicationsList.length !== 0"
+        *ngIf="applications.length !== 0"
       ></p-dropdown>
     </div>
     <div class="p-col-12 p-md-3 filter-row">
@@ -212,4 +212,7 @@
       ></app-json-dialog>
     </div>
   </div>
+  <p *ngIf="!selectedApplication && !loading">
+    Please select an application via the dropdown to view notifications
+  </p>
 </div>
