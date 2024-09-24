@@ -11,6 +11,7 @@ import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { Logger } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 @Module({
   imports: [TypeOrmModule.forFeature([Provider]), UsersModule, ApplicationsModule, JwtModule],
   providers: [
@@ -18,6 +19,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
     ApplicationsService,
     JwtService,
     ProvidersService,
+    ConfigService,
     JsendFormatter,
     IsDataValidConstraint,
     ProvidersResolver,

@@ -9,6 +9,7 @@ import { ApplicationResponse } from './dto/application-response.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApplicationsService extends CoreService<Application> {
@@ -17,6 +18,7 @@ export class ApplicationsService extends CoreService<Application> {
     private readonly applicationsRepository: Repository<Application>,
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
+    private configService: ConfigService,
   ) {
     super(applicationsRepository);
   }
@@ -51,16 +53,17 @@ export class ApplicationsService extends CoreService<Application> {
 
   async checkAdminUser(authHeader: Request): Promise<boolean> {
     try {
-      const bearerToken = authHeader.headers['authorization'];
+      const bearerToken = authHeader.toString();
 
       if (!bearerToken || !bearerToken.startsWith('Bearer ')) {
         throw new UnauthorizedException('Missing or malformed authorization header');
       }
 
       const token = bearerToken.slice(7).trim();
+      const secret = this.configService.getOrThrow('JWT_SECRET');
 
       // Decode the token to get the payload (which includes the user ID)
-      const decodedToken = this.jwtService.verify(token) as { userId: number };
+      const decodedToken = this.jwtService.verify(token, { secret });
 
       if (!decodedToken || !decodedToken.userId) {
         throw new UnauthorizedException('Invalid token');

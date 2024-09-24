@@ -6,11 +6,19 @@ import { ApplicationsResolver } from './applications.resolver';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   // Import ServerApiKeysModule to resolve ApiKeyGuard dependency
   imports: [TypeOrmModule.forFeature([Application]), JwtModule, UsersModule],
-  providers: [ApplicationsService, ApplicationsResolver, JwtService, UsersService, Logger],
+  providers: [
+    ApplicationsService,
+    ApplicationsResolver,
+    ConfigService,
+    JwtService,
+    UsersService,
+    Logger,
+  ],
   exports: [TypeOrmModule],
 })
 export class ApplicationsModule {}
