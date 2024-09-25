@@ -9,21 +9,17 @@ import { ApplicationsService } from '../applications/applications.service';
 import { ApplicationsModule } from '../applications/applications.module';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
-import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
-import { ServerApiKeysModule } from '../server-api-keys/server-api-keys.module';
 import { Logger } from '@nestjs/common';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Provider]),
-    UsersModule,
-    ApplicationsModule,
-    ServerApiKeysModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Provider]), UsersModule, ApplicationsModule, JwtModule],
   providers: [
     UsersService,
     ApplicationsService,
-    ServerApiKeysService,
+    JwtService,
     ProvidersService,
+    ConfigService,
     JsendFormatter,
     IsDataValidConstraint,
     ProvidersResolver,
