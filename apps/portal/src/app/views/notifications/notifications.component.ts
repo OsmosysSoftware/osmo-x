@@ -73,6 +73,8 @@ export class NotificationsComponent implements OnInit {
 
   loading: Boolean = true;
 
+  configSetupComplete: Boolean = false; // Flag to control lazy loading
+
   maxDateFrom = new Date();
 
   maxDateTo = new Date();
@@ -86,8 +88,21 @@ export class NotificationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getApplications();
-    this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
+    // this.getApplications();
+    // this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
+    this.setupConfig();
+  }
+
+  // Function to set up configurations before fetching data
+  setupConfig(): void {
+    // Simulate async config setup (e.g., API call or local settings)
+    setTimeout(() => {
+      this.getApplications();
+      // Configurations complete
+      this.configSetupComplete = true;
+      // Trigger lazy load manually
+      this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
+    }, 1000); // Adjust timeout or replace with actual async logic
   }
 
   getApplications() {
@@ -122,7 +137,14 @@ export class NotificationsComponent implements OnInit {
           label: obj.name, // Name to display
           value: obj.applicationId, // ID to return upon selection
         }));
+        this.selectedApplication = this.applications[0].value;
       });
+    this.messageService.add({
+      key: 'tst',
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Applications set',
+    });
   }
 
   onToDateChange() {
@@ -162,6 +184,10 @@ export class NotificationsComponent implements OnInit {
 
   loadNotificationsLazy(event: LazyLoadEvent) {
     this.loading = true;
+
+    // Fetch the login token
+    const loginToken = this.setJWTLoginToken();
+
     // event.first indicates how many records should be skipped from the beginning of the dataset
     // event.rows represents the number of records to be displayed on the current page
     const variables = {
@@ -170,11 +196,39 @@ export class NotificationsComponent implements OnInit {
       limit: event.rows,
     };
 
+    // TODO: Find a better Workaround than using setupConfig()
+    // Following code exits function on initial load as application details are not set
     if (!this.selectedApplication) {
-      this.loading = false;
+      this.applicationService
+        .getApplications(
+          {
+            filters: [],
+            offset: 0,
+            limit: 1,
+          },
+          loginToken,
+        )
+        .pipe(
+          // catchError operator to handle errors
+          catchError((error) => {
+            this.messageService.add({
+              key: 'tst',
+              severity: 'error',
+              summary: 'Error',
+              detail: `There was an error while fetching first application. Reason: ${error.message}`,
+            });
+            return of([]);
+          }),
+        )
+        .subscribe((applicationResponse: ApplicationResponse) => {
+          this.selectedApplication = applicationResponse.applications.map(
+            (obj) => obj.applicationId,
+          );
+        });
       return;
     }
 
+    // Set query filters
     variables.filters.push({
       field: 'applicationId',
       operator: 'eq',
@@ -239,9 +293,6 @@ export class NotificationsComponent implements OnInit {
         value: this.searchValue,
       });
     }
-
-    // Fetch the login token
-    const loginToken = this.setJWTLoginToken();
 
     // Fetch notifications and handle errors
     this.notificationService
