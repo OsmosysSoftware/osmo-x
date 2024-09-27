@@ -4,6 +4,8 @@ import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { catchError, of } from 'rxjs';
 import { NotificationsService } from './notifications.service';
 import { Notification, NotificationResponse } from './notification.model';
+import { ApplicationsService } from '../applications/applications.service';
+import { ApplicationResponse } from '../applications/application.model';
 
 @Component({
   selector: 'app-notifications',
@@ -12,10 +14,6 @@ import { Notification, NotificationResponse } from './notification.model';
 })
 export class NotificationsComponent implements OnInit {
   notifications: Notification[] = [];
-
-  allServerApiKeysList = [];
-
-  allApplicationsList = [];
 
   allPortalChannelTypes = ChannelType;
 
@@ -47,7 +45,7 @@ export class NotificationsComponent implements OnInit {
     value,
   }));
 
-  applications = null;
+  applications = [];
 
   selectedChannelType = null;
 
@@ -60,8 +58,6 @@ export class NotificationsComponent implements OnInit {
   selectedToDate = null;
 
   searchValue = null;
-
-  mapApplicationAndKeys = null;
 
   pageSizeOptions: number[] = [5, 10, 25, 50];
 
@@ -85,42 +81,67 @@ export class NotificationsComponent implements OnInit {
 
   constructor(
     private notificationService: NotificationsService,
+    private applicationService: ApplicationsService,
     private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
-    this.applications = this.getApplications();
-    this.selectedApplication = this.setApplicationOnInit();
-    this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
+    this.getApplications();
   }
 
   getApplications() {
-    this.allServerApiKeysList = [];
-    const allKeysFromLocalStorage = JSON.parse(localStorage.getItem('osmoXUserData'))?.allKeys;
+    // Set the query variables
+    const variables = {
+      filters: [],
+      offset: 0,
+      limit: 10,
+    };
 
-    if (!allKeysFromLocalStorage) {
-      this.allServerApiKeysList.push(JSON.parse(localStorage.getItem('osmoXUserData'))?.token);
-      return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
+    // Fetch the login token
+    const loginToken = this.getJWTLoginToken();
+
+    if (!loginToken) {
+      // Handle missing token
+      return;
     }
 
-    this.allServerApiKeysList = allKeysFromLocalStorage.map((item) => item.apiKey);
+    // Fetch applications and handle errors
+    this.applicationService
+      .getApplications(variables, loginToken)
+      .pipe(
+        // catchError operator to handle errors
+        catchError((error) => {
+          this.messageService.add({
+            key: 'tst',
+            severity: 'error',
+            summary: 'Error',
+            detail: `There was an error while loading applications. Reason: ${error.message}`,
+          });
+          return of(null); // Return null to indicate error
+        }),
+      )
+      .subscribe((applicationResponse: ApplicationResponse | null) => {
+        if (applicationResponse && applicationResponse.applications) {
+          // Fetch list of applications for dropdown
+          this.applications = applicationResponse.applications.map((obj) => ({
+            // Name to display and ID to return upon selection
+            label: obj.name,
+            value: obj.applicationId,
+          }));
 
-    this.mapApplicationAndKeys = new Map<string, string>();
+          if (this.applications.length > 0) {
+            this.selectedApplication = this.applications[0].value;
+          } else {
+            this.selectedApplication = null;
+          }
+        } else {
+          this.applications = [];
+          this.selectedApplication = null;
+        }
 
-    allKeysFromLocalStorage.forEach((application) => {
-      this.allApplicationsList.push(application.applicationDetails.name);
-      this.mapApplicationAndKeys.set(application.applicationDetails.name, application.apiKey);
-    });
-
-    return this.allApplicationsList;
-  }
-
-  setApplicationOnInit() {
-    if (this.allApplicationsList.length === 0) {
-      return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
-    }
-
-    return this.allApplicationsList[0];
+        // Now that applications are loaded, load notifications
+        this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
+      });
   }
 
   onToDateChange() {
@@ -143,16 +164,38 @@ export class NotificationsComponent implements OnInit {
     this.searchValue = null;
   }
 
-  setTokenForSelectedApplication() {
-    if (this.allApplicationsList.length === 0) {
-      return JSON.parse(localStorage.getItem('osmoXUserData'))?.token;
-    }
+  getJWTLoginToken() {
+    try {
+      const userData = localStorage.getItem('osmoXUserData');
 
-    return this.mapApplicationAndKeys.get(this.selectedApplication);
+      if (userData) {
+        const userToken = JSON.parse(userData).token;
+        return userToken;
+      }
+
+      throw new Error('User data not found in localStorage');
+    } catch (error) {
+      this.messageService.add({
+        key: 'tst',
+        severity: 'error',
+        summary: 'Error',
+        detail: `There was an error fetching the login token: ${error.message}`,
+      });
+      return null;
+    }
   }
 
   loadNotificationsLazy(event: LazyLoadEvent) {
     this.loading = true;
+
+    // Fetch the login token
+    const loginToken = this.getJWTLoginToken();
+
+    if (!loginToken) {
+      this.loading = false;
+      return;
+    }
+
     // event.first indicates how many records should be skipped from the beginning of the dataset
     // event.rows represents the number of records to be displayed on the current page
     const variables = {
@@ -161,10 +204,23 @@ export class NotificationsComponent implements OnInit {
       limit: event.rows,
     };
 
+    // Exit if no application selected
+    if (!this.selectedApplication) {
+      this.loading = false;
+      return;
+    }
+
+    // Set query filters
+    variables.filters.push({
+      field: 'applicationId',
+      operator: 'eq',
+      value: this.selectedApplication.toString(),
+    });
+
     if (this.selectedChannelType) {
       if (this.selectedChannelType === this.allPortalChannelTypes.UNKNOWN) {
         // Condition to filter all notifications with unknown channel type
-        const existingChannelTypes = Object.keys(ChannelTypeMap).filter(
+        const existingChannelTypes = Object.keys(this.channelTypeMap).filter(
           (value) => value !== this.allPortalChannelTypes.UNKNOWN.toString(),
         );
         existingChannelTypes.forEach((key) => {
@@ -208,7 +264,7 @@ export class NotificationsComponent implements OnInit {
         operator: 'lt',
         value: new Date(
           new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
-        ).toString(),
+        ).toISOString(),
       });
     }
 
@@ -220,12 +276,9 @@ export class NotificationsComponent implements OnInit {
       });
     }
 
-    // set the token based on selected application
-    const tokenForSelectedApplication = this.setTokenForSelectedApplication();
-
     // Fetch notifications and handle errors
     this.notificationService
-      .getNotifications(variables, tokenForSelectedApplication)
+      .getNotifications(variables, loginToken)
       .pipe(
         // catchError operator to handle errors
         catchError((error) => {
@@ -235,13 +288,20 @@ export class NotificationsComponent implements OnInit {
             summary: 'Error',
             detail: `There was an error while loading notifications. Reason: ${error.message}`,
           });
-          return of([]);
+          this.loading = false;
+          return of(null);
         }),
       )
-      .subscribe((notificationResponse: NotificationResponse) => {
-        // pagination is handled by p-table component of primeng
-        this.notifications = notificationResponse.notifications;
-        this.totalRecords = notificationResponse.total;
+      .subscribe((notificationResponse: NotificationResponse | null) => {
+        if (notificationResponse && notificationResponse.notifications) {
+          // pagination is handled by p-table component of primeng
+          this.notifications = notificationResponse.notifications;
+          this.totalRecords = notificationResponse.total;
+        } else {
+          this.notifications = [];
+          this.totalRecords = 0;
+        }
+
         this.loading = false;
       });
   }

@@ -30,20 +30,36 @@ export const GetNotifications = gql`
   }
 `;
 
+export const GetApplications = gql`
+  query GetApplications($limit: Int!, $offset: Int!, $filters: [UniversalFilter!]) {
+    applications(
+      options: {
+        limit: $limit
+        offset: $offset
+        sortBy: "createdOn"
+        sortOrder: ASC
+        filters: $filters
+      }
+    ) {
+      applications {
+        applicationId
+        createdOn
+        name
+        status
+        updatedOn
+        userId
+      }
+      total
+      offset
+      limit
+    }
+  }
+`;
+
 export const LoginUser = gql`
   mutation LoginUser($username: String!, $password: String!) {
     login(loginUserInput: { username: $username, password: $password }) {
       token
-      user
-      allKeys {
-        apiKeyId
-        apiKey
-        applicationId
-        applicationDetails {
-          name
-        }
-        status
-      }
     }
   }
 `;
