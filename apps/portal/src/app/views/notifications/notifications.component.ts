@@ -45,7 +45,7 @@ export class NotificationsComponent implements OnInit {
     value,
   }));
 
-  applications = null;
+  applications = [];
 
   selectedChannelType = null;
 
@@ -85,12 +85,11 @@ export class NotificationsComponent implements OnInit {
     private messageService: MessageService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.getApplications();
-    await this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
+  ngOnInit(): void {
+    this.getApplications();
   }
 
-  async getApplications() {
+  getApplications() {
     // Set the query variables
     const variables = {
       filters: [],
@@ -101,8 +100,13 @@ export class NotificationsComponent implements OnInit {
     // Fetch the login token
     const loginToken = this.setJWTLoginToken();
 
+    if (!loginToken) {
+      // Handle missing token
+      return;
+    }
+
     // Fetch applications and handle errors
-    await this.applicationService
+    this.applicationService
       .getApplications(variables, loginToken)
       .pipe(
         // catchError operator to handle errors
@@ -113,23 +117,30 @@ export class NotificationsComponent implements OnInit {
             summary: 'Error',
             detail: `There was an error while loading applications. Reason: ${error.message}`,
           });
-          return of([]);
+          return of(null); // Return null to indicate error
         }),
       )
-      .subscribe((applicationResponse: ApplicationResponse) => {
-        // Fetch list of applications for dropdown
-        this.applications = applicationResponse.applications.map((obj) => ({
-          // Name to display and ID to return upon selection
-          label: obj.name,
-          value: obj.applicationId,
-        }));
-        this.selectedApplication = this.applications[0].value;
-        this.messageService.add({
-          key: 'tst',
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Applications set',
-        });
+      .subscribe((applicationResponse: ApplicationResponse | null) => {
+        if (applicationResponse && applicationResponse.applications) {
+          // Fetch list of applications for dropdown
+          this.applications = applicationResponse.applications.map((obj) => ({
+            // Name to display and ID to return upon selection
+            label: obj.name,
+            value: obj.applicationId,
+          }));
+
+          if (this.applications.length > 0) {
+            this.selectedApplication = this.applications[0].value;
+          } else {
+            this.selectedApplication = null;
+          }
+        } else {
+          this.applications = [];
+          this.selectedApplication = null;
+        }
+
+        // Now that applications are loaded, load notifications
+        this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
       });
   }
 
@@ -155,8 +166,14 @@ export class NotificationsComponent implements OnInit {
 
   setJWTLoginToken() {
     try {
-      const userToken = JSON.parse(localStorage.getItem('osmoXUserData')).token;
-      return userToken;
+      const userData = localStorage.getItem('osmoXUserData');
+
+      if (userData) {
+        const userToken = JSON.parse(userData).token;
+        return userToken;
+      }
+
+      throw new Error('User data not found in localStorage');
     } catch (error) {
       this.messageService.add({
         key: 'tst',
@@ -168,11 +185,16 @@ export class NotificationsComponent implements OnInit {
     }
   }
 
-  async loadNotificationsLazy(event: LazyLoadEvent) {
+  loadNotificationsLazy(event: LazyLoadEvent) {
     this.loading = true;
 
     // Fetch the login token
     const loginToken = this.setJWTLoginToken();
+
+    if (!loginToken) {
+      this.loading = false;
+      return;
+    }
 
     // event.first indicates how many records should be skipped from the beginning of the dataset
     // event.rows represents the number of records to be displayed on the current page
@@ -183,8 +205,8 @@ export class NotificationsComponent implements OnInit {
     };
 
     // Exit if no application selected
-    // TODO: Find better workaround to stop console error when user logins
     if (!this.selectedApplication) {
+      this.loading = false;
       return;
     }
 
@@ -198,7 +220,7 @@ export class NotificationsComponent implements OnInit {
     if (this.selectedChannelType) {
       if (this.selectedChannelType === this.allPortalChannelTypes.UNKNOWN) {
         // Condition to filter all notifications with unknown channel type
-        const existingChannelTypes = Object.keys(ChannelTypeMap).filter(
+        const existingChannelTypes = Object.keys(this.channelTypeMap).filter(
           (value) => value !== this.allPortalChannelTypes.UNKNOWN.toString(),
         );
         existingChannelTypes.forEach((key) => {
@@ -242,7 +264,7 @@ export class NotificationsComponent implements OnInit {
         operator: 'lt',
         value: new Date(
           new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
-        ).toString(),
+        ).toISOString(),
       });
     }
 
@@ -255,7 +277,7 @@ export class NotificationsComponent implements OnInit {
     }
 
     // Fetch notifications and handle errors
-    await this.notificationService
+    this.notificationService
       .getNotifications(variables, loginToken)
       .pipe(
         // catchError operator to handle errors
@@ -266,13 +288,20 @@ export class NotificationsComponent implements OnInit {
             summary: 'Error',
             detail: `There was an error while loading notifications. Reason: ${error.message}`,
           });
-          return of([]);
+          this.loading = false;
+          return of(null);
         }),
       )
-      .subscribe((notificationResponse: NotificationResponse) => {
-        // pagination is handled by p-table component of primeng
-        this.notifications = notificationResponse.notifications;
-        this.totalRecords = notificationResponse.total;
+      .subscribe((notificationResponse: NotificationResponse | null) => {
+        if (notificationResponse && notificationResponse.notifications) {
+          // pagination is handled by p-table component of primeng
+          this.notifications = notificationResponse.notifications;
+          this.totalRecords = notificationResponse.total;
+        } else {
+          this.notifications = [];
+          this.totalRecords = 0;
+        }
+
         this.loading = false;
       });
   }
