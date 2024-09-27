@@ -19,6 +19,8 @@ export const ChannelType = {
   SMS_KAPSYSTEM: 8,
   PUSH_SNS: 9,
   VC_TWILIO: 10,
+  AWS_SES: 11,
+  SMS_SNS: 12,
 };
 
 export const ChannelTypeMap = {
@@ -91,6 +93,20 @@ export const ChannelTypeMap = {
     providerName: 'Twilio',
     providerIcon: 'assets/icons/twilio.svg',
     style: 'voicecall',
+  },
+  [ChannelType.AWS_SES]: {
+    serviceIcon: 'assets/icons/email.svg',
+    altText: 'Email',
+    providerName: 'AWS SES',
+    providerIcon: 'assets/icons/aws.png',
+    style: 'email',
+  },
+  [ChannelType.SMS_SNS]: {
+    serviceIcon: 'assets/icons/sms.svg',
+    altText: 'SMS',
+    providerName: 'SMS SNS',
+    providerIcon: 'assets/icons/aws.png',
+    style: 'sms',
   },
   [ChannelType.UNKNOWN]: {
     serviceIcon: 'assets/icons/unknown.svg',

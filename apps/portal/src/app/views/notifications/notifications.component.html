@@ -55,7 +55,6 @@
         (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
         *ngIf="applications.length !== 0"
       ></p-dropdown>
-      <!-- FIXME: applications.length !== 0 check calls notifications and causes console error -->
     </div>
     <div class="p-col-12 p-md-3 filter-row">
       <input
