@@ -32,8 +32,8 @@ Make sure Redis and MariaDB server are up and running.
   CLEANUP_INTERVAL=7d # Frequency for running the cleanup, use formats from https://github.com/vercel/ms, default 7d
   JWT_SECRET=your-strong-secret-key-here # A strong secret key for signing your JWTs. This should be a long, random string.
   JWT_EXPIRES_IN=30d #Common formats are '60s', '10m', '1h', '1d', etc
-  SALT_ROUNDS=10
-  API_KEY_SECRET=your-secret
+  SALT_ROUNDS=10 # Number of salt rounds for bcrypt
+  API_KEY_SECRET=your-secret # Replace with a strong, unique secret for API authentication
 
   # Node env
   NODE_ENV=production # Use "development" for graphql playground to work
