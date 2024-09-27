@@ -124,13 +124,13 @@ export class NotificationsComponent implements OnInit {
           value: obj.applicationId,
         }));
         this.selectedApplication = this.applications[0].value;
+        this.messageService.add({
+          key: 'tst',
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Applications set',
+        });
       });
-    this.messageService.add({
-      key: 'tst',
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Applications set',
-    });
   }
 
   onToDateChange() {
