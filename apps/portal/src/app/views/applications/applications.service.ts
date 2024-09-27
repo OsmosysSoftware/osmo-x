@@ -38,4 +38,24 @@ export class ApplicationsService {
       }),
     );
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  decodeToken(token: string): string {
+    try {
+      // Split the JWT token into its parts (Header, Payload, Signature)
+      const tokenArray = token.split('.');
+
+      if (tokenArray.length !== 3) {
+        throw new Error('Invalid JWT token');
+      }
+
+      // Decode the payload (the second part of the token)
+      const decodedPayload = atob(tokenArray[1]);
+
+      // Parse the decoded payload as JSON
+      return JSON.parse(decodedPayload);
+    } catch (error) {
+      throw new Error(`Error decoding token payload: ${error.message}`);
+    }
+  }
 }

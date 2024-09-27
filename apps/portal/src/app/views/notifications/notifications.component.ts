@@ -98,7 +98,7 @@ export class NotificationsComponent implements OnInit {
     };
 
     // Fetch the login token
-    const loginToken = this.setJWTLoginToken();
+    const loginToken = this.getJWTLoginToken();
 
     if (!loginToken) {
       // Handle missing token
@@ -164,7 +164,7 @@ export class NotificationsComponent implements OnInit {
     this.searchValue = null;
   }
 
-  setJWTLoginToken() {
+  getJWTLoginToken() {
     try {
       const userData = localStorage.getItem('osmoXUserData');
 
@@ -189,7 +189,7 @@ export class NotificationsComponent implements OnInit {
     this.loading = true;
 
     // Fetch the login token
-    const loginToken = this.setJWTLoginToken();
+    const loginToken = this.getJWTLoginToken();
 
     if (!loginToken) {
       this.loading = false;
