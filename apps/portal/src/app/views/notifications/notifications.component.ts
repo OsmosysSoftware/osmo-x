@@ -45,7 +45,7 @@ export class NotificationsComponent implements OnInit {
     value,
   }));
 
-  applications = [];
+  applications = null;
 
   selectedChannelType = null;
 
@@ -73,8 +73,6 @@ export class NotificationsComponent implements OnInit {
 
   loading: Boolean = true;
 
-  configSetupComplete: Boolean = false; // Flag to control lazy loading
-
   maxDateFrom = new Date();
 
   maxDateTo = new Date();
@@ -87,25 +85,12 @@ export class NotificationsComponent implements OnInit {
     private messageService: MessageService,
   ) {}
 
-  ngOnInit(): void {
-    // this.getApplications();
-    // this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
-    this.setupConfig();
+  async ngOnInit(): Promise<void> {
+    await this.getApplications();
+    await this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
   }
 
-  // Function to set up configurations before fetching data
-  setupConfig(): void {
-    // Simulate async config setup (e.g., API call or local settings)
-    setTimeout(() => {
-      this.getApplications();
-      // Configurations complete
-      this.configSetupComplete = true;
-      // Trigger lazy load manually
-      this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
-    }, 1000); // Adjust timeout or replace with actual async logic
-  }
-
-  getApplications() {
+  async getApplications() {
     // Set the query variables
     const variables = {
       filters: [],
@@ -117,7 +102,7 @@ export class NotificationsComponent implements OnInit {
     const loginToken = this.setJWTLoginToken();
 
     // Fetch applications and handle errors
-    this.applicationService
+    await this.applicationService
       .getApplications(variables, loginToken)
       .pipe(
         // catchError operator to handle errors
@@ -132,10 +117,11 @@ export class NotificationsComponent implements OnInit {
         }),
       )
       .subscribe((applicationResponse: ApplicationResponse) => {
-        // Fetch list of application names
+        // Fetch list of applications for dropdown
         this.applications = applicationResponse.applications.map((obj) => ({
-          label: obj.name, // Name to display
-          value: obj.applicationId, // ID to return upon selection
+          // Name to display and ID to return upon selection
+          label: obj.name,
+          value: obj.applicationId,
         }));
         this.selectedApplication = this.applications[0].value;
       });
@@ -182,7 +168,7 @@ export class NotificationsComponent implements OnInit {
     }
   }
 
-  loadNotificationsLazy(event: LazyLoadEvent) {
+  async loadNotificationsLazy(event: LazyLoadEvent) {
     this.loading = true;
 
     // Fetch the login token
@@ -196,35 +182,9 @@ export class NotificationsComponent implements OnInit {
       limit: event.rows,
     };
 
-    // TODO: Find a better Workaround than using setupConfig()
-    // Following code exits function on initial load as application details are not set
+    // Exit if no application selected
+    // TODO: Find better workaround to stop console error when user logins
     if (!this.selectedApplication) {
-      this.applicationService
-        .getApplications(
-          {
-            filters: [],
-            offset: 0,
-            limit: 1,
-          },
-          loginToken,
-        )
-        .pipe(
-          // catchError operator to handle errors
-          catchError((error) => {
-            this.messageService.add({
-              key: 'tst',
-              severity: 'error',
-              summary: 'Error',
-              detail: `There was an error while fetching first application. Reason: ${error.message}`,
-            });
-            return of([]);
-          }),
-        )
-        .subscribe((applicationResponse: ApplicationResponse) => {
-          this.selectedApplication = applicationResponse.applications.map(
-            (obj) => obj.applicationId,
-          );
-        });
       return;
     }
 
@@ -295,7 +255,7 @@ export class NotificationsComponent implements OnInit {
     }
 
     // Fetch notifications and handle errors
-    this.notificationService
+    await this.notificationService
       .getNotifications(variables, loginToken)
       .pipe(
         // catchError operator to handle errors

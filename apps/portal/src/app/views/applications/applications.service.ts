@@ -25,7 +25,7 @@ export class ApplicationsService {
         const applicationArray = response.data?.applications.applications;
 
         const applicationResponseObject: ApplicationResponse = {
-          applications: [...applicationArray],
+          applications: applicationArray,
           total: response.data?.applications.total,
           offset: response.data?.applications.offset,
           limit: response.data?.applications.limit,
