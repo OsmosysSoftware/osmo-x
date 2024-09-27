@@ -2,6 +2,11 @@
 
 This document provides a brief overview of the different API endpoints, their usage and purpose.
 
+## Postman Collection
+
+- [API Collection](./../OsmoX-API.postman_collection.json)
+- [Environment File](./../OsmoX-API.postman_environment.json)
+
 ## Authentication
 
 This section lists the authentication related requests such as login.

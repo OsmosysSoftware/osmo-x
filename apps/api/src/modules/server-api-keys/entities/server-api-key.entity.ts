@@ -23,6 +23,10 @@ export class ServerApiKey {
   @Field()
   apiKey: string;
 
+  @Column({ name: 'masked_api_key' })
+  @Field()
+  maskedApiKey: string;
+
   @Column({ name: 'application_id' })
   @Field()
   applicationId: number;
