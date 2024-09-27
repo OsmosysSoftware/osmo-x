@@ -4029,13 +4029,13 @@
 									"pm.test(\"Response is valid JSON\", function () {\r",
 									"    pm.response.to.be.json;\r",
 									"});\r",
-									"pm.test(\"Response has valid 'data' and 'webhook' properties\", function () {\r",
+									"pm.test(\"Response has valid 'data' property\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
 									"});\r",
 									"pm.test(\"Response 'data' has valid 'webhook' property\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"        pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"webhook\").to.be.an(\"object\");\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"webhook\").to.be.an(\"object\");\r",
 									"});\r",
 									""
 								],
@@ -4237,6 +4237,24 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'data' has valid 'generateApiKey' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"generateApiKey\")",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
 									""
 								],
 								"type": "text/javascript",
@@ -4260,7 +4278,73 @@
 							"mode": "graphql",
 							"graphql": {
 								"query": "mutation GenerateApiKey($applicationId: Int!) {\n  generateApiKey(applicationId: $applicationId)\n}",
-								"variables": "{\n  \"applicationId\": 1\n}"
+								"variables": "{\n  \"applicationId\": 3\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Generate New Key - Error - unknown Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation GenerateApiKey($applicationId: Int!) {\n  generateApiKey(applicationId: $applicationId)\n}",
+								"variables": "{\n  \"applicationId\": 300\n}"
 							}
 						},
 						"url": {
