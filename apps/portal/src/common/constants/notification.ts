@@ -104,7 +104,7 @@ export const ChannelTypeMap = {
   [ChannelType.SMS_SNS]: {
     serviceIcon: 'assets/icons/sms.svg',
     altText: 'SMS',
-    providerName: 'SMS SNS',
+    providerName: 'AWS SMS SNS',
     providerIcon: 'assets/icons/aws-sns.png',
     style: 'sms',
   },
