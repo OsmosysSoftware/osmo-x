@@ -84,7 +84,7 @@ export const ChannelTypeMap = {
     serviceIcon: 'assets/icons/pushnotification.svg',
     altText: 'Push Notification',
     providerName: 'AWS SNS',
-    providerIcon: 'assets/icons/aws.png',
+    providerIcon: 'assets/icons/aws-sns.png',
     style: 'pushsns',
   },
   [ChannelType.VC_TWILIO]: {
@@ -98,14 +98,14 @@ export const ChannelTypeMap = {
     serviceIcon: 'assets/icons/email.svg',
     altText: 'Email',
     providerName: 'AWS SES',
-    providerIcon: 'assets/icons/aws.png',
+    providerIcon: 'assets/icons/aws-ses.png',
     style: 'email',
   },
   [ChannelType.SMS_SNS]: {
     serviceIcon: 'assets/icons/sms.svg',
     altText: 'SMS',
     providerName: 'SMS SNS',
-    providerIcon: 'assets/icons/aws.png',
+    providerIcon: 'assets/icons/aws-sns.png',
     style: 'sms',
   },
   [ChannelType.UNKNOWN]: {
