@@ -105,7 +105,9 @@ OsmoX supports multiple channel types, allowing you to choose the most suitable 
 |     WhatsApp - Twilio (Business)     |     7     | [WhatsApp - Twilio (Business)](channels/wa-Twilio-Business.md) |
 |           SMS - KAPSystem            |     8     |          [SMS - KAPSystem](channels/sms-kapsystem.md)          |
 |        PushNotification - SNS        |     9     |        [Push Notification - SNS](channels/push-sns.md)         |
-|           Email - AWS SES            |    11     |                 [AWS SES](channels/aws-ses.md)                 |
+|         Voice Call - Twilio          |    10     |          [Voice Call - Twilio](channels/vc-twilio.md)          |
+|           Email - AWS SES            |    11     |             [Email - AWS SES](channels/aws-ses.md)             |
+|          SMS - AWS SMS SNS           |    12     |            [SMS - AWS SMS SNS](channels/sms-sns.md)            |
 
 ## 6. Delivery Status Information
 
