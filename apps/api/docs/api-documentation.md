@@ -307,7 +307,6 @@ Allows the user with `Admin` role to create a new application.
 mutation CreateApplication {
   application(createApplicationInput: {
     name: "newSampleApp",
-    userId: 2,
   }) {
     applicationId
     name
@@ -348,7 +347,7 @@ curl --location 'http://localhost:3000/graphql' \
 
 Allows the user to fetch all applications based on the passed query parameters. Requires passing bearer token for authorization.
 
-Note: The API will return a successful response when the `server-api-key` passed uses `application_id` that is associated with an `Admin`.
+Note: The API will return a successful response when the Bearer `authorization-token` passed is associated with an `Admin`.
 
 The different options that can be used while fetching notifications are as follows:
 
