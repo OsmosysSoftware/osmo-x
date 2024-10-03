@@ -10,6 +10,7 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ApplicationsService extends CoreService<Application> {
@@ -41,17 +42,33 @@ export class ApplicationsService extends CoreService<Application> {
       throw new Error('Access Denied. Not an ADMIN.');
     }
 
-    const userExists = await this.usersService.findByUserId(applicationInput.userId);
+    const userEntry = await this.getUserEntryFromToken(authorizationHeader);
 
-    if (!userExists) {
-      throw new Error('This user does not exist.');
-    }
+    const newApplicationObject = new Application({
+      name: applicationInput.name,
+      userId: userEntry.userId,
+    });
 
-    const application = this.applicationsRepository.create(applicationInput);
+    const application = this.applicationsRepository.create(newApplicationObject);
     return this.applicationsRepository.save(application);
   }
 
   async checkAdminUser(authHeader: Request): Promise<boolean> {
+    try {
+      const userEntry = await this.getUserEntryFromToken(authHeader);
+
+      // Check if the user has the ADMIN role
+      if (userEntry.userRole === UserRoles.ADMIN) {
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUserEntryFromToken(authHeader: Request): Promise<User> {
     try {
       const bearerToken = authHeader.toString();
 
@@ -76,12 +93,7 @@ export class ApplicationsService extends CoreService<Application> {
         throw new UnauthorizedException('User not found');
       }
 
-      // Check if the user has the ADMIN role
-      if (userEntry.userRole === UserRoles.ADMIN) {
-        return true;
-      }
-
-      return false;
+      return userEntry;
     } catch (error) {
       throw error;
     }
