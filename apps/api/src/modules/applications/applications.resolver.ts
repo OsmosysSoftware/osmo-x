@@ -6,9 +6,13 @@ import { Application } from './entities/application.entity';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ApplicationResponse } from './dto/application-response.dto';
 import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { UserRoles } from 'src/common/constants/database';
 
 @Resolver(() => Application)
-@UseGuards(GqlAuthGuard)
+@Roles(UserRoles.ADMIN)
+@UseGuards(GqlAuthGuard, RolesGuard)
 export class ApplicationsResolver {
   constructor(private readonly applicationsService: ApplicationsService) {}
 
@@ -27,12 +31,9 @@ export class ApplicationsResolver {
 
   @Query(() => ApplicationResponse, { name: 'applications' })
   async findAll(
-    @Context() context,
     @Args('options', { type: () => QueryOptionsDto, nullable: true, defaultValue: {} })
     options: QueryOptionsDto,
   ): Promise<ApplicationResponse> {
-    const request: Request = context.req;
-    const authorizationHeader = request.headers['authorization'];
-    return this.applicationsService.getAllApplications(options, authorizationHeader);
+    return this.applicationsService.getAllApplications(options);
   }
 }

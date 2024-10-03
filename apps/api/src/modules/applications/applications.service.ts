@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateApplicationInput } from './dto/create-application.input';
 import { UsersService } from '../users/users.service';
-import { Status, UserRoles } from 'src/common/constants/database';
+import { Status } from 'src/common/constants/database';
 import { ApplicationResponse } from './dto/application-response.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
@@ -36,12 +36,6 @@ export class ApplicationsService extends CoreService<Application> {
     applicationInput: CreateApplicationInput,
     authorizationHeader: Request,
   ): Promise<Application> {
-    const isAdmin = await this.checkAdminUser(authorizationHeader);
-
-    if (!isAdmin) {
-      throw new Error('Access Denied. Not an ADMIN.');
-    }
-
     const userEntry = await this.getUserEntryFromToken(authorizationHeader);
 
     const newApplicationObject = new Application({
@@ -51,21 +45,6 @@ export class ApplicationsService extends CoreService<Application> {
 
     const application = this.applicationsRepository.create(newApplicationObject);
     return this.applicationsRepository.save(application);
-  }
-
-  async checkAdminUser(authHeader: Request): Promise<boolean> {
-    try {
-      const userEntry = await this.getUserEntryFromToken(authHeader);
-
-      // Check if the user has the ADMIN role
-      if (userEntry.userRole === UserRoles.ADMIN) {
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      throw error;
-    }
   }
 
   async getUserEntryFromToken(authHeader: Request): Promise<User> {
@@ -99,16 +78,7 @@ export class ApplicationsService extends CoreService<Application> {
     }
   }
 
-  async getAllApplications(
-    options: QueryOptionsDto,
-    authorizationHeader: Request,
-  ): Promise<ApplicationResponse> {
-    const isAdmin = await this.checkAdminUser(authorizationHeader);
-
-    if (!isAdmin) {
-      throw new Error('Access Denied. Not an ADMIN.');
-    }
-
+  async getAllApplications(options: QueryOptionsDto): Promise<ApplicationResponse> {
     const baseConditions = [];
     const searchableFields = ['name'];
 
