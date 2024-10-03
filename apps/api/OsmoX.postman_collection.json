@@ -3430,7 +3430,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3493,7 +3493,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3551,7 +3551,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        name: \"sampleFoundationXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        name: \"sampleFoundationXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},

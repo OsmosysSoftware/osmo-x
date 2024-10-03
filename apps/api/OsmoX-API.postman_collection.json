@@ -781,7 +781,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"<newApplicationName>\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"<newApplicationName>\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
