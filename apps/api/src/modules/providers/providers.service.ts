@@ -10,6 +10,7 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ProviderResponse } from './dto/provider-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { ChannelType } from 'src/common/constants/notifications';
+import { decrypt, encrypt } from 'src/config/crypto.utils';
 
 @Injectable()
 export class ProvidersService extends CoreService<Provider> {
@@ -53,6 +54,8 @@ export class ProvidersService extends CoreService<Provider> {
       throw new Error('Invalid channelType');
     }
 
+    // Encrypt the configuration before saving
+    providerInput.configuration = encrypt(JSON.stringify(providerInput.configuration));
     const provider = this.providerRepository.create(providerInput);
     return this.providerRepository.save(provider);
   }
@@ -64,8 +67,11 @@ export class ProvidersService extends CoreService<Provider> {
     });
 
     if (configEntity) {
-      this.logger.debug('config entry fetched successfully');
-      return configEntity.configuration as unknown as Record<string, unknown>;
+      this.logger.debug('Config entry fetched successfully');
+
+      // Decrypt the configuration before returning
+      const decryptedConfig = decrypt(configEntity.configuration);
+      return JSON.parse(decryptedConfig) as Record<string, unknown>;
     }
 
     return null;
