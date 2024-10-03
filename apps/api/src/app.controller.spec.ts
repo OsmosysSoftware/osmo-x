@@ -14,9 +14,11 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
+  const response = `🚀✨ You're all set! Everything is up and running smoothly! ✨🚀`;
+
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it(`should return "${response}"`, () => {
+      expect(appController.getSuccessResponse()).toBe(`'${response}'`);
     });
   });
 });
