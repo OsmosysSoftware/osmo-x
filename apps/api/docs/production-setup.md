@@ -152,7 +152,7 @@ If you need to update any environment variable values:
 2. Stop the running containers:
 
    ```bash
-   docker-compose down
+   docker-compose stop
    ```
 
 3. Rebuild the Docker containers with the updated environment variables:
