@@ -21,12 +21,8 @@ export class ApplicationsResolver {
     @Context() context,
     @Args('createApplicationInput') createApplicationInput: CreateApplicationInput,
   ): Promise<Application> {
-    const request: Request = context.req;
-    const authorizationHeader = request.headers['authorization'];
-    return await this.applicationsService.createApplication(
-      createApplicationInput,
-      authorizationHeader,
-    );
+    const requestUserId: number = context.req.userId;
+    return await this.applicationsService.createApplication(createApplicationInput, requestUserId);
   }
 
   @Query(() => ApplicationResponse, { name: 'applications' })
