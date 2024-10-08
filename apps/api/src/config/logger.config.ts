@@ -4,6 +4,7 @@ import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import 'winston-daily-rotate-file';
 import { ConfigService } from '@nestjs/config';
+import { name as applicationName } from 'package.json';
 
 const configService = new ConfigService();
 
@@ -36,7 +37,7 @@ const transportsConfig = [
     format: format.combine(
       format.timestamp(),
       format.ms(),
-      nestWinstonModuleUtilities.format.nestLike('OsmoX'),
+      nestWinstonModuleUtilities.format.nestLike(applicationName),
     ),
   }),
 
