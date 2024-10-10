@@ -100,7 +100,9 @@ export abstract class NotificationConsumer {
       notification.result = {
         result: {
           message: error.message,
-          response: error.response?.data,
+          response: error.response?.data, // 360Dialog
+          moreInfo: error.moreInfo, // Twilio
+          apiID: error.apiID, // Plivo
           stack: error.stack,
         },
       };
@@ -110,7 +112,9 @@ export abstract class NotificationConsumer {
       // Save retry attempt record
       await this.saveRetryAttempt(notification, {
         message: error.message,
-        response: error.response?.data,
+        response: error.response?.data, // 360Dialog
+        apiID: error.apiID, // Plivo
+        moreInfo: error.moreInfo, // Twilio, Plivo
         stack: error.stack,
       });
     } finally {
