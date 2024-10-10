@@ -88,6 +88,12 @@ export abstract class NotificationConsumer {
           `Notification with ID ${notification.id} has attempted max allowed retries (sending), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
+        await this.notificationRepository.save(notification);
+        // Call webhook for all providers (skip and non skip) when delivery status is FAILED
+        await this.notificationQueueService.addNotificationToQueue(
+          QueueAction.WEBHOOK,
+          notification,
+        );
       }
 
       this.logger.debug(`Updating result of notification with id ${notification.id}`);

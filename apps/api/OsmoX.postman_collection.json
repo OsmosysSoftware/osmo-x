@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e9aeb9a0-761f-4b10-86a7-dd4bcaebca94",
+		"_postman_id": "336711a4-7ddf-4f32-b136-4aa09b0e284b",
 		"name": "OsmoX",
 		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -3276,11 +3276,11 @@
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
 									"});\r",
-									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"pm.test(\"message: Forbidden resource\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Forbidden resource\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3430,7 +3430,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3464,11 +3464,11 @@
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
 									"});\r",
-									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"pm.test(\"message: Forbidden resource\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Forbidden resource\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3493,7 +3493,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3551,7 +3551,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        name: \"sampleFoundationXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        name: \"sampleFoundationXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3656,11 +3656,11 @@
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
 									"});\r",
-									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"pm.test(\"message: Forbidden resource\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Forbidden resource\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3810,7 +3810,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 2,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 2,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},
@@ -3873,7 +3873,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        # Assuming applicationId 500 is invalid\n        applicationId: 500,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        # Assuming applicationId 500 is invalid\n        applicationId: 500,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},
@@ -3907,11 +3907,11 @@
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
 									"});\r",
-									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"pm.test(\"message: Forbidden resource\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Forbidden resource\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3936,7 +3936,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},
@@ -3994,7 +3994,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        unknownValue: \"Some unknown parameter\",\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        unknownValue: \"Some unknown parameter\",\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},

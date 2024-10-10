@@ -6,8 +6,4 @@ export class CreateApplicationInput {
   @Field()
   @IsNotEmpty()
   name: string;
-
-  @Field()
-  @IsNotEmpty()
-  userId: number;
 }
