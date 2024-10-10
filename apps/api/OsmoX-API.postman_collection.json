@@ -1593,6 +1593,277 @@
 				}
 			],
 			"description": "This group contains actual API requests done to 3rd party provider for easier debugging and verification"
+		},
+		{
+			"name": "Provider Request Confirmation",
+			"item": [
+				{
+					"name": "Mailgun Confirmation cURL",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{MAILGUN_API_KEY}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "api",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "message-id",
+									"value": "20240718180532.4c1b703bec5edf52@mg.pinestem.com",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.mailgun.net/v3/{{MAILGUN_DOMAIN}}/events?message-id={{Mailgun-message-id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mailgun",
+								"net"
+							],
+							"path": [
+								"v3",
+								"{{MAILGUN_DOMAIN}}",
+								"events"
+							],
+							"query": [
+								{
+									"key": "message-id",
+									"value": "{{Mailgun-message-id}}"
+								}
+							]
+						},
+						"description": "Mailgun tracks every inbound and outbound message event and retains this data for at least 3 days.\n\nReference: [https://documentation.mailgun.com/docs/mailgun/api-reference/openapi-final/tag/Events/#tag/Events/operation/get-v3-domain_name-events](https://documentation.mailgun.com/docs/mailgun/api-reference/openapi-final/tag/Events/#tag/Events/operation/get-v3-domain_name-events)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio SMS Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Messages/{{Twilio_message_sid}}.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Messages",
+								"{{Twilio_message_sid}}.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource](https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource)"
+					},
+					"response": []
+				},
+				{
+					"name": "Plivo SMS Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{PLIVO_SMS_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{PLIVO_SMS_AUTH_ID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.plivo.com/v1/Account/{{PLIVO_SMS_AUTH_ID}}/Message/{{Plivo_Message_Uuid}}/Media/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"plivo",
+								"com"
+							],
+							"path": [
+								"v1",
+								"Account",
+								"{{PLIVO_SMS_AUTH_ID}}",
+								"Message",
+								"{{Plivo_Message_Uuid}}",
+								"Media",
+								""
+							]
+						},
+						"description": "Reference: [https://www.plivo.com/docs/messaging/api/message#message-status-callbacks](https://www.plivo.com/docs/messaging/api/message#message-status-callbacks)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio Whatsapp Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Messages/{{Twilio_whatsapp_sid}}.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Messages",
+								"{{Twilio_whatsapp_sid}}.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource](https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio Whatsapp (Business) Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Messages/{{Twilio_whatsapp_sid}}.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Messages",
+								"{{Twilio_whatsapp_sid}}.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource](https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio VC Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Calls/{{Twilio_call_sid}}.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Calls",
+								"{{Twilio_call_sid}}.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/docs/voice/api/call-resource#fetch-a-call-resource](https://www.twilio.com/docs/voice/api/call-resource#fetch-a-call-resource)"
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
