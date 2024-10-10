@@ -70,7 +70,7 @@ SERVER_PORT=5000
    To stop the running containers, use the following command:
 
    ```bash
-   docker-compose down
+   docker-compose stop
    ```
 
 ## Additional Notes
