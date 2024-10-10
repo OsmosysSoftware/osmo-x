@@ -97,12 +97,26 @@ export abstract class NotificationConsumer {
       }
 
       this.logger.debug(`Updating result of notification with id ${notification.id}`);
-      notification.result = { result: { message: error.message, stack: error.stack } };
+      notification.result = {
+        result: {
+          message: error.message,
+          response: error.response?.data, // 360Dialog
+          moreInfo: error.moreInfo, // Twilio
+          apiID: error.apiID, // Plivo
+          stack: error.stack,
+        },
+      };
       this.logger.error(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
 
       // Save retry attempt record
-      await this.saveRetryAttempt(notification, { message: error.message, stack: error.stack });
+      await this.saveRetryAttempt(notification, {
+        message: error.message,
+        response: error.response?.data, // 360Dialog
+        apiID: error.apiID, // Plivo
+        moreInfo: error.moreInfo, // Twilio, Plivo
+        stack: error.stack,
+      });
     } finally {
       this.logger.debug(
         `processNotificationQueue completed. Saving notification in DB: ${JSON.stringify(notification)}`,

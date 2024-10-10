@@ -78,7 +78,14 @@ export class SmsPlivoService {
 
       return response;
     } catch (error) {
-      throw new Error(`Failed to send message: ${error.message}`);
+      if (error.apiID) {
+        // Log relevant parts of the error response
+        this.logger.error(`Error sent from provider: ${providerId}`, error.message);
+        throw error;
+      } else {
+        // Handle cases where there is no response (network issues, etc.)
+        throw new Error(`Failed to send message: ${error.message}`);
+      }
     }
   }
   async getDeliveryStatus(
