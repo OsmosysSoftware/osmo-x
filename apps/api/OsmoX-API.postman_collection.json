@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b97d878b-aa80-4b2f-a9f0-a0640b2bc6e2",
+		"_postman_id": "36ff2947-7450-4393-b3cd-39e82ee073e6",
 		"name": "OsmoX-API",
 		"description": "List of all APIs used in OsmoX",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -781,7 +781,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"<newApplicationName>\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"<newApplicationName>\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -883,7 +883,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 2,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 2,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},

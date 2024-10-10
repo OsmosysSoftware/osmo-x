@@ -27,16 +27,7 @@ export class ProvidersService extends CoreService<Provider> {
     return this.providerRepository.findOne({ where: { providerId, status: Status.ACTIVE } });
   }
 
-  async createProvider(
-    providerInput: CreateProviderInput,
-    authorizationHeader: Request,
-  ): Promise<Provider> {
-    const isAdmin = await this.applicationsService.checkAdminUser(authorizationHeader);
-
-    if (!isAdmin) {
-      throw new Error('Access Denied. Not an ADMIN.');
-    }
-
+  async createProvider(providerInput: CreateProviderInput): Promise<Provider> {
     const userExists = await this.usersService.findByUserId(providerInput.userId);
     const applicationExists = await this.applicationsService.findById(providerInput.applicationId);
     const channelExists = Object.values(ChannelType).includes(providerInput.channelType);
@@ -71,16 +62,7 @@ export class ProvidersService extends CoreService<Provider> {
     return null;
   }
 
-  async getAllProviders(
-    options: QueryOptionsDto,
-    authorizationHeader: Request,
-  ): Promise<ProviderResponse> {
-    const isAdmin = await this.applicationsService.checkAdminUser(authorizationHeader);
-
-    if (!isAdmin) {
-      throw new Error('Access Denied. Not an ADMIN.');
-    }
-
+  async getAllProviders(options: QueryOptionsDto): Promise<ProviderResponse> {
     const baseConditions = [];
     const searchableFields = ['name'];
 
