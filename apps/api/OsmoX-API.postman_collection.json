@@ -1000,6 +1000,870 @@
 				}
 			],
 			"description": "These API calls are responsible for all operations related to Server API Keys."
+		},
+		{
+			"name": "Provider Direct Requests",
+			"item": [
+				{
+					"name": "Mailgun cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{MAILGUN_API_KEY}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "api",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "from",
+									"value": "Excited User <postmaster@{{MAILGUN_DOMAIN}}>",
+									"type": "text"
+								},
+								{
+									"key": "to",
+									"value": "recipient-1@example.com",
+									"type": "text"
+								},
+								{
+									"key": "to",
+									"value": "recipient-2@example.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "subject",
+									"value": "Test via Postman",
+									"type": "text"
+								},
+								{
+									"key": "text",
+									"value": "Test for sending via Postman. Testing some Mailgun awesomeness!",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.mailgun.net/v3/{{MAILGUN_DOMAIN}}/messages",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mailgun",
+								"net"
+							],
+							"path": [
+								"v3",
+								"{{MAILGUN_DOMAIN}}",
+								"messages"
+							]
+						},
+						"description": "Reference: [https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/#sending-basic-text](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/#sending-basic-text)"
+					},
+					"response": []
+				},
+				{
+					"name": "360dialog Whatsapp cURL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "D360-API-KEY",
+								"value": "{{D360-API-KEY}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"919004812051\",\n    \"type\": \"template\",\n    \"template\": {\n        \"namespace\": \"d8bcb6bd_2ab2_439c_9d9e_947501266c77\",\n        \"name\": \"ir_incident_resolution\",\n        \"language\": {\n            \"policy\": \"deterministic\",\n            \"code\": \"en\"\n        },\n        \"components\": [\n            {\n                \"type\": \"body\",\n                \"parameters\": [\n                    {\n                        \"type\": \"text\",\n                        \"text\": \"Bishal Biswas\"\n                    },\n                    {\n                        \"type\": \"text\",\n                        \"text\": \"WNK227\"\n                    },\n                    {\n                        \"type\": \"text\",\n                        \"text\": \"Massive Earthquake\"\n                    },\n                    {\n                        \"type\": \"text\",\n                        \"text\": \"Power Grid\"\n                    },\n                    {\n                        \"type\": \"text\",\n                        \"text\": \"Bishal Mondal\"\n                    },\n                    {\n                        \"type\": \"text\",\n                        \"text\": \"Vikas\"\n                    },\n                    {\n                        \"type\": \"text\",\n                        \"text\": \"Open\"\n                    },\n                    {\n                        \"type\": \"text\",\n                        \"text\": \"10\"\n                    },\n                    {\n                        \"type\": \"text\",\n                        \"text\": \"15755\"\n                    }\n                ]\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://waba.360dialog.io/v1/messages",
+							"protocol": "https",
+							"host": [
+								"waba",
+								"360dialog",
+								"io"
+							],
+							"path": [
+								"v1",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio Whatsapp cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp: +14155238886",
+									"type": "text"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp: +919999000012",
+									"type": "text"
+								},
+								{
+									"key": "Body",
+									"value": "This is a test message from OsmoX",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Messages.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Messages.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/en-us/blog/postman-make-requests-test-apis#Make-a-POST-request-with-authorization-to-the-Twilio-API](https://www.twilio.com/en-us/blog/postman-make-requests-test-apis#Make-a-POST-request-with-authorization-to-the-Twilio-API)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio SMS cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "+14155238886",
+									"type": "text"
+								},
+								{
+									"key": "To",
+									"value": "+919999000012",
+									"type": "text"
+								},
+								{
+									"key": "Body",
+									"value": "This is a test message from OsmoX",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Messages.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Messages.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/en-us/blog/postman-make-requests-test-apis#Make-a-POST-request-with-authorization-to-the-Twilio-API](https://www.twilio.com/en-us/blog/postman-make-requests-test-apis#Make-a-POST-request-with-authorization-to-the-Twilio-API)"
+					},
+					"response": []
+				},
+				{
+					"name": "Plivo SMS cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{PLIVO_SMS_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{PLIVO_SMS_AUTH_ID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"src\": \"<from_number>\",\n    \"dst\": \"+12025551111\",\n    \"text\": \"Hello, this is sample text\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.plivo.com/v1/Account/{{PLIVO_SMS_AUTH_ID}}/Message/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"plivo",
+								"com"
+							],
+							"path": [
+								"v1",
+								"Account",
+								"{{PLIVO_SMS_AUTH_ID}}",
+								"Message",
+								""
+							]
+						},
+						"description": "Reference: [https://www.plivo.com/docs/messaging/api/message#send-a-message](https://www.plivo.com/docs/messaging/api/message#send-a-message)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio Whatsapp (Business) cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "ContentSid",
+									"value": "HXXXXXXXXX",
+									"type": "text"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp: 18551234567",
+									"type": "text"
+								},
+								{
+									"key": "From",
+									"value": "whatsapp: 15005550006",
+									"type": "text"
+								},
+								{
+									"key": "ContentVariables",
+									"value": "{\n        \"1\": \"Name\",\n        \"2\": \"2\",\n        \"3\": \"29-04-2024\",\n        \"4\": \"03-05-2024\",\n        \"5\": \"Sunday, 05-05-2024\"\n}",
+									"type": "text"
+								},
+								{
+									"key": "MessagingServiceSid",
+									"value": "MGXXXXXXXX",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Messages.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Messages.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/docs/whatsapp/tutorial/send-whatsapp-notification-messages-templates#send-a-whatsapp-message-using-a-template](https://www.twilio.com/docs/whatsapp/tutorial/send-whatsapp-notification-messages-templates#send-a-whatsapp-message-using-a-template)"
+					},
+					"response": []
+				},
+				{
+					"name": "KAPS SMS cURL",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{KAP_SMS_BASE_API_URL}}?username={{KAP_SMS_ACCOUNT_USERNAME}}&password={{KAP_SMS_ACCOUNT_PASSWORD}}&from={{KAP_SMS_FROM}}&indiaDltContentTemplateId=1707160146562806652&indiaDltPrincipalEntityId=1601100000000005964&to=+918900100002&text=This is a test message from OsmoX.",
+							"host": [
+								"{{KAP_SMS_BASE_API_URL}}"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "{{KAP_SMS_ACCOUNT_USERNAME}}"
+								},
+								{
+									"key": "password",
+									"value": "{{KAP_SMS_ACCOUNT_PASSWORD}}"
+								},
+								{
+									"key": "from",
+									"value": "{{KAP_SMS_FROM}}"
+								},
+								{
+									"key": "indiaDltContentTemplateId",
+									"value": "1707160146562806652"
+								},
+								{
+									"key": "indiaDltPrincipalEntityId",
+									"value": "1601100000000005964"
+								},
+								{
+									"key": "to",
+									"value": "+918900100002"
+								},
+								{
+									"key": "text",
+									"value": "This is a test message from OsmoX."
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio Voice Call cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "+14155238886",
+									"type": "text"
+								},
+								{
+									"key": "To",
+									"value": "+919999000012",
+									"type": "text"
+								},
+								{
+									"key": "Url",
+									"value": "https://handler.twilio.com/twiml/EHd14d3e5c3b06ccfeffd994e0cb0d5829",
+									"description": "Select one of Url, Twiml",
+									"type": "text"
+								},
+								{
+									"key": "Twiml",
+									"value": "\"<Response><Say>Hello there!</Say></Response>",
+									"description": "If both used, Twiml is ignored",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Calls.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Calls.json"
+							]
+						},
+						"description": "Reference: [https://www.postman.com/twilio/twilio-api/request/h7hz0j0/create-call](https://www.postman.com/twilio/twilio-api/request/h7hz0j0/create-call)"
+					},
+					"response": []
+				},
+				{
+					"name": "AWS SNS Push Notification cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{AWS_SECRET_ACCESS_KEY}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{AWS_ACCESS_KEY_ID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "Action",
+									"value": "Publish",
+									"type": "text"
+								},
+								{
+									"key": "Message",
+									"value": "{\\\"notification\\\":{\\\"title\\\":\\\"Test Notification\\\",\\\"body\\\":\\\"This is a test notification\\\"}}",
+									"type": "text"
+								},
+								{
+									"key": "TargetArn",
+									"value": "arn:aws:sns:us-west-2:505884080245:endpoint/GCM/OQSHA-Android/7fb080a5-a5e9-38f0-98fe-ebd0396e0076",
+									"type": "text"
+								},
+								{
+									"key": "Version",
+									"value": "2010-03-31",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://sns.{{AWS_REGION}}.amazonaws.com/",
+							"protocol": "https",
+							"host": [
+								"sns",
+								"{{AWS_REGION}}",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Reference: [https://docs.aws.amazon.com/sns/latest/api/API_Publish.html](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html)"
+					},
+					"response": []
+				},
+				{
+					"name": "AWS SNS SMS cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{AWS_SECRET_ACCESS_KEY}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{AWS_ACCESS_KEY_ID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "Action",
+									"value": "Publish",
+									"type": "text"
+								},
+								{
+									"key": "Message",
+									"value": "This is a test notification",
+									"type": "text"
+								},
+								{
+									"key": "PhoneNumber",
+									"value": "+919234567890",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://sns.{{AWS_REGION}}.amazonaws.com/",
+							"protocol": "https",
+							"host": [
+								"sns",
+								"{{AWS_REGION}}",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This group contains actual API requests done to 3rd party provider for easier debugging and verification"
+		},
+		{
+			"name": "Provider Request Confirmation",
+			"item": [
+				{
+					"name": "Mailgun Confirmation cURL",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{MAILGUN_API_KEY}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "api",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "message-id",
+									"value": "20240718180532.4c1b703bec5edf52@mg.pinestem.com",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.mailgun.net/v3/{{MAILGUN_DOMAIN}}/events?message-id={{Mailgun-message-id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mailgun",
+								"net"
+							],
+							"path": [
+								"v3",
+								"{{MAILGUN_DOMAIN}}",
+								"events"
+							],
+							"query": [
+								{
+									"key": "message-id",
+									"value": "{{Mailgun-message-id}}"
+								}
+							]
+						},
+						"description": "Mailgun tracks every inbound and outbound message event and retains this data for at least 3 days.\n\nReference: [https://documentation.mailgun.com/docs/mailgun/api-reference/openapi-final/tag/Events/#tag/Events/operation/get-v3-domain_name-events](https://documentation.mailgun.com/docs/mailgun/api-reference/openapi-final/tag/Events/#tag/Events/operation/get-v3-domain_name-events)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio SMS Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Messages/{{Twilio_message_sid}}.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Messages",
+								"{{Twilio_message_sid}}.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource](https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource)"
+					},
+					"response": []
+				},
+				{
+					"name": "Plivo SMS Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{PLIVO_SMS_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{PLIVO_SMS_AUTH_ID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.plivo.com/v1/Account/{{PLIVO_SMS_AUTH_ID}}/Message/{{Plivo_Message_Uuid}}/Media/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"plivo",
+								"com"
+							],
+							"path": [
+								"v1",
+								"Account",
+								"{{PLIVO_SMS_AUTH_ID}}",
+								"Message",
+								"{{Plivo_Message_Uuid}}",
+								"Media",
+								""
+							]
+						},
+						"description": "Reference: [https://www.plivo.com/docs/messaging/api/message#message-status-callbacks](https://www.plivo.com/docs/messaging/api/message#message-status-callbacks)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio Whatsapp Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Messages/{{Twilio_whatsapp_sid}}.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Messages",
+								"{{Twilio_whatsapp_sid}}.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource](https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio Whatsapp (Business) Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Messages/{{Twilio_whatsapp_sid}}.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Messages",
+								"{{Twilio_whatsapp_sid}}.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource](https://www.twilio.com/docs/messaging/api/message-resource#fetch-a-message-resource)"
+					},
+					"response": []
+				},
+				{
+					"name": "Twilio VC Confirmation cURL",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{TWILIO_AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{TWILIO_ACCOUNT_SID}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.twilio.com/2010-04-01/Accounts/{{TWILIO_ACCOUNT_SID}}/Calls/{{Twilio_call_sid}}.json",
+							"protocol": "https",
+							"host": [
+								"api",
+								"twilio",
+								"com"
+							],
+							"path": [
+								"2010-04-01",
+								"Accounts",
+								"{{TWILIO_ACCOUNT_SID}}",
+								"Calls",
+								"{{Twilio_call_sid}}.json"
+							]
+						},
+						"description": "Reference: [https://www.twilio.com/docs/voice/api/call-resource#fetch-a-call-resource](https://www.twilio.com/docs/voice/api/call-resource#fetch-a-call-resource)"
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
