@@ -76,15 +76,14 @@ export class Wa360dialogService {
         const providerResponseError = {
           status: error.response.status,
           statusText: error.response.statusText,
-          data: error.response.data,
         };
         // Log relevant parts of the error response
-        this.logger.error('Error from provider:', providerResponseError);
+        this.logger.error(`Error sent from provider: ${providerId}`, providerResponseError);
 
         throw error;
       } else {
         // Handle cases where there is no response (network issues, etc.)
-        throw new Error(`Unexpected error occurred: ${error}`);
+        throw error;
       }
     }
   }
