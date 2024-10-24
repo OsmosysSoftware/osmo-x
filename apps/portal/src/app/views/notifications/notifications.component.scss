@@ -170,3 +170,8 @@ tr:hover {
     width: 1.8em;
   }
 }
+
+.grid-row {
+  display: grid;
+  grid-template-columns: 1fr auto; /* 1fr for left, auto for right */
+}
