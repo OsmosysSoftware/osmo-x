@@ -56,28 +56,36 @@
         *ngIf="applications.length !== 0"
       ></p-dropdown>
     </div>
-    <div class="p-col-12 p-md-3 filter-row">
-      <input
-        type="email"
-        pInputText
-        [(ngModel)]="searchValue"
-        placeholder="Search Notifier Email"
-        class="grid-input"
-        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-        #searchInput="ngModel"
-      />
+    <div class="grid-row">
+      <div class="p-col-12 p-md-3 filter-row">
+        <input
+          type="email"
+          pInputText
+          [(ngModel)]="searchValue"
+          placeholder="Search Notifier Email"
+          class="grid-input"
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+          #searchInput="ngModel"
+        />
+        <p-button
+          (onClick)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
+          label="Search"
+          class="grid-button"
+          [disabled]="searchInput.invalid || !searchInput.value"
+        />
+        <p-button
+          (onClick)="onSearchClear(); loadNotificationsLazy({ first: 0, rows: this.pageSize })"
+          label="Clear"
+          class="grid-button"
+          severity="danger"
+          [disabled]="!searchValue"
+        />
+      </div>
       <p-button
-        (onClick)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
-        label="Search"
+        (onClick)="loadNotificationsLazy({ first: this.currentPage, rows: this.pageSize })"
+        label="Reload"
+        severity="warning"
         class="grid-button"
-        [disabled]="searchInput.invalid || !searchInput.value"
-      />
-      <p-button
-        (onClick)="onSearchClear(); loadNotificationsLazy({ first: 0, rows: this.pageSize })"
-        label="Clear"
-        class="grid-button"
-        severity="danger"
-        [disabled]="!searchValue"
       />
     </div>
   </div>
