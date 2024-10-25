@@ -52,7 +52,7 @@
         placeholder="Select an Application"
         class="grid-dropdown"
         [showClear]="false"
-        (onChange)="loadNotificationsLazy({ first: 0, rows: 10 })"
+        (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
         *ngIf="applications.length !== 0"
       ></p-dropdown>
     </div>
@@ -82,15 +82,7 @@
         />
       </div>
       <p-button
-        (onClick)="
-          loadNotificationsLazy({
-            first:
-              (this.currentPage - 1) * this.pageSize < 0
-                ? 0
-                : (this.currentPage - 1) * this.pageSize,
-            rows: this.pageSize,
-          })
-        "
+        (onClick)="loadNotificationsLazy({ first: getOffset(), rows: this.pageSize })"
         label="Reload"
         severity="warning"
         class="grid-button"
