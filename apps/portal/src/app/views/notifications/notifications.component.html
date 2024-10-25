@@ -82,7 +82,15 @@
         />
       </div>
       <p-button
-        (onClick)="loadNotificationsLazy({ first: this.currentPage, rows: this.pageSize })"
+        (onClick)="
+          loadNotificationsLazy({
+            first:
+              (this.currentPage - 1) * this.pageSize < 0
+                ? 0
+                : (this.currentPage - 1) * this.pageSize,
+            rows: this.pageSize,
+          })
+        "
         label="Reload"
         severity="warning"
         class="grid-button"
