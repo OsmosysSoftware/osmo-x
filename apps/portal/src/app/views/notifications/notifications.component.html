@@ -52,7 +52,7 @@
         placeholder="Select an Application"
         class="grid-dropdown"
         [showClear]="false"
-        (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
+        (onChange)="loadNotificationsLazy({ first: 0, rows: 10 })"
         *ngIf="applications.length !== 0"
       ></p-dropdown>
     </div>

@@ -276,6 +276,12 @@ export class NotificationsComponent implements OnInit {
       });
     }
 
+    // Set page size
+    this.pageSize = event.rows;
+
+    // Set current page
+    this.currentPage = Math.floor(event.first / event.rows) + 1;
+
     // Fetch notifications and handle errors
     this.notificationService
       .getNotifications(variables, loginToken)
