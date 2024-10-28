@@ -138,6 +138,7 @@ export class NotificationsComponent implements OnInit {
               summary: 'Error',
               detail: 'Unauthorized access. Please log in again.',
             });
+            this.authService.logoutUser();
           } else {
             applicationResponse.errors.forEach((error) => {
               this.messageService.add({
