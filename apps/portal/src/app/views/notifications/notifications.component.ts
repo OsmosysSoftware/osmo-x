@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ChannelType, ChannelTypeMap, DeliveryStatus } from 'src/common/constants/notification';
 import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { catchError, of } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
 import { NotificationsService } from './notifications.service';
 import { Notification, NotificationResponse } from './notification.model';
 import { ApplicationsService } from '../applications/applications.service';
@@ -83,6 +84,7 @@ export class NotificationsComponent implements OnInit {
     private notificationService: NotificationsService,
     private applicationService: ApplicationsService,
     private messageService: MessageService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -121,7 +123,32 @@ export class NotificationsComponent implements OnInit {
         }),
       )
       .subscribe((applicationResponse: ApplicationResponse | null) => {
-        if (applicationResponse && applicationResponse.applications) {
+        if (applicationResponse.errors) {
+          const unauthorizedError = applicationResponse.errors.find(
+            (error) => error.message === 'Unauthorized',
+          );
+
+          this.applications = [];
+          this.selectedApplication = null;
+
+          if (unauthorizedError) {
+            this.messageService.add({
+              key: 'tst',
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Unauthorized access. Please log in again.',
+            });
+          } else {
+            applicationResponse.errors.forEach((error) => {
+              this.messageService.add({
+                key: 'tst',
+                severity: 'error',
+                summary: 'Error',
+                detail: `GraphQL Error - Get Applications: ${error.message}`,
+              });
+            });
+          }
+        } else if (applicationResponse && applicationResponse.applications) {
           // Fetch list of applications for dropdown
           this.applications = applicationResponse.applications.map((obj) => ({
             // Name to display and ID to return upon selection
