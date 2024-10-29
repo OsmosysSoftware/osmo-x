@@ -46,7 +46,7 @@ const transportsConfig = [
     datePattern: 'YYYY-MM-DD',
     zippedArchive: true,
     maxFiles: '30d',
-    maxSize: '5m',
+    maxSize: '150m',
     format: logFormat,
   }),
   new transports.DailyRotateFile({
@@ -55,7 +55,7 @@ const transportsConfig = [
     datePattern: 'YYYY-MM-DD',
     zippedArchive: true,
     maxFiles: '30d',
-    maxSize: '5m',
+    maxSize: '20m',
     format: logFormat,
   }),
 ];
