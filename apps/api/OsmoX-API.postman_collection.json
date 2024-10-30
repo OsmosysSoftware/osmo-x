@@ -883,7 +883,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 1\n        configuration: {},\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 1\n        configuration: {\n            ExampleConfigKey: \"ExampleConfigValue\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -931,7 +931,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 1\n        configuration: {\n            SMTP_HOST: \"smtp.example.com\",\n            SMTP_PORT: 587,\n            SMTP_USERNAME: \"your-smtp-username\",\n            SMTP_PASSWORD: \"your-smtp-password\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 1\n        configuration: {\n            SMTP_HOST: \"<smtp.example.com>\",\n            SMTP_PORT: 587,\n            SMTP_USERNAME: \"<YOUR_SMTP_USERNAME>\",\n            SMTP_PASSWORD: \"<YOUR_SMTP_PASSWORD>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -979,7 +979,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 2,\n        configuration: {\n            MAILGUN_API_KEY: \"your-api-key\",\n            MAILGUN_HOST: \"api.mailgun.net\",\n            MAILGUN_DOMAIN: \"your.mailgun.domain\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 2,\n        configuration: {\n            MAILGUN_API_KEY: \"<YOUR_MAILGUN_API_KEY>\",\n            MAILGUN_HOST: \"api.mailgun.net\",\n            MAILGUN_DOMAIN: \"<YOUR_MAILGUN_DOMAIN>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1027,7 +1027,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 2,\n        configuration: {\n            MAILGUN_API_KEY: \"your-api-key\",\n            MAILGUN_HOST: \"api.eu.mailgun.net\",\n            MAILGUN_DOMAIN: \"your.mailgun.domain\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 2,\n        configuration: {\n            MAILGUN_API_KEY: \"<YOUR_MAILGUN_API_KEY>\",\n            MAILGUN_HOST: \"api.eu.mailgun.net\",\n            MAILGUN_DOMAIN: \"<YOUR_MAILGUN_DOMAIN>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1075,7 +1075,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 3\n        configuration: {\n            WA_360_DIALOG_API_KEY: \"api-url\",\n            WA_360_DIALOG_URL: \"your-api-key\"    \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 3\n        configuration: {\n            WA_360_DIALOG_API_KEY: \"<YOUR_WA_360_DIALOG_API_KEY>\",\n            WA_360_DIALOG_URL: \"<YOUR_WA_360_DIALOG_URL>\"    \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1123,7 +1123,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 4\n        configuration: {\n            TWILIO_WA_ACCOUNT_SID: \"ACapiKeyMsg\",\n            TWILIO_WA_AUTH_TOKEN: \"some-auth-token\",\n            TWILIO_WA_NUMBER: \"+15005550006\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 4\n        configuration: {\n            TWILIO_WA_ACCOUNT_SID: \"<YOUR_TWILIO_WA_ACCOUNT_SID>\",\n            TWILIO_WA_AUTH_TOKEN: \"<YOUR_TWILIO_WA_AUTH_TOKEN>\",\n            TWILIO_WA_NUMBER: \"+15005550006\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1171,7 +1171,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 5\n        configuration: {\n            TWILIO_SMS_ACCOUNT_SID: \"ACapiKeyMsg\",\n            TWILIO_SMS_AUTH_TOKEN: \"some-auth-token\",\n            TWILIO_SMS_NUMBER: \"+15005550006\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 5\n        configuration: {\n            TWILIO_SMS_ACCOUNT_SID: \"<YOUR_TWILIO_SMS_ACCOUNT_SID>\",\n            TWILIO_SMS_AUTH_TOKEN: \"<YOUR_TWILIO_SMS_AUTH_TOKEN>\",\n            TWILIO_SMS_NUMBER: \"+15005550006\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1219,7 +1219,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 6\n        configuration: {\n            PLIVO_SMS_AUTH_ID: \"PlivoAuthId\",\n            PLIVO_SMS_AUTH_TOKEN: \"PlivoAuthToken\",\n            PLIVO_SMS_NUMBER: \"+919000180002\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 6\n        configuration: {\n            PLIVO_SMS_AUTH_ID: \"<YOUR_PLIVO_SMS_AUTH_ID>\",\n            PLIVO_SMS_AUTH_TOKEN: \"<YOUR_PLIVO_SMS_AUTH_TOKEN>\",\n            PLIVO_SMS_NUMBER: \"+919000180002\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1267,7 +1267,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 7\n        configuration: {\n            TWILIO_WA_ACCOUNT_SID: \"ACXXXXXXXXXXXXXXXXX\",\n            TWILIO_WA_AUTH_TOKEN: \"someauthtoken\",\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 7\n        configuration: {\n            TWILIO_WA_ACCOUNT_SID: \"<YOUR_TWILIO_WA_ACCOUNT_SID>\",\n            TWILIO_WA_AUTH_TOKEN: \"<YOUR_TWILIO_WA_AUTH_TOKEN>\",\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1315,7 +1315,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 8\n        configuration: {\n            KAP_SMS_BASE_API_URL:\"http://<api-domain>/api/v3/sendsms/plain\",\n            KAP_SMS_ACCOUNT_USERNAME: \"your-username\", \n            KAP_SMS_ACCOUNT_PASSWORD: \"your-password\",  \n            KAP_SMS_FROM: \"KAPMSG\" \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 8\n        configuration: {\n            KAP_SMS_BASE_API_URL:\"http://<api-domain>/api/v3/sendsms/plain\",\n            KAP_SMS_ACCOUNT_USERNAME: \"<YOUR_KAP_SMS_ACCOUNT_USERNAME>\", \n            KAP_SMS_ACCOUNT_PASSWORD: \"<YOUR_KAP_SMS_ACCOUNT_PASSWORD>\",  \n            KAP_SMS_FROM: \"KAPMSG\" \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1363,7 +1363,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 9\n        configuration: {\n            AWS_ACCESS_KEY_ID:\"Aws-Access-key\",\n            AWS_SECRET_ACCESS_KEY:\"Aws-Secret-Key\",\n            AWS_REGION:\"aws-region\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 9\n        configuration: {\n            AWS_ACCESS_KEY_ID:\"<YOUR_AWS_ACCESS_KEY_ID>\",\n            AWS_SECRET_ACCESS_KEY:\"<YOUR_AWS_SECRET_ACCESS_KEY>\",\n            AWS_REGION:\"<YOUR_AWS_REGION>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1411,7 +1411,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 10\n        configuration: {\n            TWILIO_VC_ACCOUNT_SID: \"twilio-account-sid\",\n            TWILIO_VC_AUTH_TOKEN: \"twilio-auth-token\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 10\n        configuration: {\n            TWILIO_VC_ACCOUNT_SID: \"<YOUR_TWILIO_VC_ACCOUNT_SID>\",\n            TWILIO_VC_AUTH_TOKEN: \"<YOUR_TWILIO_VC_AUTH_TOKEN>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1459,7 +1459,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 11\n        configuration: {\n            AWS_ACCESS_KEY_ID:\"Aws-Access-key\",\n            AWS_SECRET_ACCESS_KEY:\"Aws-Secret-Key\",\n            AWS_REGION:\"aws-region\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 11\n        configuration: {\n            AWS_ACCESS_KEY_ID:\"<YOUR_AWS_ACCESS_KEY_ID>\",\n            AWS_SECRET_ACCESS_KEY:\"<YOUR_AWS_SECRET_ACCESS_KEY>\",\n            AWS_REGION:\"<YOUR_AWS_REGION>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -1507,7 +1507,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 12\n        configuration: {\n            AWS_ACCESS_KEY_ID:\"Aws-Access-key\",\n            AWS_SECRET_ACCESS_KEY:\"Aws-Secret-Key\",\n            AWS_REGION:\"aws-region\"     \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 12\n        configuration: {\n            AWS_ACCESS_KEY_ID:\"<YOUR_AWS_ACCESS_KEY_ID>\",\n            AWS_SECRET_ACCESS_KEY:\"<YOUR_AWS_SECRET_ACCESS_KEY>\",\n            AWS_REGION:\"<YOUR_AWS_REGION>\"  \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
