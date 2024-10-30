@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Queue, Worker, QueueEvents } from 'bullmq';
 import ms = require('ms');
 import { ChannelType, QueueAction } from 'src/common/constants/notifications';
+import { AwsSesNotificationConsumer } from 'src/jobs/consumers/notifications/awsSes-notifications.job.consumer';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
 import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
@@ -38,6 +39,7 @@ export class QueueService {
     private readonly smsKapsystemNotificationConsumer: SmsKapsystemNotificationsConsumer,
     private readonly pushSnsNotificationConsumer: PushSnsNotificationConsumer,
     private readonly vcTwilioNotificationsConsumer: VcTwilioNotificationsConsumer,
+    private readonly awsSesNotificationConsumer: AwsSesNotificationConsumer,
     private readonly smsSnsNotificationConsumer: SmsSnsNotificationConsumer,
     protected readonly webhookService: WebhookService,
   ) {
@@ -172,6 +174,10 @@ export class QueueService {
             job.data.id,
           );
           break;
+        // AWS_SES cases
+        case `${QueueAction.SEND}-${ChannelType.AWS_SES}`:
+          await this.awsSesNotificationConsumer.processAwsSesNotificationQueue(job.data.id);
+          break;
         // SMS_SNS cases
         case `${QueueAction.SEND}-${ChannelType.SMS_SNS}`:
           await this.smsSnsNotificationConsumer.processSmsSnsNotificationQueue(job.data.id);
@@ -187,6 +193,8 @@ export class QueueService {
         case `${QueueAction.WEBHOOK}-${ChannelType.SMS_KAPSYSTEM}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.PUSH_SNS}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.VC_TWILIO}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.AWS_SES}`:
+        case `${QueueAction.WEBHOOK}-${ChannelType.SMS_SNS}`:
           await this.webhookService.triggerWebhook(job.data.id);
           break;
         default:

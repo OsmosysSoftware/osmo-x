@@ -22,6 +22,7 @@ import { ProvidersService } from 'src/modules/providers/providers.service';
 import { SmsKapsystemDataDto } from 'src/modules/notifications/dtos/providers/smsKapsystem-data.dto';
 import { PushSnsDataDto } from 'src/modules/notifications/dtos/providers/pushSns-data.dto';
 import { VcTwilioDataDto } from 'src/modules/notifications/dtos/providers/vcTwilio-data.dto';
+import { AwsSesDataDto } from 'src/modules/notifications/dtos/providers/awsSes-data.dto';
 import { SmsSnsDataDto } from 'src/modules/notifications/dtos/providers/smsSns-data.dto';
 
 @ValidatorConstraint({ name: 'isDataValidConstraint', async: true })
@@ -125,6 +126,13 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
         const vcTwilioData = new VcTwilioDataDto();
         Object.assign(vcTwilioData, value);
         await validateAndThrowError(vcTwilioData);
+        return true;
+      }
+
+      case ChannelType.AWS_SES: {
+        const awsSesData = new AwsSesDataDto();
+        Object.assign(awsSesData, value);
+        await validateAndThrowError(awsSesData);
         return true;
       }
 

@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "8e75fe81-d5b4-4fda-bb05-a1c9e9224fce",
+		"_postman_id": "336711a4-7ddf-4f32-b136-4aa09b0e284b",
 		"name": "OsmoX",
 		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "20654268"
+		"_exporter_id": "27217372"
 	},
 	"item": [
 		{
@@ -1935,7 +1935,7 @@
 			"name": "Push Notification",
 			"item": [
 				{
-					"name": "PushNotifiation_Android",
+					"name": "PushNotification_Android",
 					"event": [
 						{
 							"listen": "test",
@@ -2603,6 +2603,246 @@
 			"description": "Collection of requests pertaining to creating notifications for the AWS SES channel type."
 		},
 		{
+			"name": "SNS SMS Notification",
+			"item": [
+				{
+					"name": "Send SNS SMS Notification - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'channelType' is 12\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 12);",
+									"});",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SNS SMS channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SNS SMS Notification - Missing to Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"message\": \"This is a test notification\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SNS SMS channel type when missing the `to` field."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SNS SMS Notification - Mismatch in ChannelType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code is 400 Bad Request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"});",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 121,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows successfully creating new notification for the SNS SMS channel type."
+					},
+					"response": []
+				},
+				{
+					"name": "Send SNS SMS Notification - Invalid API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Failed request with invalid x-api-key\", function () {",
+									"    pm.expect(pm.response.code).to.equal(401);",
+									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
+									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "bad-api-key",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Allows representing failure in creating new notification for the SNS SMS channel type when passing invalid API key."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creating notifications for the SNS SMS channel type."
+		},
+		{
 			"name": "Authentication",
 			"item": [
 				{
@@ -2645,7 +2885,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    user\n    allKeys {\n       apiKeyId\n       apiKey\n       applicationId\n       status\n    }\n    __typename\n  }\n}",
+								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    __typename\n  }\n}",
 								"operationName": "LoginUser",
 								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
 							}
@@ -2699,7 +2939,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    user\n    allKeys {\n       apiKeyId\n       apiKey\n       applicationId\n       status\n    }\n    __typename\n  }\n}",
+								"query": "mutation LoginUser($username: String!, $password: String!) {\n  login(loginUserInput: {username: $username, password: $password}) {\n    token\n    __typename\n  }\n}",
 								"operationName": "LoginUser",
 								"variables": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"abc{{adminPassword}}\"\n}"
 							}
@@ -2752,7 +2992,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation LoginUser($username: String!) {\n  login(loginUserInput: {username: $username}) {\n    token\n    user\n    allKeys {\n       apiKeyId\n       apiKey\n       applicationId\n       status\n    }\n    __typename\n  }\n}",
+								"query": "mutation LoginUser($username: String!) {\n  login(loginUserInput: {username: $username}) {\n    token\n    __typename\n  }\n}",
 								"operationName": "LoginUser",
 								"variables": "{\n  \"username\": \"{{adminUsername}}\"\n}"
 							}
@@ -2875,7 +3115,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -2931,7 +3171,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  notifications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  notifications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3002,7 +3242,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"Pinestem\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"sampleOsmoXApp\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3036,11 +3276,11 @@
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
 									"});\r",
-									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"pm.test(\"message: Forbidden resource\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Forbidden resource\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3190,7 +3430,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3224,11 +3464,11 @@
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
 									"});\r",
-									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"pm.test(\"message: Forbidden resource\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Forbidden resource\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3253,7 +3493,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3311,7 +3551,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        name: \"sampleFoundationXApp\",\r\n        userId: 2,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        name: \"sampleFoundationXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3416,11 +3656,11 @@
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
 									"});\r",
-									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"pm.test(\"message: Forbidden resource\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Forbidden resource\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3570,7 +3810,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 2,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 2,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},
@@ -3633,7 +3873,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        # Assuming applicationId 500 is invalid\n        applicationId: 500,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        # Assuming applicationId 500 is invalid\n        applicationId: 500,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},
@@ -3667,11 +3907,11 @@
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
 									"});\r",
-									"pm.test(\"message: Access Denied. Not an ADMIN.\", function () {\r",
+									"pm.test(\"message: Forbidden resource\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\");\r",
 									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Access Denied. Not an ADMIN.\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Forbidden resource\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -3696,7 +3936,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},
@@ -3754,7 +3994,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        unknownValue: \"Some unknown parameter\",\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 5,\n        unknownValue: \"Some unknown parameter\",\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"Mailgun PineStem\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": ""
 							}
 						},
@@ -3789,13 +4029,13 @@
 									"pm.test(\"Response is valid JSON\", function () {\r",
 									"    pm.response.to.be.json;\r",
 									"});\r",
-									"pm.test(\"Response has valid 'data' and 'webhook' properties\", function () {\r",
+									"pm.test(\"Response has valid 'data' property\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
 									"});\r",
 									"pm.test(\"Response 'data' has valid 'webhook' property\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"        pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"webhook\").to.be.an(\"object\");\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"webhook\").to.be.an(\"object\");\r",
 									"});\r",
 									""
 								],
@@ -3985,10 +4225,10 @@
 			"description": "Collection of requests pertaining to webhook registration."
 		},
 		{
-			"name": "SNS SMS Notification",
+			"name": "Server Keys",
 			"item": [
 				{
-					"name": "Send SNS SMS Notification - Success",
+					"name": "Generate New Key - Success",
 					"event": [
 						{
 							"listen": "test",
@@ -3997,23 +4237,24 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
-									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"pm.test(\"Response has valid 'data' property\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");",
 									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
 									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
+									"pm.test(\"Response 'data' has valid 'generateApiKey' property\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"generateApiKey\")",
 									"});",
-									"pm.test(\"Response 'channelType' is 12\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 12);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
 									""
 								],
 								"type": "text/javascript",
@@ -4026,35 +4267,37 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"value": "application/json"
 							},
 							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation GenerateApiKey($applicationId: Int!) {\n  generateApiKey(applicationId: $applicationId)\n}",
+								"variables": "{\n  \"applicationId\": 3\n}"
+							}
 						},
 						"url": {
-							"raw": "localhost:3000/notifications",
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3000",
 							"path": [
-								"notifications"
+								"graphql"
 							]
 						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
+						"description": "Allows successfully generating a new server key based on the options passed."
 					},
 					"response": []
 				},
 				{
-					"name": "Send SNS SMS Notification - Missing to Field",
+					"name": "Generate New Key - Error - unknown Application",
 					"event": [
 						{
 							"listen": "test",
@@ -4063,125 +4306,21 @@
 									"pm.test(\"Response is valid JSON\", function () {",
 									"    pm.response.to.be.json;",
 									"});",
-									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"message\": \"This is a test notification\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when missing the `to` field."
-					},
-					"response": []
-				},
-				{
-					"name": "Send SNS SMS Notification - Mismatch in ChannelType",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response code is 400 Bad Request\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"});",
-									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
 									"    pm.expect(jsonData).to.have.property(\"data\");",
-									"});",
-									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");",
 									"});",
 									""
 								],
 								"type": "text/javascript",
 								"packages": {}
 							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 121,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
 						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the SMTP channel type."
-					},
-					"response": []
-				},
-				{
-					"name": "Send SNS SMS Notification - Invalid API Key",
-					"event": [
 						{
-							"listen": "test",
+							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Failed request with invalid x-api-key\", function () {",
-									"    pm.expect(pm.response.code).to.equal(401);",
-									"    pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"    pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
-									"});",
 									""
 								],
 								"type": "text/javascript",
@@ -4194,35 +4333,37 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"value": "application/json"
 							},
 							{
-								"key": "x-api-key",
-								"value": "bad-api-key",
-								"type": "text"
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 12,\n    \"data\": {\n        \"to\": \"+919234567890\",\n        \"message\": \"This is a test notification\"\n    }\n}"
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation GenerateApiKey($applicationId: Int!) {\n  generateApiKey(applicationId: $applicationId)\n}",
+								"variables": "{\n  \"applicationId\": 300\n}"
+							}
 						},
 						"url": {
-							"raw": "localhost:3000/notifications",
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3000",
 							"path": [
-								"notifications"
+								"graphql"
 							]
 						},
-						"description": "Allows representing failure in creating new notification for the SMTP channel type when passing invalid API key."
+						"description": "Allows successfully generating a new server key based on the options passed."
 					},
 					"response": []
 				}
 			],
-			"description": "Collection of requests pertaining to creating notifications for the AWS SES channel type."
+			"description": "Collection of requests pertaining to generation of server keys."
 		}
 	]
 }

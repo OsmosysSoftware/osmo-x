@@ -1,21 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Application } from './entities/application.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateApplicationInput } from './dto/create-application.input';
-import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { UsersService } from '../users/users.service';
-import { Status, UserRoles } from 'src/common/constants/database';
+import { Status } from 'src/common/constants/database';
 import { ApplicationResponse } from './dto/application-response.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ApplicationsService extends CoreService<Application> {
   constructor(
     @InjectRepository(Application)
     private readonly applicationsRepository: Repository<Application>,
-    private readonly serverApiKeysService: ServerApiKeysService,
     private readonly usersService: UsersService,
   ) {
     super(applicationsRepository);
@@ -31,57 +30,35 @@ export class ApplicationsService extends CoreService<Application> {
 
   async createApplication(
     applicationInput: CreateApplicationInput,
-    authorizationHeader: Request,
+    requestUserId: number,
   ): Promise<Application> {
-    const isAdmin = await this.checkAdminUser(authorizationHeader);
+    const userEntryFromContext = await this.getUserEntryFromContext(requestUserId);
 
-    if (!isAdmin) {
-      throw new Error('Access Denied. Not an ADMIN.');
-    }
+    const newApplicationObject = new Application({
+      name: applicationInput.name,
+      userId: userEntryFromContext.userId,
+    });
 
-    const userExists = await this.usersService.findByUserId(applicationInput.userId);
-
-    if (!userExists) {
-      throw new Error('This user does not exist.');
-    }
-
-    const application = this.applicationsRepository.create(applicationInput);
+    const application = this.applicationsRepository.create(newApplicationObject);
     return this.applicationsRepository.save(application);
   }
 
-  async checkAdminUser(authHeader: Request): Promise<boolean> {
+  async getUserEntryFromContext(requestUserId: number): Promise<User> {
     try {
-      const bearerToken = authHeader.toString();
-      const apiKeyToken = bearerToken.substring(7);
+      // Find the related user entry using the user ID from the token
+      const userEntry = await this.usersService.findByUserId(requestUserId);
 
-      // Find the related server api key entry
-      const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
-      // Find the related application entry
-      const applicationEntry = await this.findById(apiKeyEntry.applicationId);
-      // Find the related user entry
-      const userEntry = await this.usersService.findByUserId(applicationEntry.userId);
-
-      // Check if ADMIN
-      if (userEntry.userRole === UserRoles.ADMIN) {
-        return true;
+      if (!userEntry) {
+        throw new UnauthorizedException('User not found');
       }
 
-      return false;
+      return userEntry;
     } catch (error) {
       throw error;
     }
   }
 
-  async getAllApplications(
-    options: QueryOptionsDto,
-    authorizationHeader: Request,
-  ): Promise<ApplicationResponse> {
-    const isAdmin = await this.checkAdminUser(authorizationHeader);
-
-    if (!isAdmin) {
-      throw new Error('Access Denied. Not an ADMIN.');
-    }
-
+  async getAllApplications(options: QueryOptionsDto): Promise<ApplicationResponse> {
     const baseConditions = [];
     const searchableFields = ['name'];
 

@@ -39,8 +39,11 @@ import { PushSnsModule } from '../providers/push-sns/push-sns.module';
 import { WebhookModule } from '../webhook/webhook.module';
 import { VcTwilioModule } from '../providers/vc-twilio/vc-twilio.module';
 import { VcTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/vcTwilio-notifications.job.consumer';
+import { AwsSesModule } from '../providers/aws-ses/aws-ses.module';
+import { AwsSesNotificationConsumer } from 'src/jobs/consumers/notifications/awsSes-notifications.job.consumer';
 import { SmsSnsNotificationConsumer } from 'src/jobs/consumers/notifications/smsSns-notifications.job.consumer';
 import { SmsSnsModule } from '../providers/sms-sns/sms-sns.module';
+import { JwtService } from '@nestjs/jwt';
 
 const providerModules = [
   MailgunModule,
@@ -53,6 +56,7 @@ const providerModules = [
   SmsKapsystemModule,
   PushSnsModule,
   VcTwilioModule,
+  AwsSesModule,
   ServerApiKeysModule,
   ApplicationsModule,
   UsersModule,
@@ -71,6 +75,7 @@ const consumers = [
   SmsKapsystemNotificationsConsumer,
   PushSnsNotificationConsumer,
   VcTwilioNotificationsConsumer,
+  AwsSesNotificationConsumer,
   SmsSnsNotificationConsumer,
 ];
 
@@ -89,6 +94,7 @@ const consumers = [
     Logger,
     NotificationsResolver,
     ServerApiKeysService,
+    JwtService,
     ApplicationsService,
     UsersService,
     ProvidersService,
@@ -98,6 +104,7 @@ const consumers = [
   exports: [
     NotificationsService,
     ServerApiKeysService,
+    JwtService,
     ApplicationsService,
     UsersService,
     ProvidersService,

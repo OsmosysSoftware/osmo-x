@@ -26,6 +26,23 @@ Make sure Redis and MariaDB server are up and running.
   ```env
   # Server
   SERVER_PORT=3000
+  REQUEST_MAX_SIZE=50mb # Max Size of Request, Default is 50mb
+  CLEANUP_IDLE_RESOURCES=false # Cleans up idle queues if inactive for the specified duration, default false
+  IDLE_TIMEOUT=30m # How long the queue should be idle before being considered for deletion, default 30m
+  CLEANUP_INTERVAL=7d # Frequency for running the cleanup, use formats from https://github.com/vercel/ms, default 7d
+  JWT_SECRET=your-strong-secret-key-here # A strong secret key for signing your JWTs. This should be a long, random string.
+  JWT_EXPIRES_IN=30d # Common formats are '60s', '10m', '1h', '1d', etc
+  SALT_ROUNDS=10 # Number of salt rounds for bcrypt
+  API_KEY_SECRET=your-secret # Replace with a strong, unique secret for API authentication
+
+  # Node env
+  NODE_ENV=production # Use "development" for graphql playground to work
+
+  # Notification configuration
+  MAX_RETRY_COUNT=3 # Max retry count, default is 3
+
+  # Log Level
+  LOG_LEVEL=info # Log level, default is info
 
   # Database configuration
   DB_TYPE=mysql
@@ -135,7 +152,7 @@ If you need to update any environment variable values:
 2. Stop the running containers:
 
    ```bash
-   docker-compose down
+   docker-compose stop
    ```
 
 3. Rebuild the Docker containers with the updated environment variables:

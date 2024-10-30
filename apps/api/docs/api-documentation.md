@@ -2,6 +2,11 @@
 
 This document provides a brief overview of the different API endpoints, their usage and purpose.
 
+## Postman Collection
+
+- [API Collection](./../OsmoX-API.postman_collection.json)
+- [Environment File](./../OsmoX-API.postman_environment.json)
+
 ## Authentication
 
 This section lists the authentication related requests such as login.
@@ -22,13 +27,6 @@ Note: Only users with `Admin` role get list of all keys. Returns `null` for user
 mutation LoginUser {
   login(loginUserInput: { username: "admin", password: "mysecurepassword" }) {
     token
-    user
-    allKeys {
-      apiKeyId
-      apiKey
-      applicationId
-      status
-    }
     __typename
   }
 }
@@ -37,9 +35,9 @@ mutation LoginUser {
 **cURL**
 
 ```sh
-curl --location 'http://localhost:3000/graphql' \
+curl --location 'localhost:3000/graphql' \
 --header 'Content-Type: application/json' \
---data-raw '{"query":"mutation LoginUser {\n  login(loginUserInput: { username: \"admin\", password: \"mysecurepassword\" }) {\n    token\n    user\n    allKeys {\n       apiKeyId\n       apiKey\n       applicationId\n       status\n    }\n    __typename\n  }\n}","variables":{}}'
+--data '{"query":"mutation LoginUser {\n  login(loginUserInput: { username: \"admin\", password: \"mysecurepassword\" }) {\n    token\n    __typename\n  }\n}","variables":{}}'
 ```
 
 **Sample response**
@@ -48,22 +46,7 @@ curl --location 'http://localhost:3000/graphql' \
 {
   "data": {
     "login": {
-      "token": "mysecuretoken",
-      "user": "admin",
-      "allKeys": [
-        {
-          "apiKeyId": 1,
-          "apiKey": "test-api-key",
-          "applicationId": 1,
-          "status": 1
-        },
-        {
-          "apiKeyId": 2,
-          "apiKey": "test-api-key-2",
-          "applicationId": 2,
-          "status": 1
-        }
-      ],
+      "token": "eymysecuretoken",
       "__typename": "LoginResponse"
     }
   }
@@ -181,7 +164,7 @@ query {
       sortBy: "createdOn"
       sortOrder: DESC
       search: "sender@email.com"
-      filters: [{ field: "channelType", operator: "eq", value: "1" }]
+      filters: [{ field: "applicationId", operator: "eq", value: "1" }]
     }
   ) {
     notifications {
@@ -324,7 +307,6 @@ Allows the user with `Admin` role to create a new application.
 mutation CreateApplication {
   application(createApplicationInput: {
     name: "newSampleApp",
-    userId: 2,
   }) {
     applicationId
     name
@@ -365,7 +347,7 @@ curl --location 'http://localhost:3000/graphql' \
 
 Allows the user to fetch all applications based on the passed query parameters. Requires passing bearer token for authorization.
 
-Note: The API will return a successful response when the `server-api-key` passed uses `application_id` that is associated with an `Admin`.
+Note: The API will return a successful response when the Bearer `authorization-token` passed is associated with an `Admin`.
 
 The different options that can be used while fetching notifications are as follows:
 
