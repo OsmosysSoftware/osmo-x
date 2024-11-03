@@ -123,7 +123,7 @@ export class NotificationsComponent implements OnInit {
         }),
       )
       .subscribe((applicationResponse: ApplicationResponse | null) => {
-        if (applicationResponse.errors) {
+        if (applicationResponse?.errors?.length) {
           const unauthorizedError = applicationResponse.errors.find(
             (error) => error.message === 'Unauthorized',
           );
@@ -149,7 +149,7 @@ export class NotificationsComponent implements OnInit {
               });
             });
           }
-        } else if (applicationResponse && applicationResponse.applications) {
+        } else if (applicationResponse?.applications?.length) {
           // Fetch list of applications for dropdown
           this.applications = applicationResponse.applications.map((obj) => ({
             // Name to display and ID to return upon selection

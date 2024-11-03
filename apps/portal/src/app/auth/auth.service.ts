@@ -44,8 +44,16 @@ export class AuthService {
   }
 
   logoutUser(): void {
-    // Clear storage and navigate to login
-    localStorage.clear();
-    this.router.navigate(['/login']);
+    try {
+      // Ensure complete cleanup of sensitive data
+      localStorage.clear();
+      sessionStorage.clear();
+      this.userData = null;
+
+      this.router.navigate(['/login']);
+    } catch (error) {
+      // Still attempt to navigate even if cleanup fails
+      this.router.navigate(['/login']);
+    }
   }
 }
