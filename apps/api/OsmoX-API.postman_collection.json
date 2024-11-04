@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "36ff2947-7450-4393-b3cd-39e82ee073e6",
+		"_postman_id": "54a84395-9a6f-42f0-a130-615811b203fa",
 		"name": "OsmoX-API",
 		"description": "List of all APIs used in OsmoX",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -883,8 +883,632 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateProvider {\n    provider(createProviderInput: {\n        applicationId: 2,\n        channelType: 2,\n        configuration: {},\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
-								"variables": ""
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 1\n        configuration: {\n            ExampleConfigKey: \"ExampleConfigValue\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create SMTP Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 1\n        configuration: {\n            SMTP_HOST: \"<smtp.example.com>\",\n            SMTP_PORT: 587,\n            SMTP_USERNAME: \"<YOUR_SMTP_USERNAME>\",\n            SMTP_PASSWORD: \"<YOUR_SMTP_PASSWORD>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Mailgun Provider - US",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 2,\n        configuration: {\n            MAILGUN_API_KEY: \"<YOUR_MAILGUN_API_KEY>\",\n            MAILGUN_HOST: \"api.mailgun.net\",\n            MAILGUN_DOMAIN: \"<YOUR_MAILGUN_DOMAIN>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Mailgun Provider - EU",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 2,\n        configuration: {\n            MAILGUN_API_KEY: \"<YOUR_MAILGUN_API_KEY>\",\n            MAILGUN_HOST: \"api.eu.mailgun.net\",\n            MAILGUN_DOMAIN: \"<YOUR_MAILGUN_DOMAIN>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create 360Dialog Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 3\n        configuration: {\n            WA_360_DIALOG_API_KEY: \"<YOUR_WA_360_DIALOG_API_KEY>\",\n            WA_360_DIALOG_URL: \"<YOUR_WA_360_DIALOG_URL>\"    \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Twilio WhatsApp Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 4\n        configuration: {\n            TWILIO_WA_ACCOUNT_SID: \"<YOUR_TWILIO_WA_ACCOUNT_SID>\",\n            TWILIO_WA_AUTH_TOKEN: \"<YOUR_TWILIO_WA_AUTH_TOKEN>\",\n            TWILIO_WA_NUMBER: \"+15005550006\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Twilio SMS Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 5\n        configuration: {\n            TWILIO_SMS_ACCOUNT_SID: \"<YOUR_TWILIO_SMS_ACCOUNT_SID>\",\n            TWILIO_SMS_AUTH_TOKEN: \"<YOUR_TWILIO_SMS_AUTH_TOKEN>\",\n            TWILIO_SMS_NUMBER: \"+15005550006\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Plivo SMS Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 6\n        configuration: {\n            PLIVO_SMS_AUTH_ID: \"<YOUR_PLIVO_SMS_AUTH_ID>\",\n            PLIVO_SMS_AUTH_TOKEN: \"<YOUR_PLIVO_SMS_AUTH_TOKEN>\",\n            PLIVO_SMS_NUMBER: \"+919000180002\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Twilio WhatsApp (Business) Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 7\n        configuration: {\n            TWILIO_WA_ACCOUNT_SID: \"<YOUR_TWILIO_WA_ACCOUNT_SID>\",\n            TWILIO_WA_AUTH_TOKEN: \"<YOUR_TWILIO_WA_AUTH_TOKEN>\",\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create KAPSystem SMS Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 8\n        configuration: {\n            KAP_SMS_BASE_API_URL:\"http://<api-domain>/api/v3/sendsms/plain\",\n            KAP_SMS_ACCOUNT_USERNAME: \"<YOUR_KAP_SMS_ACCOUNT_USERNAME>\", \n            KAP_SMS_ACCOUNT_PASSWORD: \"<YOUR_KAP_SMS_ACCOUNT_PASSWORD>\",  \n            KAP_SMS_FROM: \"KAPMSG\" \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create AWS SNS Push Notification Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 9\n        configuration: {\n            AWS_ACCESS_KEY_ID:\"<YOUR_AWS_ACCESS_KEY_ID>\",\n            AWS_SECRET_ACCESS_KEY:\"<YOUR_AWS_SECRET_ACCESS_KEY>\",\n            AWS_REGION:\"<YOUR_AWS_REGION>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Twilio Voice Call Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 10\n        configuration: {\n            TWILIO_VC_ACCOUNT_SID: \"<YOUR_TWILIO_VC_ACCOUNT_SID>\",\n            TWILIO_VC_AUTH_TOKEN: \"<YOUR_TWILIO_VC_AUTH_TOKEN>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create AWS SES Email Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 11\n        configuration: {\n            AWS_ACCESS_KEY_ID:\"<YOUR_AWS_ACCESS_KEY_ID>\",\n            AWS_SECRET_ACCESS_KEY:\"<YOUR_AWS_SECRET_ACCESS_KEY>\",\n            AWS_REGION:\"<YOUR_AWS_REGION>\"\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully creating a provider based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create AWS SMS SNS Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 12\n        configuration: {\n            AWS_ACCESS_KEY_ID:\"<YOUR_AWS_ACCESS_KEY_ID>\",\n            AWS_SECRET_ACCESS_KEY:\"<YOUR_AWS_SECRET_ACCESS_KEY>\",\n            AWS_REGION:\"<YOUR_AWS_REGION>\"  \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
 						"url": {
