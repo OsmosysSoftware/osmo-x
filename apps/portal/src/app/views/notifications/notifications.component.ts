@@ -192,6 +192,10 @@ export class NotificationsComponent implements OnInit {
     this.searchValue = null;
   }
 
+  getOffset(): number {
+    return Math.max(0, (this.currentPage - 1) * this.pageSize);
+  }
+
   getJWTLoginToken() {
     try {
       const userData = localStorage.getItem('osmoXUserData');
