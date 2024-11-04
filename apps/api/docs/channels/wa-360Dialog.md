@@ -21,8 +21,8 @@ Then set the following configurations in the `configuration` field
 ```jsonc
 // Sample json to set in configuration field
 {
-  "WA_360_DIALOG_API_KEY": "api-url",
-  "WA_360_DIALOG_URL": "your-api-key"
+  "WA_360_DIALOG_API_KEY": "your-api-key",
+  "WA_360_DIALOG_URL": "api-url"
 }
 ```
 
