@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MutationResult } from 'apollo-angular';
+import { Router } from '@angular/router';
 import { GraphqlService } from '../graphql/graphql.service';
 import { LoginUser } from '../graphql/graphql.queries';
 import { LoginRequestBody } from './auth.interface';
@@ -13,7 +14,10 @@ const SESSION_EXPIRATION_DAYS = 30;
 export class AuthService {
   userData = null;
 
-  constructor(private graphqlService: GraphqlService) {}
+  constructor(
+    private graphqlService: GraphqlService,
+    private router: Router,
+  ) {}
 
   isLoggedIn(): boolean {
     this.userData = JSON.parse(localStorage.getItem('osmoXUserData'));
@@ -37,5 +41,19 @@ export class AuthService {
   loginUser(data: LoginRequestBody): Observable<MutationResult> {
     const variables = { username: data.username, password: data.password };
     return this.graphqlService.mutate(LoginUser, variables);
+  }
+
+  logoutUser(): void {
+    try {
+      // Ensure complete cleanup of sensitive data
+      localStorage.clear();
+      sessionStorage.clear();
+      this.userData = null;
+
+      this.router.navigate(['/login']);
+    } catch (error) {
+      // Still attempt to navigate even if cleanup fails
+      this.router.navigate(['/login']);
+    }
   }
 }
