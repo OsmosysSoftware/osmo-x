@@ -29,6 +29,7 @@ export class ApplicationsService {
           total: response.data?.applications.total,
           offset: response.data?.applications.offset,
           limit: response.data?.applications.limit,
+          errors: response.errors || null,
         };
         return applicationResponseObject;
       }),
