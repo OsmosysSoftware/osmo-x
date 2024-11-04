@@ -1,3 +1,5 @@
+import { GraphQLFormattedError } from 'graphql/error/GraphQLError';
+
 export interface Application {
   applicationId: number;
   name: string;
@@ -12,4 +14,5 @@ export interface ApplicationResponse {
   total: number;
   offset: number;
   limit: number;
+  errors?: ReadonlyArray<GraphQLFormattedError>;
 }
