@@ -11,6 +11,7 @@ import { Status } from 'src/common/constants/database';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { ServerApiKey } from 'src/modules/server-api-keys/entities/server-api-key.entity';
+import { ArchivedNotification } from 'src/modules/archived-notifications/entities/archived-notification.entity';
 
 @Entity({ name: 'notify_applications' })
 @ObjectType()
@@ -51,6 +52,12 @@ export class Application {
   // create join for fetching data from portal
   @OneToMany(() => ServerApiKey, (serverApiKey) => serverApiKey.applicationDetails)
   serverApiKey: ServerApiKey[];
+
+  @OneToMany(
+    () => ArchivedNotification,
+    (archivedNotification) => archivedNotification.applicationDetails,
+  )
+  archivedNotifications: ArchivedNotification[];
 
   constructor(application: Partial<Application>) {
     Object.assign(this, application);

@@ -293,4 +293,31 @@ export class NotificationsService extends CoreService<Notification> {
 
     await this.retryNotificationRepository.save(retryEntry);
   }
+
+  async findNotificationsToArchive(archiveLimit: number = 1000): Promise<Notification[]> {
+    try {
+      return this.notificationRepository
+        .createQueryBuilder('notification')
+        .where('notification.delivery_status IN (:...deliveryStatuses)', {
+          deliveryStatuses: [DeliveryStatus.SUCCESS, DeliveryStatus.FAILED],
+        })
+        .orderBy('notification.createdOn', 'ASC')
+        .limit(archiveLimit)
+        .getMany();
+    } catch (error) {
+      this.logger.error('Failed to find notifications to archive', error);
+      throw error;
+    }
+  }
+
+  async deleteArchivedNotifications(notificationsToArchive: Notification[]): Promise<void> {
+    try {
+      const idsToDelete = notificationsToArchive.map((notification) => notification.id);
+      this.logger.debug(`Notification IDs to delete: ${idsToDelete}`);
+      await this.notificationRepository.delete(idsToDelete);
+      this.logger.log(`Archived and deleted ${notificationsToArchive.length} notifications.`);
+    } catch (error) {
+      this.logger.error('Error deleting notifications from the main table', error);
+    }
+  }
 }
