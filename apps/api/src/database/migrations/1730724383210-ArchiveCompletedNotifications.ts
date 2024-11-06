@@ -108,6 +108,17 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    // Copy the entries in archived_notifications back to notify_notifications
+    await queryRunner.query(`
+      INSERT INTO notify_notifications (
+        id, channel_type, data, delivery_status, result, created_on, updated_on,
+        created_by, updated_by, status, application_id, provider_id, retry_count
+      ) SELECT
+        notification_id, channel_type, data, delivery_status, result, created_on, updated_on,
+        created_by, updated_by, status, application_id, provider_id, retry_count
+      FROM archived_notifications
+  `);
+
     // To drop the auto generated foreign key for archived_notifications
     const archived_notifications_table = await queryRunner.getTable('archived_notifications');
     const archived_notifications_providerIdforeignKey =
