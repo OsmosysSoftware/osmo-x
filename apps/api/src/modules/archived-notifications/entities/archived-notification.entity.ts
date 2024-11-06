@@ -22,8 +22,8 @@ export class ArchivedNotification {
   @Field()
   id: number;
 
-  @Column()
-  notification_id: number;
+  @Column({ name: 'notification_id' })
+  notificationId: number;
 
   @Column({ name: 'provider_id', default: null })
   @Field()

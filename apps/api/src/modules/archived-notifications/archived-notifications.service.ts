@@ -7,8 +7,6 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { NotificationsService } from '../notifications/notifications.service';
 import { ConfigService } from '@nestjs/config';
 
-const configService = new ConfigService();
-
 @Injectable()
 export class ArchivedNotificationsService {
   protected readonly logger = new Logger(ArchivedNotificationsService.name);
@@ -18,6 +16,7 @@ export class ArchivedNotificationsService {
     private readonly archivedNotificationRepository: Repository<ArchivedNotification>,
     @Inject(forwardRef(() => NotificationsService))
     protected readonly notificationsService: NotificationsService,
+    private readonly configService: ConfigService,
   ) {}
 
   private convertToArchivedNotifications(notifications: Notification[]): ArchivedNotification[] {
@@ -29,7 +28,7 @@ export class ArchivedNotificationsService {
       archivedNotification.createdOn = notification.createdOn;
       archivedNotification.data = notification.data;
       archivedNotification.deliveryStatus = notification.deliveryStatus;
-      archivedNotification.notification_id = notification.id;
+      archivedNotification.notificationId = notification.id;
       archivedNotification.providerId = notification.providerId;
       archivedNotification.result = notification.result;
       archivedNotification.retryCount = notification.retryCount;
@@ -45,7 +44,7 @@ export class ArchivedNotificationsService {
   }
 
   async moveNotificationsToArchive(): Promise<void> {
-    const archiveLimit = configService.get<number>('ARCHIVE_LIMIT', 1000);
+    const archiveLimit = this.configService.get<number>('ARCHIVE_LIMIT', 1000);
 
     try {
       // Step 1: Retrieve the notifications to archive
@@ -81,6 +80,6 @@ export class ArchivedNotificationsService {
   @Cron(CronExpression.EVERY_HOUR)
   async ArchiveCompletedNotificationsCron(): Promise<void> {
     this.logger.log('Running archive notifications task');
-    this.moveNotificationsToArchive();
+    await this.moveNotificationsToArchive();
   }
 }
