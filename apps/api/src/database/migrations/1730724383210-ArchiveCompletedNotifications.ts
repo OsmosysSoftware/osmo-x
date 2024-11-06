@@ -2,12 +2,14 @@ import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm
 
 export class ArchiveCompletedNotifications1730724383210 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // Drop foreign key from notify_notification_retries
     const table = await queryRunner.getTable('notify_notification_retries');
     const foreignKey = table.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('notification_id') !== -1,
     );
     await queryRunner.dropForeignKey('notify_notification_retries', foreignKey);
 
+    // Create table archived_notifications
     await queryRunner.createTable(
       new Table({
         name: 'archived_notifications',
@@ -117,9 +119,9 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
         notification_id, channel_type, data, delivery_status, result, created_on, updated_on,
         created_by, updated_by, status, application_id, provider_id, retry_count
       FROM archived_notifications
-  `);
+    `);
 
-    // To drop the auto generated foreign key for archived_notifications
+    // Drop the auto generated foreign key for archived_notifications
     const archived_notifications_table = await queryRunner.getTable('archived_notifications');
     const archived_notifications_providerIdforeignKey =
       archived_notifications_table?.foreignKeys.find(
@@ -147,8 +149,10 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
       );
     }
 
+    // Drop table archived_notifications
     await queryRunner.dropTable('archived_notifications');
 
+    // Add foreign key again for notify_notification_retries
     await queryRunner.createForeignKey(
       'notify_notification_retries',
       new TableForeignKey({
