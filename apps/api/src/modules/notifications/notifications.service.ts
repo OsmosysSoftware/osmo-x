@@ -314,15 +314,4 @@ export class NotificationsService extends CoreService<Notification> {
       throw error;
     }
   }
-
-  async deleteArchivedNotifications(notificationsToArchive: Notification[]): Promise<void> {
-    try {
-      const idsToDelete = notificationsToArchive.map((notification) => notification.id);
-      this.logger.debug(`Notification IDs to delete: ${idsToDelete}`);
-      await this.notificationRepository.delete(idsToDelete);
-      this.logger.log(`Archived and deleted ${notificationsToArchive.length} notifications.`);
-    } catch (error) {
-      this.logger.error('Error deleting notifications from the main table', error);
-    }
-  }
 }
