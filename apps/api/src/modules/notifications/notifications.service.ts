@@ -296,11 +296,16 @@ export class NotificationsService extends CoreService<Notification> {
 
   async findNotificationsToArchive(archiveLimit: number = 1000): Promise<Notification[]> {
     try {
+      if (archiveLimit <= 0) {
+        throw new Error('Archive limit must be greater than 0');
+      }
+
       return this.notificationRepository
         .createQueryBuilder('notification')
         .where('notification.delivery_status IN (:...deliveryStatuses)', {
           deliveryStatuses: [DeliveryStatus.SUCCESS, DeliveryStatus.FAILED],
         })
+        .andWhere('notification.status = :status', { status: Status.ACTIVE })
         .orderBy('notification.createdOn', 'ASC')
         .limit(archiveLimit)
         .getMany();
