@@ -42,7 +42,7 @@ export class RolesGuard implements CanActivate {
 
       // Check if the user's role matches any of the required roles
       return requiredRoles.includes(userRoleId);
-    } catch (error) {
+    } catch {
       return false; // Invalid token or other error
     }
   }

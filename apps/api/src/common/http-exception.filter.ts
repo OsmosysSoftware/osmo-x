@@ -20,7 +20,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     try {
       response.status(status).json(this.jsend.fail(data.message));
-    } catch (error) {
+    } catch {
       // throw the original exception incase response.status doesn't workout
       throw exception;
     }
