@@ -79,7 +79,6 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
           {
             name: 'retry_count',
             type: 'int',
-            length: '3',
             default: 0,
           },
         ],
