@@ -9,10 +9,10 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
     );
     await queryRunner.dropForeignKey('notify_notification_retries', foreignKey);
 
-    // Create table archived_notifications
+    // Create table notify_archived_notifications
     await queryRunner.createTable(
       new Table({
-        name: 'archived_notifications',
+        name: 'notify_archived_notifications',
         columns: [
           {
             name: 'id',
@@ -89,9 +89,9 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
       }),
     );
 
-    // Create foreign keys for table archived_notifications
+    // Create foreign keys for table notify_archived_notifications
     await queryRunner.createForeignKey(
-      'archived_notifications',
+      'notify_archived_notifications',
       new TableForeignKey({
         columnNames: ['channel_type'],
         referencedColumnNames: ['master_id'],
@@ -101,7 +101,7 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
     );
 
     await queryRunner.createForeignKey(
-      'archived_notifications',
+      'notify_archived_notifications',
       new TableForeignKey({
         columnNames: ['provider_id'],
         referencedColumnNames: ['provider_id'],
@@ -112,7 +112,7 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Copy the entries in archived_notifications back to notify_notifications
+    // Copy the entries in notify_archived_notifications back to notify_notifications
     await queryRunner.query(`
       INSERT INTO notify_notifications (
         id, channel_type, data, delivery_status, result, created_on, updated_on,
@@ -120,37 +120,39 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
       ) SELECT
         notification_id, channel_type, data, delivery_status, result, created_on, updated_on,
         created_by, updated_by, status, application_id, provider_id, retry_count
-      FROM archived_notifications
+      FROM notify_archived_notifications
     `);
 
-    // Drop foreign keys from table archived_notifications
-    const archived_notifications_table = await queryRunner.getTable('archived_notifications');
-    const archived_notifications_providerIdforeignKey =
-      archived_notifications_table?.foreignKeys.find(
+    // Drop foreign keys from table notify_archived_notifications
+    const notify_archived_notifications_table = await queryRunner.getTable(
+      'notify_archived_notifications',
+    );
+    const notify_archived_notifications_providerIdforeignKey =
+      notify_archived_notifications_table?.foreignKeys.find(
         (fk) => fk.columnNames.indexOf('provider_id') !== -1,
       );
 
-    if (archived_notifications_providerIdforeignKey) {
+    if (notify_archived_notifications_providerIdforeignKey) {
       await queryRunner.dropForeignKey(
-        'archived_notifications',
-        archived_notifications_providerIdforeignKey,
+        'notify_archived_notifications',
+        notify_archived_notifications_providerIdforeignKey,
       );
     }
 
-    const archived_notifications_channelTypeforeignKey =
-      archived_notifications_table?.foreignKeys.find(
+    const notify_archived_notifications_channelTypeforeignKey =
+      notify_archived_notifications_table?.foreignKeys.find(
         (fk) => fk.columnNames.indexOf('channel_type') !== -1,
       );
 
-    if (archived_notifications_channelTypeforeignKey) {
+    if (notify_archived_notifications_channelTypeforeignKey) {
       await queryRunner.dropForeignKey(
-        'archived_notifications',
-        archived_notifications_channelTypeforeignKey,
+        'notify_archived_notifications',
+        notify_archived_notifications_channelTypeforeignKey,
       );
     }
 
-    // Drop table archived_notifications
-    await queryRunner.dropTable('archived_notifications');
+    // Drop table notify_archived_notifications
+    await queryRunner.dropTable('notify_archived_notifications');
 
     // Add foreign key again for table notify_notification_retries
     await queryRunner.createForeignKey(

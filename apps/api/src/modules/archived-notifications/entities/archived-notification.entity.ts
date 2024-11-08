@@ -15,7 +15,7 @@ import { GraphQLJSONObject } from 'graphql-type-json';
 import { Application } from 'src/modules/applications/entities/application.entity';
 import { Provider } from 'src/modules/providers/entities/provider.entity';
 
-@Entity({ name: 'archived_notifications' })
+@Entity({ name: 'notify_archived_notifications' })
 @ObjectType()
 export class ArchivedNotification {
   @PrimaryGeneratedColumn()
