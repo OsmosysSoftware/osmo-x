@@ -1,12 +1,31 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex } from 'typeorm';
 
 export class ArchiveCompletedNotifications1730724383210 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // Add index for table notify_notifications as archiving will be done based on delivery_status
+    await queryRunner.createIndex(
+      'notify_notifications',
+      new TableIndex({
+        name: 'IDX_DELIVERY_STATUS',
+        columnNames: ['delivery_status'],
+      }),
+    );
+
     // Drop foreign key from table notify_notification_retries
     const table = await queryRunner.getTable('notify_notification_retries');
+
+    if (!table) {
+      throw new Error('Table notify_notification_retries does not exist');
+    }
+
     const foreignKey = table.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('notification_id') !== -1,
     );
+
+    if (!foreignKey) {
+      throw new Error('Foreign key on notification_id not found');
+    }
+
     await queryRunner.dropForeignKey('notify_notification_retries', foreignKey);
 
     // Create table notify_archived_notifications
@@ -109,6 +128,23 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
         onDelete: 'CASCADE',
       }),
     );
+
+    // Add indexes to table notify_archived_notifications
+    await queryRunner.createIndex(
+      'notify_archived_notifications',
+      new TableIndex({
+        name: 'IDX_ARCHIVED_NOTIFICATION_ID',
+        columnNames: ['notification_id'],
+      }),
+    );
+
+    await queryRunner.createIndex(
+      'notify_archived_notifications',
+      new TableIndex({
+        name: 'IDX_ARCHIVED_DELIVERY_STATUS',
+        columnNames: ['delivery_status'],
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -122,6 +158,10 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
         created_by, updated_by, status, application_id, provider_id, retry_count
       FROM notify_archived_notifications
     `);
+
+    // Remove indexes from table notify_archived_notifications
+    await queryRunner.dropIndex('notify_archived_notifications', 'IDX_ARCHIVED_NOTIFICATION_ID');
+    await queryRunner.dropIndex('notify_archived_notifications', 'IDX_ARCHIVED_DELIVERY_STATUS');
 
     // Drop foreign keys from table notify_archived_notifications
     const notify_archived_notifications_table = await queryRunner.getTable(
@@ -164,5 +204,8 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
         onDelete: 'CASCADE',
       }),
     );
+
+    // Remove index from notify_notifications table
+    await queryRunner.dropIndex('notify_notifications', 'IDX_DELIVERY_STATUS');
   }
 }
