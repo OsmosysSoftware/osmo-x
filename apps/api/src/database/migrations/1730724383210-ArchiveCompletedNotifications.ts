@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm
 
 export class ArchiveCompletedNotifications1730724383210 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Drop foreign key from notify_notification_retries
+    // Drop foreign key from table notify_notification_retries
     const table = await queryRunner.getTable('notify_notification_retries');
     const foreignKey = table.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('notification_id') !== -1,
@@ -24,6 +24,8 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
           {
             name: 'notification_id',
             type: 'int',
+            // Not adding a foreign key constraint because the original notifications will be deleted in cron process.
+            // We want to retain archived notifications even if the original notifications are removed.
           },
           {
             name: 'channel_type',
@@ -87,7 +89,7 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
       }),
     );
 
-    // Create Foreign keys for archived_notifications
+    // Create foreign keys for table archived_notifications
     await queryRunner.createForeignKey(
       'archived_notifications',
       new TableForeignKey({
@@ -121,14 +123,13 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
       FROM archived_notifications
     `);
 
-    // Drop the auto generated foreign key for archived_notifications
+    // Drop foreign keys from table archived_notifications
     const archived_notifications_table = await queryRunner.getTable('archived_notifications');
     const archived_notifications_providerIdforeignKey =
       archived_notifications_table?.foreignKeys.find(
         (fk) => fk.columnNames.indexOf('provider_id') !== -1,
       );
 
-    // providerIdforeignKey
     if (archived_notifications_providerIdforeignKey) {
       await queryRunner.dropForeignKey(
         'archived_notifications',
@@ -136,7 +137,6 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
       );
     }
 
-    // channelTypeforeignKey
     const archived_notifications_channelTypeforeignKey =
       archived_notifications_table?.foreignKeys.find(
         (fk) => fk.columnNames.indexOf('channel_type') !== -1,
@@ -152,7 +152,7 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
     // Drop table archived_notifications
     await queryRunner.dropTable('archived_notifications');
 
-    // Add foreign key again for notify_notification_retries
+    // Add foreign key again for table notify_notification_retries
     await queryRunner.createForeignKey(
       'notify_notification_retries',
       new TableForeignKey({
