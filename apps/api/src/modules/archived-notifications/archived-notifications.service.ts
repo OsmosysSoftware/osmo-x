@@ -35,8 +35,9 @@ export class ArchivedNotificationsService {
       archivedNotification.status = notification.status;
 
       this.logger.debug(
-        `Preparing ArchivedNotification entry: ${JSON.stringify(archivedNotification, null, 2)}}`,
+        `Preparing ArchivedNotification entry using NotificationID: ${archivedNotification.notificationId}, DeliveryStatus: ${archivedNotification.deliveryStatus}, ApplicationID: ${archivedNotification.applicationId}, ProviderID: ${archivedNotification.providerId}`,
       );
+
       return archivedNotification;
     });
   }
@@ -45,22 +46,22 @@ export class ArchivedNotificationsService {
     const archiveLimit = this.configService.get<number>('ARCHIVE_LIMIT', 1000);
 
     try {
+      // Step 1: Retrieve the notifications to archive
+      this.logger.log(`Retrieve the top ${archiveLimit} notifications to archive`);
+      const notificationsToArchive =
+        await this.notificationsService.findNotificationsToArchive(archiveLimit);
+
+      if (notificationsToArchive.length === 0) {
+        this.logger.log('No notifications to archive at this time.');
+        return;
+      }
+
       this.logger.log('Creating queryRunner and starting transaction');
       const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
       try {
-        // Step 1: Retrieve the notifications to archive
-        this.logger.log(`Retrieve the top ${archiveLimit} notifications to archive`);
-        const notificationsToArchive =
-          await this.notificationsService.findNotificationsToArchive(archiveLimit);
-
-        if (notificationsToArchive.length === 0) {
-          this.logger.log('No notifications to archive at this time.');
-          return;
-        }
-
         // Step 2: Convert notifications to archived notifications
         const archivedNotificationsArray =
           this.convertToArchivedNotifications(notificationsToArchive);
@@ -69,14 +70,12 @@ export class ArchivedNotificationsService {
         this.logger.log(`Inserting archived notifications into the archive table`);
         await queryRunner.manager.save(ArchivedNotification, archivedNotificationsArray);
 
-        // Step 4: Delete notifications from the main table by IDs
-        this.logger.log(`Deleting notifications from the main table by IDs`);
+        // Step 4: Delete notifications from the main table
+        this.logger.log(`Deleting notifications from the main table`);
         const idsToDelete = notificationsToArchive.map((notification) => notification.id);
         this.logger.log(`Notification IDs to delete: ${idsToDelete}`);
-
         await queryRunner.manager.delete(Notification, idsToDelete);
 
-        // Commit transaction
         await queryRunner.commitTransaction();
         this.logger.log('Transaction successful');
       } catch (error) {
