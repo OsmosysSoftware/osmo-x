@@ -148,6 +148,16 @@ export class ArchiveCompletedNotifications1730724383210 implements MigrationInte
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    const conflicts = await queryRunner.query(`
+      SELECT an.notification_id
+      FROM notify_archived_notifications an
+      JOIN notify_notifications nn ON an.notification_id = nn.id
+   `);
+
+    if (conflicts.length > 0) {
+      throw new Error(`Found ${conflicts.length} ID conflicts in notify_notifications table`);
+    }
+
     // Copy the entries in notify_archived_notifications back to notify_notifications
     await queryRunner.query(`
       INSERT INTO notify_notifications (
