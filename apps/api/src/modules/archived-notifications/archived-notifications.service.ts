@@ -78,7 +78,7 @@ export class ArchivedNotificationsService {
 
         // Commit transaction
         await queryRunner.commitTransaction();
-        this.logger.log(`Archive notifications task completed`);
+        this.logger.log('Transaction successful');
       } catch (error) {
         this.logger.error('Error while archiving notifications. Rolling back transaction');
         await queryRunner.rollbackTransaction();
@@ -93,8 +93,14 @@ export class ArchivedNotificationsService {
   }
 
   @Cron(CronExpression.EVERY_HOUR)
-  async ArchiveCompletedNotificationsCron(): Promise<void> {
-    this.logger.log('Running archive notifications task');
-    await this.moveNotificationsToArchive();
+  async archiveCompletedNotificationsCron(): Promise<void> {
+    try {
+      this.logger.log('Running archive notifications cron task');
+      await this.moveNotificationsToArchive();
+      this.logger.log(`Archive notifications cron task completed`);
+    } catch (error) {
+      this.logger.error('Cron job failed:', error);
+      throw error;
+    }
   }
 }
