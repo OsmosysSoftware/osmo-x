@@ -1,17 +1,16 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ArchivedNotification } from './entities/archived-notification.entity';
-import { DataSource, QueryRunner } from 'typeorm';
+import { DataSource, In, QueryRunner } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
-import { NotificationsService } from '../notifications/notifications.service';
 import { ConfigService } from '@nestjs/config';
+import { DeliveryStatus } from 'src/common/constants/notifications';
+import { Status } from 'src/common/constants/database';
 
 @Injectable()
 export class ArchivedNotificationsService {
   protected readonly logger = new Logger(ArchivedNotificationsService.name);
 
   constructor(
-    @Inject(forwardRef(() => NotificationsService))
-    protected readonly notificationsService: NotificationsService,
     private readonly configService: ConfigService,
     private dataSource: DataSource,
   ) {}
@@ -41,26 +40,35 @@ export class ArchivedNotificationsService {
     });
   }
 
-  async moveCompletedNotificationsToArchive(): Promise<void> {
+  async moveCompletedNotificationsToArchiveTable(): Promise<void> {
     const archiveLimit = this.configService.get<number>('ARCHIVE_LIMIT', 1000);
 
     try {
-      // Step 1: Retrieve the notifications to archive
-      this.logger.log(`Retrieve the top ${archiveLimit} notifications to archive`);
-      const notificationsToArchive =
-        await this.notificationsService.findNotificationsToArchive(archiveLimit);
-
-      if (notificationsToArchive.length === 0) {
-        this.logger.log('No notifications to archive at this time.');
-        return;
-      }
-
       this.logger.log('Creating queryRunner and starting transaction');
       const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
       try {
+        // Step 1: Retrieve the notifications to archive
+        this.logger.log(`Retrieve the top ${archiveLimit} notifications to archive`);
+        const notificationsToArchive = await queryRunner.manager.find(Notification, {
+          where: {
+            deliveryStatus: In([DeliveryStatus.SUCCESS, DeliveryStatus.FAILED]),
+            status: Status.ACTIVE,
+          },
+          order: {
+            createdOn: 'ASC',
+          },
+          take: archiveLimit,
+        });
+
+        if (notificationsToArchive.length === 0) {
+          this.logger.log('No notifications to archive at this time.');
+          await queryRunner.commitTransaction();
+          return;
+        }
+
         // Step 2: Convert notifications to archived notifications
         const archivedNotificationsArray =
           this.convertToArchivedNotifications(notificationsToArchive);
@@ -93,7 +101,7 @@ export class ArchivedNotificationsService {
   async archiveCompletedNotificationsCron(): Promise<void> {
     try {
       this.logger.log('Running archive notifications cron task');
-      await this.moveCompletedNotificationsToArchive();
+      await this.moveCompletedNotificationsToArchiveTable();
       this.logger.log(`Archive notifications cron task completed`);
     } catch (error) {
       this.logger.error('Cron job failed:', error);
