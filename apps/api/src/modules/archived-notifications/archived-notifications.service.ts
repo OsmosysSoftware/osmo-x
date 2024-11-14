@@ -1,6 +1,5 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ArchivedNotification } from './entities/archived-notification.entity';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { DataSource, QueryRunner } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -42,7 +41,7 @@ export class ArchivedNotificationsService {
     });
   }
 
-  async moveNotificationsToArchive(): Promise<void> {
+  async moveCompletedNotificationsToArchive(): Promise<void> {
     const archiveLimit = this.configService.get<number>('ARCHIVE_LIMIT', 1000);
 
     try {
@@ -91,11 +90,10 @@ export class ArchivedNotificationsService {
     }
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
   async archiveCompletedNotificationsCron(): Promise<void> {
     try {
       this.logger.log('Running archive notifications cron task');
-      await this.moveNotificationsToArchive();
+      await this.moveCompletedNotificationsToArchive();
       this.logger.log(`Archive notifications cron task completed`);
     } catch (error) {
       this.logger.error('Cron job failed:', error);
