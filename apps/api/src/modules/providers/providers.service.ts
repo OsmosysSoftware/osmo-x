@@ -63,7 +63,7 @@ export class ProvidersService extends CoreService<Provider> {
   }
 
   async getAllProviders(options: QueryOptionsDto): Promise<ProviderResponse> {
-    const baseConditions = [];
+    const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
     const searchableFields = ['name'];
 
     const { items, total } = await super.findAll(
