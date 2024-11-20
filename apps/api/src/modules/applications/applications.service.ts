@@ -59,7 +59,7 @@ export class ApplicationsService extends CoreService<Application> {
   }
 
   async getAllApplications(options: QueryOptionsDto): Promise<ApplicationResponse> {
-    const baseConditions = [];
+    const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
     const searchableFields = ['name'];
 
     const { items, total } = await super.findAll(
