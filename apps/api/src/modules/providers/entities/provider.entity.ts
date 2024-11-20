@@ -12,6 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
+import { ArchivedNotification } from 'src/modules/archived-notifications/entities/archived-notification.entity';
 
 @Entity({ name: 'notify_providers' })
 @ObjectType()
@@ -72,6 +73,12 @@ export class Provider {
 
   @OneToMany(() => Notification, (notification) => notification.providerDetails)
   notifications: Notification[];
+
+  @OneToMany(
+    () => ArchivedNotification,
+    (archivedNotification) => archivedNotification.providerDetails,
+  )
+  archivedNotifications: ArchivedNotification[];
 
   constructor(provider: Partial<Provider>) {
     Object.assign(this, provider);
