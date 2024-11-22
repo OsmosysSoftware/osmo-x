@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class HotfixArchiveTable1732200721350 implements MigrationInterface {
+export class UpdateArchiveTableDatatypes1732200721350 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Update the 'data' column type to LONGTEXT
     await queryRunner.query(`
