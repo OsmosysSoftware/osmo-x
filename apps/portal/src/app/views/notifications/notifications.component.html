@@ -83,8 +83,7 @@
       </div>
       <p-button
         (onClick)="loadNotificationsLazy({ first: getOffset(), rows: this.pageSize })"
-        label="Refresh"
-        severity="warning"
+        severity="primary"
         icon="pi pi-refresh"
         [loading]="loading"
       />
