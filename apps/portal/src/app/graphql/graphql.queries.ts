@@ -30,6 +30,36 @@ export const GetNotifications = gql`
   }
 `;
 
+export const GetArchivedNotifications = gql`
+  query GetArchivedNotifications($limit: Int!, $offset: Int!, $filters: [UniversalFilter!]) {
+    archivedNotifications(
+      options: {
+        limit: $limit
+        offset: $offset
+        sortBy: "createdOn"
+        sortOrder: DESC
+        filters: $filters
+      }
+    ) {
+      archivedNotifications {
+        channelType
+        createdBy
+        createdOn
+        data
+        deliveryStatus
+        notificationId
+        result
+        status
+        updatedBy
+        updatedOn
+      }
+      total
+      offset
+      limit
+    }
+  }
+`;
+
 export const GetApplications = gql`
   query GetApplications($limit: Int!, $offset: Int!, $filters: [UniversalFilter!]) {
     applications(
