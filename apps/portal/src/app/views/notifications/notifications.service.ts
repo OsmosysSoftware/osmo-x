@@ -56,18 +56,19 @@ export class NotificationsService {
           response.data?.archivedNotifications.archivedNotifications;
 
         const notificationResponseObject: NotificationResponse = {
-          notifications: archivedNotificationArray.map((item) => ({
-            id: item.notificationId,
-            channelType: item.channelType,
-            data: item.data,
-            deliveryStatus: item.deliveryStatus,
-            result: item.result,
-            createdOn: item.createdOn,
-            updatedOn: item.updatedOn,
-            createdBy: item.createdBy,
-            updatedBy: item.updatedBy,
-            status: item.status,
-          })),
+          notifications:
+            archivedNotificationArray?.map((item) => ({
+              id: item.notificationId,
+              channelType: item.channelType,
+              data: item.data,
+              deliveryStatus: item.deliveryStatus,
+              result: item.result,
+              createdOn: item.createdOn,
+              updatedOn: item.updatedOn,
+              createdBy: item.createdBy,
+              updatedBy: item.updatedBy,
+              status: item.status,
+            })) ?? [],
           total: response.data?.archivedNotifications.total,
           offset: response.data?.archivedNotifications.offset,
           limit: response.data?.archivedNotifications.limit,
