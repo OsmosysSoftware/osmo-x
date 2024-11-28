@@ -80,6 +80,8 @@ export class NotificationsComponent implements OnInit {
 
   minDateTo = null;
 
+  archivedNotificationToggle = false;
+
   constructor(
     private notificationService: NotificationsService,
     private applicationService: ApplicationsService,
@@ -89,6 +91,10 @@ export class NotificationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getApplications();
+  }
+
+  toggleArchive() {
+    this.archivedNotificationToggle = !this.archivedNotificationToggle;
   }
 
   getApplications() {

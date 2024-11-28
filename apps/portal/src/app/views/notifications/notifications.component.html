@@ -57,7 +57,7 @@
       ></p-dropdown>
     </div>
     <div class="grid-row">
-      <div class="p-col-12 p-md-3 filter-row">
+      <div class="p-col-12 p-md-3 filter-row grid-row-left">
         <input
           type="email"
           pInputText
@@ -81,12 +81,24 @@
           [disabled]="!searchValue"
         />
       </div>
-      <p-button
-        (onClick)="loadNotificationsLazy({ first: getOffset(), rows: this.pageSize })"
-        severity="primary"
-        icon="pi pi-refresh"
-        [loading]="loading"
-      />
+      <div class="grid-row-right">
+        <p-button
+          (onClick)="toggleArchive(); loadNotificationsLazy({ first: 0, rows: this.pageSize })"
+          [label]="archivedNotificationToggle ? 'Archived' : 'Active'"
+          [severity]="archivedNotificationToggle ? 'help' : 'secondary'"
+          [icon]="archivedNotificationToggle ? 'pi pi-server' : 'pi pi-database'"
+          [loading]="loading"
+          class="toggle-button"
+        >
+        </p-button>
+        <p-button
+          (onClick)="loadNotificationsLazy({ first: getOffset(), rows: this.pageSize })"
+          severity="primary"
+          icon="pi pi-refresh"
+          [loading]="loading"
+          class="grid-button"
+        />
+      </div>
     </div>
   </div>
 

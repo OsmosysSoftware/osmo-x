@@ -173,5 +173,19 @@ tr:hover {
 
 .grid-row {
   display: grid;
-  grid-template-columns: 1fr auto; /* 1fr for left, auto for right */
+  grid-template-columns: auto auto; /* Two columns: one for each div */
+  justify-content: space-between; /* Space between the two divs */
+  align-items: center; /* Align items vertically in the center */
+  width: 100%; /* Ensure it spans the container width */
+  box-sizing: border-box; /* Include padding in the total width */
+}
+
+.grid-row-left {
+  display: flex; /* Arrange input and buttons horizontally */
+  gap: 1em; /* Add space between input and buttons */
+}
+
+.grid-row-right {
+  display: flex; /* Arrange buttons horizontally */
+  gap: 1em; /* Add space between buttons */
 }
