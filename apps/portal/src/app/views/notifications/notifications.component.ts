@@ -95,6 +95,8 @@ export class NotificationsComponent implements OnInit {
 
   toggleArchive() {
     this.archivedNotificationToggle = !this.archivedNotificationToggle;
+    // Now that toggle has been activated, load notifications
+    this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
   }
 
   getApplications() {
@@ -320,34 +322,66 @@ export class NotificationsComponent implements OnInit {
     // Set current page
     this.currentPage = Math.floor(event.first / event.rows) + 1;
 
-    // Fetch notifications and handle errors
-    this.notificationService
-      .getNotifications(variables, loginToken)
-      .pipe(
-        // catchError operator to handle errors
-        catchError((error) => {
-          this.messageService.add({
-            key: 'tst',
-            severity: 'error',
-            summary: 'Error',
-            detail: `There was an error while loading notifications. Reason: ${error.message}`,
-          });
-          this.loading = false;
-          return of(null);
-        }),
-      )
-      .subscribe((notificationResponse: NotificationResponse | null) => {
-        if (notificationResponse && notificationResponse.notifications) {
-          // pagination is handled by p-table component of primeng
-          this.notifications = notificationResponse.notifications;
-          this.totalRecords = notificationResponse.total;
-        } else {
-          this.notifications = [];
-          this.totalRecords = 0;
-        }
+    // Check if we need to fetch from archive table or notifications table
+    if (this.archivedNotificationToggle) {
+      // Fetch archived notifications and handle errors
+      this.notificationService
+        .getArchivedNotifications(variables, loginToken)
+        .pipe(
+          // catchError operator to handle errors
+          catchError((error) => {
+            this.messageService.add({
+              key: 'tst',
+              severity: 'error',
+              summary: 'Error',
+              detail: `There was an error while loading notifications. Reason: ${error.message}`,
+            });
+            this.loading = false;
+            return of(null);
+          }),
+        )
+        .subscribe((notificationResponse: NotificationResponse | null) => {
+          if (notificationResponse && notificationResponse.notifications) {
+            // pagination is handled by p-table component of primeng
+            this.notifications = notificationResponse.notifications;
+            this.totalRecords = notificationResponse.total;
+          } else {
+            this.notifications = [];
+            this.totalRecords = 0;
+          }
 
-        this.loading = false;
-      });
+          this.loading = false;
+        });
+    } else {
+      // Fetch notifications and handle errors
+      this.notificationService
+        .getNotifications(variables, loginToken)
+        .pipe(
+          // catchError operator to handle errors
+          catchError((error) => {
+            this.messageService.add({
+              key: 'tst',
+              severity: 'error',
+              summary: 'Error',
+              detail: `There was an error while loading notifications. Reason: ${error.message}`,
+            });
+            this.loading = false;
+            return of(null);
+          }),
+        )
+        .subscribe((notificationResponse: NotificationResponse | null) => {
+          if (notificationResponse && notificationResponse.notifications) {
+            // pagination is handled by p-table component of primeng
+            this.notifications = notificationResponse.notifications;
+            this.totalRecords = notificationResponse.total;
+          } else {
+            this.notifications = [];
+            this.totalRecords = 0;
+          }
+
+          this.loading = false;
+        });
+    }
   }
 
   showJsonObject(json: Record<string, unknown>): void {
