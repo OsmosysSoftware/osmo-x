@@ -3194,6 +3194,131 @@
 			"description": "Collection of requests pertaining to fetching all notifications."
 		},
 		{
+			"name": "All Archived Notifications",
+			"item": [
+				{
+					"name": "Fetch All Archived Notifications - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'archivedNotifications' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"archivedNotifications\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'archivedNotifications' array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.archivedNotifications).to.have.property(\"archivedNotifications\").to.be.an(\"array\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  archivedNotifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications{\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      notificationId\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully fetching all notifications based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch All Archived Notifications - Bad request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for fetching archivedNotifications with bad request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  archivedNotifications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      notificationId\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows representing failure when fetching all notifications when using invalid/bad request."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to fetching all notifications."
+		},
+		{
 			"name": "All Applications",
 			"item": [
 				{
