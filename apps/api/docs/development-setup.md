@@ -56,7 +56,7 @@ sudo systemctl status mariadb
    NODE_ENV=development
 
    # Notification configuration
-   MAX_RETRY_COUNT=2 # Max retry count, default is 3
+   MAX_RETRY_COUNT=3 # Max retry count, default is 3
    ARCHIVE_LIMIT=1000 # Max notifications to archive, default is 1000
    ARCHIVE_INTERVAL=3600 # Interval (in seconds) for archiving notifications, default 3600 (every 1 hour)
 
