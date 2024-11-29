@@ -8,7 +8,7 @@ The tables discussed below are created as part of the database migration.
 
 ## Database Schema
 
-The database schema consists of the following 7 tables:
+The database schema consists of the following tables:
 
 - **notify_applications:** Contains details about all the current applications
 - **notify_archived_notifications:** Contains details about all the completed notifications that have been archived
