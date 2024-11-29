@@ -289,6 +289,153 @@ curl --location 'http://localhost:3000/graphql' \
 }
 ```
 
+## Archived Notifications
+
+This sections lists notification related requests such as fetching all archived notifications.
+
+### Fetch All Archived Notifications
+
+Allows the user to fetch all archived notifications based on the passed query parameters. Requires passing bearer token for authorization.
+
+The different options that can be used while fetching notifications are as follows:
+
+- `limit:` Limit the number of results to the provided value
+- `offset:` Offset the result set by the provided value
+- `sortBy:` Sort the results by the provided key
+- `sortOrder:` Sort the results in either `ASC`ending or `DESC`ending order
+- `search:` Search for the provided value in `createdBy`, `data` and `result` and return results matching it
+- `filters:` Filter the results based on the provided `field`, `operator` and `value`. Operator can be `eq` (equal), `ne` (not equal), `contains`, `gt` (greater than) or `lt` (less than)
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method:** `POST`
+
+**Body:** `graphql`
+
+```graphql
+query {
+  archivedNotifications(
+    options: {
+      limit: 5
+      offset: 0
+      sortBy: "createdOn"
+      sortOrder: DESC
+      search: "sender@email.com"
+      filters: [{ field: "applicationId", operator: "eq", value: "1" }]
+    }
+  ) {
+    archivedNotifications {
+      applicationDetails {
+        applicationId
+        name
+        userId
+        status
+        createdOn
+        updatedOn
+      }
+      applicationId
+      channelType
+      createdBy
+      createdOn
+      data
+      deliveryStatus
+      id
+      notificationId
+      providerDetails {
+        providerId
+        name
+        channelType
+        isEnabled
+        configuration
+        applicationId
+        userId
+        status
+      }
+      providerId
+      result
+      status
+      updatedBy
+      updatedOn
+    }
+    total,
+    offset,
+    limit
+  }
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'YOUR_BASE_URL/graphql' \
+--header 'Authorization: Bearer YOUR_AUTH_TOKEN' \
+--header 'Content-Type: application/json' \
+--data-raw '{"query":"query {\r\n  archivedNotifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationId\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
+```
+
+**Sample response**
+
+```json
+{
+    "data": {
+        "archivedNotifications": {
+            "archivedNotifications": [
+                {
+                    "applicationDetails": {
+                        "applicationId": 1,
+                        "name": "sampleOsmoXApp",
+                        "userId": 1,
+                        "status": 1,
+                        "createdOn": "2024-04-29T08:06:41.000Z",
+                        "updatedOn": "2024-04-29T08:06:41.000Z"
+                    },
+                    "applicationId": 1,
+                    "channelType": 1,
+                    "createdBy": "sampleOsmoXApp",
+                    "createdOn": "2024-05-07T06:44:39.000Z",
+                    "data": {
+                        "from": "sender@email.com",
+                        "to": "receiver@email.com",
+                        "subject": "Test subject",
+                        "text": "This is a test notification",
+                        "html": "<b>This is a test notification</b>"
+                    },
+                    "deliveryStatus": 6,
+                    "id": 7,
+                    "notificationId": 9,
+                    "providerDetails": {
+                        "providerId": 1,
+                        "name": "smtp",
+                        "channelType": 1,
+                        "isEnabled": 1,
+                        "configuration": {},
+                        "applicationId": 1,
+                        "userId": 1,
+                        "status": 1
+                    },
+                    "providerId": 1,
+                    "result": {
+                        "result": {
+                            "errno": -3008,
+                            "code": "EDNS",
+                            "syscall": "getaddrinfo",
+                            "hostname": "some.smtp.host",
+                            "command": "CONN"
+                        }
+                    },
+                    "status": 1,
+                    "updatedBy": "sampleOsmoXApp",
+                    "updatedOn": "2024-07-03T06:18:08.000Z"
+                }
+            ],
+            "total": 1,
+            "offset": 0,
+            "limit": 5
+        }
+    }
+}
+```
+
 ## Applications
 
 This sections lists application related requests such as creating new application and fetching all applications.
