@@ -23,6 +23,7 @@ export class ArchivedNotification {
   id: number;
 
   @Column({ name: 'notification_id' })
+  @Field()
   notificationId: number;
 
   @Column({ name: 'provider_id', default: null })

@@ -5,13 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { ConfigService } from '@nestjs/config';
 import { ArchivedNotificationsController } from './archived-notifications.controller';
+import { ArchivedNotificationsResolver } from './archived-notifications.resolver';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ArchivedNotification]),
     forwardRef(() => NotificationsModule),
   ],
-  providers: [ArchivedNotificationsService, Logger, ConfigService],
+  providers: [ArchivedNotificationsService, ArchivedNotificationsResolver, Logger, ConfigService],
   exports: [ArchivedNotificationsService],
   controllers: [ArchivedNotificationsController],
 })
