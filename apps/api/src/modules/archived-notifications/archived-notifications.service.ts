@@ -1,19 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ArchivedNotification } from './entities/archived-notification.entity';
-import { DataSource, In, QueryRunner } from 'typeorm';
+import { DataSource, In, QueryRunner, Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { ConfigService } from '@nestjs/config';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { Status } from 'src/common/constants/database';
+import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
+import { ArchivedNotificationResponse } from './dtos/archived-notification-response.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CoreService } from 'src/common/graphql/services/core.service';
 
 @Injectable()
-export class ArchivedNotificationsService {
+export class ArchivedNotificationsService extends CoreService<ArchivedNotification> {
   protected readonly logger = new Logger(ArchivedNotificationsService.name);
 
   constructor(
+    @InjectRepository(ArchivedNotification)
+    private readonly archivedNotificationRepository: Repository<ArchivedNotification>,
     private readonly configService: ConfigService,
     private dataSource: DataSource,
-  ) {}
+  ) {
+    super(archivedNotificationRepository);
+  }
 
   private convertToArchivedNotifications(notifications: Notification[]): ArchivedNotification[] {
     return notifications.map((notification) => {
@@ -107,5 +115,22 @@ export class ArchivedNotificationsService {
       this.logger.error('Cron job failed:', error);
       throw error;
     }
+  }
+
+  async getAllArchivedNotifications(
+    options: QueryOptionsDto,
+  ): Promise<ArchivedNotificationResponse> {
+    this.logger.log('Getting all archived notifications with options.');
+
+    const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
+    const searchableFields = ['createdBy', 'data', 'result'];
+
+    const { items, total } = await super.findAll(
+      options,
+      'archivedNotification',
+      searchableFields,
+      baseConditions,
+    );
+    return new ArchivedNotificationResponse(items, total, options.offset, options.limit);
   }
 }
