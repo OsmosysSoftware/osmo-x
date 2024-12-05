@@ -293,8 +293,8 @@ export class NotificationsComponent implements OnInit {
         field: 'createdOn',
         operator: 'gt',
         value: new Date(
-          new Date(this.selectedFromDate).setTime(this.selectedFromDate.getTime() - 1000),
-        ).toString(),
+          new Date(this.selectedFromDate).setDate(this.selectedFromDate.getDate()),
+        ).toISOString(),
       });
     }
 
@@ -303,7 +303,7 @@ export class NotificationsComponent implements OnInit {
         field: 'createdOn',
         operator: 'lt',
         value: new Date(
-          new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
+          new Date(this.selectedToDate).setDate(this.selectedToDate.getDate()),
         ).toISOString(),
       });
     }
