@@ -303,7 +303,7 @@ export class NotificationsComponent implements OnInit {
         field: 'createdOn',
         operator: 'lt',
         value: new Date(
-          new Date(this.selectedToDate).setDate(this.selectedToDate.getDate()),
+          new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
         ).toISOString(),
       });
     }
