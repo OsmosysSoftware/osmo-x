@@ -38,11 +38,6 @@ export class NotificationsComponent implements OnInit {
   };
 
   // for component
-  channelTypes = Object.entries(ChannelType).map(([, value]) => ({
-    label: `${this.channelTypeMap[value].altText} - ${this.channelTypeMap[value].providerName}`,
-    value,
-  }));
-
   deliveryStatuses = Object.entries(DeliveryStatus).map(([, value]) => ({
     label: this.deliveryStatusMap[value].value,
     value,
@@ -51,8 +46,6 @@ export class NotificationsComponent implements OnInit {
   applications = [];
 
   providers = [];
-
-  selectedChannelType = null;
 
   selectedDeliveryStatus = null;
 
@@ -344,29 +337,6 @@ export class NotificationsComponent implements OnInit {
       operator: 'eq',
       value: this.selectedApplication.toString(),
     });
-
-    if (this.selectedChannelType) {
-      if (this.selectedChannelType === this.allPortalChannelTypes.UNKNOWN) {
-        // Condition to filter all notifications with unknown channel type
-        const existingChannelTypes = Object.keys(this.channelTypeMap).filter(
-          (value) => value !== this.allPortalChannelTypes.UNKNOWN.toString(),
-        );
-        existingChannelTypes.forEach((key) => {
-          variables.filters.push({
-            field: 'channelType',
-            operator: 'ne',
-            value: key.toString(),
-          });
-        });
-      } else {
-        // Default behavior when we are sorting on known channelType
-        variables.filters.push({
-          field: 'channelType',
-          operator: 'eq',
-          value: this.selectedChannelType.toString(),
-        });
-      }
-    }
 
     if (this.selectedDeliveryStatus) {
       variables.filters.push({
