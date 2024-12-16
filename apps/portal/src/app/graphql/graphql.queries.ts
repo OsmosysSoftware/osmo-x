@@ -105,6 +105,9 @@ export const GetProviders = gql`
         status
         updatedOn
       }
+      total
+      offset
+      limit
     }
   }
 `;
