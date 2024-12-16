@@ -86,6 +86,29 @@ export const GetApplications = gql`
   }
 `;
 
+export const GetProviders = gql`
+  query GetProviders($limit: Int!, $offset: Int!, $filters: [UniversalFilter!]) {
+    providers(
+      options: {
+        limit: $limit
+        offset: $offset
+        sortBy: "createdOn"
+        sortOrder: ASC
+        filters: $filters
+      }
+    ) {
+      providers {
+        channelType
+        createdOn
+        name
+        providerId
+        status
+        updatedOn
+      }
+    }
+  }
+`;
+
 export const LoginUser = gql`
   mutation LoginUser($username: String!, $password: String!) {
     login(loginUserInput: { username: $username, password: $password }) {

@@ -7,6 +7,8 @@ import { NotificationsService } from './notifications.service';
 import { Notification, NotificationResponse } from './notification.model';
 import { ApplicationsService } from '../applications/applications.service';
 import { ApplicationResponse } from '../applications/application.model';
+import { ProvidersService } from '../providers/providers.service';
+import { ProviderResponse } from '../providers/provider.model';
 
 @Component({
   selector: 'app-notifications',
@@ -48,11 +50,15 @@ export class NotificationsComponent implements OnInit {
 
   applications = [];
 
+  providers = [];
+
   selectedChannelType = null;
 
   selectedDeliveryStatus = null;
 
   selectedApplication = null;
+
+  selectedProvider = null;
 
   selectedFromDate = null;
 
@@ -85,6 +91,7 @@ export class NotificationsComponent implements OnInit {
   constructor(
     private notificationService: NotificationsService,
     private applicationService: ApplicationsService,
+    private providerService: ProvidersService,
     private messageService: MessageService,
     private authService: AuthService,
   ) {}
@@ -177,6 +184,9 @@ export class NotificationsComponent implements OnInit {
 
         // Now that applications are loaded, load notifications
         this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
+
+        // Load providers for selected application
+        this.getProvidersForSelectedApplication();
       });
   }
 
@@ -223,6 +233,84 @@ export class NotificationsComponent implements OnInit {
       });
       return null;
     }
+  }
+
+  getProvidersForSelectedApplication() {
+    // Set the query variables
+    const variables = {
+      filters: [],
+      offset: 0,
+      limit: 15,
+    };
+
+    // Set query filters
+    variables.filters.push({
+      field: 'applicationId',
+      operator: 'eq',
+      value: this.selectedApplication.toString(),
+    });
+
+    // Fetch the login token
+    const loginToken = this.getJWTLoginToken();
+
+    if (!loginToken) {
+      // Handle missing token
+      return;
+    }
+
+    // Fetch providers and handle errors
+    this.providerService
+      .getProviders(variables, loginToken)
+      .pipe(
+        // catchError operator to handle errors
+        catchError((error) => {
+          this.messageService.add({
+            key: 'tst',
+            severity: 'error',
+            summary: 'Error',
+            detail: `There was an error while loading providers. Reason: ${error.message}`,
+          });
+          return of(null); // Return null to indicate error
+        }),
+      )
+      .subscribe((providerResponse: ProviderResponse | null) => {
+        if (providerResponse?.errors?.length) {
+          const unauthorizedError = providerResponse.errors.find(
+            (error) => error.message === 'Unauthorized',
+          );
+
+          this.providers = [];
+
+          if (unauthorizedError) {
+            this.messageService.add({
+              key: 'tst',
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Unauthorized access. Please log in again.',
+            });
+            this.authService.logoutUser();
+          } else {
+            providerResponse.errors.forEach((error) => {
+              this.messageService.add({
+                key: 'tst',
+                severity: 'error',
+                summary: 'Error',
+                detail: `GraphQL Error - Get Providers: ${error.message}`,
+              });
+            });
+          }
+        } else if (providerResponse?.providers?.length) {
+          // Fetch list of providers for dropdown
+          this.providers = providerResponse.providers.map((obj) => ({
+            // Name to display and ID to return upon selection
+            label: `${obj.name} - ${this.channelTypeMap[obj.channelType].altText}`,
+            value: obj.providerId,
+          }));
+        } else {
+          this.providers = [];
+          this.selectedProvider = null;
+        }
+      });
   }
 
   loadNotificationsLazy(event: LazyLoadEvent) {
@@ -285,6 +373,14 @@ export class NotificationsComponent implements OnInit {
         field: 'deliveryStatus',
         operator: 'eq',
         value: this.selectedDeliveryStatus.toString(),
+      });
+    }
+
+    if (this.selectedProvider) {
+      variables.filters.push({
+        field: 'providerId',
+        operator: 'eq',
+        value: this.selectedProvider.toString(),
       });
     }
 
