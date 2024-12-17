@@ -98,6 +98,7 @@ export const GetProviders = gql`
       }
     ) {
       providers {
+        applicationId
         channelType
         createdOn
         name
