@@ -104,7 +104,7 @@ export class NotificationsComponent implements OnInit {
     const variables = {
       filters: [],
       offset: 0,
-      limit: 10,
+      limit: 20,
     };
 
     // Fetch the login token
