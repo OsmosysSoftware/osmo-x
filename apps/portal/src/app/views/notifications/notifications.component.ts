@@ -236,6 +236,11 @@ export class NotificationsComponent implements OnInit {
       limit: 15,
     };
 
+    if (!this.selectedApplication) {
+      // Handle missing selected application
+      return;
+    }
+
     // Set query filters
     variables.filters.push({
       field: 'applicationId',
