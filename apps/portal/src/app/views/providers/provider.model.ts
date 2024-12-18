@@ -1,4 +1,5 @@
 import { GraphQLFormattedError } from 'graphql/error/GraphQLError';
+import { Notification } from '../notifications/notification.model';
 
 export interface Provider {
   providerId: number;
@@ -9,10 +10,14 @@ export interface Provider {
   status: number;
 }
 
-export interface ProviderResponse {
+export interface ProviderAndNotificationResponse {
   providers: Provider[];
-  total: number;
-  offset: number;
-  limit: number;
+  providerTotal: number;
+  providerOffset: number;
+  providerLimit: number;
+  notifications: Notification[];
+  notificationTotal: number;
+  notificationOffset: number;
+  notificationLimit: number;
   errors?: ReadonlyArray<GraphQLFormattedError>;
 }

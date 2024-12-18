@@ -86,15 +86,30 @@ export const GetApplications = gql`
   }
 `;
 
-export const GetProviders = gql`
-  query GetProviders($limit: Int!, $offset: Int!, $filters: [UniversalFilter!]) {
+export const LoginUser = gql`
+  mutation LoginUser($username: String!, $password: String!) {
+    login(loginUserInput: { username: $username, password: $password }) {
+      token
+    }
+  }
+`;
+
+export const GetProvidersAndNotifications = gql`
+  query GetProvidersAndNotifications(
+    $providerLimit: Int!
+    $providerOffset: Int!
+    $providerFilters: [UniversalFilter!]
+    $notificationLimit: Int!
+    $notificationOffset: Int!
+    $notificationFilters: [UniversalFilter!]
+  ) {
     providers(
       options: {
-        limit: $limit
-        offset: $offset
+        limit: $providerLimit
+        offset: $providerOffset
         sortBy: "createdOn"
         sortOrder: ASC
-        filters: $filters
+        filters: $providerFilters
       }
     ) {
       providers {
@@ -110,13 +125,89 @@ export const GetProviders = gql`
       offset
       limit
     }
+    notifications(
+      options: {
+        limit: $notificationLimit
+        offset: $notificationOffset
+        sortBy: "createdOn"
+        sortOrder: DESC
+        filters: $notificationFilters
+      }
+    ) {
+      notifications {
+        channelType
+        createdBy
+        createdOn
+        data
+        deliveryStatus
+        id
+        result
+        status
+        updatedBy
+        updatedOn
+      }
+      total
+      offset
+      limit
+    }
   }
 `;
 
-export const LoginUser = gql`
-  mutation LoginUser($username: String!, $password: String!) {
-    login(loginUserInput: { username: $username, password: $password }) {
-      token
+export const GetProvidersAndArchivedNotifications = gql`
+  query GetProvidersAndArchivedNotifications(
+    $providerLimit: Int!
+    $providerOffset: Int!
+    $providerFilters: [UniversalFilter!]
+    $notificationLimit: Int!
+    $notificationOffset: Int!
+    $notificationFilters: [UniversalFilter!]
+  ) {
+    providers(
+      options: {
+        limit: $providerLimit
+        offset: $providerOffset
+        sortBy: "createdOn"
+        sortOrder: ASC
+        filters: $providerFilters
+      }
+    ) {
+      providers {
+        applicationId
+        channelType
+        createdOn
+        name
+        providerId
+        status
+        updatedOn
+      }
+      total
+      offset
+      limit
+    }
+    archivedNotifications(
+      options: {
+        limit: $notificationLimit
+        offset: $notificationOffset
+        sortBy: "createdOn"
+        sortOrder: DESC
+        filters: $notificationFilters
+      }
+    ) {
+      archivedNotifications {
+        channelType
+        createdBy
+        createdOn
+        data
+        deliveryStatus
+        notificationId
+        result
+        status
+        updatedBy
+        updatedOn
+      }
+      total
+      offset
+      limit
     }
   }
 `;

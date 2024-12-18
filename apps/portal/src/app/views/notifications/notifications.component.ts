@@ -8,7 +8,7 @@ import { Notification, NotificationResponse } from './notification.model';
 import { ApplicationsService } from '../applications/applications.service';
 import { ApplicationResponse } from '../applications/application.model';
 import { ProvidersService } from '../providers/providers.service';
-import { ProviderResponse } from '../providers/provider.model';
+import { ProviderAndNotificationResponse } from '../providers/provider.model';
 
 @Component({
   selector: 'app-notifications',
@@ -90,7 +90,7 @@ export class NotificationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getApplications();
+    this.getApplicationsAndInitializeData();
   }
 
   toggleArchive() {
@@ -99,7 +99,7 @@ export class NotificationsComponent implements OnInit {
     this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
   }
 
-  getApplications() {
+  getApplicationsAndInitializeData() {
     // Set the query variables
     const variables = {
       filters: [],
@@ -175,11 +175,8 @@ export class NotificationsComponent implements OnInit {
           this.selectedApplication = null;
         }
 
-        // Now that applications are loaded, load notifications
-        this.loadNotificationsLazy({ first: 0, rows: this.pageSize });
-
-        // Load providers for selected application
-        this.getProvidersForSelectedApplication();
+        // Now that applications are loaded, load providers and notifications
+        this.loadProvidersAndNotificationsForSelectedApplication({ first: 0, rows: this.pageSize });
       });
   }
 
@@ -228,12 +225,18 @@ export class NotificationsComponent implements OnInit {
     }
   }
 
-  getProvidersForSelectedApplication() {
+  loadProvidersAndNotificationsForSelectedApplication(event: LazyLoadEvent) {
+    this.loading = true;
+    this.selectedProvider = null;
+
     // Set the query variables
     const variables = {
-      filters: [],
-      offset: 0,
-      limit: 15,
+      providerFilters: [],
+      providerOffset: 0,
+      providerLimit: 20,
+      notificationFilters: [],
+      notificationOffset: event.first,
+      notificationLimit: event.rows,
     };
 
     if (!this.selectedApplication) {
@@ -242,11 +245,18 @@ export class NotificationsComponent implements OnInit {
     }
 
     // Set query filters
-    variables.filters.push({
+    const applicationIdFilterObject = {
       field: 'applicationId',
       operator: 'eq',
       value: this.selectedApplication.toString(),
-    });
+    };
+
+    variables.providerFilters.push(applicationIdFilterObject);
+    variables.notificationFilters.push(applicationIdFilterObject);
+
+    // Add rest of the filters
+    const combinedNotificationFilters = this.getCombinedNotificationFilters();
+    variables.notificationFilters.push(...combinedNotificationFilters);
 
     // Fetch the login token
     const loginToken = this.getJWTLoginToken();
@@ -256,9 +266,15 @@ export class NotificationsComponent implements OnInit {
       return;
     }
 
-    // Fetch providers and handle errors
+    // Set page size
+    this.pageSize = event.rows;
+
+    // Set current page
+    this.currentPage = Math.floor(event.first / event.rows) + 1;
+
+    // Fetch providers & notifications together. Handle errors
     this.providerService
-      .getProviders(variables, loginToken)
+      .getProvidersAndNotifications(variables, loginToken, this.archivedNotificationToggle)
       .pipe(
         // catchError operator to handle errors
         catchError((error) => {
@@ -266,14 +282,14 @@ export class NotificationsComponent implements OnInit {
             key: 'tst',
             severity: 'error',
             summary: 'Error',
-            detail: `There was an error while loading providers. Reason: ${error.message}`,
+            detail: `Error while loading providers and notifications: ${error.message}`,
           });
           return of(null); // Return null to indicate error
         }),
       )
-      .subscribe((providerResponse: ProviderResponse | null) => {
-        if (providerResponse?.errors?.length) {
-          const unauthorizedError = providerResponse.errors.find(
+      .subscribe((providerAndNotificationResponse: ProviderAndNotificationResponse | null) => {
+        if (providerAndNotificationResponse?.errors?.length) {
+          const unauthorizedError = providerAndNotificationResponse.errors.find(
             (error) => error.message === 'Unauthorized',
           );
 
@@ -288,26 +304,35 @@ export class NotificationsComponent implements OnInit {
             });
             this.authService.logoutUser();
           } else {
-            providerResponse.errors.forEach((error) => {
+            providerAndNotificationResponse.errors.forEach((error) => {
               this.messageService.add({
                 key: 'tst',
                 severity: 'error',
                 summary: 'Error',
-                detail: `GraphQL Error - Get Providers: ${error.message}`,
+                detail: `GraphQL Error - Get Providers and Notifications: ${error.message}`,
               });
             });
           }
-        } else if (providerResponse?.providers?.length) {
+        } else if (
+          providerAndNotificationResponse?.providers?.length &&
+          providerAndNotificationResponse?.notifications?.length
+        ) {
           // Fetch list of providers for dropdown
-          this.providers = providerResponse.providers.map((obj) => ({
+          this.providers = providerAndNotificationResponse.providers.map((obj) => ({
             // Name to display and ID to return upon selection
             label: `${obj.name} - ${this.channelTypeMap[obj.channelType].altText}`,
             value: obj.providerId,
           }));
+          this.notifications = providerAndNotificationResponse.notifications;
+          this.totalRecords = providerAndNotificationResponse.notificationTotal;
         } else {
           this.providers = [];
           this.selectedProvider = null;
+          this.notifications = [];
+          this.totalRecords = 0;
         }
+
+        this.loading = false;
       });
   }
 
@@ -343,49 +368,9 @@ export class NotificationsComponent implements OnInit {
       value: this.selectedApplication.toString(),
     });
 
-    if (this.selectedDeliveryStatus) {
-      variables.filters.push({
-        field: 'deliveryStatus',
-        operator: 'eq',
-        value: this.selectedDeliveryStatus.toString(),
-      });
-    }
-
-    if (this.selectedProvider) {
-      variables.filters.push({
-        field: 'providerId',
-        operator: 'eq',
-        value: this.selectedProvider.toString(),
-      });
-    }
-
-    if (this.selectedFromDate) {
-      variables.filters.push({
-        field: 'createdOn',
-        operator: 'gt',
-        value: new Date(
-          new Date(this.selectedFromDate).setDate(this.selectedFromDate.getDate()),
-        ).toISOString(),
-      });
-    }
-
-    if (this.selectedToDate) {
-      variables.filters.push({
-        field: 'createdOn',
-        operator: 'lt',
-        value: new Date(
-          new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
-        ).toISOString(),
-      });
-    }
-
-    if (this.searchValue) {
-      variables.filters.push({
-        field: 'data',
-        operator: 'contains',
-        value: this.searchValue,
-      });
-    }
+    // Add rest of the filters
+    const combinedNotificationFilters = this.getCombinedNotificationFilters();
+    variables.filters.push(...combinedNotificationFilters);
 
     // Set page size
     this.pageSize = event.rows;
@@ -453,6 +438,56 @@ export class NotificationsComponent implements OnInit {
           this.loading = false;
         });
     }
+  }
+
+  getCombinedNotificationFilters() {
+    const combinedNotificationFilters = [];
+
+    if (this.selectedDeliveryStatus) {
+      combinedNotificationFilters.push({
+        field: 'deliveryStatus',
+        operator: 'eq',
+        value: this.selectedDeliveryStatus.toString(),
+      });
+    }
+
+    if (this.selectedProvider) {
+      combinedNotificationFilters.push({
+        field: 'providerId',
+        operator: 'eq',
+        value: this.selectedProvider.toString(),
+      });
+    }
+
+    if (this.selectedFromDate) {
+      combinedNotificationFilters.push({
+        field: 'createdOn',
+        operator: 'gt',
+        value: new Date(
+          new Date(this.selectedFromDate).setDate(this.selectedFromDate.getDate()),
+        ).toISOString(),
+      });
+    }
+
+    if (this.selectedToDate) {
+      combinedNotificationFilters.push({
+        field: 'createdOn',
+        operator: 'lt',
+        value: new Date(
+          new Date(this.selectedToDate).setDate(this.selectedToDate.getDate() + 1),
+        ).toISOString(),
+      });
+    }
+
+    if (this.searchValue) {
+      combinedNotificationFilters.push({
+        field: 'data',
+        operator: 'contains',
+        value: this.searchValue,
+      });
+    }
+
+    return combinedNotificationFilters;
   }
 
   showJsonObject(json: Record<string, unknown>): void {

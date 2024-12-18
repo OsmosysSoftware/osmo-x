@@ -53,8 +53,7 @@
         class="grid-dropdown"
         [showClear]="false"
         (onChange)="
-          loadNotificationsLazy({ first: 0, rows: this.pageSize });
-          getProvidersForSelectedApplication()
+          loadProvidersAndNotificationsForSelectedApplication({ first: 0, rows: this.pageSize })
         "
         *ngIf="applications.length !== 0"
       ></p-dropdown>
