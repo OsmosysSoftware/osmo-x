@@ -3,6 +3,7 @@ import TransportStream = require('winston-transport');
 import { TransportStreamOptions } from 'winston-transport';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common/services/logger.service';
+import { firstValueFrom } from 'rxjs';
 
 interface CustomTransportOptions extends TransportStreamOptions {
   httpService: HttpService;
@@ -44,8 +45,8 @@ export class SlogerrTransport extends TransportStream {
       const logCreatedOn = info.timestamp || new Date().toISOString();
 
       try {
-        const response = await this.httpService
-          .post(
+        const response = await firstValueFrom(
+          this.httpService.post(
             apiEndpoint,
             {
               moduleName: info.context || 'Unknown Module',
@@ -60,8 +61,8 @@ export class SlogerrTransport extends TransportStream {
               },
             },
             { headers: { 'slogerr-secure-api-key': apiKey } },
-          )
-          .toPromise(); // Convert Observable to Promise
+          ),
+        );
 
         if (response.status !== 200) {
           this.logger.error(
