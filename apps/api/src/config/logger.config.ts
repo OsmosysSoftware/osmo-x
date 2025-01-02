@@ -1,13 +1,16 @@
 import { WinstonModule, utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import { transports, format } from 'winston';
 import { join } from 'path';
+import { HttpService } from '@nestjs/axios';
 import { v4 as uuidv4 } from 'uuid';
 import 'winston-daily-rotate-file';
 import { ConfigService } from '@nestjs/config';
 import { name as applicationName } from 'package.json';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import { SlogerrTransport } from 'src/common/logger/slogerr.transport';
 
 const configService = new ConfigService();
+const httpService = new HttpService();
 
 const logDir = 'logs';
 
@@ -77,6 +80,11 @@ if (errorLogMaxSize === '0') {
   errorLogOptions.maxSize = '20m';
 }
 
+const slogerrTransport = new SlogerrTransport({
+  httpService,
+  configService,
+});
+
 const transportsConfig = [
   new transports.Console({
     format: format.combine(
@@ -87,6 +95,7 @@ const transportsConfig = [
   }),
   new transports.DailyRotateFile(combinedLogOptions),
   new transports.DailyRotateFile(errorLogOptions),
+  slogerrTransport,
 ];
 
 export const loggerConfig = WinstonModule.createLogger({
