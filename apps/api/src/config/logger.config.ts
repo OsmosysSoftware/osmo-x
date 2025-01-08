@@ -18,6 +18,8 @@ const logDir = 'logs';
 const combinedLogMaxSize = configService.get<string>('COMBINED_LOG_MAX_SIZE');
 const errorLogMaxSize = configService.get<string>('ERROR_LOG_MAX_SIZE');
 
+const enableSlogger = configService.get<string>('ENABLE_SLOGERR') || 'false';
+
 const logFormat = format.combine(
   format.timestamp(),
   format.printf((info) => {
@@ -95,7 +97,7 @@ const transportsConfig = [
   }),
   new transports.DailyRotateFile(combinedLogOptions),
   new transports.DailyRotateFile(errorLogOptions),
-  slogerrTransport,
+  ...(enableSlogger === 'true' ? [slogerrTransport] : []),
 ];
 
 export const loggerConfig = WinstonModule.createLogger({
