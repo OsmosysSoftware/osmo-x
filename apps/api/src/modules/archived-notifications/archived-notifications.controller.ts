@@ -5,7 +5,7 @@ import { ArchivedNotificationsService } from './archived-notifications.service';
 export class ArchivedNotificationsController {
   constructor(
     private readonly archivedNotificationService: ArchivedNotificationsService,
-    private logger: Logger,
+    private logger: Logger = new Logger(ArchivedNotificationsController.name),
   ) {}
 
   @Post('archive')
