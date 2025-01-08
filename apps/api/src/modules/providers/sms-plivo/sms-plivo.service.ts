@@ -52,7 +52,7 @@ export class SmsPlivoService {
 
   constructor(
     private readonly providersService: ProvidersService,
-    private logger: Logger,
+    private logger: Logger = new Logger(SmsPlivoService.name),
   ) {}
 
   async assignTransport(providerId: number): Promise<void> {
