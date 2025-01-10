@@ -66,7 +66,7 @@ export class SlogerrTransport extends TransportStream {
         );
 
         if (response.status !== 200) {
-          this.logger.log(
+          this.logger.error(
             `Failed to send log to Slogerr. Status: ${response.status}, Message: ${response.statusText}`,
           );
         } else {
