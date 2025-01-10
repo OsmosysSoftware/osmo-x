@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { name as applicationName } from 'package.json';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { SlogerrTransport } from 'src/common/logger/slogerr.transport';
+import { stringify } from 'flatted';
 
 const configService = new ConfigService();
 const httpService = new HttpService();
@@ -39,7 +40,7 @@ const logFormat = format.combine(
       message,
       stackTrace: stack,
     };
-    return JSON.stringify(logObject);
+    return stringify(logObject);
   }),
 );
 
