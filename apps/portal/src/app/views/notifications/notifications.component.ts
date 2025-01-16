@@ -390,7 +390,7 @@ export class NotificationsComponent implements OnInit {
               key: 'tst',
               severity: 'error',
               summary: 'Error',
-              detail: `There was an error while loading notifications. Reason: ${error.message}`,
+              detail: `There was an error while loading archived notifications. Reason: ${error.message}`,
             });
             this.loading = false;
             return of(null);

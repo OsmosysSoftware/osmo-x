@@ -55,6 +55,7 @@ export class ProvidersService {
         .query(GetProvidersAndArchivedNotifications, variables, inputToken)
         .pipe(
           map((response: ApolloQueryResult<GetProviderArchivedNotificationResponse>) => {
+            this.graphqlService.validateApolloErrors(response);
             const providerArray = response.data?.providers.providers;
             const archivedNotificationArray =
               response.data?.archivedNotifications.archivedNotifications;
@@ -95,6 +96,7 @@ export class ProvidersService {
 
     return this.graphqlService.query(GetProvidersAndNotifications, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetProviderNotificationResponse>) => {
+        this.graphqlService.validateApolloErrors(response);
         const providerArray = response.data?.providers.providers;
         const notificationArray = response.data?.notifications.notifications;
 
