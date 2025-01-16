@@ -111,7 +111,7 @@ export class NotificationsComponent implements OnInit {
     const loginToken = this.getJWTLoginToken();
 
     if (!loginToken) {
-      // Handle missing token
+      this.authService.logoutUser();
       return;
     }
 
@@ -262,7 +262,7 @@ export class NotificationsComponent implements OnInit {
     const loginToken = this.getJWTLoginToken();
 
     if (!loginToken) {
-      // Handle missing token
+      this.authService.logoutUser();
       return;
     }
 
@@ -344,6 +344,7 @@ export class NotificationsComponent implements OnInit {
 
     if (!loginToken) {
       this.loading = false;
+      this.authService.logoutUser();
       return;
     }
 
