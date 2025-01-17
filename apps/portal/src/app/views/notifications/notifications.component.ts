@@ -241,6 +241,13 @@ export class NotificationsComponent implements OnInit {
 
     if (!this.selectedApplication) {
       // Handle missing selected application
+      this.messageService.add({
+        key: 'tst',
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Application is missing for loading providers',
+      });
+      this.loading = false;
       return;
     }
 
@@ -313,18 +320,24 @@ export class NotificationsComponent implements OnInit {
               });
             });
           }
-        } else if (
-          providerAndNotificationResponse?.providers?.length &&
-          providerAndNotificationResponse?.notifications?.length
-        ) {
+        } else if (providerAndNotificationResponse?.providers?.length) {
           // Fetch list of providers for dropdown
           this.providers = providerAndNotificationResponse.providers.map((obj) => ({
             // Name to display and ID to return upon selection
-            label: `${obj.name} - ${this.channelTypeMap[obj.channelType].altText}`,
+            label: this.channelTypeMap[obj.channelType]?.altText
+              ? `${obj.name} - ${this.channelTypeMap[obj.channelType].altText}`
+              : `${obj.name} - ${this.channelTypeMap[ChannelType.UNKNOWN].altText}`,
             value: obj.providerId,
           }));
-          this.notifications = providerAndNotificationResponse.notifications;
-          this.totalRecords = providerAndNotificationResponse.notificationTotal;
+
+          // Set notifications
+          if (providerAndNotificationResponse?.notifications?.length) {
+            this.notifications = providerAndNotificationResponse.notifications;
+            this.totalRecords = providerAndNotificationResponse.notificationTotal;
+          } else {
+            this.notifications = [];
+            this.totalRecords = 0;
+          }
         } else {
           this.providers = [];
           this.selectedProvider = null;
