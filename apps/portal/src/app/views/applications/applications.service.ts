@@ -19,7 +19,7 @@ interface GetApplicationsResponse {
 export class ApplicationsService {
   constructor(private graphqlService: GraphqlService) {}
 
-  getApplications(variables, inputToken): Observable<ApplicationResponse> {
+  getApplications(variables: unknown, inputToken: string): Observable<ApplicationResponse> {
     return this.graphqlService.query(GetApplications, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetApplicationsResponse>) => {
         const applicationArray = response.data?.applications.applications;

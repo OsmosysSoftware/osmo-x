@@ -46,9 +46,9 @@ export class ProvidersService {
   constructor(private graphqlService: GraphqlService) {}
 
   getProvidersAndNotifications(
-    variables,
-    inputToken,
-    archivedNotificationToggle,
+    variables: unknown,
+    inputToken: string,
+    archivedNotificationToggle: boolean,
   ): Observable<ProviderAndNotificationResponse> {
     if (archivedNotificationToggle) {
       return this.graphqlService
