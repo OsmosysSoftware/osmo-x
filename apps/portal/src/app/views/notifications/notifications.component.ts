@@ -173,9 +173,6 @@ export class NotificationsComponent implements OnInit {
         } else {
           this.applications = [];
           this.selectedApplication = null;
-          this.providers = [];
-          this.notifications = [];
-          this.totalRecords = 0;
         }
 
         // Now that applications are loaded, load providers and notifications
