@@ -327,7 +327,9 @@ export class NotificationsComponent implements OnInit {
           // Fetch list of providers for dropdown
           this.providers = providerAndNotificationResponse.providers.map((obj) => ({
             // Name to display and ID to return upon selection
-            label: `${obj.name} - ${this.channelTypeMap[obj.channelType].altText}`,
+            label: this.channelTypeMap[obj.channelType]?.altText
+              ? `${obj.name} - ${this.channelTypeMap[obj.channelType].altText}`
+              : `${obj.name} - ${this.channelTypeMap[ChannelType.UNKNOWN].altText}`,
             value: obj.providerId,
           }));
 
