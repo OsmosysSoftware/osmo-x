@@ -313,18 +313,22 @@ export class NotificationsComponent implements OnInit {
               });
             });
           }
-        } else if (
-          providerAndNotificationResponse?.providers?.length &&
-          providerAndNotificationResponse?.notifications?.length
-        ) {
+        } else if (providerAndNotificationResponse?.providers?.length) {
           // Fetch list of providers for dropdown
           this.providers = providerAndNotificationResponse.providers.map((obj) => ({
             // Name to display and ID to return upon selection
             label: `${obj.name} - ${this.channelTypeMap[obj.channelType].altText}`,
             value: obj.providerId,
           }));
-          this.notifications = providerAndNotificationResponse.notifications;
-          this.totalRecords = providerAndNotificationResponse.notificationTotal;
+
+          // Set notifications
+          if (providerAndNotificationResponse?.notifications?.length) {
+            this.notifications = providerAndNotificationResponse.notifications;
+            this.totalRecords = providerAndNotificationResponse.notificationTotal;
+          } else {
+            this.notifications = [];
+            this.totalRecords = 0;
+          }
         } else {
           this.providers = [];
           this.selectedProvider = null;
