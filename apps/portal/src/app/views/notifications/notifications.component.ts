@@ -173,6 +173,9 @@ export class NotificationsComponent implements OnInit {
         } else {
           this.applications = [];
           this.selectedApplication = null;
+          this.providers = [];
+          this.notifications = [];
+          this.totalRecords = 0;
         }
 
         // Now that applications are loaded, load providers and notifications
@@ -241,6 +244,13 @@ export class NotificationsComponent implements OnInit {
 
     if (!this.selectedApplication) {
       // Handle missing selected application
+      this.messageService.add({
+        key: 'tst',
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Application is missing for loading providers',
+      });
+      this.loading = false;
       return;
     }
 
