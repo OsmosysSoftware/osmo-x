@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Queue, Worker, QueueEvents } from 'bullmq';
-import ms = require('ms');
+import ms from 'ms';
 import { ChannelType, QueueAction } from 'src/common/constants/notifications';
 import { AwsSesNotificationConsumer } from 'src/jobs/consumers/notifications/awsSes-notifications.job.consumer';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
@@ -24,6 +24,7 @@ export class QueueService {
   private workers: Map<string, Worker> = new Map();
   private queueEvents: Map<string, QueueEvents> = new Map();
   private redisConfig: { host: string; port: number };
+  private consumerConcurrencyNumber: number;
   private idleTimeout: number;
   private cleanupInterval: number;
 
@@ -47,6 +48,8 @@ export class QueueService {
       host: this.configService.get<string>('REDIS_HOST'),
       port: this.configService.get<number>('REDIS_PORT'),
     };
+
+    this.consumerConcurrencyNumber = +this.configService.get<number>('CONSUMER_CONCURRENCY', 50);
 
     if (this.configService.get('CLEANUP_IDLE_RESOURCES', 'false') === 'true') {
       this.idleTimeout = ms(this.configService.get<string>('IDLE_TIMEOUT', '30m'));
@@ -205,7 +208,10 @@ export class QueueService {
       }
     };
 
-    const worker = new Worker(queueName, processJob, { connection: this.redisConfig });
+    const worker = new Worker(queueName, processJob, {
+      connection: this.redisConfig,
+      concurrency: this.consumerConcurrencyNumber,
+    });
     worker.on('completed', (job) => {
       this.logger.log(JSON.stringify(job));
       this.logger.log(`Job completed: ${job.id}`);
