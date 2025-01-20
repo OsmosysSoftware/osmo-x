@@ -51,6 +51,14 @@ export class QueueService {
 
     this.consumerConcurrencyNumber = +this.configService.get<number>('CONSUMER_CONCURRENCY', 50);
 
+    if (
+      typeof this.consumerConcurrencyNumber !== 'number' ||
+      Number.isNaN(this.consumerConcurrencyNumber) ||
+      this.consumerConcurrencyNumber <= 0
+    ) {
+      this.consumerConcurrencyNumber = 50;
+    }
+
     if (this.configService.get('CLEANUP_IDLE_RESOURCES', 'false') === 'true') {
       this.idleTimeout = ms(this.configService.get<string>('IDLE_TIMEOUT', '30m'));
       this.cleanupInterval = ms(this.configService.get<string>('CLEANUP_INTERVAL', '7d'));
