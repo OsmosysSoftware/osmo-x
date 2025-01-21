@@ -4,6 +4,7 @@ import { TransportStreamOptions } from 'winston-transport';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common/services/logger.service';
 import { firstValueFrom } from 'rxjs';
+import { stringify } from 'flatted';
 
 interface CustomTransportOptions extends TransportStreamOptions {
   httpService: HttpService;
@@ -40,7 +41,7 @@ export class SlogerrTransport extends TransportStream {
       const apiEndpoint = this.configService.get<string>('SLOGERR_API_ENDPOINT');
       const apiKey = this.configService.get<string>('SLOGERR_API_TOKEN');
 
-      this.logger.log(`Log Info: ${JSON.stringify(info)}`);
+      this.logger.log(`Log Info: ${stringify(info)}`);
 
       const logCreatedOn = info.timestamp || new Date().toISOString();
 
@@ -65,14 +66,14 @@ export class SlogerrTransport extends TransportStream {
         );
 
         if (response.status !== 200) {
-          this.logger.error(
+          this.logger.warn(
             `Failed to send log to Slogerr. Status: ${response.status}, Message: ${response.statusText}`,
           );
         } else {
           this.logger.log('Error log successfully sent to Slogerr', response);
         }
       } catch (error) {
-        this.logger.error('Failed to send log to Slogerr', error.message);
+        this.logger.warn('Failed to send log to Slogerr', error.message);
       }
     }
 
