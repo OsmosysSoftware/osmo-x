@@ -21,7 +21,7 @@ export class MailgunService {
 
   constructor(
     private readonly providersService: ProvidersService,
-    private logger: Logger,
+    private logger: Logger = new Logger(MailgunService.name),
   ) {
     this.mailgun = new Mailgun(FormData);
   }
