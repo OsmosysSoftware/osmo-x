@@ -60,6 +60,13 @@ sudo systemctl status mariadb
    ARCHIVE_LIMIT=1000 # Max notifications to archive, default is 1000
    ARCHIVE_INTERVAL=3600 # Interval (in seconds) for archiving notifications, default 3600 (every 1 hour)
 
+   # Slogger configuration
+   SLOGGER_LOG_TYPE=Exceptions
+   SLOGGER_LOG_LEVEL=error #Log level, default is error
+   SLOGERR_API_ENDPOINT=https://api.dhilog.com/log #Slogger log api url
+   SLOGERR_API_TOKEN=your-slogger-token #Slogger api token
+   ENABLE_SLOGERR=false #default set to false
+
    # Log configuration
    LOG_LEVEL=info # Log level, default is info
    COMBINED_LOG_MAX_SIZE=150m # Max file size for combined logs. Set 0 for no size limit, default 150m
@@ -104,3 +111,19 @@ sudo systemctl status mariadb
    ```
 
    OsmoX will now be running locally at `http://localhost:3000`.
+
+## Start the scheduler script
+
+Start the [scheduler script](../scheduler.sh) on Terminal(Linux/Unix) or Git-Bash(Windows):
+
+```sh
+# Ensure API directory is active
+cd osmo-x/apps/api
+# Start scheduler script
+./scheduler.sh
+```
+
+This script will periodically call OsmoX APIs that facilitate the following processes:
+- Processing of all `Pending` notifications
+- Provider Confirmation of all `Awaiting Confirmation` notifications
+- Archiving of all completed notifications in `notify_notifications` table
