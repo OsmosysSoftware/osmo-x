@@ -13,13 +13,15 @@ This section lists the authentication related requests such as login.
 
 ### Login
 
-Allows the user to login into the portal and receive the auth token from the API. Requires the username and password values.
+- Allows the user to login into the portal and receive the `auth token` from the API.
+- Requires the username and password values.
+- The response token is used for Bearer Token Authorization as **Bearer `auth token`**
 
 Note: Only users with `Admin` role get list of all keys. Returns `null` for users with `Basic` role.
 
 **Endpoint:** `http://localhost:3000/graphql`
 
-**Method: `POST`**
+**Method:** `POST`
 
 **Body:** `graphql`
 
@@ -49,6 +51,45 @@ curl --location 'localhost:3000/graphql' \
       "token": "eymysecuretoken",
       "__typename": "LoginResponse"
     }
+  }
+}
+```
+
+## Server API Key
+
+This section lists the Server Key related requests such as new key generation.
+
+### Generate new Server API Key
+
+Generates a new server API key for requested application. It is used as value for the header **`x-api-key`**.
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method:** `POST`
+
+**Body:** `graphql`
+
+```graphql
+mutation GenerateApiKey {
+  generateApiKey(applicationId: 1)
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'localhost:3000/graphql' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer mysecuretoken' \
+--data '{"query":"mutation GenerateApiKey {\n  generateApiKey(applicationId: 1)\n}","variables":{}}'
+```
+
+**Sample response**
+
+```json
+{
+  "data": {
+    "generateApiKey": "mySecureServerApiKey"
   }
 }
 ```
@@ -442,11 +483,11 @@ This sections lists application related requests such as creating new applicatio
 
 ### Create new Application
 
-Allows the user with `Admin` role to create a new application.
+Allows the user with `Admin` role to create a new application. Requires passing bearer token for authorization.
 
 **Endpoint:** `http://localhost:3000/graphql`
 
-**Method: `POST`**
+**Method:** `POST`
 
 **Body:** `graphql`
 
@@ -585,11 +626,11 @@ This sections lists providers related requests such as creating new provider and
 
 ### Create new Provider
 
-Allows the user with `Admin` role to create a new Provider.
+Allows the user with `Admin` role to create a new Provider. Requires passing bearer token for authorization.
 
 **Endpoint:** `http://localhost:3000/graphql`
 
-**Method: `POST`**
+**Method:** `POST`
 
 **Body:** `graphql`
 
@@ -749,3 +790,7 @@ curl --location 'http://localhost:3000/graphql' \
     }
 }
 ```
+
+## Webhook
+
+Kindly go through the [Webhook Guide](./webhook-guide.md).
