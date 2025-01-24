@@ -161,7 +161,6 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
     - Return `super processAwaitingConfirmationNotificationQueue`
     - If the provider allows verification methods for checking if the message was successfully sent to the end user, call your `getDeliveryStatus` method that was added in the service file and update the received result in database
 
-
 #### 9. Update `.queue.ts` file
 
   All providers will be using a queue specific to them for queuing notifications that have to be sent. The required values for this queue for a provider is specified in the `src/modules/notifications/queues/queue.service.ts` file.
@@ -198,7 +197,9 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 
 #### 10.  Create migration file for database related changes
 
-  Add migration file(s) in `src/database/migrations` for accomodating any database related changes. Keep filename as `<Unix Timestamp>-migrationName`. Create and test both `migration.up()` and `migration.down()` methods.
+  - Add migration file(s) in `src/database/migrations` for accomodating any database related changes.
+  - Keep filename as `<Unix epoch Timestamp in miliseconds>-migrationName` (e.g., `1701000000000-add-new-provider-config.ts`).
+  - Create and test both `migration.up()` and `migration.down()` methods.
 
 #### 11.  Update and add documentation
 

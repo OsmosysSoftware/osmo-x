@@ -15,16 +15,16 @@ Welcome to the usage guide for OsmoX, a powerful notification management system 
   - [4. Using the OsmoX API](#4-using-the-osmox-api)
     - [x-api-key Header](#x-api-key-header)
   - [4. Tracking Notification Status](#4-tracking-notification-status)
-  - [5. Available Channel Types](#5-available-channel-types)
+  - [5. Available Channel Type End Providers](#5-available-channel-type-end-providers)
   - [6. Delivery Status Information](#6-delivery-status-information)
 
 ## 1. Overview
 
-OsmoX offers a streamlined solution for sending notifications via different channels.
+OsmoX offers a streamlined solution for sending notifications via different channel providers.
 
-- It operates by monitoring the `notify_notifications` database table and automatically dispatches notifications for records with a `PENDING` status.
-- It processes if the message was successfully delivered to the end user for records with `AWAITING_CONFIRMATION` status if the provider offers the service.
-- It also allows users to set up custom webhooks for verification.
+- The system monitors the `notify_notifications` database table and automatically dispatches notifications for records with a `PENDING` status.
+- For records with `AWAITING_CONFIRMATION` status, the system verifies successful message delivery to the end user as long as the service is supported by the end provider (e.g., Mailgun, Twilio).
+- Additionally, users can set up custom webhooks for verification purposes.
 
 ## 2. Pushing Data to the Database
 
@@ -37,7 +37,7 @@ For more information, please refer to the [OsmoX database design](./database-des
 1. Set up the codebase and start the API as per requirement:
   - [Development Setup](./development-setup.md)
   - [Production Setup](./production-setup.md)
-2. OsmoX has seeded `Master Provider` & `User` data to facilitate notification service setup.
+2. OsmoX has seeded [Master Provider](#5-available-channel-type-end-providers) & `Admin User` data to facilitate notification service setup.
 3. Get the Bearer Token for the seeded Admin user using the [login API](./api-documentation.md#login)
 4. Create a new `Application` as per requirement using the [create new application API](./api-documentation.md#create-new-application).
 5. Create a new `Provider` that will be used to send notifications using the [create new provider API](./api-documentation.md#create-new-provider).
@@ -114,7 +114,7 @@ For detailed information, please refer to the [OsmoX API documentation](./api-do
 
 OsmoX updates the `delivery_status` and `result` columns to provide information on the notification's status. Use these columns to track the progress of your notifications in database.
 
-## 5. Available Channel Types
+## 5. Available Channel Type End Providers
 
 OsmoX supports multiple channel types, allowing you to choose the most suitable one for your notifications. Currently, the available channel types are:
 
