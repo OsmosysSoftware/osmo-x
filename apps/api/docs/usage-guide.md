@@ -35,8 +35,8 @@ For more information, please refer to the [OsmoX database design](./database-des
 ## 3. Setup
 
 1. Set up the codebase and start the API as per requirement:
-  - [Development Setup](./development-setup.md)
-  - [Production Setup](./production-setup.md)
+     - [Development Setup](./development-setup.md)
+     - [Production Setup](./production-setup.md)
 2. OsmoX has seeded [Master Provider](#5-available-channel-type-end-providers) & `Admin User` data to facilitate notification service setup.
 3. Get the Bearer Token for the seeded Admin user using the [login API](./api-documentation.md#login)
 4. Create a new `Application` as per requirement using the [create new application API](./api-documentation.md#create-new-application).
