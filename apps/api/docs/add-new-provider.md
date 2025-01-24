@@ -76,20 +76,20 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
   Ex `channeltype.module.ts`
   ```ts
   import { Logger, Module } from '@nestjs/common';
-  import { SmtpService } from './smtp.service';
+  import { <channeltype>Service } from './channeltype.service';
   import { ConfigModule } from '@nestjs/config';
   import { ProvidersModule } from '../providers.module';
   import { ProvidersService } from '../providers.service';
 
   @Module({
     imports: [ConfigModule, ProvidersModule],
-    providers: [SmtpService, ProvidersService, Logger],
-    exports: [SmtpService],
+    providers: [<channeltype>Service, ProvidersService, Logger],
+    exports: [<channeltype>Service],
   })
-  export class SmtpModule {}
+  export class <channeltype>Module {}
   ```
 
-  Make sure to import ConfigModule too as service file will most probably be using related env variables.
+  Make sure to import `ConfigModule` if the service file will be using related env variables.
 
 #### 6. Add logic in `.service.ts` file
 
@@ -100,6 +100,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
   - Create a constructor for initializing and configuring the object as needed. Also initialize and use any environment variables as needed.
   - Importing env in constructor with getOrThrow will let us know if something is missing in env file.
   - Create a `send` method named after `<type>` (`sendEmail`, `sendSms`, etc) which accepts the notification data and add code logic for sending it. Return the response received.
+  - Add any other helper methods as needed
 
   If the provider allows verification methods for checking if the message was successfully sent to the end user, add method `getDeliveryStatus` to verify if the message was successfully sent or not.
 
@@ -134,11 +135,11 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 
   Following methods are to be added:
 
-  **process<Channel-Type>NotificationQueue**
+  **process<Channel-Type>NotificationQueue (main function)**
     - Return `super processNotificationQueue`
     - Call your `send` method that was added in the service file and update the received result in database
 
-  **process<Channel-Type>NotificationConfirmationQueue**
+  **process<Channel-Type>NotificationConfirmationQueue (as needed)**
     - Return `super processAwaitingConfirmationNotificationQueue`
     - If the provider allows verification methods for checking if the message was successfully sent to the end user, call your `getDeliveryStatus` method that was added in the service file and update the received result in database
 
@@ -156,7 +157,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
   ) {}
   ```
 
-  Add switch cases in `createWorker` function for the following as required:
+  Add switch cases in `createWorker` function for creating the following queues as required:
   - NotificationQueue
   - NotificationConfirmationQueue
   - Webhook
