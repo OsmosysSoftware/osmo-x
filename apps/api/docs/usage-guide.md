@@ -11,7 +11,8 @@ Welcome to the usage guide for OsmoX, a powerful notification management system 
   - [Table of Contents](#table-of-contents)
   - [1. Overview](#1-overview)
   - [2. Pushing Data to the Database](#2-pushing-data-to-the-database)
-  - [3. Using the OsmoX API](#3-using-the-osmox-api)
+  - [3. Setup](#3-setup)
+  - [4. Using the OsmoX API](#4-using-the-osmox-api)
     - [x-api-key Header](#x-api-key-header)
   - [4. Tracking Notification Status](#4-tracking-notification-status)
   - [5. Available Channel Types](#5-available-channel-types)
@@ -19,13 +20,33 @@ Welcome to the usage guide for OsmoX, a powerful notification management system 
 
 ## 1. Overview
 
-OsmoX offers a streamlined solution for sending notifications via different channels. It operates by monitoring the `notify_notifications` database table and automatically dispatches notifications for records with a `PENDING` status.
+OsmoX offers a streamlined solution for sending notifications via different channels.
+
+- It operates by monitoring the `notify_notifications` database table and automatically dispatches notifications for records with a `PENDING` status.
+- It processes if the message was successfully delivered to the end user for records with `AWAITING_CONFIRMATION` status if the provider offers the service.
+- It also allows users to set up custom webhooks for verification.
 
 ## 2. Pushing Data to the Database
 
 Developers have the flexibility to populate the `notify_notifications` database table directly or opt for the recommended approach of utilizing the OsmoX API. By following this method, the notification processing is seamlessly managed by OsmoX.
 
-## 3. Using the OsmoX API
+For more information, please refer to the [OsmoX database design](./database-design.md)
+
+## 3. Setup
+
+1. Set up the codebase and start the API as per requirement:
+  - [Development Setup](./development-setup.md)
+  - [Production Setup](./production-setup.md)
+2. OsmoX has seeded `Master Provider` & `User` data to facilitate notification service setup.
+3. Get the Bearer Token for the seeded Admin user using the [login API](./api-documentation.md#login)
+4. Create a new `Application` as per requirement using the [create new application API](./api-documentation.md#create-new-application).
+5. Create a new `Provider` that will be used to send notifications using the [create new provider API](./api-documentation.md#create-new-provider).
+6. Generate a new `x-api-key` for the newly created application by using the [generate new server api key API](./api-documentation.md#generate-new-server-api-key).
+7. `x-api-key` will be used to access OsmoX notification creation services in other applications.
+
+Now you can use the OsmoX API to send notifications.
+
+## 4. Using the OsmoX API
 
 To use the OsmoX API, follow these steps:
 
@@ -73,6 +94,7 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
         "text": "This is a test notification",
         "html": "<b>This is a test notification</b>"
       },
+      "applicationId": 1,
       "createdBy": "OsmoX",
       "updatedBy": "OsmoX",
       "result": null,
@@ -85,6 +107,8 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
   }
 }
 ```
+
+For detailed information, please refer to the [OsmoX API documentation](./api-documentation.md)
 
 ## 4. Tracking Notification Status
 
