@@ -42,7 +42,7 @@ For more information, please refer to the [OsmoX database design](./database-des
 4. Create a new `Application` as per requirement using the [create new application API](./api-documentation.md#create-new-application).
 5. Create a new `Provider` that will be used to send notifications using the [create new provider API](./api-documentation.md#create-new-provider).
 6. Generate a new `x-api-key` for the newly created application by using the [generate new server api key API](./api-documentation.md#generate-new-server-api-key).
-7. `x-api-key` will be used to access OsmoX notification creation services in other applications.
+7. Header `x-api-key` will be used for OsmoX notification service requests.
 
 Now you can use the OsmoX API to send notifications.
 
