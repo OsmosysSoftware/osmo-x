@@ -40,7 +40,8 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
   ```
 
   If the provider allows verification methods for checking if the message was successfully sent to the end user, add the success and fail states in `ProviderDeliveryStatus`. Check the official provider documentation for exact states used.
-  Note: OsmoX does not consider neutral states like `queued`, so these can be moved to either success/fail states.
+
+  **Note:** OsmoX only considers success/fail states. Neutral states like `queued` should be mapped to either success or failure states based on your requirements.
 
   If the provider does not provide verification methods, add it to `SkipProviderConfirmationChannels`
 
@@ -106,7 +107,24 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 
 #### 7. Add dto for validation
 
-  Add dto for `data` field validation at the location `src/modules/notifications/dtos/providers/<channel_type>-data.dto.ts`
+  Add dto for `data` field validation in `src/modules/notifications/dtos/providers/<channel_type>-data.dto.ts`
+
+  ```ts
+  export class ExampleProviderDataDto {
+    @IsString()
+    @IsNotEmpty()
+    to: string;
+
+    @IsString()
+    @IsNotEmpty()
+    message: string;
+
+    @IsOptional()
+    @IsString()
+    templateId?: string;
+  }
+  ```
+
   Update the file `src/common/decorators/is-data-valid.decorator.ts` and add condition for the newly added dto.
 
   ```ts
