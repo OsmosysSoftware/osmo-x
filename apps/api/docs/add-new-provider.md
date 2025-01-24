@@ -8,7 +8,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 
 ## Getting Started
 
-#### 1. Install additional required dependencies
+### 1. Install additional required dependencies
 
   For adding a new provider, it is highly likely one or more new `npm` packages will be required. Install these packages and dependencies using `npm`.
 
@@ -16,7 +16,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
   npm install <package_name>
   ```
 
-#### 2. Update the database
+### 2. Update the database
 
   Set the respective details of newly added provider in `notify_master_providers` table. This contains the configuration template and other related details for your provider.
 
@@ -24,7 +24,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 
   Take reference for what fields need to be added from [Database Design Document](./database-design.md#notify_master_providers).
 
-#### 3. Update `src/common/constants/notifications.ts`
+### 3. Update `src/common/constants/notifications.ts`
 
   A new channel type will be denoted using a unique numeric value (for example, 1 for SMTP, 2 for Mailgun, etc). The new provider being added will also need to represented with such a value.
 
@@ -45,7 +45,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 
   If the provider does not provide verification methods, add it to `SkipProviderConfirmationChannels`
 
-#### 4. Generate a new module for the provider
+### 4. Generate a new module for the provider
 
   Create a new module for the provider, run the following command to generate it using `nest`:
 
@@ -64,7 +64,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
   ]
   ```
 
-#### 5. Generate new service file
+### 5. Generate new service file
 
   The new provider will require a service file. For this, run the following command to generate it using `nest`:
 
@@ -92,7 +92,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 
   Make sure to import `ConfigModule` if the service file will be using related env variables.
 
-#### 6. Add logic in `.service.ts` file
+### 6. Add logic in `.service.ts` file
 
   Add the required logic in the `.service.ts` file, referring already added service files. A few points that can help in adding the logic are as follows:
 
@@ -105,7 +105,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
 
   If the provider allows verification methods for checking if the message was successfully sent to the end user, add method `getDeliveryStatus` to verify if the message was successfully sent or not.
 
-#### 7. Add dto for validation
+### 7. Add dto for validation
 
   Add dto for `data` field validation in `src/modules/notifications/dtos/providers/<channel_type>-data.dto.ts`
 
@@ -141,7 +141,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
   }
   ```
 
-#### 8. Create `.job.consumer.ts` file
+### 8. Create `.job.consumer.ts` file
 
   Create a consumer file with path `src/jobs/consumers/notifications/<channel_name>-notification.job.consumer.ts`. Add the required logic in it by referring other consumer files, following these key points:
 
@@ -161,7 +161,7 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
     - Return `super processAwaitingConfirmationNotificationQueue`
     - If the provider allows verification methods for checking if the message was successfully sent to the end user, call your `getDeliveryStatus` method that was added in the service file and update the received result in database
 
-#### 9. Update `.queue.ts` file
+### 9. Update `.queue.ts` file
 
   All providers will be using a queue specific to them for queuing notifications that have to be sent. The required values for this queue for a provider is specified in the `src/modules/notifications/queues/queue.service.ts` file.
 
@@ -195,12 +195,12 @@ Before working on adding a new provider, ensure that you have set up the OsmoX d
   }
   ```
 
-#### 10.  Create migration file for database related changes
+### 10.  Create migration file for database related changes
 
   - Add migration file(s) in `src/database/migrations` for accomodating any database related changes.
   - Keep filename as `<Unix epoch Timestamp in miliseconds>-migrationName` (e.g., `1701000000000-add-new-provider-config.ts`).
   - Create and test both `migration.up()` and `migration.down()` methods.
 
-#### 11.  Update and add documentation
+### 11.  Update and add documentation
 
   Add a new document `<channel_name>.md` in the `docs/channels` folder describing environment variables to be set and how to use the new provider channel with sample request body and any additional information. Update the `usage-guide.md` file to add and link the new channel document under [Available Channel Types](usage-guide.md#5-available-channel-types).
