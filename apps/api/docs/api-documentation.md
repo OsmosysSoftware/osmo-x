@@ -628,6 +628,8 @@ This sections lists providers related requests such as creating new provider and
 
 Allows the user with `Admin` role to create a new Provider. Requires passing bearer token for authorization.
 
+Users can create a new provider based on the available `Master Providers` in the database.
+
 **Endpoint:** `http://localhost:3000/graphql`
 
 **Method:** `POST`
