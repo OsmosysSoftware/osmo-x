@@ -47,7 +47,7 @@ Make sure Redis and MariaDB server are up and running.
   DHILOG_LOG_TYPE=Exceptions # Custom "Log types" value defined on Dhilog portal
   DHILOG_LOG_LEVEL=error # Log level, default is error
   DHILOG_API_ENDPOINT=https://api.dhilog.com/log # Dhilog log api url
-  DHILOG_API_TOKEN=your-slogger-token # Dhilog api token
+  DHILOG_API_TOKEN=your-api-token # Dhilog api token
   ENABLE_DHILOG=false # Default set to false
 
   # Log configuration
