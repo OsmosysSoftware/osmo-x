@@ -14,9 +14,9 @@ Welcome to the usage guide for OsmoX, a powerful notification management system 
   - [3. Setup](#3-setup)
   - [4. Using the OsmoX API](#4-using-the-osmox-api)
     - [x-api-key Header](#x-api-key-header)
-  - [4. Tracking Notification Status](#4-tracking-notification-status)
-  - [5. Available Channel Type End Providers](#5-available-channel-type-end-providers)
-  - [6. Delivery Status Information](#6-delivery-status-information)
+  - [5. Tracking Notification Status](#5-tracking-notification-status)
+  - [6. Available Channel Type End Providers](#6-available-channel-type-end-providers)
+  - [7. Delivery Status Information](#7-delivery-status-information)
 
 ## 1. Overview
 
@@ -37,7 +37,7 @@ For more information, please refer to the [OsmoX database design](./database-des
 1. Set up the codebase and start the API as per requirement:
      - [Development Setup](./development-setup.md)
      - [Production Setup](./production-setup.md)
-2. OsmoX has seeded [Master Provider](#5-available-channel-type-end-providers) & `Admin User` data to facilitate notification service setup.
+2. OsmoX has seeded [Master Provider](#6-available-channel-type-end-providers) & `Admin User` data to facilitate notification service setup.
 3. Get the Bearer Token for the seeded Admin user using the [login API](./api-documentation.md#login)
 4. Create a new `Application` as per requirement using the [create new application API](./api-documentation.md#create-new-application).
 5. Create a new `Provider` that will be used to send notifications using the [create new provider API](./api-documentation.md#create-new-provider).
@@ -110,11 +110,11 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
 
 For detailed information, please refer to the [OsmoX API documentation](./api-documentation.md)
 
-## 4. Tracking Notification Status
+## 5. Tracking Notification Status
 
 OsmoX updates the `delivery_status` and `result` columns to provide information on the notification's status. Use these columns to track the progress of your notifications in database.
 
-## 5. Available Channel Type End Providers
+## 6. Available Channel Type End Providers
 
 OsmoX supports multiple channel types, allowing you to choose the most suitable one for your notifications. Currently, the available channel types are:
 
@@ -133,7 +133,7 @@ OsmoX supports multiple channel types, allowing you to choose the most suitable 
 |           Email - AWS SES            |    11     |             [Email - AWS SES](channels/aws-ses.md)             |
 |          SMS - AWS SMS SNS           |    12     |            [SMS - AWS SMS SNS](channels/sms-sns.md)            |
 
-## 6. Delivery Status Information
+## 7. Delivery Status Information
 
 OsmoX provides different delivery status options to reflect the state of your notifications:
 

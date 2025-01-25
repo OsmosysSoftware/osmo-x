@@ -108,7 +108,7 @@ Allows the user to create a new notification for processing and sending it. Requ
 - The `application id` for the **Server API Key** and **Provider** should match.
 - The `data` passed should have all the fields related to `channelType`.
 
-Refer the [Available Channel Types](./usage-guide.md#5-available-channel-types) for understanding the different channel types and [Delivery Status Information](./usage-guide.md#6-delivery-status-information) for understanding `deliveryStatus` in response.
+Refer the [Available Channel Types](./usage-guide.md#5-available-channel-types) for understanding the different channel types and [Delivery Status Information](./usage-guide.md#7-delivery-status-information) for understanding `deliveryStatus` in response.
 
 **Endpoint:** `http://localhost:3000/notifications`
 
