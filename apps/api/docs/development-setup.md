@@ -60,12 +60,12 @@ sudo systemctl status mariadb
    ARCHIVE_LIMIT=1000 # Max notifications to archive, default is 1000
    ARCHIVE_INTERVAL=3600 # Interval (in seconds) for archiving notifications, default 3600 (every 1 hour)
 
-   # Slogger configuration
-   SLOGGER_LOG_TYPE=Exceptions
-   SLOGGER_LOG_LEVEL=error #Log level, default is error
-   SLOGERR_API_ENDPOINT=https://api.dhilog.com/log #Slogger log api url
-   SLOGERR_API_TOKEN=your-slogger-token #Slogger api token
-   ENABLE_SLOGERR=false #default set to false
+   # Dhilog configuration
+   DHILOG_LOG_TYPE=Exceptions # Custom "Log types" value defined on Dhilog portal
+   DHILOG_LOG_LEVEL=error # Log level, default is error
+   DHILOG_API_ENDPOINT=https://api.dhilog.com/log # Dhilog log api url
+   DHILOG_API_TOKEN=your-slogger-token # Dhilog api token
+   ENABLE_DHILOG=false # Default set to false
 
    # Log configuration
    LOG_LEVEL=info # Log level, default is info
