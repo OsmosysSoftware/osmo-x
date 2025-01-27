@@ -68,11 +68,12 @@ export class SmsPlivoService {
       await this.assignTransport(providerId);
       const smsPlivoConfig = await this.providersService.getConfigById(providerId);
       const fromNumber = smsPlivoConfig.PLIVO_SMS_NUMBER as string;
+      const dstNumbers = this.toPlivoSendableFormat(body.to);
 
       this.logger.debug('Sending Plivo SMS');
       const response = await this.plivoClient.messages.create({
         src: fromNumber,
-        dst: body.to,
+        dst: dstNumbers,
         text: body.message,
       });
 
@@ -88,6 +89,7 @@ export class SmsPlivoService {
       }
     }
   }
+
   async getDeliveryStatus(
     messageUuid: string,
     providerId: number,
@@ -101,5 +103,13 @@ export class SmsPlivoService {
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);
     }
+  }
+
+  toPlivoSendableFormat(input: string): string {
+    // Remove any whitespace and split by comma
+    const numbers = input.split(',').map((num) => num.trim());
+
+    // Convert the numbers into the Plivo sendable format
+    return numbers.map((num) => num.replace('+', '')).join('<');
   }
 }
