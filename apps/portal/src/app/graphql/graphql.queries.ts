@@ -93,3 +93,121 @@ export const LoginUser = gql`
     }
   }
 `;
+
+export const GetProvidersAndNotifications = gql`
+  query GetProvidersAndNotifications(
+    $providerLimit: Int!
+    $providerOffset: Int!
+    $providerFilters: [UniversalFilter!]
+    $notificationLimit: Int!
+    $notificationOffset: Int!
+    $notificationFilters: [UniversalFilter!]
+  ) {
+    providers(
+      options: {
+        limit: $providerLimit
+        offset: $providerOffset
+        sortBy: "createdOn"
+        sortOrder: ASC
+        filters: $providerFilters
+      }
+    ) {
+      providers {
+        applicationId
+        channelType
+        createdOn
+        name
+        providerId
+        status
+        updatedOn
+      }
+      total
+      offset
+      limit
+    }
+    notifications(
+      options: {
+        limit: $notificationLimit
+        offset: $notificationOffset
+        sortBy: "createdOn"
+        sortOrder: DESC
+        filters: $notificationFilters
+      }
+    ) {
+      notifications {
+        channelType
+        createdBy
+        createdOn
+        data
+        deliveryStatus
+        id
+        result
+        status
+        updatedBy
+        updatedOn
+      }
+      total
+      offset
+      limit
+    }
+  }
+`;
+
+export const GetProvidersAndArchivedNotifications = gql`
+  query GetProvidersAndArchivedNotifications(
+    $providerLimit: Int!
+    $providerOffset: Int!
+    $providerFilters: [UniversalFilter!]
+    $notificationLimit: Int!
+    $notificationOffset: Int!
+    $notificationFilters: [UniversalFilter!]
+  ) {
+    providers(
+      options: {
+        limit: $providerLimit
+        offset: $providerOffset
+        sortBy: "createdOn"
+        sortOrder: ASC
+        filters: $providerFilters
+      }
+    ) {
+      providers {
+        applicationId
+        channelType
+        createdOn
+        name
+        providerId
+        status
+        updatedOn
+      }
+      total
+      offset
+      limit
+    }
+    archivedNotifications(
+      options: {
+        limit: $notificationLimit
+        offset: $notificationOffset
+        sortBy: "createdOn"
+        sortOrder: DESC
+        filters: $notificationFilters
+      }
+    ) {
+      archivedNotifications {
+        channelType
+        createdBy
+        createdOn
+        data
+        deliveryStatus
+        notificationId
+        result
+        status
+        updatedBy
+        updatedOn
+      }
+      total
+      offset
+      limit
+    }
+  }
+`;
