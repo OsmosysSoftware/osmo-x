@@ -61,7 +61,7 @@ This section lists the Server Key related requests such as new key generation.
 
 ### Generate new Server API Key
 
-Generates a new server API key for requested application. It is used as value for the header **`x-api-key`**.
+Generates a new server API key for the requested application. This key is used as the value for the **`x-api-key`** header.
 
 **Endpoint:** `http://localhost:3000/graphql`
 
