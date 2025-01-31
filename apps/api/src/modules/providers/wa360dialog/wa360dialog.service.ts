@@ -51,7 +51,7 @@ export class Wa360dialogService {
   constructor(
     private httpService: HttpService,
     private readonly providersService: ProvidersService,
-    private logger: Logger,
+    private logger: Logger = new Logger(Wa360dialogService.name),
   ) {}
 
   async assignWA360Values(providerId: number): Promise<void> {
