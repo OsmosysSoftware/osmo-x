@@ -59,4 +59,16 @@ export class GraphqlService {
       fetchPolicy: 'network-only',
     });
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  validateApolloErrors<T>(response: ApolloQueryResult<T>): void {
+    if (response.errors && response.errors.length > 0) {
+      const errorMessages = response.errors.map((err) => err.message).join('; ');
+      throw new Error(`GraphQL Formatted Error(s): ${errorMessages}`);
+    }
+
+    if (response.error) {
+      throw new Error(`Apollo Error: ${response.error.message}`);
+    }
+  }
 }
