@@ -30,7 +30,7 @@ import { SmsSnsDataDto } from 'src/modules/notifications/dtos/providers/smsSns-d
 export class IsDataValidConstraint implements ValidatorConstraintInterface {
   constructor(
     private readonly providersService: ProvidersService,
-    private logger: Logger,
+    private logger: Logger = new Logger(IsDataValidConstraint.name),
   ) {}
 
   async validate(value: object, args: ValidationArguments): Promise<boolean> {
