@@ -18,7 +18,7 @@ export class ApiKeyGuard implements CanActivate {
   constructor(
     private readonly serverApiKeysService: ServerApiKeysService,
     private readonly providersService: ProvidersService,
-    private logger: Logger,
+    private logger: Logger = new Logger(ApiKeyGuard.name),
   ) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
