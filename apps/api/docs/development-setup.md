@@ -38,7 +38,14 @@ sudo systemctl status mariadb
    npm install
    ```
 
-3. Create a `.env` file in the project root and add the required environment variables:
+3. Create a `.env` file in the project root and add the required environment variables. Copy the example environment configuration file and modify it with your specific settings:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Check the `.env.example` file for the required environment variables and ensure all necessary values are set correctly in the `.env` file.
+
 
    ```env
    # Server
@@ -89,8 +96,6 @@ sudo systemctl status mariadb
    # Docker env
    COMPOSE_PROJECT_NAME=osmox-api  # Add your project name here.
    ```
-
-   Alternatively, use the `.env.example` file instead.
 
    Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
 
