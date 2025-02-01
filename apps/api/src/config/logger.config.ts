@@ -7,7 +7,8 @@ import 'winston-daily-rotate-file';
 import { ConfigService } from '@nestjs/config';
 import { name as applicationName } from 'package.json';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { SlogerrTransport } from 'src/common/logger/slogerr.transport';
+import { DhilogTransport } from 'src/common/logger/dhilog.transport';
+import { stringify } from 'flatted';
 
 const configService = new ConfigService();
 const httpService = new HttpService();
@@ -18,7 +19,7 @@ const logDir = 'logs';
 const combinedLogMaxSize = configService.get<string>('COMBINED_LOG_MAX_SIZE');
 const errorLogMaxSize = configService.get<string>('ERROR_LOG_MAX_SIZE');
 
-const enableSlogger = configService.get<string>('ENABLE_SLOGERR') || 'false';
+const enableDhilog = configService.get<string>('ENABLE_DHILOG') || 'false';
 
 const logFormat = format.combine(
   format.timestamp(),
@@ -39,7 +40,7 @@ const logFormat = format.combine(
       message,
       stackTrace: stack,
     };
-    return JSON.stringify(logObject);
+    return stringify(logObject);
   }),
 );
 
@@ -82,7 +83,7 @@ if (errorLogMaxSize === '0') {
   errorLogOptions.maxSize = '20m';
 }
 
-const slogerrTransport = new SlogerrTransport({
+const dhilogTransport = new DhilogTransport({
   httpService,
   configService,
 });
@@ -97,7 +98,7 @@ const transportsConfig = [
   }),
   new transports.DailyRotateFile(combinedLogOptions),
   new transports.DailyRotateFile(errorLogOptions),
-  ...(enableSlogger === 'true' ? [slogerrTransport] : []),
+  ...(enableDhilog === 'true' ? [dhilogTransport] : []),
 ];
 
 export const loggerConfig = WinstonModule.createLogger({

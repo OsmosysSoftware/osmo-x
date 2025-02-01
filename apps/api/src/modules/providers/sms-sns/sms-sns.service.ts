@@ -13,7 +13,7 @@ export class SmsSnsService {
 
   constructor(
     private readonly providersService: ProvidersService,
-    private logger: Logger,
+    private logger: Logger = new Logger(SmsSnsService.name),
   ) {}
 
   async assignSnsConfig(providerId: number): Promise<void> {
