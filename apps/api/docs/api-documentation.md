@@ -13,13 +13,15 @@ This section lists the authentication related requests such as login.
 
 ### Login
 
-Allows the user to login into the portal and receive the auth token from the API. Requires the username and password values.
+- Allows the user to login into the portal and receive the `auth token` from the API.
+- Requires the username and password values.
+- The response token is used for Bearer Token Authorization as **Bearer `auth token`**
 
 Note: Only users with `Admin` role get list of all keys. Returns `null` for users with `Basic` role.
 
 **Endpoint:** `http://localhost:3000/graphql`
 
-**Method: `POST`**
+**Method:** `POST`
 
 **Body:** `graphql`
 
@@ -53,6 +55,45 @@ curl --location 'localhost:3000/graphql' \
 }
 ```
 
+## Server API Key
+
+This section lists the Server Key related requests such as new key generation.
+
+### Generate new Server API Key
+
+Generates a new server API key for the requested application. This key is used as the value for the **`x-api-key`** header.
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method:** `POST`
+
+**Body:** `graphql`
+
+```graphql
+mutation GenerateApiKey {
+  generateApiKey(applicationId: 1)
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'localhost:3000/graphql' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer mysecuretoken' \
+--data '{"query":"mutation GenerateApiKey {\n  generateApiKey(applicationId: 1)\n}","variables":{}}'
+```
+
+**Sample response**
+
+```json
+{
+  "data": {
+    "generateApiKey": "mySecureServerApiKey"
+  }
+}
+```
+
 ## Notifications
 
 This sections lists notification related requests such as creating new notifications and fetching all notifications.
@@ -67,7 +108,7 @@ Allows the user to create a new notification for processing and sending it. Requ
 - The `application id` for the **Server API Key** and **Provider** should match.
 - The `data` passed should have all the fields related to `channelType`.
 
-Refer the [Available Channel Types](./usage-guide.md#5-available-channel-types) for understanding the different channel types and [Delivery Status Information](./usage-guide.md#6-delivery-status-information) for understanding `deliveryStatus` in response.
+Refer the [Available Channel Types](./usage-guide.md#6-available-channel-type-end-providers) for understanding the different channel types and [Delivery Status Information](./usage-guide.md#7-delivery-status-information) for understanding `deliveryStatus` in response.
 
 **Endpoint:** `http://localhost:3000/notifications`
 
@@ -442,11 +483,11 @@ This sections lists application related requests such as creating new applicatio
 
 ### Create new Application
 
-Allows the user with `Admin` role to create a new application.
+Allows the user with `Admin` role to create a new application. Requires passing bearer token for authorization.
 
 **Endpoint:** `http://localhost:3000/graphql`
 
-**Method: `POST`**
+**Method:** `POST`
 
 **Body:** `graphql`
 
@@ -585,11 +626,13 @@ This sections lists providers related requests such as creating new provider and
 
 ### Create new Provider
 
-Allows the user with `Admin` role to create a new Provider.
+Allows the user with `Admin` role to create a new Provider. Requires passing bearer token for authorization.
+
+Users can create a new provider by selecting a `channel type` from the available `Master Providers` in the database.
 
 **Endpoint:** `http://localhost:3000/graphql`
 
-**Method: `POST`**
+**Method:** `POST`
 
 **Body:** `graphql`
 
@@ -749,3 +792,7 @@ curl --location 'http://localhost:3000/graphql' \
     }
 }
 ```
+
+## Webhook
+
+Kindly go through the [Webhook Guide](./webhook-guide.md).
