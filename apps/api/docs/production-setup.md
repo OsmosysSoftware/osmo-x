@@ -29,7 +29,7 @@ Make sure Redis and MariaDB server are up and running.
 
 Check the `.env.example` file for the required environment variables and ensure all necessary values are set correctly in the `.env` file.
 
-Make sure to replace the example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
+Make sure to replace the example values with appropriate values as per your setup and configuration. Update values such as `SERVER_PORT`, `NODE_ENV`, `DB_HOST`, `DB_PORT`, database configuration, `REDIS_HOST` and `REDIS_PORT` as required for your production setup. Default server Port is `3000`, you can update it if you want to use a different port of your choice. Update `NODE_ENV` "production" for deployment.
 
 ## Building and Preparing
 
@@ -86,7 +86,7 @@ Save pm2 config:
 
 **Step 1: Update Environment Variables**
 
-Before using Docker, ensure you've configured the environment variables in your `.env` file correctly. Update values such as `SERVER_PORT`, `MARIADB_DOCKER_PORT`, `REDIS_DOCKER_PORT`, `REDIS_HOST`, and `DB_HOST` as required for your Docker setup.
+Before using Docker, ensure you've configured the environment variables in your `.env` file correctly. Update values such as `NODE_ENV`, `SERVER_PORT`, `MARIADB_DOCKER_PORT`, `REDIS_DOCKER_PORT`, `REDIS_HOST`, and `DB_HOST` as required for your Docker setup.
 
 **Step 2: Build your docker container**
 
