@@ -46,7 +46,7 @@ sudo systemctl status mariadb
 
    Check the `.env.example` file for the required environment variables and ensure all necessary values are set correctly in the `.env` file.
 
-   Make sure to replace the example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
+   Make sure to replace the example values with appropriate values as per your setup and configuration. Update values such as `SERVER_PORT`, `DB_HOST`, `DB_PORT`, `DB_NAME`, database credentials and `REDIS_HOST` as required for your local setup. Default server Port is `3000`, you can update it if you want to use a different port of your choice.
 
 4. Set up the database:
 
