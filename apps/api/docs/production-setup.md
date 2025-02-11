@@ -29,7 +29,19 @@ Make sure Redis and MariaDB server are up and running.
 
 Check the `.env.example` file for the required environment variables and ensure all necessary values are set correctly in the `.env` file.
 
-Make sure to replace the example values with appropriate values as per your setup and configuration. Update values such as `SERVER_PORT`, `NODE_ENV`, `DB_HOST`, `DB_PORT`, database configuration, `REDIS_HOST` and `REDIS_PORT` as required for your production setup. Default server Port is `3000`, you can update it if you want to use a different port of your choice. Update `NODE_ENV` "production" for deployment.
+Make sure to replace the example values with appropriate values as per your setup and configuration. Default server Port is `3000`, you can update it if you want to use a different port of your choice. Update `NODE_ENV` "production" for deployment.
+
+Values that you should ideally update as required for your production setup:
+- `SERVER_PORT`
+- `NODE_ENV`
+- `DB_HOST`
+- `DB_PORT`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `REDIS_HOST`
+- `REDIS_PORT`
+- `API_KEY_SECRET`
+- `JWT_SECRET`
 
 ## Building and Preparing
 
