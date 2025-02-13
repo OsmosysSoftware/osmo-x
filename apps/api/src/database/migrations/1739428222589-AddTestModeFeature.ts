@@ -14,7 +14,7 @@ export class AddTestModeFeature1739428222589 implements MigrationInterface {
     await queryRunner.addColumn(
       'notify_applications',
       new TableColumn({
-        name: 'test_mode_whitelist',
+        name: 'whitelist_recipients',
         type: 'text',
         isNullable: true,
       }),
@@ -22,7 +22,7 @@ export class AddTestModeFeature1739428222589 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropColumn('notify_applications', 'test_mode_whitelist');
+    await queryRunner.dropColumn('notify_applications', 'whitelist_recipients');
     await queryRunner.dropColumn('notify_applications', 'test_mode_enabled');
   }
 }
