@@ -39,7 +39,7 @@ export class Application {
   @Field()
   testModeEnabled: number;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ name: 'whitelist_recipients', type: 'json', nullable: true })
   @IsObject()
   @IsOptional()
   @Field(() => GraphQLJSONObject, { nullable: true })
