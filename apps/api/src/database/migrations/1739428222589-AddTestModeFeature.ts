@@ -15,7 +15,7 @@ export class AddTestModeFeature1739428222589 implements MigrationInterface {
       'notify_applications',
       new TableColumn({
         name: 'whitelist_recipients',
-        type: 'text',
+        type: 'longtext',
         isNullable: true,
       }),
     );
