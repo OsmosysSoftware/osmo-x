@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { DeliveryStatus, QueueAction } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
-import { Status } from 'src/common/constants/database';
+import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
@@ -13,6 +13,7 @@ import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
 import { RetryNotification } from './entities/retry-notification.entity';
+import { TEST_MODE_RESULT_JSON } from 'src/common/constants/miscellaneous';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -50,6 +51,13 @@ export class NotificationsService extends CoreService<Notification> {
     this.logger.debug(
       `New Notification created. Saving notification in DB: ${JSON.stringify(notification)}`,
     );
+
+    if (this.checkApplicationIsInTestMode(providerEntry.applicationId)) {
+      this.logger.log('Application is in test mode. Notification will not processed.');
+      notification.deliveryStatus = DeliveryStatus.SUCCESS;
+      notification.result = TEST_MODE_RESULT_JSON;
+    }
+
     return this.notificationRepository.save(notification);
   }
 
@@ -88,6 +96,17 @@ export class NotificationsService extends CoreService<Notification> {
       return applicationEntry.name;
     } catch (error) {
       this.logger.log('Error creating notification:', error.message);
+      throw error;
+    }
+  }
+
+  async checkApplicationIsInTestMode(applicationId: number): Promise<boolean> {
+    try {
+      const applicationEntry = await this.applicationsService.findById(applicationId);
+
+      return applicationEntry.testModeEnabled === IsEnabledStatus.TRUE ? true : false;
+    } catch (error) {
+      this.logger.log('Error verifying test mode for notification:', error.message);
       throw error;
     }
   }
