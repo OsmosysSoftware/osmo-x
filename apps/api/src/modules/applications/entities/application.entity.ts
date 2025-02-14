@@ -43,7 +43,7 @@ export class Application {
   @IsObject()
   @IsOptional()
   @Field(() => GraphQLJSONObject, { nullable: true })
-  whitelistRecipients: Record<string, unknown>;
+  whitelistRecipients: string;
 
   @CreateDateColumn({ name: 'created_on' })
   @Field()
