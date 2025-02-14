@@ -14,6 +14,7 @@ import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
 import { RetryNotification } from './entities/retry-notification.entity';
 import { TEST_MODE_RESULT_JSON } from 'src/common/constants/miscellaneous';
+import { Application } from '../applications/entities/application.entity';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -45,19 +46,22 @@ export class NotificationsService extends CoreService<Notification> {
     notification.channelType = providerEntry.channelType;
     notification.applicationId = providerEntry.applicationId;
 
-    // Set correct application name using applicationId
-    notification.createdBy = await this.getApplicationNameFromId(notification.applicationId);
-    notification.updatedBy = await this.getApplicationNameFromId(notification.applicationId);
-    this.logger.debug(
-      `New Notification created. Saving notification in DB: ${JSON.stringify(notification)}`,
-    );
+    // Fetch application details using applicationId
+    const applicationEntry = await this.fetchApplicationEntryFromId(notification.applicationId);
 
-    if (this.checkApplicationIsInTestMode(providerEntry.applicationId)) {
+    // Set correct application name
+    notification.createdBy = applicationEntry.name;
+    notification.updatedBy = applicationEntry.name;
+
+    if (this.checkApplicationIsInTestMode(applicationEntry)) {
       this.logger.log('Application is in test mode. Notification will not processed.');
       notification.deliveryStatus = DeliveryStatus.SUCCESS;
       notification.result = TEST_MODE_RESULT_JSON;
     }
 
+    this.logger.debug(
+      `New Notification created. Saving notification in DB: ${JSON.stringify(notification)}`,
+    );
     return this.notificationRepository.save(notification);
   }
 
@@ -84,8 +88,8 @@ export class NotificationsService extends CoreService<Notification> {
     }
   }
 
-  // Get correct application name using applicationId
-  async getApplicationNameFromId(applicationId: number): Promise<string> {
+  // Get application details using applicationId
+  async fetchApplicationEntryFromId(applicationId: number): Promise<Application> {
     try {
       const applicationEntry = await this.applicationsService.findById(applicationId);
 
@@ -93,17 +97,14 @@ export class NotificationsService extends CoreService<Notification> {
         throw new Error('Related Application does not exist');
       }
 
-      return applicationEntry.name;
+      return applicationEntry;
     } catch (error) {
-      this.logger.log('Error creating notification:', error.message);
-      throw error;
+      throw new Error(`Error fetching application: ${error}`);
     }
   }
 
-  async checkApplicationIsInTestMode(applicationId: number): Promise<boolean> {
+  async checkApplicationIsInTestMode(applicationEntry: Application): Promise<boolean> {
     try {
-      const applicationEntry = await this.applicationsService.findById(applicationId);
-
       return applicationEntry.testModeEnabled === IsEnabledStatus.TRUE ? true : false;
     } catch (error) {
       this.logger.log('Error verifying test mode for notification:', error.message);
