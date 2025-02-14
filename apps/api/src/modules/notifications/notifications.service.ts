@@ -2,7 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import { DeliveryStatus, QueueAction } from 'src/common/constants/notifications';
+import {
+  DeliveryStatus,
+  QueueAction,
+  RecipientKeyForChannelType,
+} from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
@@ -53,10 +57,17 @@ export class NotificationsService extends CoreService<Notification> {
     notification.createdBy = applicationEntry.name;
     notification.updatedBy = applicationEntry.name;
 
-    if (this.checkApplicationIsInTestMode(applicationEntry)) {
-      this.logger.log('Application is in test mode. Notification will not processed.');
-      notification.deliveryStatus = DeliveryStatus.SUCCESS;
-      notification.result = TEST_MODE_RESULT_JSON;
+    // Handle notification creation when application is in Test Mode
+    if ((await this.checkApplicationIsInTestMode(applicationEntry)) === true) {
+      this.logger.log('Application is in test mode.');
+
+      if ((await this.checkRecipientIsWhitelisted(notification, applicationEntry)) === false) {
+        this.logger.log('Recipient is not whitelisted. Notification will not processed.');
+        notification.deliveryStatus = DeliveryStatus.SUCCESS;
+        notification.result = TEST_MODE_RESULT_JSON;
+      } else {
+        this.logger.log('Recipient is whitelisted. Notification will be prepared for processing.');
+      }
     }
 
     this.logger.debug(
@@ -108,6 +119,49 @@ export class NotificationsService extends CoreService<Notification> {
       return applicationEntry.testModeEnabled === IsEnabledStatus.TRUE ? true : false;
     } catch (error) {
       this.logger.log('Error verifying test mode for notification:', error.message);
+      throw error;
+    }
+  }
+
+  async checkRecipientIsWhitelisted(
+    notificationEntry: Notification,
+    applicationEntry: Application,
+  ): Promise<boolean> {
+    try {
+      if (applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()]) {
+        this.logger.debug(`Whitelist exists for provider ${notificationEntry.providerId}`);
+
+        const whitelistRecipientValues =
+          applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()];
+        this.logger.debug(
+          `Whitelist recipient values: ${JSON.stringify(whitelistRecipientValues)}`,
+        );
+
+        const ChannelTypeRecipientKey = RecipientKeyForChannelType[notificationEntry.channelType];
+
+        if (ChannelTypeRecipientKey) {
+          this.logger.debug(
+            `Recipient Key for provider ${notificationEntry.providerId} with channel type ${notificationEntry.channelType}: [${ChannelTypeRecipientKey}]`,
+          );
+
+          const notificationRecipientRaw = notificationEntry.data[ChannelTypeRecipientKey];
+          const notificationRecipientsArray =
+            typeof notificationRecipientRaw === 'string'
+              ? notificationRecipientRaw.split(',').map((recipient) => recipient.trim())
+              : [notificationRecipientRaw];
+          this.logger.debug(`Notification recipient list: ${notificationRecipientsArray}`);
+
+          const exists = (whitelistRecipientValues as string[]).some((item) =>
+            notificationRecipientsArray.includes(item),
+          );
+          return exists;
+        }
+      }
+
+      this.logger.debug('Notification does not have whitelisted recipient');
+      return false;
+    } catch (error) {
+      this.logger.log(`Error checking if recipient is whitelisted: ${error.message}`);
       throw error;
     }
   }
