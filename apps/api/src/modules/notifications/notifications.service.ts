@@ -62,7 +62,7 @@ export class NotificationsService extends CoreService<Notification> {
       this.logger.log('Application is in test mode.');
 
       if ((await this.checkRecipientIsWhitelisted(notification, applicationEntry)) === false) {
-        this.logger.log('Recipient is not whitelisted. Notification will not processed.');
+        this.logger.log('Recipient is not whitelisted. Notification will not be processed.');
         notification.deliveryStatus = DeliveryStatus.SUCCESS;
         notification.result = TEST_MODE_RESULT_JSON;
       } else {
@@ -123,6 +123,7 @@ export class NotificationsService extends CoreService<Notification> {
     }
   }
 
+  // Function to check if request body has any whitelisted recipients
   async checkRecipientIsWhitelisted(
     notificationEntry: Notification,
     applicationEntry: Application,
@@ -134,12 +135,14 @@ export class NotificationsService extends CoreService<Notification> {
       ) {
         this.logger.debug(`Whitelist exists for provider ${notificationEntry.providerId}`);
 
+        // Fetch whitelist whitelist recipients from db
         const whitelistRecipientValues =
           applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()];
         this.logger.debug(
           `Whitelist recipient values: ${JSON.stringify(whitelistRecipientValues)}`,
         );
 
+        // Fetch recipient key for the channel type. Ex. "to", "target"
         const ChannelTypeRecipientKey = RecipientKeyForChannelType[notificationEntry.channelType];
 
         if (ChannelTypeRecipientKey) {
@@ -147,6 +150,7 @@ export class NotificationsService extends CoreService<Notification> {
             `Recipient Key for provider ${notificationEntry.providerId} with channel type ${notificationEntry.channelType}: [${ChannelTypeRecipientKey}]`,
           );
 
+          // Create a list of recipient(s) added in request body
           const notificationRecipientRaw = notificationEntry.data[ChannelTypeRecipientKey];
           const notificationRecipientsArray =
             typeof notificationRecipientRaw === 'string'
@@ -154,6 +158,7 @@ export class NotificationsService extends CoreService<Notification> {
               : [notificationRecipientRaw];
           this.logger.debug(`Notification recipient list: ${notificationRecipientsArray}`);
 
+          // Confirm if a whitelisted recipient is in request body
           const exists = (whitelistRecipientValues as string[]).some((item) =>
             notificationRecipientsArray.includes(item),
           );
@@ -161,7 +166,7 @@ export class NotificationsService extends CoreService<Notification> {
         }
       }
 
-      this.logger.debug('Notification does not have whitelisted recipient');
+      this.logger.debug('Notification provider does not have whitelisted recipient(s)');
       return false;
     } catch (error) {
       this.logger.log(`Error checking if recipient is whitelisted: ${error.message}`);
