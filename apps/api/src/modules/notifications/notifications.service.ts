@@ -128,7 +128,10 @@ export class NotificationsService extends CoreService<Notification> {
     applicationEntry: Application,
   ): Promise<boolean> {
     try {
-      if (applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()]) {
+      if (
+        applicationEntry.whitelistRecipients &&
+        applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()]
+      ) {
         this.logger.debug(`Whitelist exists for provider ${notificationEntry.providerId}`);
 
         const whitelistRecipientValues =
