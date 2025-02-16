@@ -6,12 +6,13 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { IsEnum } from 'class-validator';
-import { Status } from 'src/common/constants/database';
+import { IsEnum, IsObject, IsOptional } from 'class-validator';
+import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { ServerApiKey } from 'src/modules/server-api-keys/entities/server-api-key.entity';
 import { ArchivedNotification } from 'src/modules/archived-notifications/entities/archived-notification.entity';
+import { GraphQLJSONObject } from 'graphql-type-json';
 
 @Entity({ name: 'notify_applications' })
 @ObjectType()
@@ -27,6 +28,22 @@ export class Application {
   @Column({ name: 'user_id' })
   @Field()
   userId: number;
+
+  @Column({
+    name: 'test_mode_enabled',
+    type: 'tinyint',
+    width: 1,
+    default: IsEnabledStatus.FALSE,
+  })
+  @IsEnum(IsEnabledStatus)
+  @Field()
+  testModeEnabled: number;
+
+  @Column({ name: 'whitelist_recipients', type: 'json', nullable: true })
+  @IsObject()
+  @IsOptional()
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  whitelistRecipients: string;
 
   @CreateDateColumn({ name: 'created_on' })
   @Field()
