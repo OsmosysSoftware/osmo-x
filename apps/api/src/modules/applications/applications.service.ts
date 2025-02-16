@@ -9,6 +9,7 @@ import { ApplicationResponse } from './dto/application-response.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { User } from '../users/entities/user.entity';
+import { UpdateApplicationInput } from './dto/update-application.input';
 
 @Injectable()
 export class ApplicationsService extends CoreService<Application> {
@@ -69,5 +70,28 @@ export class ApplicationsService extends CoreService<Application> {
       baseConditions,
     );
     return new ApplicationResponse(items, total, options.offset, options.limit);
+  }
+
+  async updateApplication(updateApplicationInput: UpdateApplicationInput): Promise<Application> {
+    if (!(await this.findById(updateApplicationInput.applicationId))) {
+      throw new Error('Application does not exist. Update failed.');
+    }
+
+    const application = await this.findById(updateApplicationInput.applicationId);
+
+    application.name = updateApplicationInput.name ? updateApplicationInput.name : application.name;
+
+    if (application.testModeEnabled !== updateApplicationInput.testModeEnabled) {
+      application.testModeEnabled = updateApplicationInput.testModeEnabled;
+    }
+
+    application.whitelistRecipients = updateApplicationInput.whitelistRecipients
+      ? updateApplicationInput.whitelistRecipients
+      : application.whitelistRecipients;
+
+    await this.applicationsRepository.save(application);
+    return await this.applicationsRepository.findOne({
+      where: { applicationId: updateApplicationInput.applicationId },
+    });
   }
 }
