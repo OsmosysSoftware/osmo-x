@@ -116,7 +116,7 @@ export class NotificationsService extends CoreService<Notification> {
 
   async checkApplicationIsInTestMode(applicationEntry: Application): Promise<boolean> {
     try {
-      return applicationEntry.testModeEnabled === IsEnabledStatus.TRUE ? true : false;
+      return applicationEntry.testModeEnabled === IsEnabledStatus.TRUE;
     } catch (error) {
       this.logger.log('Error verifying test mode for notification:', error.message);
       throw error;
