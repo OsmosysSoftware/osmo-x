@@ -9,6 +9,7 @@ import { ApplicationResponse } from './dto/application-response.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { User } from '../users/entities/user.entity';
+import { UpdateApplicationInput } from './dto/update-application.input';
 
 @Injectable()
 export class ApplicationsService extends CoreService<Application> {
@@ -69,5 +70,42 @@ export class ApplicationsService extends CoreService<Application> {
       baseConditions,
     );
     return new ApplicationResponse(items, total, options.offset, options.limit);
+  }
+
+  async updateApplication(updateApplicationInput: UpdateApplicationInput): Promise<Application> {
+    if (!(await this.findById(updateApplicationInput.applicationId))) {
+      throw new Error('Application does not exist. Update failed.');
+    }
+
+    const application = await this.findById(updateApplicationInput.applicationId);
+
+    if (
+      updateApplicationInput.name !== null &&
+      updateApplicationInput.name !== undefined &&
+      updateApplicationInput.name != application.name
+    ) {
+      application.name = updateApplicationInput.name;
+    }
+
+    if (
+      updateApplicationInput.testModeEnabled !== null &&
+      updateApplicationInput.testModeEnabled !== undefined &&
+      updateApplicationInput.testModeEnabled != application.testModeEnabled
+    ) {
+      application.testModeEnabled = updateApplicationInput.testModeEnabled;
+    }
+
+    if (
+      updateApplicationInput.whitelistRecipients !== null &&
+      updateApplicationInput.whitelistRecipients !== undefined &&
+      updateApplicationInput.whitelistRecipients != application.whitelistRecipients
+    ) {
+      application.whitelistRecipients = updateApplicationInput.whitelistRecipients;
+    }
+
+    await this.applicationsRepository.save(application);
+    return await this.applicationsRepository.findOne({
+      where: { applicationId: updateApplicationInput.applicationId },
+    });
   }
 }
