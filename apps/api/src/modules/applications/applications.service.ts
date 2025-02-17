@@ -79,15 +79,29 @@ export class ApplicationsService extends CoreService<Application> {
 
     const application = await this.findById(updateApplicationInput.applicationId);
 
-    application.name = updateApplicationInput.name ? updateApplicationInput.name : application.name;
+    if (
+      updateApplicationInput.name !== null &&
+      updateApplicationInput.name !== undefined &&
+      updateApplicationInput.name != application.name
+    ) {
+      application.name = updateApplicationInput.name;
+    }
 
-    if (application.testModeEnabled !== updateApplicationInput.testModeEnabled) {
+    if (
+      updateApplicationInput.testModeEnabled !== null &&
+      updateApplicationInput.testModeEnabled !== undefined &&
+      updateApplicationInput.testModeEnabled != application.testModeEnabled
+    ) {
       application.testModeEnabled = updateApplicationInput.testModeEnabled;
     }
 
-    application.whitelistRecipients = updateApplicationInput.whitelistRecipients
-      ? updateApplicationInput.whitelistRecipients
-      : application.whitelistRecipients;
+    if (
+      updateApplicationInput.whitelistRecipients !== null &&
+      updateApplicationInput.whitelistRecipients !== undefined &&
+      updateApplicationInput.whitelistRecipients != application.whitelistRecipients
+    ) {
+      application.whitelistRecipients = updateApplicationInput.whitelistRecipients;
+    }
 
     await this.applicationsRepository.save(application);
     return await this.applicationsRepository.findOne({
