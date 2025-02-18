@@ -2,6 +2,7 @@ import { Field, InputType } from '@nestjs/graphql';
 import { IsString, IsOptional, IsNumber, IsObject, IsNotEmpty, IsEnum } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { IsEnabledStatus } from 'src/common/constants/database';
+import { IsValidWhitelist } from 'src/common/decorators/is-valid-whitelist.decorator';
 
 @InputType()
 export class UpdateApplicationInput {
@@ -23,5 +24,6 @@ export class UpdateApplicationInput {
   @Field(() => GraphQLJSONObject, { nullable: true })
   @IsObject()
   @IsOptional()
+  @IsValidWhitelist()
   whitelistRecipients?: string | null;
 }
