@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "54a84395-9a6f-42f0-a130-615811b203fa",
+		"_postman_id": "94e8e403-1d7b-4516-af46-e7865654e4b5",
 		"name": "OsmoX-API",
 		"description": "List of all APIs used in OsmoX",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -784,7 +784,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"Pinestem\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    #   search: \"Pinestem\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -832,7 +832,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"<newApplicationName>\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"<newApplicationName>\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
 								"variables": ""
 							}
 						},
@@ -846,6 +846,54 @@
 							]
 						},
 						"description": "Allows successfully creating an application based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {\r\n    updateApplication(updateApplicationInput: {\r\n        applicationId: $applicationId,\r\n        # name: \"<updatedApplicationName>\",\r\n        testModeEnabled: 0,\r\n        # whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}},\n  \"whitelistRecipients\": {\n            \"2\": [\"Recipient1\",\"Recipient2\"], \n            \"15\": [\"Recipient3\",\"Recipient4\"]\n        }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/graphql",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully updating an application based on the options passed."
 					},
 					"response": []
 				}
