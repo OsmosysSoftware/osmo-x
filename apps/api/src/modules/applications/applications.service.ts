@@ -1,6 +1,12 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Application } from './entities/application.entity';
-import { Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateApplicationInput } from './dto/create-application.input';
 import { UsersService } from '../users/users.service';
@@ -10,6 +16,8 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { User } from '../users/entities/user.entity';
 import { UpdateApplicationInput } from './dto/update-application.input';
+import { ProvidersService } from '../providers/providers.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApplicationsService extends CoreService<Application> {
@@ -17,6 +25,10 @@ export class ApplicationsService extends CoreService<Application> {
     @InjectRepository(Application)
     private readonly applicationsRepository: Repository<Application>,
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => ProvidersService))
+    private readonly providersService: ProvidersService,
+    private readonly configService: ConfigService,
+    private dataSource: DataSource,
   ) {
     super(applicationsRepository);
   }
@@ -74,38 +86,95 @@ export class ApplicationsService extends CoreService<Application> {
 
   async updateApplication(updateApplicationInput: UpdateApplicationInput): Promise<Application> {
     if (!(await this.findById(updateApplicationInput.applicationId))) {
-      throw new Error('Application does not exist. Update failed.');
+      throw new BadRequestException('Application does not exist. Update failed.');
     }
 
-    const application = await this.findById(updateApplicationInput.applicationId);
+    this.logger.log('Creating queryRunner and starting transaction');
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    if (
-      updateApplicationInput.name !== null &&
-      updateApplicationInput.name !== undefined &&
-      updateApplicationInput.name != application.name
-    ) {
-      application.name = updateApplicationInput.name;
+    try {
+      const application = await this.findById(updateApplicationInput.applicationId);
+
+      if (
+        updateApplicationInput.whitelistRecipients !== null &&
+        updateApplicationInput.whitelistRecipients !== undefined &&
+        updateApplicationInput.whitelistRecipients != application.whitelistRecipients
+      ) {
+        const verified = await this.verifyWhitelist(
+          updateApplicationInput.whitelistRecipients,
+          updateApplicationInput.applicationId,
+        );
+
+        if (verified) {
+          application.whitelistRecipients = updateApplicationInput.whitelistRecipients;
+        } else {
+          throw new Error(
+            'Whitelist verification failed. Please check the inputted whitelist values and try again',
+          );
+        }
+      }
+
+      if (
+        updateApplicationInput.name !== null &&
+        updateApplicationInput.name !== undefined &&
+        updateApplicationInput.name != application.name
+      ) {
+        application.name = updateApplicationInput.name;
+      }
+
+      if (
+        updateApplicationInput.testModeEnabled !== null &&
+        updateApplicationInput.testModeEnabled !== undefined &&
+        updateApplicationInput.testModeEnabled != application.testModeEnabled
+      ) {
+        application.testModeEnabled = updateApplicationInput.testModeEnabled;
+      }
+
+      await this.applicationsRepository.save(application);
+      await queryRunner.commitTransaction();
+      return await this.applicationsRepository.findOne({
+        where: { applicationId: updateApplicationInput.applicationId },
+      });
+    } catch (error) {
+      this.logger.error('Error while updating application. Rolling back transaction');
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async verifyWhitelist(inputWhitelist: string, applicationId: number): Promise<boolean> {
+    for (const [key, values] of Object.entries(inputWhitelist)) {
+      // Convert provider key to number
+      const numericKey = Number(key);
+      const providerEntry = await this.providersService.getById(numericKey);
+
+      // Check provider belongs to correct application
+      if (!providerEntry || providerEntry.applicationId !== applicationId) {
+        this.logger.debug(
+          `Provider ${providerEntry.providerId} is not associated with application ${applicationId}`,
+        );
+        return false;
+      }
+
+      // Check values is an array
+      if (!Array.isArray(values)) {
+        this.logger.debug(`Key ${key} does not have an array as value`);
+        return false;
+      }
+
+      // Check all elements of the array are strings
+      values.forEach((element) => {
+        if (typeof element !== 'string') {
+          this.logger.debug(`Element ${element} was not parsed as string`);
+          return false;
+        }
+      });
     }
 
-    if (
-      updateApplicationInput.testModeEnabled !== null &&
-      updateApplicationInput.testModeEnabled !== undefined &&
-      updateApplicationInput.testModeEnabled != application.testModeEnabled
-    ) {
-      application.testModeEnabled = updateApplicationInput.testModeEnabled;
-    }
-
-    if (
-      updateApplicationInput.whitelistRecipients !== null &&
-      updateApplicationInput.whitelistRecipients !== undefined &&
-      updateApplicationInput.whitelistRecipients != application.whitelistRecipients
-    ) {
-      application.whitelistRecipients = updateApplicationInput.whitelistRecipients;
-    }
-
-    await this.applicationsRepository.save(application);
-    return await this.applicationsRepository.findOne({
-      where: { applicationId: updateApplicationInput.applicationId },
-    });
+    return true;
   }
 }
