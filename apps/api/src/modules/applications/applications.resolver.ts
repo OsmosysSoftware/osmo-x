@@ -9,6 +9,7 @@ import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { UserRoles } from 'src/common/constants/database';
+import { UpdateApplicationInput } from './dto/update-application.input';
 
 @Resolver(() => Application)
 @Roles(UserRoles.ADMIN)
@@ -31,5 +32,12 @@ export class ApplicationsResolver {
     options: QueryOptionsDto,
   ): Promise<ApplicationResponse> {
     return this.applicationsService.getAllApplications(options);
+  }
+
+  @Mutation(() => Application, { name: 'updateApplication' })
+  async updateApplication(
+    @Args('updateApplicationInput') updateApplicationInput: UpdateApplicationInput,
+  ): Promise<Application> {
+    return this.applicationsService.updateApplication(updateApplicationInput);
   }
 }
