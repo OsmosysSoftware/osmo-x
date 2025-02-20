@@ -52,6 +52,20 @@ export class ApplicationsService extends CoreService<Application> {
       userId: userEntryFromContext.userId,
     });
 
+    if (
+      applicationInput.testModeEnabled !== null &&
+      applicationInput.testModeEnabled !== undefined
+    ) {
+      newApplicationObject.testModeEnabled = applicationInput.testModeEnabled;
+    }
+
+    if (
+      applicationInput.whitelistRecipients !== null &&
+      applicationInput.whitelistRecipients !== undefined
+    ) {
+      newApplicationObject.whitelistRecipients = applicationInput.whitelistRecipients;
+    }
+
     const application = this.applicationsRepository.create(newApplicationObject);
     return this.applicationsRepository.save(application);
   }
