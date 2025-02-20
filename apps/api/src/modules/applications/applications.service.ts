@@ -63,7 +63,15 @@ export class ApplicationsService extends CoreService<Application> {
       applicationInput.whitelistRecipients !== null &&
       applicationInput.whitelistRecipients !== undefined
     ) {
-      newApplicationObject.whitelistRecipients = applicationInput.whitelistRecipients;
+      const verified = await this.verifyWhitelist(applicationInput.whitelistRecipients);
+
+      if (verified) {
+        newApplicationObject.whitelistRecipients = applicationInput.whitelistRecipients;
+      } else {
+        throw new Error(
+          'Whitelist verification failed. Please check the inputted whitelist values and try again',
+        );
+      }
     }
 
     const application = this.applicationsRepository.create(newApplicationObject);
@@ -160,14 +168,20 @@ export class ApplicationsService extends CoreService<Application> {
     }
   }
 
-  async verifyWhitelist(inputWhitelist: string, applicationId: number): Promise<boolean> {
+  async verifyWhitelist(inputWhitelist: string, applicationId?: number): Promise<boolean> {
     for (const [key, values] of Object.entries(inputWhitelist)) {
       // Convert provider key to number
       const numericKey = Number(key);
       const providerEntry = await this.providersService.getById(numericKey);
 
-      // Check provider belongs to correct application
-      if (!providerEntry || providerEntry.applicationId !== applicationId) {
+      // Check if provider exist
+      if (!providerEntry) {
+        this.logger.debug(`Provider ${key} does not exist`);
+        return false;
+      }
+
+      // Check provider belongs to correct application when applicationId is provided for comparison
+      if (applicationId && providerEntry.applicationId !== applicationId) {
         this.logger.debug(
           `Provider ${providerEntry.providerId} is not associated with application ${applicationId}`,
         );
