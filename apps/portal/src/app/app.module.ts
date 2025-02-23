@@ -12,6 +12,7 @@ import { NotificationsService } from './views/notifications/notifications.servic
 import { JsonDialogComponent } from './views/notifications/json-dialog/json-dialog.component';
 import { PrimeNgModule } from './primeng.module';
 import { LoginComponent } from './auth/login/login.component';
+import { FooterComponent } from './views/footer/footer.component';
 
 @NgModule({
   declarations: [AppComponent, NotificationsComponent, JsonDialogComponent, LoginComponent],
@@ -22,6 +23,7 @@ import { LoginComponent } from './auth/login/login.component';
     PrimeNgModule,
     HttpClientModule,
     CalendarModule,
+    FooterComponent,
   ],
   providers: [NotificationsService, MessageService],
   bootstrap: [AppComponent],
