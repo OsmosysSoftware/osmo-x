@@ -2,7 +2,9 @@
 
 ### Task Link
 
-[OSXT-###](pinestem-task-url. Mandatory to add for for Osmosys Developers)
+Osmosys Developers must include the Pinestem task link in the PR.
+
+[OSXT-###](pinestem-task-url)
 
 ### Pre-requisites
 
