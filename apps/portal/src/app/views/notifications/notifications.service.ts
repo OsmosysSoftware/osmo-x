@@ -29,9 +29,10 @@ interface GetArchivedNotificationsResponse {
 export class NotificationsService {
   constructor(private graphqlService: GraphqlService) {}
 
-  getNotifications(variables, inputToken): Observable<NotificationResponse> {
+  getNotifications(variables: unknown, inputToken: string): Observable<NotificationResponse> {
     return this.graphqlService.query(GetNotifications, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetNotificationsResponse>) => {
+        this.graphqlService.validateApolloErrors(response);
         const notificationArray = response.data?.notifications.notifications;
 
         const notificationResponseObject: NotificationResponse = {
@@ -52,6 +53,7 @@ export class NotificationsService {
   getArchivedNotifications(variables, inputToken): Observable<NotificationResponse> {
     return this.graphqlService.query(GetArchivedNotifications, variables, inputToken).pipe(
       map((response: ApolloQueryResult<GetArchivedNotificationsResponse>) => {
+        this.graphqlService.validateApolloErrors(response);
         const archivedNotificationArray =
           response.data?.archivedNotifications.archivedNotifications;
 
