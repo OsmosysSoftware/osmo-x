@@ -21,7 +21,7 @@ Make sure Redis and MariaDB server are up and running.
 
 ## Server Configuration
 
-1. **Environment Variables:** Set the necessary environment variables on your production server. These variables include database configuration, SMTP settings, and any other variables your application requires. Ensure the `.env` file is properly configured with production values.
+1. **Environment Variables:** Set the necessary environment variables on your production server. These variables include database configuration, server settings, and any other variables your application requires. Create the `.env` file and ensure that it is properly configured with production values.
 
   ```env
   # Server
@@ -42,6 +42,13 @@ Make sure Redis and MariaDB server are up and running.
   MAX_RETRY_COUNT=3 # Max retry count, default is 3
   ARCHIVE_LIMIT=1000 # Max notifications to archive, default is 1000
   ARCHIVE_INTERVAL=3600 # Interval (in seconds) for archiving notifications, default 3600 (every 1 hour)
+
+  # Dhilog configuration
+  DHILOG_LOG_TYPE=Exceptions # Custom "Log types" value defined on Dhilog portal
+  DHILOG_LOG_LEVEL=error # Log level, default is error
+  DHILOG_API_ENDPOINT=https://api.dhilog.com/log # Dhilog log api url
+  DHILOG_API_TOKEN=your-api-token # Dhilog api token
+  ENABLE_DHILOG=false # Default set to false
 
   # Log configuration
   LOG_LEVEL=info # Log level, default is info
