@@ -1,5 +1,9 @@
 ## Portal PR Checklist
 
+### Task Link
+
+[OSXT-###](pinestem-task-url. Mandatory to add for for Osmosys Developers)
+
 ### Pre-requisites
 
 - [ ] I have gone through the Contributing guidelines for [Submitting a Pull Request (PR)](https://github.com/OsmosysSoftware/osmo-x/blob/main/CONTRIBUTING.md#-submitting-a-pull-request-pr) and ensured that this is not a duplicate PR.
