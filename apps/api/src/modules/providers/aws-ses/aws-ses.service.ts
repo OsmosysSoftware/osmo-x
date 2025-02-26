@@ -26,7 +26,7 @@ export interface AwsSesData {
 export class AwsSesService {
   constructor(
     private readonly providersService: ProvidersService,
-    private logger: Logger,
+    private logger: Logger = new Logger(AwsSesService.name),
   ) {}
 
   private async getSesClient(providerId: number): Promise<aws.SES> {

@@ -9,7 +9,7 @@ export class NotificationsController {
   constructor(
     private readonly notificationService: NotificationsService,
     private readonly jsend: JsendFormatter,
-    private logger: Logger,
+    private logger: Logger = new Logger(NotificationsController.name),
   ) {}
 
   @Post('queue')
