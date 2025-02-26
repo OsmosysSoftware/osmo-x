@@ -270,10 +270,10 @@ export class NotificationsService extends CoreService<Notification> {
   }
 
   async findActiveOrArchivedNotificationById(
-    notificatonId: number,
+    notificationId: number,
   ): Promise<SingleNotificationResponse> {
     try {
-      const activeEntry = (await this.getNotificationById(notificatonId))[0];
+      const activeEntry = (await this.getNotificationById(notificationId))[0];
 
       if (activeEntry) {
         return new SingleNotificationResponse(activeEntry);
@@ -281,15 +281,17 @@ export class NotificationsService extends CoreService<Notification> {
 
       const archivedEntry =
         await this.archivedNotificationsService.getArchivedNotificationFromNotificationId(
-          notificatonId,
+          notificationId,
         );
 
       if (archivedEntry) {
         return new SingleNotificationResponse(archivedEntry);
       }
 
-      throw new NotFoundException(`Notification with ID ${notificatonId} not found in any table`);
+      this.logger.error(`Notification with ID ${notificationId} not found in any table`);
+      throw new NotFoundException(`Notification with ID ${notificationId} not found in any table`);
     } catch (error) {
+      this.logger.error(`Error finding notification: ${error.message}`, error.stack);
       return error;
     }
   }
