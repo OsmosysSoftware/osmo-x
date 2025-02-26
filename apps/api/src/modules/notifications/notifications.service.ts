@@ -288,7 +288,6 @@ export class NotificationsService extends CoreService<Notification> {
         return new SingleNotificationResponse(archivedEntry);
       }
 
-      this.logger.error(`Notification with ID ${notificationId} not found in any table`);
       throw new NotFoundException(`Notification with ID ${notificationId} not found in any table`);
     } catch (error) {
       this.logger.error(`Error finding notification: ${error.message}`, error.stack);
