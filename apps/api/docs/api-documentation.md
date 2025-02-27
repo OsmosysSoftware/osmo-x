@@ -620,6 +620,85 @@ curl --location 'http://localhost:3000/graphql' \
 }
 ```
 
+### Update an Application
+
+Allows the user to update the `application name`, `test mode toggle`, `whitelist recipients` for the requested `applicationId`. Requires passing bearer token for authorization.
+
+Note: The API will return a successful response when the Bearer `authorization-token` passed is associated with an `Admin`.
+
+The required parameter for updating an application is as follows:
+
+- `applicationId`
+
+The optional parameter for updating an application is as follows:
+
+- `name`: String of updated application name
+- `testModeEnabled`: Set 1 to enable or 0 to disable test mode
+- `whitelistRecipients`: Whitelist must be a either null or a valid JSON with string of provider id as keys and arrays of strings of recipients as values
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method:** `POST`
+
+**Body:** `graphql`
+
+```graphql
+mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {
+    updateApplication(updateApplicationInput: {
+        applicationId: $applicationId,
+        name: "<updatedApplicationName>",
+        testModeEnabled: 1,
+        whitelistRecipients: $whitelistRecipients,
+    }) {
+        applicationId
+        name
+        userId
+        testModeEnabled
+        whitelistRecipients
+        createdOn
+        updatedOn
+        status
+    }
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'localhost:3000/graphql' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data-raw '{"query":"mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {\r\n    updateApplication(updateApplicationInput: {\r\n        applicationId: $applicationId,\r\n        name: \"<updatedApplicationName>\",\r\n        testModeEnabled: 1,\r\n        whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}","variables":{"applicationId":2,"whitelistRecipients":{"2":["abc@example.com","test@email.co"],"15":["+19800176002","+19800176003"]}}}'
+```
+
+**Sample response**
+
+```json
+{
+  "data": {
+    "updateApplication": {
+      "applicationId": 2,
+      "name": "<updatedApplicationName>",
+      "userId": 2,
+      "testModeEnabled": 1,
+      "whitelistRecipients": {
+        "2": [
+          "abc@example.com",
+          "test@email.co"
+        ],
+        "15": [
+          "+19800176002",
+          "+19800176003"
+        ]
+      },
+      "createdOn": "2024-04-29T08:12:55.000Z",
+      "updatedOn": "2025-02-19T13:04:32.000Z",
+      "status": 1
+    }
+  }
+}
+```
+
 ## Providers
 
 This sections lists providers related requests such as creating new provider and fetching all providers.
