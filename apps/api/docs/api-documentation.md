@@ -334,7 +334,7 @@ curl --location 'http://localhost:3000/graphql' \
 
 Allows the user to fetch a single notification present in either `notify_notifications` or `notify_archived_notifications` table by passing notificationId. Requires passing bearer token for authorization.
 
-The required parameter for fetching a single active or archived  notification is as follows:
+The required parameter for fetching a single active or archived notification is as follows:
 
 - `notificationId`
 
