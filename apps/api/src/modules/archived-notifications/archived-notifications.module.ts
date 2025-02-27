@@ -13,7 +13,7 @@ import { ArchivedNotificationsResolver } from './archived-notifications.resolver
     forwardRef(() => NotificationsModule),
   ],
   providers: [ArchivedNotificationsService, ArchivedNotificationsResolver, Logger, ConfigService],
-  exports: [ArchivedNotificationsService],
+  exports: [TypeOrmModule, ArchivedNotificationsService],
   controllers: [ArchivedNotificationsController],
 })
 export class ArchivedNotificationsModule {}

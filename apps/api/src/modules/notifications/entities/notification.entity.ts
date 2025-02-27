@@ -97,6 +97,8 @@ export class Notification {
   @Field(() => Provider)
   providerDetails: Provider;
 
+  // TODO: Remove the retries relation in Notification and RetryNotification as the foreign key has been removed
+  // Ensure archivedNotification and Notification entities have same parameters save for extra id
   @OneToMany(() => RetryNotification, (retry) => retry.notification)
   retries: RetryNotification[];
 

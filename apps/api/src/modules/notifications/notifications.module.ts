@@ -44,6 +44,8 @@ import { AwsSesNotificationConsumer } from 'src/jobs/consumers/notifications/aws
 import { SmsSnsNotificationConsumer } from 'src/jobs/consumers/notifications/smsSns-notifications.job.consumer';
 import { SmsSnsModule } from '../providers/sms-sns/sms-sns.module';
 import { JwtService } from '@nestjs/jwt';
+import { ArchivedNotificationsModule } from '../archived-notifications/archived-notifications.module';
+import { ArchivedNotificationsService } from '../archived-notifications/archived-notifications.service';
 
 const providerModules = [
   MailgunModule,
@@ -84,6 +86,7 @@ const consumers = [
     TypeOrmModule.forFeature([Notification, RetryNotification]),
     ...providerModules,
     WebhookModule,
+    ArchivedNotificationsModule,
   ],
   providers: [
     NotificationsService,
@@ -99,6 +102,7 @@ const consumers = [
     UsersService,
     ProvidersService,
     QueueService,
+    ArchivedNotificationsService,
     ...consumers,
   ],
   exports: [
