@@ -9,7 +9,6 @@ import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
-import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
 import { RetryNotification } from './entities/retry-notification.entity';
@@ -26,7 +25,6 @@ export class NotificationsService extends CoreService<Notification> {
     @InjectRepository(RetryNotification)
     private readonly retryNotificationRepository: Repository<RetryNotification>,
     private readonly notificationQueueService: NotificationQueueProducer,
-    private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
     private readonly providersService: ProvidersService,
   ) {
@@ -51,29 +49,6 @@ export class NotificationsService extends CoreService<Notification> {
       `New Notification created. Saving notification in DB: ${JSON.stringify(notification)}`,
     );
     return this.notificationRepository.save(notification);
-  }
-
-  // Get correct applicationId using authorization header
-  async getApplicationIdFromApiKey(authHeader: Request): Promise<number> {
-    try {
-      const bearerToken = authHeader.toString();
-      const apiKeyToken = bearerToken.substring(7);
-
-      if (apiKeyToken == null) {
-        throw new Error('Failed to assign applicationId');
-      }
-
-      const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
-
-      if (!apiKeyEntry || !apiKeyEntry.applicationId) {
-        throw new Error('Related Api Key does not exist');
-      }
-
-      return apiKeyEntry.applicationId;
-    } catch (error) {
-      this.logger.log('Error creating notification:', error.message);
-      throw error;
-    }
   }
 
   // Get correct application name using applicationId
