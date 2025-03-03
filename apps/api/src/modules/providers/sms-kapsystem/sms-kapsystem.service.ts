@@ -52,6 +52,8 @@ export class SmsKapsystemService {
     function objToQueryString(obj: KapsystemData): string {
       let queryString = '';
 
+      obj.to = obj.to.trim();
+
       for (const key in obj) {
         if (queryString != '') {
           queryString += '&';
