@@ -38,7 +38,14 @@ sudo systemctl status mariadb
    npm install
    ```
 
-3. Create a `.env` file in the project root and add the required environment variables:
+3. Create a `.env` file in the project root and add the required environment variables. Copy the example environment configuration file and modify it with your specific settings:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Check the `.env.example` file for the required environment variables and ensure all necessary values are set correctly in the `.env` file.
+
 
    ```env
    # Server
@@ -59,6 +66,13 @@ sudo systemctl status mariadb
    MAX_RETRY_COUNT=3 # Max retry count, default is 3
    ARCHIVE_LIMIT=1000 # Max notifications to archive, default is 1000
    ARCHIVE_INTERVAL=3600 # Interval (in seconds) for archiving notifications, default 3600 (every 1 hour)
+
+   # Dhilog configuration
+   DHILOG_LOG_TYPE=Exceptions # Custom "Log types" value defined on Dhilog portal
+   DHILOG_LOG_LEVEL=error # Log level, default is error
+   DHILOG_API_ENDPOINT=https://api.dhilog.com/log # Dhilog log api url
+   DHILOG_API_TOKEN=your-api-token # Dhilog api token
+   ENABLE_DHILOG=false # Default set to false
 
    # Log configuration
    LOG_LEVEL=info # Log level, default is info
@@ -83,8 +97,6 @@ sudo systemctl status mariadb
    COMPOSE_PROJECT_NAME=osmox-api  # Add your project name here.
    ```
 
-   Alternatively, use the `.env.example` file instead.
-
    Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
 
 4. Set up the database:
@@ -104,3 +116,19 @@ sudo systemctl status mariadb
    ```
 
    OsmoX will now be running locally at `http://localhost:3000`.
+
+## Start the scheduler script
+
+Start the [scheduler script](../scheduler.sh) on Terminal(Linux/Unix) or Git-Bash(Windows):
+
+```sh
+# Ensure API directory is active
+cd osmo-x/apps/api
+# Start scheduler script
+./scheduler.sh
+```
+
+This script will periodically call OsmoX APIs that facilitate the following processes:
+- Processing of all `Pending` notifications
+- Provider Confirmation of all `Awaiting Confirmation` notifications
+- Archiving of all completed notifications in `notify_notifications` table
