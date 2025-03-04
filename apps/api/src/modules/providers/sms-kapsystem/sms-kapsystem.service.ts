@@ -34,7 +34,7 @@ export class SmsKapsystemService {
   constructor(
     private httpService: HttpService,
     private readonly providersService: ProvidersService,
-    private logger: Logger,
+    private logger: Logger = new Logger(SmsKapsystemService.name),
   ) {}
 
   async assignKAPSystemValues(providerId: number): Promise<void> {

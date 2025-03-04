@@ -4,6 +4,7 @@ import { TransportStreamOptions } from 'winston-transport';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common/services/logger.service';
 import { firstValueFrom } from 'rxjs';
+import { stringify } from 'flatted';
 
 interface CustomTransportOptions extends TransportStreamOptions {
   httpService: HttpService;
@@ -19,10 +20,10 @@ interface LogInfo {
   severity: string;
 }
 
-export class SlogerrTransport extends TransportStream {
+export class DhilogTransport extends TransportStream {
   private readonly httpService: HttpService;
   private readonly configService: ConfigService;
-  private readonly logger = new Logger(SlogerrTransport.name);
+  private readonly logger = new Logger(DhilogTransport.name);
 
   constructor(options: CustomTransportOptions) {
     super(options);
@@ -31,16 +32,16 @@ export class SlogerrTransport extends TransportStream {
   }
 
   async log(info: LogInfo, callback: () => void): Promise<void> {
-    const allowedLevels = (this.configService.get<string>('SLOGGER_LOG_LEVEL') || 'error')
+    const allowedLevels = (this.configService.get<string>('DHILOG_LOG_LEVEL') || 'error')
       .split(',')
       .map((level) => level.trim());
-    const logType = this.configService.get<string>('SLOGGER_LOG_TYPE') || 'Exceptions';
+    const logType = this.configService.get<string>('DHILOG_LOG_TYPE') || 'Exceptions';
 
     if (allowedLevels.includes(info.level)) {
-      const apiEndpoint = this.configService.get<string>('SLOGERR_API_ENDPOINT');
-      const apiKey = this.configService.get<string>('SLOGERR_API_TOKEN');
+      const apiEndpoint = this.configService.get<string>('DHILOG_API_ENDPOINT');
+      const apiKey = this.configService.get<string>('DHILOG_API_TOKEN');
 
-      this.logger.log(`Log Info: ${JSON.stringify(info)}`);
+      this.logger.log(`Log Info: ${stringify(info)}`);
 
       const logCreatedOn = info.timestamp || new Date().toISOString();
 
@@ -65,14 +66,14 @@ export class SlogerrTransport extends TransportStream {
         );
 
         if (response.status !== 200) {
-          this.logger.error(
-            `Failed to send log to Slogerr. Status: ${response.status}, Message: ${response.statusText}`,
+          this.logger.warn(
+            `Failed to send log to Dhilog. Status: ${response.status}, Message: ${response.statusText}`,
           );
         } else {
-          this.logger.log('Error log successfully sent to Slogerr', response);
+          this.logger.log('Error log successfully sent to Dhilog', response);
         }
       } catch (error) {
-        this.logger.error('Failed to send log to Slogerr', error.message);
+        this.logger.warn('Failed to send log to Dhilog', error.message);
       }
     }
 
