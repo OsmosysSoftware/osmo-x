@@ -483,7 +483,7 @@ This sections lists application related requests such as creating new applicatio
 
 ### Create new Application
 
-Allows the user with `Admin` role to create a new application. Requires passing bearer token for authorization.
+Allows the user with `Admin` role to create a new application. The fields `testModeEnabled` and `whitelistRecipients` are optional fields. Requires passing bearer token for authorization.
 
 **Endpoint:** `http://localhost:3000/graphql`
 
@@ -492,17 +492,23 @@ Allows the user with `Admin` role to create a new application. Requires passing 
 **Body:** `graphql`
 
 ```graphql
-mutation CreateApplication {
-  application(createApplicationInput: {
-    name: "newSampleApp",
-  }) {
-    applicationId
-    name
-    userId
-    createdOn
-    updatedOn
-    status
-  }
+mutation CreateApplication
+($whitelistRecipients: JSONObject!)
+{
+    application(createApplicationInput: {
+        name: "<newApplicationName>",
+        testModeEnabled: 0,
+        whitelistRecipients: $whitelistRecipients,
+    }) {
+        applicationId
+        name
+        userId
+        testModeEnabled
+        whitelistRecipients
+        createdOn
+        updatedOn
+        status
+    }
 }
 ```
 
@@ -511,7 +517,7 @@ mutation CreateApplication {
 ```sh
 curl --location 'http://localhost:3000/graphql' \
 --header 'Content-Type: application/json' \
---data-raw '{"query":"mutation CreateApplication {\n    application(createApplicationInput: {\n        name: \"newSampleApp\",\n        userId: 2,\n    }) {\n        applicationId\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}","variables":{}}'
+--data-raw '{"query":"mutation CreateApplication\r\n($whitelistRecipients: JSONObject!) \r\n{\r\n    application(createApplicationInput: {\r\n        name: \"<newApplicationName>\",\r\n        testModeEnabled: 0,\r\n        whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}","variables":{"whitelistRecipients":{"2":["abc@example.com","test@email.co"],"5":["+19800176002","+19800176003"]}}}'
 ```
 
 **Sample response**
@@ -520,11 +526,22 @@ curl --location 'http://localhost:3000/graphql' \
 {
   "data": {
     "application": {
-      "applicationId": 4,
+      "applicationId": 10,
       "name": "newSampleApp",
-      "userId": 2,
-      "createdOn": "2024-04-29T09:47:30.000Z",
-      "updatedOn": "2024-04-29T09:47:30.000Z",
+      "userId": 1,
+      "testModeEnabled": 0,
+      "whitelistRecipients": {
+        "2": [
+          "abc@example.com",
+          "test@email.co"
+        ],
+        "5": [
+          "+19800176002",
+          "+19800176003"
+        ]
+      },
+      "createdOn": "2025-02-20T08:04:07.000Z",
+      "updatedOn": "2025-02-20T08:04:07.000Z",
       "status": 1
     }
   }
@@ -568,6 +585,8 @@ query {
         applicationId
         name
         userId
+        testModeEnabled
+        whitelistRecipients
         createdOn
         updatedOn
         status
@@ -585,7 +604,7 @@ query {
 curl --location 'http://localhost:3000/graphql' \
 --header 'Authorization: Bearer mysecuretoken' \
 --header 'Content-Type: application/json' \
---data-raw '{"query":"query {\n  applications(\n    options: {\n      limit: 5\n      offset: 2\n      sortBy: \"createdOn\"\n      sortOrder: ASC\n      #search: \"key\"\n      #filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\n    }\n  ) {\n    applications {\n        applicationId\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n    total,\n    offset,\n    limit\n  }\n}","variables":{}}'
+--data-raw '{"query":"query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    #   search: \"Pinestem\"\r\n      #filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
 ```
 
 **Sample response**
@@ -615,6 +634,85 @@ curl --location 'http://localhost:3000/graphql' \
       "total": 2,
       "offset": 0,
       "limit": 5
+    }
+  }
+}
+```
+
+### Update an Application
+
+Allows the user to update the `application name`, `test mode toggle`, `whitelist recipients` for the requested `applicationId`. Requires passing bearer token for authorization.
+
+Note: The API will return a successful response when the Bearer `authorization-token` passed is associated with an `Admin`.
+
+The required parameter for updating an application is as follows:
+
+- `applicationId`
+
+The optional parameter for updating an application is as follows:
+
+- `name`: String of updated application name
+- `testModeEnabled`: Set 1 to enable or 0 to disable test mode
+- `whitelistRecipients`: Whitelist must be a either null or a valid JSON with string of provider id as keys and arrays of strings of recipients as values
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method:** `POST`
+
+**Body:** `graphql`
+
+```graphql
+mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {
+    updateApplication(updateApplicationInput: {
+        applicationId: $applicationId,
+        name: "<updatedApplicationName>",
+        testModeEnabled: 1,
+        whitelistRecipients: $whitelistRecipients,
+    }) {
+        applicationId
+        name
+        userId
+        testModeEnabled
+        whitelistRecipients
+        createdOn
+        updatedOn
+        status
+    }
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'localhost:3000/graphql' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data-raw '{"query":"mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {\r\n    updateApplication(updateApplicationInput: {\r\n        applicationId: $applicationId,\r\n        name: \"<updatedApplicationName>\",\r\n        testModeEnabled: 1,\r\n        whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}","variables":{"applicationId":2,"whitelistRecipients":{"2":["abc@example.com","test@email.co"],"15":["+19800176002","+19800176003"]}}}'
+```
+
+**Sample response**
+
+```json
+{
+  "data": {
+    "updateApplication": {
+      "applicationId": 2,
+      "name": "<updatedApplicationName>",
+      "userId": 2,
+      "testModeEnabled": 1,
+      "whitelistRecipients": {
+        "2": [
+          "abc@example.com",
+          "test@email.co"
+        ],
+        "15": [
+          "+19800176002",
+          "+19800176003"
+        ]
+      },
+      "createdOn": "2024-04-29T08:12:55.000Z",
+      "updatedOn": "2025-02-19T13:04:32.000Z",
+      "status": 1
     }
   }
 }
