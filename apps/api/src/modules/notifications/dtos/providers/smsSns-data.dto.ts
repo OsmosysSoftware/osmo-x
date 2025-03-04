@@ -7,5 +7,7 @@ export class SmsSnsDataDto {
 
   @IsString()
   @IsNotEmpty()
+  // Max length as per https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-client-sns/Interface/PublishCommandInput/
+  @MaxLength(1600)
   message: string;
 }
