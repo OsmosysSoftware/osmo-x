@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
@@ -12,6 +12,8 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
 import { RetryNotification } from './entities/retry-notification.entity';
+import { ArchivedNotificationsService } from '../archived-notifications/archived-notifications.service';
+import { SingleNotificationResponse } from './dtos/single-notification.response.dto';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -27,6 +29,7 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly notificationQueueService: NotificationQueueProducer,
     private readonly applicationsService: ApplicationsService,
     private readonly providersService: ProvidersService,
+    private readonly archivedNotificationsService: ArchivedNotificationsService,
   ) {
     super(notificationRepository);
   }
@@ -229,6 +232,8 @@ export class NotificationsService extends CoreService<Notification> {
     });
   }
 
+  // TODO: Update function to return single notification instead of array and make it asynchronous
+  // It is possible this was done so that we do not get null value as response so need to check first
   getNotificationById(id: number): Promise<Notification[]> {
     this.logger.log(`Getting notification with id: ${id}`);
     return this.notificationRepository.find({
@@ -237,6 +242,32 @@ export class NotificationsService extends CoreService<Notification> {
         status: Status.ACTIVE,
       },
     });
+  }
+
+  async findActiveOrArchivedNotificationById(
+    notificationId: number,
+  ): Promise<SingleNotificationResponse> {
+    try {
+      const activeEntry = (await this.getNotificationById(notificationId))[0];
+
+      if (activeEntry) {
+        return new SingleNotificationResponse(activeEntry);
+      }
+
+      const archivedEntry =
+        await this.archivedNotificationsService.getArchivedNotificationFromNotificationId(
+          notificationId,
+        );
+
+      if (archivedEntry) {
+        return new SingleNotificationResponse(archivedEntry);
+      }
+
+      throw new NotFoundException(`Notification with ID ${notificationId} not found in any table`);
+    } catch (error) {
+      this.logger.error(`Error finding notification: ${error.message}`, error.stack);
+      return error;
+    }
   }
 
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {
