@@ -2,7 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import { DeliveryStatus, QueueAction } from 'src/common/constants/notifications';
+import {
+  DeliveryStatus,
+  QueueAction,
+  RecipientKeyForChannelType,
+} from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
@@ -53,10 +57,17 @@ export class NotificationsService extends CoreService<Notification> {
     notification.createdBy = applicationEntry.name;
     notification.updatedBy = applicationEntry.name;
 
-    if (this.checkApplicationIsInTestMode(applicationEntry)) {
-      this.logger.log('Application is in test mode. Notification will not processed.');
-      notification.deliveryStatus = DeliveryStatus.SUCCESS;
-      notification.result = TEST_MODE_RESULT_JSON;
+    // Handle notification creation when application is in Test Mode
+    if ((await this.checkApplicationIsInTestMode(applicationEntry)) === true) {
+      this.logger.log('Application is in test mode.');
+
+      if ((await this.checkRecipientIsWhitelisted(notification, applicationEntry)) === false) {
+        this.logger.log('Recipient is not whitelisted. Notification will not be processed.');
+        notification.deliveryStatus = DeliveryStatus.SUCCESS;
+        notification.result = TEST_MODE_RESULT_JSON;
+      } else {
+        this.logger.log('Recipient is whitelisted. Notification will be prepared for processing.');
+      }
     }
 
     this.logger.debug(
@@ -105,9 +116,60 @@ export class NotificationsService extends CoreService<Notification> {
 
   async checkApplicationIsInTestMode(applicationEntry: Application): Promise<boolean> {
     try {
-      return applicationEntry.testModeEnabled === IsEnabledStatus.TRUE ? true : false;
+      return applicationEntry.testModeEnabled === IsEnabledStatus.TRUE;
     } catch (error) {
       this.logger.log('Error verifying test mode for notification:', error.message);
+      throw error;
+    }
+  }
+
+  // Function to check if request body has any whitelisted recipients
+  async checkRecipientIsWhitelisted(
+    notificationEntry: Notification,
+    applicationEntry: Application,
+  ): Promise<boolean> {
+    try {
+      if (
+        applicationEntry.whitelistRecipients &&
+        applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()]
+      ) {
+        this.logger.debug(`Whitelist exists for provider ${notificationEntry.providerId}`);
+
+        // Fetch whitelist whitelist recipients from db
+        const whitelistRecipientValues =
+          applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()];
+        this.logger.debug(
+          `Whitelist recipient values: ${JSON.stringify(whitelistRecipientValues)}`,
+        );
+
+        // Fetch recipient key for the channel type. Ex. "to", "target"
+        const ChannelTypeRecipientKey = RecipientKeyForChannelType[notificationEntry.channelType];
+
+        if (ChannelTypeRecipientKey) {
+          this.logger.debug(
+            `Recipient Key for provider ${notificationEntry.providerId} with channel type ${notificationEntry.channelType}: [${ChannelTypeRecipientKey}]`,
+          );
+
+          // Create a list of recipient(s) added in request body
+          const notificationRecipientRaw = notificationEntry.data[ChannelTypeRecipientKey];
+          const notificationRecipientsArray =
+            typeof notificationRecipientRaw === 'string'
+              ? notificationRecipientRaw.split(',').map((recipient) => recipient.trim())
+              : [notificationRecipientRaw];
+          this.logger.debug(`Notification recipient list: ${notificationRecipientsArray}`);
+
+          // Confirm if a whitelisted recipient is in request body
+          const exists = (whitelistRecipientValues as string[]).some((item) =>
+            notificationRecipientsArray.includes(item),
+          );
+          return exists;
+        }
+      }
+
+      this.logger.debug('Notification provider does not have whitelisted recipient(s)');
+      return false;
+    } catch (error) {
+      this.logger.log(`Error checking if recipient is whitelisted: ${error.message}`);
       throw error;
     }
   }

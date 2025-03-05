@@ -71,3 +71,18 @@ export const SkipProviderConfirmationChannels = [
   ChannelType.AWS_SES,
   ChannelType.SMS_SNS,
 ];
+
+export const RecipientKeyForChannelType = {
+  [ChannelType.SMTP]: 'to',
+  [ChannelType.MAILGUN]: 'to',
+  [ChannelType.WA_360_DAILOG]: 'to',
+  [ChannelType.WA_TWILIO]: 'to',
+  [ChannelType.SMS_TWILIO]: 'to',
+  [ChannelType.SMS_PLIVO]: 'to',
+  [ChannelType.WA_TWILIO_BUSINESS]: 'to',
+  [ChannelType.SMS_KAPSYSTEM]: 'to',
+  [ChannelType.PUSH_SNS]: 'target',
+  [ChannelType.VC_TWILIO]: 'to',
+  [ChannelType.AWS_SES]: 'to',
+  [ChannelType.SMS_SNS]: 'to',
+};
