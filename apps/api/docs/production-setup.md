@@ -21,69 +21,37 @@ Make sure Redis and MariaDB server are up and running.
 
 ## Server Configuration
 
-1. **Environment Variables:** Set the necessary environment variables on your production server. These variables include database configuration, server settings, and any other variables your application requires. Create the `.env` file and ensure that it is properly configured with production values.
+**Environment Variables:** Set the necessary environment variables on your production server. These variables include database configuration, server settings, and any other variables your application requires. Create the `.env` file and ensure that it is properly configured with production values.
 
-  ```env
-  # Server
-  SERVER_PORT=3000
-  REQUEST_MAX_SIZE=50mb # Max Size of Request, Default is 50mb
-  CLEANUP_IDLE_RESOURCES=false # Cleans up idle queues if inactive for the specified duration, default false
-  IDLE_TIMEOUT=30m # How long the queue should be idle before being considered for deletion, default 30m
-  CLEANUP_INTERVAL=7d # Frequency for running the cleanup, use formats from https://github.com/vercel/ms, default 7d
-  JWT_SECRET=your-strong-secret-key-here # A strong secret key for signing your JWTs. This should be a long, random string.
-  JWT_EXPIRES_IN=30d # Common formats are '60s', '10m', '1h', '1d', etc
-  SALT_ROUNDS=10 # Number of salt rounds for bcrypt
-  API_KEY_SECRET=your-secret # Replace with a strong, unique secret for API authentication
-
-  # Node env
-  NODE_ENV=production # Use "development" for graphql playground to work
-
-  # Notification configuration
-  MAX_RETRY_COUNT=3 # Max retry count, default is 3
-  ARCHIVE_LIMIT=1000 # Max notifications to archive, default is 1000
-  ARCHIVE_INTERVAL=3600 # Interval (in seconds) for archiving notifications, default 3600 (every 1 hour)
-
-  # Dhilog configuration
-  DHILOG_LOG_TYPE=Exceptions # Custom "Log types" value defined on Dhilog portal
-  DHILOG_LOG_LEVEL=error # Log level, default is error
-  DHILOG_API_ENDPOINT=https://api.dhilog.com/log # Dhilog log api url
-  DHILOG_API_TOKEN=your-api-token # Dhilog api token
-  ENABLE_DHILOG=false # Default set to false
-
-  # Log configuration
-  LOG_LEVEL=info # Log level, default is info
-  COMBINED_LOG_MAX_SIZE=150m # Max file size for combined logs. Set 0 for no size limit, default 150m
-  ERROR_LOG_MAX_SIZE=20m # Max file size for error logs. Set 0 for no size limit, default 20m
-
-  # Database configuration
-  DB_TYPE=mysql
-  DB_HOST=localhost # use value as osmox-mariadb in docker
-  DB_PORT=3306
-  DB_USERNAME=root
-  DB_PASSWORD=your-password
-  DB_NAME=your-database
-  MARIADB_DOCKER_PORT=3307 # (required only if using docker)
-
-  # Redis configuration
-  REDIS_HOST=127.0.0.1 # use value as osmox-redis in docker
-  REDIS_PORT=6379
-  REDIS_DOCKER_PORT=6397 # (required only if using docker)
-
-  # Docker env
-  COMPOSE_PROJECT_NAME=osmox-api  # Add your project name here.
+  ```bash
+  cp .env.example .env
   ```
 
-Make sure to replace the above example values with appropriate values as per your setup and configuration. Server Port is `3000`, you can update it if you want to use a different port of your choice.
+Check the `.env.example` file for the required environment variables and ensure all necessary values are set correctly in the `.env` file.
+
+Make sure to replace the example values with appropriate values as per your setup and configuration. Default server Port is `3000`, you can update it if you want to use a different port of your choice. Update `NODE_ENV` "production" for deployment.
+
+Values that you should ideally update as required for your production setup:
+- `SERVER_PORT`
+- `NODE_ENV`
+- `DB_HOST`
+- `DB_PORT`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `REDIS_HOST`
+- `REDIS_PORT`
+- `API_KEY_SECRET`
+- `JWT_SECRET`
 
 ## Building and Preparing
 
-1. **Build the Application:** Before starting the server, build OsmoX by running:
+**Build the Application:** Before starting the server, build OsmoX by running:
 
-   ```sh
-   npm run build
-   ```
+  ```sh
+  npm run build
+  ```
 
-  This command compiles your TypeScript code into JavaScript and generates the necessary build files.
+This command compiles your TypeScript code into JavaScript and generates the necessary build files.
 
 ## Starting the Server
 ### Using PM2
@@ -130,7 +98,7 @@ Save pm2 config:
 
 **Step 1: Update Environment Variables**
 
-Before using Docker, ensure you've configured the environment variables in your `.env` file correctly. Update values such as `MARIADB_DOCKER_PORT`, `REDIS_DOCKER_PORT`, `REDIS_HOST`, and `DB_HOST` as required for your Docker setup.
+Before using Docker, ensure you've configured the environment variables in your `.env` file correctly. Update values such as `NODE_ENV`, `SERVER_PORT`, `MARIADB_DOCKER_PORT`, `REDIS_DOCKER_PORT`, `REDIS_HOST`, and `DB_HOST` as required for your Docker setup.
 
 **Step 2: Build your docker container**
 
