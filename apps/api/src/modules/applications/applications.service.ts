@@ -154,7 +154,7 @@ export class ApplicationsService extends CoreService<Application> {
         application.testModeEnabled = updateApplicationInput.testModeEnabled;
       }
 
-      await this.applicationsRepository.save(application);
+      await queryRunner.manager.save(application);
       await queryRunner.commitTransaction();
       return await this.applicationsRepository.findOne({
         where: { applicationId: updateApplicationInput.applicationId },
