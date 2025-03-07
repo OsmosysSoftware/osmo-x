@@ -728,7 +728,7 @@ The optional parameter for updating an application is as follows:
 
 - `name`: String of updated application name
 - `testModeEnabled`: Set 1 to enable or 0 to disable test mode
-- `whitelistRecipients`: Whitelist must be a either null or a valid JSON with string of provider id as keys and arrays of strings of recipients as values
+- `whitelistRecipients`: Whitelist must be either null or a valid JSON with string of provider id as keys and arrays of strings of recipients as values
 
 **Endpoint:** `http://localhost:3000/graphql`
 
