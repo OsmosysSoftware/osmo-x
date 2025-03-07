@@ -40,7 +40,7 @@ The ERD diagram file for this schema can be accessed [here](./assets/OsmoX_datab
 | updated_on          | timestamp    | True     | current_timestamp() | Stores the timestamp for the last update to the notification                   |
 | status              | tinyint(4)   | True     | 1                   | Stores whether the notification must be considered as active(1) or inactive(0) |
 | test_mode_enabled   | tinyint(4)   | True     | 0                   | Stores whether test mode is enabled(1) or disabled(0) for the application      |
-| test_mode_whitelist | text         | False    | NULL                | Stores whitelisted recipients for application providers in JSON format         |
+| whitelist_recipients | text         | False    | NULL                | Stores whitelisted recipients for application providers in JSON format         |
 
 ### notify_archived_notifications
 
