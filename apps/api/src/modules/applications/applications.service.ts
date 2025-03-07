@@ -122,7 +122,8 @@ export class ApplicationsService extends CoreService<Application> {
       if (
         updateApplicationInput.whitelistRecipients !== null &&
         updateApplicationInput.whitelistRecipients !== undefined &&
-        updateApplicationInput.whitelistRecipients != application.whitelistRecipients
+        JSON.stringify(updateApplicationInput.whitelistRecipients) !==
+          JSON.stringify(application.whitelistRecipients)
       ) {
         const verified = await this.verifyWhitelist(
           updateApplicationInput.whitelistRecipients,
@@ -141,7 +142,7 @@ export class ApplicationsService extends CoreService<Application> {
       if (
         updateApplicationInput.name !== null &&
         updateApplicationInput.name !== undefined &&
-        updateApplicationInput.name != application.name
+        updateApplicationInput.name !== application.name
       ) {
         application.name = updateApplicationInput.name;
       }
@@ -149,7 +150,7 @@ export class ApplicationsService extends CoreService<Application> {
       if (
         updateApplicationInput.testModeEnabled !== null &&
         updateApplicationInput.testModeEnabled !== undefined &&
-        updateApplicationInput.testModeEnabled != application.testModeEnabled
+        updateApplicationInput.testModeEnabled !== application.testModeEnabled
       ) {
         application.testModeEnabled = updateApplicationInput.testModeEnabled;
       }
