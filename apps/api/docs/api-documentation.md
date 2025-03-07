@@ -330,6 +330,81 @@ curl --location 'http://localhost:3000/graphql' \
 }
 ```
 
+### Fetch active or archived Notification by Id
+
+Allows the user to fetch a single notification present in either `notify_notifications` or `notify_archived_notifications` table by passing notificationId. Requires passing bearer token for authorization.
+
+The required parameter for fetching a single active or archived notification is as follows:
+
+- `notificationId`
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method:** `POST`
+
+**Body:** `graphql`
+
+```graphql
+query {
+  notification(
+    notificationId: 150
+  ) {
+      applicationId
+      channelType
+      createdBy
+      createdOn
+      data
+      deliveryStatus
+      id
+      providerId
+      result
+      status
+      updatedBy
+      updatedOn
+    }
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'localhost:3000/graphql' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{"query":"query {\r\n  notification(\r\n    notificationId: 150\r\n  ) {\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n}","variables":{}}'
+```
+
+**Sample response**
+
+```json
+{
+  "data": {
+    "notification": {
+      "applicationId": 3,
+      "channelType": 11,
+      "createdBy": "Test3",
+      "createdOn": "2025-02-14T12:25:23.000Z",
+      "data": {
+        "from": "fromtestmail@gmail.com",
+        "to": "totestmail@gmail.co",
+        "subject": "Test subject",
+        "text": "This is a test notification",
+        "html": "<b>This is a test notification</b>"
+      },
+      "deliveryStatus": 5,
+      "id": 150,
+      "providerId": 16,
+      "result": {
+        "result": "This is a test mode notification. Notification was not delivered to recipient."
+      },
+      "status": 1,
+      "updatedBy": "Test3",
+      "updatedOn": "2025-02-14T12:25:23.000Z"
+    }
+  }
+}
+```
+
 ## Archived Notifications
 
 This sections lists notification related requests such as fetching all archived notifications.

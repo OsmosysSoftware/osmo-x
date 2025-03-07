@@ -6,9 +6,9 @@
   <div class="p-grid">
     <div class="p-col-12 p-md-3 filter-row">
       <p-dropdown
-        [options]="channelTypes"
-        [(ngModel)]="selectedChannelType"
-        placeholder="Select a Channel Type"
+        [options]="providers"
+        [(ngModel)]="selectedProvider"
+        placeholder="Select a Provider"
         class="grid-dropdown"
         [showClear]="true"
         (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
@@ -52,7 +52,9 @@
         placeholder="Select an Application"
         class="grid-dropdown"
         [showClear]="false"
-        (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
+        (onChange)="
+          loadProvidersAndNotificationsForSelectedApplication({ first: 0, rows: this.pageSize })
+        "
         *ngIf="applications.length !== 0"
       ></p-dropdown>
     </div>
