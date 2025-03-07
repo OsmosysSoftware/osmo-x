@@ -194,13 +194,13 @@ export class ApplicationsService extends CoreService<Application> {
         return false;
       }
 
-      // Check all elements of the array are strings
-      values.forEach((element) => {
-        if (typeof element !== 'string') {
-          this.logger.debug(`Element ${element} was not parsed as string`);
+      // Check all whitelist elements of the array are strings
+      for (const whitelistElement of values) {
+        if (typeof whitelistElement !== 'string') {
+          this.logger.debug(`Element ${whitelistElement} was not parsed as string`);
           return false;
         }
-      });
+      }
     }
 
     return true;
