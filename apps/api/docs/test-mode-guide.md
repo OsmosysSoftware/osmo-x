@@ -26,6 +26,8 @@ A JSON specifying `providers` and related recipients that will process notificat
   - Keys are **_providerId_** (string id identifying notification provider).
   - Values are arrays of **_recipient_** strings (e.g., email addresses, phone numbers).
 
+- **_Provider Id_** used should belong to the application.
+
 - **_Recipient_** is the data set in the **"to"** or **"target"** field of the [CreateNotification API](./api-documentation.md#create-notification) request body.
   - Multiple whitelisted recipient values can be set as array of strings for the related for `provider` key.
   - Values should be in array structure even if a single recipient is set.
