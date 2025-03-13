@@ -49,14 +49,14 @@ export class QueueService {
       port: this.configService.get<number>('REDIS_PORT'),
     };
 
-    this.workerConcurrency = +this.configService.get<number>('REDIS_WORKER_CONCURRENCY', 50);
+    this.workerConcurrency = +this.configService.get<number>('REDIS_WORKER_CONCURRENCY', 5);
 
     if (
       typeof this.workerConcurrency !== 'number' ||
       Number.isNaN(this.workerConcurrency) ||
       this.workerConcurrency <= 0
     ) {
-      this.workerConcurrency = 50;
+      this.workerConcurrency = 5;
     }
 
     if (this.configService.get('CLEANUP_IDLE_RESOURCES', 'false') === 'true') {
