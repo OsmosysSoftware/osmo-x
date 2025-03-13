@@ -5,6 +5,7 @@ import { UseGuards } from '@nestjs/common';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
+import { SingleNotificationResponse } from './dtos/single-notification.response.dto';
 
 @Resolver(() => Notification)
 @UseGuards(GqlAuthGuard)
@@ -18,5 +19,10 @@ export class NotificationsResolver {
     options: QueryOptionsDto,
   ): Promise<NotificationResponse> {
     return this.notificationsService.getAllNotifications(options);
+  }
+
+  @Query(() => Notification, { name: 'notification' })
+  async find(@Args('notificationId') notificationId: number): Promise<SingleNotificationResponse> {
+    return this.notificationsService.findActiveOrArchivedNotificationById(notificationId);
   }
 }

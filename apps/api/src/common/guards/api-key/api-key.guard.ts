@@ -116,21 +116,4 @@ export class ApiKeyGuard implements CanActivate {
 
     return false;
   }
-
-  // Get correct applicationId using apiKeyToken
-  async getApplicationIdFromApiKey(apiKeyToken: string): Promise<number> {
-    try {
-      const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
-
-      if (!apiKeyEntry || !apiKeyEntry.applicationId) {
-        this.logger.error('Related Api Key does not exist');
-        throw new Error('Related Api Key does not exist');
-      }
-
-      return apiKeyEntry.applicationId;
-    } catch (error) {
-      this.logger.error(error.message);
-      throw error;
-    }
-  }
 }

@@ -1,18 +1,25 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-import { DeliveryStatus, QueueAction } from 'src/common/constants/notifications';
+import {
+  DeliveryStatus,
+  QueueAction,
+  RecipientKeyForChannelType,
+} from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
-import { Status } from 'src/common/constants/database';
+import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
-import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
 import { RetryNotification } from './entities/retry-notification.entity';
+import { ArchivedNotificationsService } from '../archived-notifications/archived-notifications.service';
+import { SingleNotificationResponse } from './dtos/single-notification.response.dto';
+import { TEST_MODE_RESULT_JSON } from 'src/common/constants/miscellaneous';
+import { Application } from '../applications/entities/application.entity';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -26,9 +33,9 @@ export class NotificationsService extends CoreService<Notification> {
     @InjectRepository(RetryNotification)
     private readonly retryNotificationRepository: Repository<RetryNotification>,
     private readonly notificationQueueService: NotificationQueueProducer,
-    private readonly serverApiKeysService: ServerApiKeysService,
     private readonly applicationsService: ApplicationsService,
     private readonly providersService: ProvidersService,
+    private readonly archivedNotificationsService: ArchivedNotificationsService,
   ) {
     super(notificationRepository);
   }
@@ -44,40 +51,34 @@ export class NotificationsService extends CoreService<Notification> {
     notification.channelType = providerEntry.channelType;
     notification.applicationId = providerEntry.applicationId;
 
-    // Set correct application name using applicationId
-    notification.createdBy = await this.getApplicationNameFromId(notification.applicationId);
-    notification.updatedBy = await this.getApplicationNameFromId(notification.applicationId);
+    // Fetch application details using applicationId
+    const applicationEntry = await this.fetchApplicationEntryFromId(notification.applicationId);
+
+    // Set correct application name
+    notification.createdBy = applicationEntry.name;
+    notification.updatedBy = applicationEntry.name;
+
+    // Handle notification creation when application is in Test Mode
+    if ((await this.checkApplicationIsInTestMode(applicationEntry)) === true) {
+      this.logger.log('Application is in test mode.');
+
+      if ((await this.checkRecipientIsWhitelisted(notification, applicationEntry)) === false) {
+        this.logger.log('Recipient is not whitelisted. Notification will not be processed.');
+        notification.deliveryStatus = DeliveryStatus.SUCCESS;
+        notification.result = TEST_MODE_RESULT_JSON;
+      } else {
+        this.logger.log('Recipient is whitelisted. Notification will be prepared for processing.');
+      }
+    }
+
     this.logger.debug(
       `New Notification created. Saving notification in DB: ${JSON.stringify(notification)}`,
     );
     return this.notificationRepository.save(notification);
   }
 
-  // Get correct applicationId using authorization header
-  async getApplicationIdFromApiKey(authHeader: Request): Promise<number> {
-    try {
-      const bearerToken = authHeader.toString();
-      const apiKeyToken = bearerToken.substring(7);
-
-      if (apiKeyToken == null) {
-        throw new Error('Failed to assign applicationId');
-      }
-
-      const apiKeyEntry = await this.serverApiKeysService.findByServerApiKey(apiKeyToken);
-
-      if (!apiKeyEntry || !apiKeyEntry.applicationId) {
-        throw new Error('Related Api Key does not exist');
-      }
-
-      return apiKeyEntry.applicationId;
-    } catch (error) {
-      this.logger.log('Error creating notification:', error.message);
-      throw error;
-    }
-  }
-
-  // Get correct application name using applicationId
-  async getApplicationNameFromId(applicationId: number): Promise<string> {
+  // Get application details using applicationId
+  async fetchApplicationEntryFromId(applicationId: number): Promise<Application> {
     try {
       const applicationEntry = await this.applicationsService.findById(applicationId);
 
@@ -85,9 +86,68 @@ export class NotificationsService extends CoreService<Notification> {
         throw new Error('Related Application does not exist');
       }
 
-      return applicationEntry.name;
+      return applicationEntry;
     } catch (error) {
-      this.logger.log('Error creating notification:', error.message);
+      throw new Error(`Error fetching application: ${error}`);
+    }
+  }
+
+  async checkApplicationIsInTestMode(applicationEntry: Application): Promise<boolean> {
+    try {
+      return applicationEntry.testModeEnabled === IsEnabledStatus.TRUE;
+    } catch (error) {
+      this.logger.log('Error verifying test mode for notification:', error.message);
+      throw error;
+    }
+  }
+
+  // Function to check if request body has any whitelisted recipients
+  async checkRecipientIsWhitelisted(
+    notificationEntry: Notification,
+    applicationEntry: Application,
+  ): Promise<boolean> {
+    try {
+      if (
+        applicationEntry.whitelistRecipients &&
+        applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()]
+      ) {
+        this.logger.debug(`Whitelist exists for provider ${notificationEntry.providerId}`);
+
+        // Fetch whitelist whitelist recipients from db
+        const whitelistRecipientValues =
+          applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()];
+        this.logger.debug(
+          `Whitelist recipient values: ${JSON.stringify(whitelistRecipientValues)}`,
+        );
+
+        // Fetch recipient key for the channel type. Ex. "to", "target"
+        const ChannelTypeRecipientKey = RecipientKeyForChannelType[notificationEntry.channelType];
+
+        if (ChannelTypeRecipientKey) {
+          this.logger.debug(
+            `Recipient Key for provider ${notificationEntry.providerId} with channel type ${notificationEntry.channelType}: [${ChannelTypeRecipientKey}]`,
+          );
+
+          // Create a list of recipient(s) added in request body
+          const notificationRecipientRaw = notificationEntry.data[ChannelTypeRecipientKey];
+          const notificationRecipientsArray =
+            typeof notificationRecipientRaw === 'string'
+              ? notificationRecipientRaw.split(',').map((recipient) => recipient.trim())
+              : [notificationRecipientRaw];
+          this.logger.debug(`Notification recipient list: ${notificationRecipientsArray}`);
+
+          // Confirm if a whitelisted recipient is in request body
+          const exists = (whitelistRecipientValues as string[]).some((item) =>
+            notificationRecipientsArray.includes(item),
+          );
+          return exists;
+        }
+      }
+
+      this.logger.debug('Notification provider does not have whitelisted recipient(s)');
+      return false;
+    } catch (error) {
+      this.logger.log(`Error checking if recipient is whitelisted: ${error.message}`);
       throw error;
     }
   }
@@ -254,6 +314,8 @@ export class NotificationsService extends CoreService<Notification> {
     });
   }
 
+  // TODO: Update function to return single notification instead of array and make it asynchronous
+  // It is possible this was done so that we do not get null value as response so need to check first
   getNotificationById(id: number): Promise<Notification[]> {
     this.logger.log(`Getting notification with id: ${id}`);
     return this.notificationRepository.find({
@@ -262,6 +324,32 @@ export class NotificationsService extends CoreService<Notification> {
         status: Status.ACTIVE,
       },
     });
+  }
+
+  async findActiveOrArchivedNotificationById(
+    notificationId: number,
+  ): Promise<SingleNotificationResponse> {
+    try {
+      const activeEntry = (await this.getNotificationById(notificationId))[0];
+
+      if (activeEntry) {
+        return new SingleNotificationResponse(activeEntry);
+      }
+
+      const archivedEntry =
+        await this.archivedNotificationsService.getArchivedNotificationFromNotificationId(
+          notificationId,
+        );
+
+      if (archivedEntry) {
+        return new SingleNotificationResponse(archivedEntry);
+      }
+
+      throw new NotFoundException(`Notification with ID ${notificationId} not found in any table`);
+    } catch (error) {
+      this.logger.error(`Error finding notification: ${error.message}`, error.stack);
+      return error;
+    }
   }
 
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {

@@ -133,4 +133,17 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     );
     return new ArchivedNotificationResponse(items, total, options.offset, options.limit);
   }
+
+  async getArchivedNotificationFromNotificationId(
+    notificationId: number,
+  ): Promise<ArchivedNotification | null> {
+    this.logger.log(`Getting notification with id: ${notificationId} from archive table.`);
+    const archivedNotification = await this.archivedNotificationRepository.findOne({
+      where: {
+        notificationId: notificationId,
+        status: Status.ACTIVE,
+      },
+    });
+    return archivedNotification;
+  }
 }
