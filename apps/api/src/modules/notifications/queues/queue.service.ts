@@ -24,6 +24,7 @@ export class QueueService {
   private workers: Map<string, Worker> = new Map();
   private queueEvents: Map<string, QueueEvents> = new Map();
   private redisConfig: { host: string; port: number };
+  private workerConcurrency: number;
   private idleTimeout: number;
   private cleanupInterval: number;
 
@@ -47,6 +48,16 @@ export class QueueService {
       host: this.configService.get<string>('REDIS_HOST'),
       port: this.configService.get<number>('REDIS_PORT'),
     };
+
+    this.workerConcurrency = +this.configService.get<number>('REDIS_WORKER_CONCURRENCY', 5);
+
+    if (
+      typeof this.workerConcurrency !== 'number' ||
+      Number.isNaN(this.workerConcurrency) ||
+      this.workerConcurrency <= 0
+    ) {
+      this.workerConcurrency = 5;
+    }
 
     if (this.configService.get('CLEANUP_IDLE_RESOURCES', 'false') === 'true') {
       this.idleTimeout = ms(this.configService.get<string>('IDLE_TIMEOUT', '30m'));
@@ -205,7 +216,10 @@ export class QueueService {
       }
     };
 
-    const worker = new Worker(queueName, processJob, { connection: this.redisConfig });
+    const worker = new Worker(queueName, processJob, {
+      connection: this.redisConfig,
+      concurrency: this.workerConcurrency,
+    });
     worker.on('completed', (job) => {
       this.logger.log(JSON.stringify(job));
       this.logger.log(`Job completed: ${job.id}`);

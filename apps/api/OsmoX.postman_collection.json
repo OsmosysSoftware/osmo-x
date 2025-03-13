@@ -3491,7 +3491,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"sampleOsmoXApp\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"sampleOsmoXApp\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3554,7 +3554,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    #   search: \"Pinestem\"\r\n    #   filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    #   search: \"Pinestem\"\r\n    #   filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3612,7 +3612,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  applications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"key\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  applications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n      search: \"key\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    applications {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3679,8 +3679,8 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
-								"variables": ""
+								"query": "mutation CreateApplication\r\n($whitelistRecipients: JSONObject!) \r\n{\r\n    application(createApplicationInput: {\r\n        name: \"<newApplicationName>\",\r\n        testModeEnabled: 0,\r\n        whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": "{\n  \"whitelistRecipients\": {\n            \"2\": [\"abc@example.com\",\"test@email.co\"], \n            \"5\": [\"+19800176002\",\"+19800176003\"]\n        }\n}"
 							}
 						},
 						"url": {
@@ -3742,8 +3742,8 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        name: \"sampleTestXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
-								"variables": ""
+								"query": "mutation CreateApplication\r\n($whitelistRecipients: JSONObject!) \r\n{\r\n    application(createApplicationInput: {\r\n        name: \"<newApplicationName>\",\r\n        testModeEnabled: 0,\r\n        whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": "{\n  \"whitelistRecipients\": {\n            \"2\": [\"abc@example.com\",\"test@email.co\"], \n            \"5\": [\"+19800176002\",\"+19800176003\"]\n        }\n}"
 							}
 						},
 						"url": {
@@ -3800,8 +3800,8 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation CreateApplication {\r\n    application(createApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        name: \"sampleFoundationXApp\",\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
-								"variables": ""
+								"query": "mutation CreateApplication\r\n($whitelistRecipients: JSONObject!) \r\n{\r\n    application(createApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        name: \"<newApplicationName>\",\r\n        testModeEnabled: 0,\r\n        whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": "{\n  \"whitelistRecipients\": {\n            \"2\": [\"abc@example.com\",\"test@email.co\"], \n            \"5\": [\"+19800176002\",\"+19800176003\"]\n        }\n}"
 							}
 						},
 						"url": {
@@ -3821,6 +3821,194 @@
 				}
 			],
 			"description": "Collection of requests pertaining to creating new application."
+		},
+		{
+			"name": "Update Application",
+			"item": [
+				{
+					"name": "Update Application - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'data' property\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'updateApplication' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.have.property(\"updateApplication\").to.be.an(\"object\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {\r\n    updateApplication(updateApplicationInput: {\r\n        applicationId: $applicationId,\r\n        name: \"<updatedApplicationName>\",\r\n        testModeEnabled: 1,\r\n        whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}},\n  \"whitelistRecipients\": {\n            \"2\": [\"def@example.com\",\"updatedtest@email.co\"], \n            \"15\": [\"+19800176004\",\"+19800176005\"]\n        }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully updating an application based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application - Error - Non Admin user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'errors' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"});\r",
+									"pm.test(\"message: Forbidden resource\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\").to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\", \"Forbidden resource\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {\r\n    updateApplication(updateApplicationInput: {\r\n        applicationId: $applicationId,\r\n        name: \"<updatedApplicationName>\",\r\n        testModeEnabled: 1,\r\n        whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}},\n  \"whitelistRecipients\": {\n            \"2\": [\"def@example.com\",\"updatedtest@email.co\"], \n            \"15\": [\"+19800176004\",\"+19800176005\"]\n        }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows representing failure when updating an application when using a NON ADMIN user for triggering request."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application - Bad Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response for creating new application with bad request\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(400);\r",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");\r",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {\r\n    updateApplication(updateApplicationInput: {\r\n        unknownValue: \"Some unknown parameter\"\r\n        applicationId: $applicationId,\r\n        name: \"<updatedApplicationName>\",\r\n        testModeEnabled: 1,\r\n        whitelistRecipients: $whitelistRecipients,\r\n    }) {\r\n        applicationId\r\n        name\r\n        userId\r\n        testModeEnabled\r\n        whitelistRecipients\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n}",
+								"variables": "{\n  \"applicationId\": {{applicationId}},\n  \"whitelistRecipients\": {\n            \"2\": [\"def@example.com\",\"updatedtest@email.co\"], \n            \"15\": [\"+19800176004\",\"+19800176005\"]\n        }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows representing failure when updating an application when using invalid/bad request."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to updating an application."
 		},
 		{
 			"name": "All Providers",

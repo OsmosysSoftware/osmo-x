@@ -17,6 +17,7 @@ Welcome to the usage guide for OsmoX, a powerful notification management system 
   - [5. Tracking Notification Status](#5-tracking-notification-status)
   - [6. Available Channel Type End Providers](#6-available-channel-type-end-providers)
   - [7. Delivery Status Information](#7-delivery-status-information)
+  - [8. Test Mode Feature](#8-test-mode-feature)
 
 ## 1. Overview
 
@@ -35,9 +36,9 @@ For more information, please refer to the [OsmoX database design](./database-des
 ## 3. Setup
 
 1. Set up the codebase and start the API as per requirement:
-     - [Development Setup](./development-setup.md)
-     - [Production Setup](./production-setup.md)
-2. OsmoX has seeded [Master Provider](#6-available-channel-type-end-providers) & `Admin User` data to facilitate notification service setup.
+   - [Development Setup](./development-setup.md)
+   - [Production Setup](./production-setup.md)
+2. OsmoX has seeded [Master Provider](#6-available-channel-type-end-providers) & [Admin User](../src/database/migrations/1692870736646-seeddata.ts) data to facilitate notification service setup.
 3. Get the Bearer Token for the seeded Admin user using the [login API](./api-documentation.md#login)
 4. Create a new `Application` as per requirement using the [create new application API](./api-documentation.md#create-new-application).
 5. Create a new `Provider` that will be used to send notifications using the [create new provider API](./api-documentation.md#create-new-provider).
@@ -48,7 +49,7 @@ Now you can use the OsmoX API to send notifications.
 
 ## 4. Using the OsmoX API
 
-To use the OsmoX API, follow these steps:
+To use the OsmoX API, follow these steps: [Create Notification API](./api-documentation.md#create-notification)
 
 - **Method:** POST
 - **Endpoint:** `/notifications`
@@ -145,3 +146,13 @@ OsmoX provides different delivery status options to reflect the state of your no
 |  QUEUED_CONFIRMATION  | The notification is added to confirmation queue. |     4     |
 |        SUCCESS        |   The notification was successfully delivered.   |     5     |
 |        FAILED         |        The notification delivery failed.         |     6     |
+
+## 8. Test Mode Feature
+
+OsmoX Admin users can enable/disable **Test Mode** for applications. This feature allows end applications using the OsmoX service to perform functional testing without sending unnecessary notifications to end recipients
+
+- Providers associated with test mode enabled application DO NOT send notifications to end recipients.
+- Admin users can add a whitelist which sends notifications to recipients present in the whitelist
+- Whitelist must be a either null or a valid JSON with string of provider id as keys and arrays of strings of recipients as values
+
+For detailed information, please refer to the [OsmoX Test Mode guide](./test-mode-guide.md)
