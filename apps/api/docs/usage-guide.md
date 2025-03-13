@@ -36,9 +36,9 @@ For more information, please refer to the [OsmoX database design](./database-des
 ## 3. Setup
 
 1. Set up the codebase and start the API as per requirement:
-     - [Development Setup](./development-setup.md)
-     - [Production Setup](./production-setup.md)
-2. OsmoX has seeded [Master Provider](#6-available-channel-type-end-providers) & `Admin User` data to facilitate notification service setup.
+   - [Development Setup](./development-setup.md)
+   - [Production Setup](./production-setup.md)
+2. OsmoX has seeded [Master Provider](#6-available-channel-type-end-providers) & [Admin User](../src/database/migrations/1692870736646-seeddata.ts) data to facilitate notification service setup.
 3. Get the Bearer Token for the seeded Admin user using the [login API](./api-documentation.md#login)
 4. Create a new `Application` as per requirement using the [create new application API](./api-documentation.md#create-new-application).
 5. Create a new `Provider` that will be used to send notifications using the [create new provider API](./api-documentation.md#create-new-provider).
@@ -154,3 +154,5 @@ OsmoX Admin users can enable/disable **Test Mode** for applications. This featur
 - Providers associated with test mode enabled application DO NOT send notifications to end recipients.
 - Admin users can add a whitelist which sends notifications to recipients present in the whitelist
 - Whitelist must be a either null or a valid JSON with string of provider id as keys and arrays of strings of recipients as values
+
+For detailed information, please refer to the [OsmoX Test Mode guide](./test-mode-guide.md)
