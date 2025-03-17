@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCHEDULE_TIME=5
+SCHEDULE_TIME_IN_SECONDS="${SCHEDULE_TIME_IN_SECONDS:-5}"
 
 source ".env"
 
@@ -35,5 +35,5 @@ while true; do
     last_archive_run=$current_time
   fi
 
-  sleep $SCHEDULE_TIME
+  sleep $SCHEDULE_TIME_IN_SECONDS
 done
