@@ -42,6 +42,7 @@ Follow the [Usage Guide](docs/usage-guide.md) to set up and use OsmoX on your lo
 - [API Test Cases](docs/api-test-cases.md)
 - [SNS Usage Guide](docs/sns-usage-guide.md)
 - [Webhook Guide](docs/webhook-guide.md)
+- [Test Mode Guide](docs/test-mode-guide.md)
 
 ## Contributing
 
