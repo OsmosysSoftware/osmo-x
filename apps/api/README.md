@@ -28,6 +28,8 @@ Imagine having a central hub where you can create and send notifications seamles
 2. **Create Notifications:** Easily create and customize notifications for different channels. Use your own API or our API to update the notification database.
 3. **Sit Back and Relax:** Let our app handle the delivery and status tracking.
 
+Follow the [Usage Guide](docs/usage-guide.md) to set up and use OsmoX on your local machine.
+
 ## Documentation
 
 - [Development Setup](docs/development-setup.md)
@@ -38,6 +40,9 @@ Imagine having a central hub where you can create and send notifications seamles
 - [Database Design](docs/database-design.md)
 - [API Documentation](docs/api-documentation.md)
 - [API Test Cases](docs/api-test-cases.md)
+- [SNS Usage Guide](docs/sns-usage-guide.md)
+- [Webhook Guide](docs/webhook-guide.md)
+- [Test Mode Guide](docs/test-mode-guide.md)
 
 ## Contributing
 
