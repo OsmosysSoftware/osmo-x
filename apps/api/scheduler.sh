@@ -1,8 +1,8 @@
 #!/bin/bash
 
-SCHEDULE_TIME=5
-
 source ".env"
+
+SCHEDULE_TIME_IN_SECONDS="${SCHEDULE_TIME_IN_SECONDS:-5}"
 
 BASE_URL="http://localhost:${SERVER_PORT}/notifications"
 ARCHIVE_URL="http://localhost:${SERVER_PORT}/archived-notifications"
@@ -35,5 +35,5 @@ while true; do
     last_archive_run=$current_time
   fi
 
-  sleep $SCHEDULE_TIME
+  sleep $SCHEDULE_TIME_IN_SECONDS
 done
