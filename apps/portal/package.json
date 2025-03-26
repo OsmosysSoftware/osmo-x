@@ -26,7 +26,7 @@
     "@angular/router": "^18.2.10",
     "@apollo/client": "^3.11.8",
     "apollo-angular": "^7.2.1",
-    "graphql": "^16.9.0",
+    "graphql": "^16.10.0",
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
     "primeng": "^17.18.9",
@@ -52,13 +52,13 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.2.5",
-    "jasmine-core": "~5.4.0",
+    "jasmine-core": "~5.6.0",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.5.3",
     "typescript": "~5.4.5"
   }
 }
