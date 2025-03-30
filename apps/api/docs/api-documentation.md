@@ -224,6 +224,7 @@ query {
       data
       deliveryStatus
       id
+      notificationSentOn
       providerDetails {
         providerId
         name
@@ -253,7 +254,7 @@ query {
 curl --location 'http://localhost:3000/graphql' \
 --header 'Authorization: Bearer mysecuretoken' \
 --header 'Content-Type: application/json' \
---data-raw '{"query":"query {\n  notifications(\n    options: {\n      limit: 5\n      offset: 0\n      sortBy: \"createdOn\"\n      sortOrder: DESC\n      #search: \"sender@email.com\"\n      #filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\n    }\n  ) {\n    notifications {\n      applicationDetails {\n        applicationId\n        name\n        userId\n        status\n      }\n      applicationId\n      channelType\n      createdBy\n      createdOn\n      data\n      deliveryStatus\n      id\n      providerDetails {\n        providerId\n        name\n        channelType\n        isEnabled\n        configuration\n        applicationId\n        userId\n        status\n      }\n      providerId\n      result\n      status\n      updatedBy\n      updatedOn\n    }\n    total,\n    offset,\n    limit\n  }\n}","variables":{}}'
+--data-raw '{"query":"query {\n  notifications(\n    options: {\n      limit: 5\n      offset: 0\n      sortBy: \"createdOn\"\n      sortOrder: DESC\n      #search: \"sender@email.com\"\n      #filters: [{ field: \"channelType\", operator: \"eq\", value: \"1\" }]\n    }\n  ) {\n    notifications {\n      applicationDetails {\n        applicationId\n        name\n        userId\n        status\n      }\n      applicationId\n      channelType\n      createdBy\n      createdOn\n      data\n      deliveryStatus\n      id\n      notificationSentOn\n      providerDetails {\n        providerId\n        name\n        channelType\n        isEnabled\n        configuration\n        applicationId\n        userId\n        status\n      }\n      providerId\n      result\n      status\n      updatedBy\n      updatedOn\n    }\n    total,\n    offset,\n    limit\n  }\n}","variables":{}}'
 ```
 
 **Sample response**
@@ -285,6 +286,7 @@ curl --location 'http://localhost:3000/graphql' \
           },
           "deliveryStatus": 3,
           "id": 93,
+          "notificationSentOn": "2024-02-12T07:01:43.000Z",
           "providerDetails": {
             "providerId": 1,
             "name": "SMTP",
@@ -356,6 +358,7 @@ query {
       data
       deliveryStatus
       id
+      notificationSentOn
       providerId
       result
       status
@@ -371,7 +374,7 @@ query {
 curl --location 'localhost:3000/graphql' \
 --header 'Authorization: Bearer mysecuretoken' \
 --header 'Content-Type: application/json' \
---data '{"query":"query {\r\n  notification(\r\n    notificationId: 150\r\n  ) {\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n}","variables":{}}'
+--data '{"query":"query {\r\n  notification(\r\n    notificationId: 150\r\n  ) {\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n}","variables":{}}'
 ```
 
 **Sample response**
@@ -393,6 +396,7 @@ curl --location 'localhost:3000/graphql' \
       },
       "deliveryStatus": 5,
       "id": 150,
+      "notificationSentOn": null,
       "providerId": 16,
       "result": {
         "result": "This is a test mode notification. Notification was not delivered to recipient."
@@ -457,6 +461,7 @@ query {
       deliveryStatus
       id
       notificationId
+      notificationSentOn
       providerDetails {
         providerId
         name
@@ -486,7 +491,7 @@ query {
 curl --location 'YOUR_BASE_URL/graphql' \
 --header 'Authorization: Bearer YOUR_AUTH_TOKEN' \
 --header 'Content-Type: application/json' \
---data-raw '{"query":"query {\r\n  archivedNotifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationId\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
+--data-raw '{"query":"query {\r\n  archivedNotifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationId\r\n      notificationSentOn\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
 ```
 
 **Sample response**
@@ -519,6 +524,7 @@ curl --location 'YOUR_BASE_URL/graphql' \
                     "deliveryStatus": 6,
                     "id": 7,
                     "notificationId": 9,
+                    "notificationSentOn": "2024-07-03T06:10:08.000Z",
                     "providerDetails": {
                         "providerId": 1,
                         "name": "smtp",
