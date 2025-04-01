@@ -147,6 +147,8 @@ OsmoX provides different delivery status options to reflect the state of your no
 |        SUCCESS        |   The notification was successfully delivered.   |     5     |
 |        FAILED         |        The notification delivery failed.         |     6     |
 
+For more information, please refer to the [Delivery Status Lifecycle](docs/delivery-status-lifecycle.md)
+
 ## 8. Test Mode Feature
 
 OsmoX Admin users can enable/disable **Test Mode** for applications. This feature allows end applications using the OsmoX service to perform functional testing without sending unnecessary notifications to end recipients
