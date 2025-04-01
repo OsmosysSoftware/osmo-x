@@ -60,8 +60,12 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
         notificationSendResponse.id,
         notification.providerId,
       );
-      const deliveryStatus = result.event;
-      notificationSendResponse.message = result.event;
+
+      // If result.items[0] does not exist, set value as null to prevent undefined TypeError
+      // Else return mailgun event to decide DeliveryStatus
+      const deliveryStatus = typeof result.items[0] === 'undefined' ? null : result.items[0].event;
+
+      notificationSendResponse.message = deliveryStatus;
 
       if (ProviderDeliveryStatus.MAILGUN.FAILURE_STATES.includes(deliveryStatus)) {
         return { result: result, deliveryStatus: DeliveryStatus.PENDING };

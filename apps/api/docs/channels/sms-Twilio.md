@@ -13,11 +13,11 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key                      | Description                    |
-|--------------------------|--------------------------------|
-| TWILIO_SMS_ACCOUNT_SID   | Twilio SMS account SID         |
-| TWILIO_SMS_AUTH_TOKEN    | Twilio SMS auth token          |
-| TWILIO_SMS_NUMBER        | Twilio registered phone number |
+| Key                    | Description                    |
+| ---------------------- | ------------------------------ |
+| TWILIO_SMS_ACCOUNT_SID | Twilio SMS account SID         |
+| TWILIO_SMS_AUTH_TOKEN  | Twilio SMS auth token          |
+| TWILIO_SMS_NUMBER      | Twilio registered phone number |
 
 ```jsonc
 // Sample json to set in configuration field
@@ -45,9 +45,9 @@ Here's a sample request body:
 
 ### Dependencies
 
-| Package Name       | Version    | Description                                                                                                                                                |
-| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| twilio      | ^5.2.2  | Twilio client for sending SMS, making voice calls, and other communication functionalities.     |
+| Package Name | Version | Description                                                                                 |
+| ------------ | ------- | ------------------------------------------------------------------------------------------- |
+| twilio       | ^5.5.1  | Twilio client for sending SMS, making voice calls, and other communication functionalities. |
 
 ### References
 

@@ -4,7 +4,7 @@ import Mailgun, {
   MailgunClientOptions,
   MailgunMessageData,
   MessagesSendResult,
-  DomainEvent,
+  EventsList,
 } from 'mailgun.js';
 import * as path from 'path';
 import * as fs from 'node:fs/promises';
@@ -98,7 +98,7 @@ export class MailgunService {
     );
   }
 
-  async getDeliveryStatus(messageId: string, providerId: number): Promise<DomainEvent> {
+  async getDeliveryStatus(messageId: string, providerId: number): Promise<EventsList> {
     try {
       this.logger.debug('Fetching delivery status from Mailgun email');
       await this.assignClient(providerId);
@@ -109,7 +109,7 @@ export class MailgunService {
         'message-id': sanitizedMessageId,
       });
       this.logger.debug(`Mailgun email Delivery status: ${response}`);
-      return response.items[0];
+      return response;
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);
     }
