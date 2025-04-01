@@ -14,7 +14,7 @@ Create a new entry in the table `notify_providers` and set the fields - `name`, 
 Then set the following configurations in the `configuration` field:
 
 | Key             | Description                                                     |
-|-----------------|-----------------------------------------------------------------|
+| --------------- | --------------------------------------------------------------- |
 | MAILGUN_API_KEY | Your Mailgun API key                                            |
 | MAILGUN_HOST    | Mailgun host; api.mailgun.net for US, api.eu.mailgun.net for EU |
 | MAILGUN_DOMAIN  | Your Mailgun domain name                                        |
@@ -98,9 +98,9 @@ These options allow you to customize the email message according to your needs. 
 
 ### Dependencies
 
-| Package Name  | Version | Description                                     |
-|---------------|---------|-------------------------------------------------|
-| mailgun.js    | ^10.2.3 | A Mailgun client for JavaScript                 |
-| form-data     | ^4.0.0  | Used by mailgun.js to handle form data for HTTP requests |
+| Package Name | Version | Description                                              |
+| ------------ | ------- | -------------------------------------------------------- |
+| mailgun.js   | ^10.2.3 | A Mailgun client for JavaScript                          |
+| form-data    | ^4.0.0  | Used by mailgun.js to handle form data for HTTP requests |
 
 Reference: [Mailgun API Documentation](https://documentation.mailgun.com/en/latest/api-sending.html)

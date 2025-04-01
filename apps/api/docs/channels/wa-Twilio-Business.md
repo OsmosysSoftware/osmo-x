@@ -50,9 +50,9 @@ Here's a sample request body:
 
 ### Dependencies
 
-| Package Name       | Version    | Description                                                                                                                                                |
-| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| twilio      | ^5.2.2  | Twilio client for sending SMS, making voice calls, and other communication functionalities.     |
+| Package Name | Version | Description                                                                                 |
+| ------------ | ------- | ------------------------------------------------------------------------------------------- |
+| twilio       | ^5.5.1  | Twilio client for sending SMS, making voice calls, and other communication functionalities. |
 
 References
 

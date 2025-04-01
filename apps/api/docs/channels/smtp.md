@@ -13,12 +13,12 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key             | Description                                     |
-|-----------------|-------------------------------------------------|
-| SMTP_HOST       | SMTP server hostname                            |
-| SMTP_PORT       | Port number for SMTP (587 for TLS, 465 for SSL) |
-| SMTP_USERNAME   | Your SMTP username for authentication           |
-| SMTP_PASSWORD   | Your SMTP password for authentication           |
+| Key           | Description                                     |
+| ------------- | ----------------------------------------------- |
+| SMTP_HOST     | SMTP server hostname                            |
+| SMTP_PORT     | Port number for SMTP (587 for TLS, 465 for SSL) |
+| SMTP_USERNAME | Your SMTP username for authentication           |
+| SMTP_PASSWORD | Your SMTP password for authentication           |
 
 ```jsonc
 // Sample json to set in configuration field
@@ -73,8 +73,8 @@ These options allow you to customize the email message according to your needs. 
 
 ### Dependencies
 
-| Package Name       | Version    | Description                                                                                                                                                |
-| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| nodemailer      | ^6.9.14  | Nodemailer library for sending emails using SMTP, SMTP pool, sendmail, or direct transport.     |
+| Package Name | Version | Description                                                                                 |
+| ------------ | ------- | ------------------------------------------------------------------------------------------- |
+| nodemailer   | ^6.10.0 | Nodemailer library for sending emails using SMTP, SMTP pool, sendmail, or direct transport. |
 
 Reference: https://nodemailer.com/message/
