@@ -15,19 +15,19 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key                       | Description                   |
-|---------------------------|-------------------------------|
-| KAP_SMS_BASE_API_URL      | KAP SMS base API URL          |
-| KAP_SMS_ACCOUNT_USERNAME  | KAP SMS account username      |
-| KAP_SMS_ACCOUNT_PASSWORD  | KAP SMS account password      |
-| KAP_SMS_FROM              | KAP SMS from                  |
+| Key                      | Description              |
+| ------------------------ | ------------------------ |
+| KAP_SMS_BASE_API_URL     | KAP SMS base API URL     |
+| KAP_SMS_ACCOUNT_USERNAME | KAP SMS account username |
+| KAP_SMS_ACCOUNT_PASSWORD | KAP SMS account password |
+| KAP_SMS_FROM             | KAP SMS from             |
 
 ```jsonc
 // Sample json to set in configuration field
 {
     "KAP_SMS_BASE_API_URL":"http://<api-domain>/api/v3/sendsms/plain",
-    "KAP_SMS_ACCOUNT_USERNAME": "your-username", 
-    "KAP_SMS_ACCOUNT_PASSWORD": "your-password",  
+    "KAP_SMS_ACCOUNT_USERNAME": "your-username",
+    "KAP_SMS_ACCOUNT_PASSWORD": "your-password",
     "KAP_SMS_FROM": "KAPMSG"
 }
 ```
@@ -51,7 +51,7 @@ Here's a sample request body:
 
 ### Dependencies
 
-| Package Name       | Version    | Description                                                                                                                                                |
-| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| @nestjs/axios      | ^3.0.2   | Integration of Axios with NestJS for making HTTP requests.     |
-| rxjs           | ^7.8.1 | Reactive extensions library for JavaScript, used for composing asynchronous and event-based programs.     |
+| Package Name  | Version | Description                                                                                           |
+| ------------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| @nestjs/axios | ^3.1.1  | Integration of Axios with NestJS for making HTTP requests.                                            |
+| rxjs          | ^7.8.2  | Reactive extensions library for JavaScript, used for composing asynchronous and event-based programs. |

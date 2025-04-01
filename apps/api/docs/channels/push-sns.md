@@ -15,11 +15,11 @@ Create a new entry in table `notify_providers` and set the fields - `name`, `app
 
 Then set the following configurations in the `configuration` field
 
-| Key                       | Description                   |
-|---------------------------|-------------------------------|
-| AWS_ACCESS_KEY_ID      | Access key for aws instance       |
-| AWS_SECRET_ACCESS_KEY  | Secret access key for aws      |
-| AWS_REGION  | Region of the aws instance     |
+| Key                   | Description                 |
+| --------------------- | --------------------------- |
+| AWS_ACCESS_KEY_ID     | Access key for aws instance |
+| AWS_SECRET_ACCESS_KEY | Secret access key for aws   |
+| AWS_REGION            | Region of the aws instance  |
 
 ```jsonc
 // Sample json to set in configuration field
@@ -48,6 +48,6 @@ For further payload information check here : [link](https://docs.aws.amazon.com/
 
 ### Dependencies
 
-| Package Name       | Version    | Description                                                                                                                                                |
-| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| @aws-sdk/client-sns    | ^3.621.0  | AWS SDK for JavaScript, used to interact with AWS services including SNS.     |
+| Package Name        | Version  | Description                                                               |
+| ------------------- | -------- | ------------------------------------------------------------------------- |
+| @aws-sdk/client-sns | ^3.775.0 | AWS SDK for JavaScript, used to interact with AWS services including SNS. |
