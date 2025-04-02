@@ -32,19 +32,7 @@ export class AddNotificationSentOnColumn1743145236864 implements MigrationInterf
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
-      UPDATE notify_notifications
-      SET updated_on = notification_sent_on
-      WHERE notification_sent_on IS NOT NULL;
-    `);
-
     await queryRunner.dropColumn('notify_notifications', 'notification_sent_on');
-
-    await queryRunner.query(`
-      UPDATE notify_archived_notifications
-      SET updated_on = notification_sent_on
-      WHERE notification_sent_on IS NOT NULL;
-    `);
 
     await queryRunner.dropColumn('notify_archived_notifications', 'notification_sent_on');
   }
