@@ -87,6 +87,11 @@ export class Notification {
   @Field()
   retryCount: number;
 
+  @Column({ name: 'notification_sent_on', nullable: true })
+  @Field({ nullable: true })
+  @IsOptional()
+  notificationSentOn: Date;
+
   @ManyToOne(() => Application, (application) => application.notifications)
   @JoinColumn({ name: 'application_id' })
   @Field(() => Application)
