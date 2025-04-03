@@ -57,6 +57,14 @@ export abstract class NotificationConsumer {
       );
       const result = await sendNotification();
 
+      // Store the date and time when a notification was first sent to end provider for processing
+      if (notification.retryCount === 0) {
+        notification.notificationSentOn = new Date();
+        this.logger.log(
+          `Notification id ${id} sent to end provider ${notification.providerId} on ${notification.notificationSentOn}`,
+        );
+      }
+
       if (SkipProviderConfirmationChannels.includes(notification.channelType)) {
         this.logger.debug(
           `Channel type: ${notification.channelType} is included in skip queue. Provider confirmation skipped for notification id ${notification.id}`,
