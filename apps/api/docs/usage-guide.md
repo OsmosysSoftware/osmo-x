@@ -100,6 +100,7 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
       "updatedBy": "OsmoX",
       "result": null,
       "id": 36,
+      "notificationSentOn": null,
       "deliveryStatus": 1,
       "createdOn": "2023-09-08T13:11:52.000Z",
       "updatedOn": "2023-09-08T13:11:52.000Z",
