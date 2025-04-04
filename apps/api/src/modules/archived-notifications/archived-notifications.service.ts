@@ -33,6 +33,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       archivedNotification.data = notification.data;
       archivedNotification.deliveryStatus = notification.deliveryStatus;
       archivedNotification.notificationId = notification.id;
+      archivedNotification.notificationSentOn = notification.notificationSentOn;
       archivedNotification.providerId = notification.providerId;
       archivedNotification.result = notification.result;
       archivedNotification.retryCount = notification.retryCount;

@@ -100,6 +100,7 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
       "updatedBy": "OsmoX",
       "result": null,
       "id": 36,
+      "notificationSentOn": null,
       "deliveryStatus": 1,
       "createdOn": "2023-09-08T13:11:52.000Z",
       "updatedOn": "2023-09-08T13:11:52.000Z",
@@ -146,6 +147,8 @@ OsmoX provides different delivery status options to reflect the state of your no
 |  QUEUED_CONFIRMATION  | The notification is added to confirmation queue. |     4     |
 |        SUCCESS        |   The notification was successfully delivered.   |     5     |
 |        FAILED         |        The notification delivery failed.         |     6     |
+
+For more information, please refer to the [Delivery Status Lifecycle](./delivery-status-lifecycle.md)
 
 ## 8. Test Mode Feature
 

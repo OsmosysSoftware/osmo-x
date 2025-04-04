@@ -76,6 +76,11 @@ export class SingleNotificationResponse {
   @Field()
   retryCount: number;
 
+  @Column({ name: 'notification_sent_on', nullable: true })
+  @Field({ nullable: true })
+  @IsOptional()
+  notificationSentOn: Date;
+
   // Constructor that builds response using Notification or ArchivedNotification
   constructor(notificationEntry: Notification | ArchivedNotification) {
     this.id =
@@ -93,5 +98,6 @@ export class SingleNotificationResponse {
     this.status = notificationEntry.status;
     this.applicationId = notificationEntry.applicationId;
     this.retryCount = notificationEntry.retryCount;
+    this.notificationSentOn = notificationEntry.notificationSentOn || null;
   }
 }

@@ -1,0 +1,263 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.1.3">
+  <diagram name="Page-1" id="XiFA1FSwrtbOTiskdMXQ">
+    <mxGraphModel dx="2625" dy="1413" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1920" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="kG-uXJobFQYmmHucUcPs-3" value="Start: OsmoX API Call" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="285" y="40" width="80" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-4" value="PENDING (1) Delivery Status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="265" y="330" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-7" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-9" target="kG-uXJobFQYmmHucUcPs-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="622.5" y="379" as="sourcePoint" />
+            <mxPoint x="672.5" y="329" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-8" value="IN PROGRESS (2) Delivery Status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="266.25" y="650" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-10" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-6" target="kG-uXJobFQYmmHucUcPs-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="622.5" y="379" as="sourcePoint" />
+            <mxPoint x="672.5" y="329" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-14" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-3" target="kG-uXJobFQYmmHucUcPs-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="132.5" y="189" as="sourcePoint" />
+            <mxPoint x="132.5" y="339" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-6" value="Create new OsmoX notification via [POST] CreateNotification API" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="260" y="210" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-15" value="&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;b&gt;SEND Action&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- Create queue for &quot;{Action} {ChannelType} {ProviderId}&quot;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- Create worker for sending notification&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- Call respective proces consumer for &quot;{Action} {ChannelType}&quot;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- Consumer runs service functions to send notification creation request to end provider&lt;/span&gt;&lt;/div&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="670" y="534.5" width="220" height="291" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-16" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-4" target="kG-uXJobFQYmmHucUcPs-9">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="192.5" y="369" as="sourcePoint" />
+            <mxPoint x="372.5" y="369" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-9" value="Scheduler Script fetches all PENDING notifications. Loop through all of them and send for processing one notification at a time" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="238.75" y="459" width="172.5" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-17" value="&lt;b&gt;End Provider&lt;br&gt;&lt;br&gt;&lt;/b&gt;&lt;div&gt;(Ex. Mailgun, Twilio etc)&lt;/div&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="1025" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-18" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-8" target="kG-uXJobFQYmmHucUcPs-15">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="440" as="sourcePoint" />
+            <mxPoint x="600" y="390" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-19" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-21" target="kG-uXJobFQYmmHucUcPs-17">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="140" as="sourcePoint" />
+            <mxPoint x="600" y="90" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-23" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-15" target="kG-uXJobFQYmmHucUcPs-21">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="430" y="269" as="sourcePoint" />
+            <mxPoint x="480" y="-40" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-21" value="End Provider API Request and Response" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="710" y="900" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-24" value="FAILED (6) Delivery Status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad9d5;strokeColor=#ae4132;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="1700" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-26" value="SUCCESS (5) Delivery Status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cdeb8b;strokeColor=#36393d;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1700" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-27" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-28" target="kG-uXJobFQYmmHucUcPs-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="710" y="450" as="sourcePoint" />
+            <mxPoint x="760" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-29" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-15" target="kG-uXJobFQYmmHucUcPs-28">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="380" y="369" as="sourcePoint" />
+            <mxPoint x="206" y="369" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="780" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-28" value="Notification was not processed by end provider. Retry limit not reached" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="500" y="315" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-31" value="&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;b&gt;CONFIRM DELIVERY Action&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- Create queue for &quot;{Action} {ChannelType} {ProviderId}&quot;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- Create worker for getting status of sent message&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- Call respective proces consumer for &quot;{Action} {ChannelType}&quot;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- Consumer runs service functions to confirm notification status from end provider&lt;/span&gt;&lt;/div&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="670" y="1330" width="220" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-32" value="AWAITING CONFIRMATION (3) Delivery Status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="266.25" y="1000" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-33" value="QUEUED CONFIRMATION (4) Delivery Status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="265" y="1425" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-36" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-37" target="kG-uXJobFQYmmHucUcPs-24">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="720" y="710" as="sourcePoint" />
+            <mxPoint x="770" y="660" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-39" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-15" target="kG-uXJobFQYmmHucUcPs-37">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="920" y="605" as="sourcePoint" />
+            <mxPoint x="1060" y="1430" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1110" y="680" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-37" value="Notification was not processed by end provider. Retry limit reached" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="1085" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-40" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-41" target="kG-uXJobFQYmmHucUcPs-32">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="920" as="sourcePoint" />
+            <mxPoint x="600" y="870" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-42" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-15" target="kG-uXJobFQYmmHucUcPs-41">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="850" y="826" as="sourcePoint" />
+            <mxPoint x="850" y="1000" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="325" y="753" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-41" value="Notification was successfully sent to end provider for processing" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="245" y="840" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-43" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-44" target="kG-uXJobFQYmmHucUcPs-33">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="1060" as="sourcePoint" />
+            <mxPoint x="600" y="1010" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-45" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-32" target="kG-uXJobFQYmmHucUcPs-44">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="850" y="1060" as="sourcePoint" />
+            <mxPoint x="850" y="1230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-44" value="Scheduler Script fetches all AWAITING CONFIRMATION&amp;nbsp;notifications. Loop through all of them and send for confirmation one notification at a time" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="221.25" y="1120" width="210" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-48" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-47" target="kG-uXJobFQYmmHucUcPs-26">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="1490" as="sourcePoint" />
+            <mxPoint x="600" y="1440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-49" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-31" target="kG-uXJobFQYmmHucUcPs-47">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="780" y="1530" as="sourcePoint" />
+            <mxPoint x="780" y="1690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-47" value="Notification confirmed to be sent to recipient. Returns success state" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="695" y="1610" width="170" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-50" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-51" target="kG-uXJobFQYmmHucUcPs-17">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="1200" as="sourcePoint" />
+            <mxPoint x="600" y="1150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-52" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-31" target="kG-uXJobFQYmmHucUcPs-51">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="780" y="1280" as="sourcePoint" />
+            <mxPoint x="780" y="1120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-51" value="End Provider API Request and Response" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="710" y="1160" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-53" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-33" target="kG-uXJobFQYmmHucUcPs-31">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="1200" as="sourcePoint" />
+            <mxPoint x="600" y="1150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-54" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-61" target="kG-uXJobFQYmmHucUcPs-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="1630" as="sourcePoint" />
+            <mxPoint x="80" y="1468" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="110" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-55" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-63" target="kG-uXJobFQYmmHucUcPs-32">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="470" y="1360" as="sourcePoint" />
+            <mxPoint x="520" y="1310" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="535" y="1030" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-57" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-65" target="kG-uXJobFQYmmHucUcPs-24">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="470" y="1360" as="sourcePoint" />
+            <mxPoint x="520" y="1310" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="990" y="1730" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-62" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-31" target="kG-uXJobFQYmmHucUcPs-61">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="670" y="1518" as="sourcePoint" />
+            <mxPoint x="265" y="360" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="110" y="1518" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-61" value="End provider returns failure state. Notification could not be sent. Within retry limit" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="980" width="140" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-64" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-31" target="kG-uXJobFQYmmHucUcPs-63">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="670" y="1393" as="sourcePoint" />
+            <mxPoint x="386" y="1030" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="535" y="1390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-63" value="Provider returns intermediate state&lt;div&gt;OR&lt;/div&gt;&lt;div&gt;Error was thrown while processing&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Within retry limit.&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1210" width="170" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-66" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="kG-uXJobFQYmmHucUcPs-31" target="kG-uXJobFQYmmHucUcPs-65">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="890" y="1455" as="sourcePoint" />
+            <mxPoint x="1050" y="1730" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="990" y="1455" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kG-uXJobFQYmmHucUcPs-65" value="&lt;div&gt;Error was thrown while processing&lt;/div&gt;&lt;div&gt;OR&lt;/div&gt;&lt;div&gt;Retry limit exceeded&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="920" y="1570" width="140" height="75" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
