@@ -51,7 +51,7 @@ Before you begin, ensure you have the following software installed:
    python helper-unzip-gz-files.py
 
    # (Optional) With arguments
-   python helper-unzip-gz-files.py --log-file ../../../logs
+   python helper-unzip-gz-files.py --log-dir ../../logs
    ```
 
 5. Run script to create excel & csv of common errors found in logs (each log is an object `{}`)
@@ -61,7 +61,7 @@ Before you begin, ensure you have the following software installed:
    python main-logs-to-excel.py
 
    # (Optional) With arguments
-   python main-logs-to-excel.py --log-file ../../logs --output-dir .
+   python main-logs-to-excel.py --log-dir ../../logs --output-dir .
    ```
 
 6. Run script to create excel & csv of common errors found in faulty logs (each log is an array `[]`)
@@ -71,5 +71,5 @@ Before you begin, ensure you have the following software installed:
    python main-faulty-logs-to-excel.py
 
    # (Optional) With arguments
-   python main-faulty-logs-to-excel.py --log-file ../../logs --output-dir .
+   python main-faulty-logs-to-excel.py --log-dir ../../logs --output-dir .
    ```
