@@ -40,20 +40,36 @@ Before you begin, ensure you have the following software installed:
    ```bash
    pip install -r requirements.txt
    ```
+3. Each script accepts arguments for log directory relative to the `scripts` folder.
+   1. `--log-dir`: ../../logs
+   2. `--output-dir`: .
 
-3. Set correct paths in scripts (if needed)
-4. Unzip files in log folder using helper script (if needed)
+4. Unzip .gz files in log folder using helper script (if needed)
 
    ```bash
+   # Default
    python helper-unzip-gz-files.py
+
+   # (Optional) With arguments
+   python helper-unzip-gz-files.py --log-file ../../../logs
    ```
 
-5. Run script to create excel of common errors found in logs
+5. Run script to create excel & csv of common errors found in logs (each log is an object `{}`)
 
    ```bash
-   # For logs set as object
+   # Default
    python main-logs-to-excel.py
 
-   # For logs set as array
+   # (Optional) With arguments
+   python main-logs-to-excel.py --log-file ../../logs --output-dir .
+   ```
+
+6. Run script to create excel & csv of common errors found in faulty logs (each log is an array `[]`)
+
+   ```bash
+   # Default
    python main-faulty-logs-to-excel.py
+
+   # (Optional) With arguments
+   python main-faulty-logs-to-excel.py --log-file ../../logs --output-dir .
    ```
