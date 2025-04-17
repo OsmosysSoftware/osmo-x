@@ -1,5 +1,7 @@
 # Usage to create excel file of common errors
 
+The following scripts were executed in a Linux/Unix terminal.
+
 ## Prerequisites
 
 Before you begin, ensure you have the following software installed:
