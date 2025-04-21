@@ -114,7 +114,7 @@ export abstract class NotificationConsumer {
           stack: error.stack,
         },
       };
-      this.logger.error(`Error sending notification with id: ${id}`);
+      this.logger.log(`Error sending notification with id: ${id}`);
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
 
       // Save retry attempt record
@@ -196,7 +196,7 @@ export abstract class NotificationConsumer {
         );
       }
 
-      this.logger.error(
+      this.logger.log(
         `Error getting delivery status from provider for notification with id: ${id}`,
       );
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
