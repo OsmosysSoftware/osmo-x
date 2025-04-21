@@ -113,7 +113,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       await this.moveCompletedNotificationsToArchiveTable();
       this.logger.log(`Archive notifications cron task completed`);
     } catch (error) {
-      this.logger.error('Cron job failed:', error);
+      this.logger.error(`Cron job failed: ${error.message}`, error.stack);
       throw error;
     }
   }
