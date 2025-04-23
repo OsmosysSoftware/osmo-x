@@ -31,7 +31,7 @@ export class Application {
 
   @Column({
     name: 'test_mode_enabled',
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: IsEnabledStatus.FALSE,
   })
@@ -55,7 +55,7 @@ export class Application {
 
   @Column({
     name: 'status',
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: Status.ACTIVE,
   })

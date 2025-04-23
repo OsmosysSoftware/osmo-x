@@ -25,14 +25,14 @@ export class Provider {
   @Field()
   name: string;
 
-  @Column({ name: 'channel_type', type: 'tinyint', width: 1 })
+  @Column({ name: 'channel_type', type: 'smallint', width: 1 })
   @IsEnum(ChannelType)
   @Field()
   channelType: number;
 
   @Column({
     name: 'is_enabled',
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: IsEnabledStatus.TRUE,
   })
@@ -63,7 +63,7 @@ export class Provider {
 
   @Column({
     name: 'status',
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: Status.ACTIVE,
   })

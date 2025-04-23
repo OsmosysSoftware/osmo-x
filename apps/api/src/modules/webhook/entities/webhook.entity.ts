@@ -37,7 +37,7 @@ export class Webhook {
   updatedOn: Date;
 
   @Column({
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: Status.ACTIVE,
   })
