@@ -214,8 +214,8 @@ export class InitialSeed1745495895857 implements MigrationInterface {
             type: 'string',
           },
           KAP_SMS_ACCOUNT_PASSWORD: {
-            label: 'KAP_SMS_ACCOUNT_PASSWORD',
-            id: 'KAP SMS ACCOUNT PASSWORD',
+            label: 'KAP SMS ACCOUNT PASSWORD',
+            id: 'KAP_SMS_ACCOUNT_PASSWORD',
             pattern: '^[a-zA-Z0-9_-]{3,30}$',
             type: 'string',
           },
