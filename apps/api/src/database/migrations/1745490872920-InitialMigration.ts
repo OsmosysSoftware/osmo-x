@@ -740,7 +740,7 @@ export class InitialMigration1745490872920 implements MigrationInterface {
         (fk) => fk.columnNames.indexOf('provider_id') !== -1,
       );
     const notify_archived_notifications_channelType_foreignKey =
-      notify_notifications_table?.foreignKeys.find(
+      notify_archived_notifications_table?.foreignKeys.find(
         (fk) => fk.columnNames.indexOf('channel_type') !== -1,
       );
 
