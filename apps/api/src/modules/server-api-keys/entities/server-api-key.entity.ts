@@ -41,7 +41,7 @@ export class ServerApiKey {
 
   @Column({
     name: 'status',
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: Status.ACTIVE,
   })
