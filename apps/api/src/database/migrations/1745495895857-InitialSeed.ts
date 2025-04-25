@@ -85,7 +85,7 @@ export class InitialSeed1745495895857 implements MigrationInterface {
       },
       {
         master_id: 3,
-        name: 'WA_360_DAILOG',
+        name: 'WA_360_DIALOG',
         provider_type: 3,
         configuration: {
           WA_360_DIALOG_URL: {
