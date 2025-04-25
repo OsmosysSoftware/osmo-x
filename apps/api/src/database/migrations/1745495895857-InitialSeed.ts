@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 interface MasterProviderConfiguration {
-  master_id: number;
   name: string;
   provider_type: number;
   configuration: object;
@@ -33,7 +32,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
     // Seed Master Providers
     const masterProvidersData: MasterProviderConfiguration[] = [
       {
-        master_id: 1,
         name: 'SMTP',
         provider_type: 1,
         configuration: {
@@ -59,7 +57,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 2,
         name: 'MAILGUN',
         provider_type: 1,
         configuration: {
@@ -84,7 +81,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 3,
         name: 'WA_360_DIALOG',
         provider_type: 3,
         configuration: {
@@ -103,7 +99,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 4,
         name: 'WA_TWILIO',
         provider_type: 3,
         configuration: {
@@ -128,7 +123,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 5,
         name: 'SMS_TWILIO',
         provider_type: 2,
         configuration: {
@@ -153,7 +147,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 6,
         name: 'SMS_PLIVO',
         provider_type: 2,
         configuration: {
@@ -178,7 +171,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 7,
         name: 'WA_TWILIO_BUSINESS',
         provider_type: 3,
         configuration: {
@@ -197,7 +189,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 8,
         name: 'SMS_KAPSYSTEM',
         provider_type: 2,
         configuration: {
@@ -228,7 +219,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 9,
         name: 'PUSH_SNS',
         provider_type: 4,
         configuration: {
@@ -253,7 +243,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 10,
         name: 'VC_TWILIO',
         provider_type: 5,
         configuration: {
@@ -272,7 +261,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 11,
         name: 'AWS_SES',
         provider_type: 1,
         configuration: {
@@ -297,7 +285,6 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         },
       },
       {
-        master_id: 12,
         name: 'SMS_SNS',
         provider_type: 4,
         configuration: {
@@ -323,12 +310,22 @@ export class InitialSeed1745495895857 implements MigrationInterface {
       },
     ];
 
-    await queryRunner.manager
-      .createQueryBuilder()
-      .insert()
-      .into('notify_master_providers')
-      .values(masterProvidersData)
-      .execute();
+    try {
+      for (const providerData of masterProvidersData) {
+        try {
+          await queryRunner.manager
+            .createQueryBuilder()
+            .insert()
+            .into('notify_master_providers')
+            .values(providerData)
+            .execute();
+        } catch (insertError) {
+          throw insertError;
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
     // Seed Data END -----------------------------------------------------------
   }
 
