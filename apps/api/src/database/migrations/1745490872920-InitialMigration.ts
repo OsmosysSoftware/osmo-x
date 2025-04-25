@@ -4,7 +4,7 @@ export class InitialMigration1745490872920 implements MigrationInterface {
   name = 'InitialMigration1745490872920';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Add Schema START --------------------------------------------------------
+    // Add Tables START --------------------------------------------------------
     await queryRunner.createTable(
       new Table({
         name: 'notify_users',
@@ -239,7 +239,7 @@ export class InitialMigration1745490872920 implements MigrationInterface {
           },
           {
             name: 'timestamp',
-            type: 'bigint', // Match int8
+            type: 'bigint',
             isNullable: false,
           },
           {
@@ -591,7 +591,7 @@ export class InitialMigration1745490872920 implements MigrationInterface {
       }),
       true,
     );
-    // Add Schema END ----------------------------------------------------------
+    // Add Tables END ----------------------------------------------------------
 
     // Add Foreign Keys START --------------------------------------------------
     await queryRunner.createForeignKey(
