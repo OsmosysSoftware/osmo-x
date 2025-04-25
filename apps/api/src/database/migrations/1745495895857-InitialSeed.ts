@@ -312,16 +312,12 @@ export class InitialSeed1745495895857 implements MigrationInterface {
 
     try {
       for (const providerData of masterProvidersData) {
-        try {
-          await queryRunner.manager
-            .createQueryBuilder()
-            .insert()
-            .into('notify_master_providers')
-            .values(providerData)
-            .execute();
-        } catch (insertError) {
-          throw insertError;
-        }
+        await queryRunner.manager
+          .createQueryBuilder()
+          .insert()
+          .into('notify_master_providers')
+          .values(providerData)
+          .execute();
       }
     } catch (error) {
       throw error;
