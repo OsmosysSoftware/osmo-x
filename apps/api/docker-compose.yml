@@ -9,26 +9,25 @@ services:
     ports:
       - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
     depends_on:
-      - osmox-mariadb
+      - osmox-postgres
       - osmox-redis
     environment:
       NODE_ENV: production
     volumes:
       - ./logs:/app/logs
 
-  osmox-mariadb:
-    container_name: osmox-mariadb
-    image: mariadb:latest
+  osmox-postgres:
+    container_name: osmox-postgres
+    image: postgres:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - '127.0.0.1:${MARIADB_DOCKER_PORT}:3306'
+      - ${DB_DOCKER_PORT}:5432
     volumes:
-      - osmox-mariadb-data:/var/lib/mysql
+      - osmox-postgres-data:/var/lib/postgresql/data
 
   osmox-redis:
     container_name: osmox-redis
@@ -38,4 +37,4 @@ services:
       - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
 
 volumes:
-  osmox-mariadb-data: ~
+  osmox-postgres-data: ~
