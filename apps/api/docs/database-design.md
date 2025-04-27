@@ -86,7 +86,7 @@ Consider a pattern like this:
     "pattern": "^[0-19]10$",
     "type": "number",
   },
-  {"apikey2": "value2"}, // {}  etc
+  "apikey2": "value2" // Additional key-value entries
 }
 ```
 
