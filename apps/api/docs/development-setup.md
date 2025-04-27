@@ -12,7 +12,7 @@ Before setting up OsmoX for development, ensure you have the following prerequis
 - **PostgreSQL:** PostgreSQL v16.x or higher.
 - **Redis:** Redis v6.x or higher
 
-These prerequisites are essPostgresential for deploying and running OsmoX in an environment.
+These prerequisites are essential for deploying and running OsmoX in an environment.
 
 Please make sure to have these versions installed on your development server before proceeding with the setup.
 
