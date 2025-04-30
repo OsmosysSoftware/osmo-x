@@ -1,10 +1,5 @@
 # Use Node.js 20 as the base image
-FROM node:20-slim
-
-# Install curl (and clean up apt cache) for running scheduler script
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends curl \
-  && rm -rf /var/lib/apt/lists/*
+FROM node:20
 
 # Set the working directory inside the container
 WORKDIR /app
