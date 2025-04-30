@@ -310,17 +310,13 @@ export class InitialSeed1745495895857 implements MigrationInterface {
       },
     ];
 
-    try {
-      for (const providerData of masterProvidersData) {
-        await queryRunner.manager
-          .createQueryBuilder()
-          .insert()
-          .into('notify_master_providers')
-          .values(providerData)
-          .execute();
-      }
-    } catch (error) {
-      throw error;
+    for (const providerData of masterProvidersData) {
+      await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into('notify_master_providers')
+        .values(providerData)
+        .execute();
     }
     // Seed Data END -----------------------------------------------------------
   }
