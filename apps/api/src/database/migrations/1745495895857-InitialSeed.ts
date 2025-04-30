@@ -10,8 +10,7 @@ export class InitialSeed1745495895857 implements MigrationInterface {
   name = 'InitialSeed1745495895857';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Seed Data START ---------------------------------------------------------
-    // Seed Admin User
+    // Seed Admin User START ---------------------------------------------------
     const usersData = [
       {
         username: 'Admin',
@@ -28,8 +27,9 @@ export class InitialSeed1745495895857 implements MigrationInterface {
       .into('notify_users')
       .values(usersData)
       .execute();
+    // Seed Admin User END -----------------------------------------------------
 
-    // Seed Master Providers
+    // Seed Master Providers START ---------------------------------------------
     const masterProvidersData: MasterProviderConfiguration[] = [
       {
         name: 'SMTP',
@@ -318,7 +318,7 @@ export class InitialSeed1745495895857 implements MigrationInterface {
         .values(providerData)
         .execute();
     }
-    // Seed Data END -----------------------------------------------------------
+    // Seed Master Providers END -----------------------------------------------
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
