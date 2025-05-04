@@ -34,7 +34,7 @@ Before you begin, ensure you have the following software installed:
 
    ```bash
    git clone https://github.com/OsmosysSoftware/osmo-x.git
-   cd ./apps/api/docs/scripts
+   cd osmo-x/apps/api/docs/scripts
    ```
 
 2. Install dependencies:
