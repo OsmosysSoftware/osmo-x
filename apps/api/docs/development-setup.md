@@ -9,18 +9,18 @@ Before setting up OsmoX for development, ensure you have the following prerequis
 - **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
 - **Node.js** Node.js v20.x or higher. Can be installed via `nvm` using `nvm install 20` and used with `nvm use 20`.
 - **Git:** Git v2.x or higher.
-- **MariaDB:** MariaDB v10.x or higher.
+- **PostgreSQL:** PostgreSQL v16.x or higher.
 - **Redis:** Redis v6.x or higher
 
 These prerequisites are essential for deploying and running OsmoX in an environment.
 
 Please make sure to have these versions installed on your development server before proceeding with the setup.
 
-Make sure Redis and MariaDB server are up and running.
+Make sure Redis and PostgreSQL server are up and running.
 
 ```bash
 sudo systemctl status redis
-sudo systemctl status mariadb
+sudo systemctl status postgresql
 ```
 
 ## Getting Started
@@ -50,7 +50,7 @@ sudo systemctl status mariadb
 
 4. Set up the database:
 
-   Ensure your database server (e.g., MariaDB) is running.
+   Ensure your database server (e.g., PostgreSQL) is running.
 
    Run database migrations to create tables:
 
