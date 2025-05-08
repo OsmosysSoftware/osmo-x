@@ -24,10 +24,10 @@ export class RetryNotification {
   @Column({ name: 'retry_count' })
   retryCount: number;
 
-  @Column('longtext', { name: 'retry_result', nullable: true })
+  @Column('jsonb', { name: 'retry_result', nullable: true })
   retryResult: string;
 
-  @Column({ type: 'tinyint', default: 1 })
+  @Column({ type: 'smallint', default: 1 })
   status: number;
 
   @CreateDateColumn({ name: 'created_on' })
