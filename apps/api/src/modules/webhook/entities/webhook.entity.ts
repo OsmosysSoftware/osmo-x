@@ -20,7 +20,7 @@ export class Webhook {
   @Field()
   providerId: number;
 
-  @Column()
+  @Column({ name: 'webhook_url' })
   @Field()
   webhookUrl: string;
 
@@ -37,7 +37,7 @@ export class Webhook {
   updatedOn: Date;
 
   @Column({
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: Status.ACTIVE,
   })
