@@ -1,8 +1,8 @@
 version: '3'
+
 services:
   osmox-api:
-    image: osmox-api
-    container_name: osmox-api
+    image: osmox-api-${COMPOSE_PROJECT_NAME}
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,7 +17,6 @@ services:
       - ./logs:/app/logs
 
   osmox-postgres:
-    container_name: osmox-postgres
     image: postgres:latest
     restart: always
     environment:
@@ -27,14 +26,13 @@ services:
     ports:
       - ${DB_DOCKER_PORT}:5432
     volumes:
-      - osmox-postgres-data:/var/lib/postgresql/data
+      - osmox-postgres-data-saas:/var/lib/postgresql/data
 
   osmox-redis:
-    container_name: osmox-redis
     image: redis:latest
     restart: always
     ports:
       - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
 
 volumes:
-  osmox-postgres-data: ~
+  osmox-postgres-data-saas: {}
