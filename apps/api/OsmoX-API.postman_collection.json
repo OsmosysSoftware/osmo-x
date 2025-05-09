@@ -980,7 +980,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  providers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providers {\r\n        providerId\r\n        name\r\n        channelType\r\n        configuration\r\n        isEnabled\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  providers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providers {\r\n        applicationId\r\n        providerId\r\n        name\r\n        channelType\r\n        configuration\r\n        isEnabled\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
