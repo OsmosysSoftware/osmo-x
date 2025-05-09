@@ -38,8 +38,8 @@ Here's a sample request body:
         "from": "+15005550006",  // The phone number, SIP address, or client identifier to call
         "to": "+91xxxxxxxxxx",  // The phone number or client identifier to use as the caller id
         // Set either `url` or `twiml`. If both are provided then `twiml` parameter will be ignored.
-        "url": "http://your-server-url/calls/message",  // TwiML instructions for the call Twilio will use without fetching Twiml from url parameter. Max 4000 characters
-        "twiml": "<Response><Say>Hello there!</Say></Response>" // The SID of the Application resource that will handle the call, if the call will be handled by an application
+        "url": "http://your-server-url/calls/message",  // The absolute URL that returns the TwiML instructions for the call. We will call this URL using the `method` when the call connects. For more information, see the [Url Parameter](https://www.twilio.com/docs/voice/make-calls#specify-a-url-parameter) section in [Making Calls](https://www.twilio.com/docs/voice/make-calls).
+        "twiml": "<Response><Say>Hello there!</Say></Response>" // TwiML instructions for the call Twilio will use without fetching Twiml from url parameter. Max 4000 characters.
     }
 }
 ```
