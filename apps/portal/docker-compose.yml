@@ -5,7 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: osmox-portal
-    container_name: osmox-portal
+    image: osmox-portal-${COMPOSE_PROJECT_NAME}
     ports:
       - '127.0.0.1:${SERVER_PORT}:80'

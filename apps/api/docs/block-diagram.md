@@ -28,7 +28,7 @@ Upon receiving the request, the API stores the received details in the database.
 
 ### 3. Database
 
-The MariaDB database is responsible for holding the records of different notifications that have been created along with all other required details about them such as the request body, delivery status, notification channel type, response data, etc. Additionally, database migrations are also stored in this database. The notifications in database are updated with the response received from the provider used upon delivery success/failure.
+The PostgreSQL database is responsible for holding the records of different notifications that have been created along with all other required details about them such as the request body, delivery status, notification channel type, response data, etc. Additionally, database migrations are also stored in this database. The notifications in database are updated with the response received from the provider used upon delivery success/failure.
 
 ### 4. Cron
 

@@ -9,7 +9,7 @@ Before setting up OsmoX for production, ensure you have the following prerequisi
 - **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
 - **Node.js** Node.js v20.x or higher.
 - **Git:** Git v2.x or higher.
-- **MariaDB:** MariaDB v10.x or higher.
+- **PostgreSQL:** PostgreSQL v16.x or higher.
 - **Redis:** Redis v6.x or higher
 - **PM2 (Process Manager):** PM2 v5.x or higher.
 - **Docker:** Docker v26.1.2
@@ -17,7 +17,7 @@ Before setting up OsmoX for production, ensure you have the following prerequisi
 
 These prerequisites are essential for deploying and running OsmoX in an environment.
 
-Make sure Redis and MariaDB server are up and running.
+Make sure Redis and PostgreSQL server are up and running.
 
 ## Server Configuration
 
@@ -98,7 +98,7 @@ Save pm2 config:
 
 **Step 1: Update Environment Variables**
 
-Before using Docker, ensure you've configured the environment variables in your `.env` file correctly. Update values such as `NODE_ENV`, `SERVER_PORT`, `MARIADB_DOCKER_PORT`, `REDIS_DOCKER_PORT`, `REDIS_HOST`, and `DB_HOST` as required for your Docker setup.
+Before using Docker, ensure you've configured the environment variables in your `.env` file correctly. Update values such as `NODE_ENV`, `SERVER_PORT`, `DB_DOCKER_PORT`, `REDIS_DOCKER_PORT`, `REDIS_HOST`, and `DB_HOST` as required for your Docker setup.
 
 **Step 2: Build your docker container**
 
