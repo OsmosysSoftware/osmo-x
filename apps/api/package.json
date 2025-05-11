@@ -5,7 +5,7 @@
   "author": "Osmosys Software Solutions Private Limited",
   "license": "MIT",
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "scripts": {
     "build": "nest build",
