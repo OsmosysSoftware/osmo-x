@@ -119,7 +119,8 @@ docker-compose up -d
 For the first-time setup, you need to run database migrations to create the required database tables. Execute the following command:
 
 ```bash
-docker exec -it osmox-api npm run typeorm:run-migration
+# Use OsmoX API container name for running migrations
+docker exec -it osmo-x-api-v2_osmox-api_1 npm run typeorm:run-migration
 ```
 
 **Step 5: Update Environment Variables**
