@@ -68,4 +68,4 @@ For further payload information check the following link: [AWS SDK SendEmailComm
 
 | Package Name        | Version  | Description                                                               |
 | ------------------- | -------- | ------------------------------------------------------------------------- |
-| @aws-sdk/client-ses | ^3.775.0 | AWS SDK for JavaScript, used to interact with AWS services including SES. |
+| @aws-sdk/client-ses | ^3.806.0 | AWS SDK for JavaScript, used to interact with AWS services including SES. |

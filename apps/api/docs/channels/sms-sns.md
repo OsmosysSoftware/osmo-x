@@ -56,4 +56,4 @@ For further payload information, check the following link:
 
 | Package Name        | Version  | Description                                                               |
 | ------------------- | -------- | ------------------------------------------------------------------------- |
-| @aws-sdk/client-sns | ^3.775.0 | AWS SDK for JavaScript, used to interact with AWS services including SNS. |
+| @aws-sdk/client-sns | ^3.806.0 | AWS SDK for JavaScript, used to interact with AWS services including SNS. |
