@@ -7,7 +7,7 @@ This document provides instructions on how to run the API test cases using Postm
 Before running the test cases, make sure you have the following prerequisites installed:
 
 - [Postman](https://www.postman.com/downloads/)
-- [Node.js](https://nodejs.org/) (v20.x or higher)
+- [Node.js](https://nodejs.org/) (v22.x or higher)
 
 ## Getting Started
 
