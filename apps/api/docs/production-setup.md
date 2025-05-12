@@ -121,6 +121,10 @@ For the first-time setup, you need to run database migrations to create the requ
 ```bash
 # Use OsmoX API container name for running migrations
 docker exec -it osmo-x-api-v2_osmox-api_1 npm run typeorm:run-migration
+
+# ALTERNATIVELY
+# Use the container id for the service "osmox-api" to run migrations
+docker exec -it $(docker-compose ps -q osmox-api) npm run typeorm:run-migration
 ```
 
 **Step 5: Update Environment Variables**
