@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   osmox-api:
     image: osmox-api-${COMPOSE_PROJECT_NAME}
