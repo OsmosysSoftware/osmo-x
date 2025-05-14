@@ -124,7 +124,7 @@ docker exec -it osmo-x-api-v2-osmox-api-1 npm run typeorm:run-migration
 
 # ALTERNATIVELY
 # Use the container id for the service "osmox-api" to run migrations
-docker exec -it $(docker-compose ps -q osmox-api) npm run typeorm:run-migration
+docker exec -it $(docker compose ps -q osmox-api) npm run typeorm:run-migration
 ```
 
 **Step 5: Update Environment Variables**
