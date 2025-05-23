@@ -13,6 +13,7 @@ import { JsonDialogComponent } from './views/notifications/json-dialog/json-dial
 import { PrimeNgModule } from './primeng.module';
 import { LoginComponent } from './auth/login/login.component';
 import { FooterComponent } from './views/footer/footer.component';
+import { GraphQLModule } from './graphql/graphql.module';
 
 @NgModule({
   declarations: [AppComponent, NotificationsComponent, JsonDialogComponent, LoginComponent],
@@ -24,6 +25,7 @@ import { FooterComponent } from './views/footer/footer.component';
     HttpClientModule,
     CalendarModule,
     FooterComponent,
+    GraphQLModule,
   ],
   providers: [NotificationsService, MessageService],
   bootstrap: [AppComponent],
