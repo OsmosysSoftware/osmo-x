@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -46,12 +46,10 @@ function initializePrimeNG(primeng: PrimeNG) {
     NotificationsService,
     MessageService,
     PrimeNG,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializePrimeNG,
-      deps: [PrimeNG],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      const initializerFn = initializePrimeNG(inject(PrimeNG));
+      return initializerFn();
+    }),
   ],
   bootstrap: [AppComponent],
 })
