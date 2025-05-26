@@ -14,7 +14,7 @@ Done for logs that are set as arrays
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description='Process array-like error logs, normalize messages, and generate summary reports grouped by source.')
-parser.add_argument('--log-dir', default='../../logs', help='Directory containing error logs (default: ../../logs)')
+parser.add_argument('--log-dir', default='../logs', help='Directory containing error logs (default: ../logs)')
 parser.add_argument('--output-dir', default='.', help='Directory for output files (default: .)')
 args = parser.parse_args()
 

@@ -5,7 +5,7 @@ import argparse
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description='Unzip gz files in specified folder')
-parser.add_argument('--log-dir', default='../../logs', help='Directory containing error logs')
+parser.add_argument('--log-dir', default='../logs', help='Directory containing error logs')
 args = parser.parse_args()
 
 # Configure path from argument
