@@ -81,7 +81,7 @@ export class Wa360dialogService {
         } else {
           // Log relevant parts of the error response
           this.logger.error(
-            `Error sent from provider: ${providerId} - (${error.response.status ?? 'No Status'} ${error.response.statusText ?? 'No StatusTest'}): ${JSON.stringify(error.response.data ?? 'No Data')} - Error Message: ${error.message}`,
+            `Error sent from provider: ${providerId} - (${error.response.status ?? 'No Status'} ${error.response.statusText ?? 'No StatusText'}): ${JSON.stringify(error.response.data ?? 'No Data')} - Error Message: ${error.message}`,
             error.stack,
           );
         }
