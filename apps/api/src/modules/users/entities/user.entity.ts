@@ -26,7 +26,7 @@ export class User {
 
   @Column({
     name: 'role',
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: UserRoles.BASIC,
   })
@@ -43,7 +43,7 @@ export class User {
   updatedOn: Date;
 
   @Column({
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: Status.ACTIVE,
   })

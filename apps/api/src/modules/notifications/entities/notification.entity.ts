@@ -28,7 +28,7 @@ export class Notification {
   @Field()
   providerId: number;
 
-  @Column({ name: 'channel_type', type: 'tinyint', width: 1, default: null })
+  @Column({ name: 'channel_type', type: 'smallint', width: 1, default: null })
   @IsEnum(ChannelType)
   @Field()
   channelType: number;
@@ -40,7 +40,7 @@ export class Notification {
 
   @Column({
     name: 'delivery_status',
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: DeliveryStatus.PENDING,
   })
@@ -71,7 +71,7 @@ export class Notification {
   updatedBy: string;
 
   @Column({
-    type: 'tinyint',
+    type: 'smallint',
     width: 1,
     default: Status.ACTIVE,
   })
@@ -83,7 +83,7 @@ export class Notification {
   @Field()
   applicationId: number;
 
-  @Column({ name: 'retry_count', type: 'int', default: 0 })
+  @Column({ name: 'retry_count', type: 'integer', default: 0 })
   @Field()
   retryCount: number;
 
