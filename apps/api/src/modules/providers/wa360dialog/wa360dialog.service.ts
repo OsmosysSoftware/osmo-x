@@ -76,12 +76,12 @@ export class Wa360dialogService {
         // Log bad request
         if (error.response.status && error.response.status === 400) {
           this.logger.log(
-            `Bad Request exception sent from provider: ${providerId} - (${error.response.status}): ${JSON.stringify(error.response.data ?? 'No Data')}`,
+            `Bad Request exception sent from provider: ${providerId} - (${error.response.status}): ${JSON.stringify(error.response.data ?? 'No Data')} - Error Message: ${error.message}`,
           );
         } else {
           // Log relevant parts of the error response
           this.logger.error(
-            `Error sent from provider: ${providerId} - (${error.response.status ?? 'No Status'} ${error.response.statusText ?? 'No StatusTest'}): ${JSON.stringify(error.response.data ?? 'No Data')}`,
+            `Error sent from provider: ${providerId} - (${error.response.status ?? 'No Status'} ${error.response.statusText ?? 'No StatusTest'}): ${JSON.stringify(error.response.data ?? 'No Data')} - Error Message: ${error.message}`,
             error.stack,
           );
         }
