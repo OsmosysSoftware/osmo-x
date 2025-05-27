@@ -7,8 +7,10 @@ services:
     ports:
       - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
     depends_on:
-      - osmox-postgres
-      - osmox-redis
+      osmox-postgres:
+        condition: service_healthy
+      osmox-redis:
+        condition: service_healthy
     environment:
       NODE_ENV: production
     volumes:
@@ -25,12 +27,22 @@ services:
       - ${DB_DOCKER_PORT}:5432
     volumes:
       - osmox-postgres-data-saas:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   osmox-redis:
     image: redis:latest
     restart: always
     ports:
       - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 volumes:
   osmox-postgres-data-saas: {}
