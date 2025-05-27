@@ -137,6 +137,7 @@ If you need to update any environment variable values:
 
    ```bash
    docker compose stop
+   docker compose down -v
    ```
 
 3. Rebuild the Docker containers with the updated environment variables:
