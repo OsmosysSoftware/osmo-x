@@ -30,8 +30,9 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
       interval: 10s
-      timeout: 5s
       retries: 5
+      start_period: 30s
+      timeout: 5s
 
   osmox-redis:
     image: redis:latest
