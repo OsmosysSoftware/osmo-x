@@ -136,19 +136,19 @@ If you need to update any environment variable values:
 2. Stop the running containers:
 
    ```bash
-   docker-compose stop
+   docker compose stop
    ```
 
 3. Rebuild the Docker containers with the updated environment variables:
 
    ```bash
-   docker-compose build
+   docker compose build
    ```
 
 4. Start the Docker containers again:
 
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 With these steps, your application should be up and running in Docker with the updated environment variables.
