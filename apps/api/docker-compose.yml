@@ -42,8 +42,8 @@ services:
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
-      timeout: 3s
       retries: 5
+      timeout: 3s
 
 volumes:
   osmox-postgres-data-saas: {}
