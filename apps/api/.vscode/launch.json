@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to NestJS", // You can name this whatever you like
+      "port": 9229,              // Default Node.js debug port. Matches --debug flag from nest start.
+      "restart": true,           // Automatically try to re-attach if the Node process restarts (due to --watch)
+      "sourceMaps": true,        // Enable source maps for TypeScript debugging
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js" // Path to your compiled JavaScript files
+      ],
+      "skipFiles": [
+        "<node_internals>/**",   // Skip stepping into Node.js internal code
+        "node_modules/**"        // Skip stepping into node_modules
+      ],
+      "protocol": "inspector"
+    }
+    // You can add other configurations here if needed
+  ]
+}

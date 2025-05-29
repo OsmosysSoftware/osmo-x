@@ -9,24 +9,24 @@ services:
     ports:
       - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
     depends_on:
-      - osmox-postgres
+      # - osmox-postgres
       - osmox-redis
     environment:
       NODE_ENV: production
     volumes:
       - ./logs:/app/logs
 
-  osmox-postgres:
-    image: postgres:latest
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_DB: ${DB_NAME}
-    ports:
-      - ${DB_DOCKER_PORT}:5432
-    volumes:
-      - osmox-postgres-data-saas:/var/lib/postgresql/data
+  # osmox-postgres:
+  #   image: postgres:latest
+  #   restart: always
+  #   environment:
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     POSTGRES_USER: ${DB_USERNAME}
+  #     POSTGRES_DB: ${DB_NAME}
+  #   ports:
+  #     - ${DB_DOCKER_PORT}:5432
+  #   volumes:
+  #     - osmox-postgres-data-saas:/var/lib/postgresql/data
 
   osmox-redis:
     image: redis:latest
@@ -34,5 +34,5 @@ services:
     ports:
       - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
 
-volumes:
-  osmox-postgres-data-saas: {}
+# volumes:
+#   osmox-postgres-data-saas: {}
