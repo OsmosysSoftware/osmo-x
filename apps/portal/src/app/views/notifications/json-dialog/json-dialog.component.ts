@@ -6,6 +6,7 @@ import { MessageService } from 'primeng/api';
   selector: 'app-json-dialog',
   templateUrl: './json-dialog.component.html',
   styleUrls: ['./json-dialog.component.scss'],
+  standalone: false,
 })
 export class JsonDialogComponent {
   @Input() jsonData: Record<string, unknown>;

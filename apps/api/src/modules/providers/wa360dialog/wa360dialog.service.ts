@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ProvidersService } from '../providers.service';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 export interface Wa360DialogData {
   to: string;
@@ -69,16 +69,22 @@ export class Wa360dialogService {
         'Content-Type': 'application/json',
       };
       this.logger.debug('Sending 360Dialog Whatsapp');
-      const response = await lastValueFrom(this.httpService.post(this.apiUrl, body, { headers }));
+      const response = await firstValueFrom(this.httpService.post(this.apiUrl, body, { headers }));
       return response.data;
     } catch (error) {
       if (error.response) {
-        const providerResponseError = {
-          status: error.response.status,
-          statusText: error.response.statusText,
-        };
-        // Log relevant parts of the error response
-        this.logger.error(`Error sent from provider: ${providerId}`, providerResponseError);
+        // Log bad request
+        if (error.response.status && error.response.status === 400) {
+          this.logger.log(
+            `Bad Request exception sent from provider: ${providerId} - (${error.response.status}): ${JSON.stringify(error.response.data ?? 'No Data')} - Error Message: ${error.message}`,
+          );
+        } else {
+          // Log relevant parts of the error response
+          this.logger.error(
+            `Error sent from provider: ${providerId} - (${error.response.status ?? 'No Status'} ${error.response.statusText ?? 'No StatusText'}): ${JSON.stringify(error.response.data ?? 'No Data')} - Error Message: ${error.message}`,
+            error.stack,
+          );
+        }
 
         throw error;
       } else {

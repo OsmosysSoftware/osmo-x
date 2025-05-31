@@ -103,7 +103,7 @@ Before using Docker, ensure you've configured the environment variables in your 
 **Step 2: Build your docker container**
 
 ```bash
-docker-compose build
+docker compose build
 ```
 
 **Step 3: Start the Docker Containers**
@@ -111,7 +111,7 @@ docker-compose build
 To start your application within Docker containers, run the following command:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 **Step 4: Database Migrations (First-Time Setup)**
@@ -120,11 +120,11 @@ For the first-time setup, you need to run database migrations to create the requ
 
 ```bash
 # Use OsmoX API container name for running migrations
-docker exec -it osmo-x-api-v2_osmox-api_1 npm run typeorm:run-migration
+docker exec -it osmo-x-api-v2-osmox-api-1 npm run typeorm:run-migration
 
 # ALTERNATIVELY
 # Use the container id for the service "osmox-api" to run migrations
-docker exec -it $(docker-compose ps -q osmox-api) npm run typeorm:run-migration
+docker exec -it $(docker compose ps -q osmox-api) npm run typeorm:run-migration
 ```
 
 **Step 5: Update Environment Variables**
@@ -136,19 +136,20 @@ If you need to update any environment variable values:
 2. Stop the running containers:
 
    ```bash
-   docker-compose stop
+   docker compose stop
+   docker compose down -v
    ```
 
 3. Rebuild the Docker containers with the updated environment variables:
 
    ```bash
-   docker-compose build
+   docker compose build
    ```
 
 4. Start the Docker containers again:
 
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 With these steps, your application should be up and running in Docker with the updated environment variables.

@@ -89,11 +89,11 @@ tr:hover {
 }
 
 .view-button:hover {
-  background-color: #45a049; /* Darker green on hover */
+  background-color: #45a049;
 }
 
 .no-result {
-  color: #757575; /* Gray text for no result */
+  color: #757575;
 }
 
 .badge {
@@ -173,19 +173,19 @@ tr:hover {
 
 .grid-row {
   display: grid;
-  grid-template-columns: auto auto; /* Two columns: one for each div */
-  justify-content: space-between; /* Space between the two divs */
-  align-items: center; /* Align items vertically in the center */
-  width: 100%; /* Ensure it spans the container width */
-  box-sizing: border-box; /* Include padding in the total width */
+  grid-template-columns: auto auto;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .grid-row-left {
-  display: flex; /* Arrange input and buttons horizontally */
-  gap: 1em; /* Add space between input and buttons */
+  display: flex;
+  gap: 1em;
 }
 
 .grid-row-right {
-  display: flex; /* Arrange buttons horizontally */
-  gap: 1em; /* Add space between buttons */
+  display: flex;
+  gap: 1em;
 }

@@ -1,5 +1,5 @@
 # Use an official Node runtime as a parent image
-FROM node:18 AS builder
+FROM node:20 AS builder
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -23,7 +23,9 @@ RUN npm run build:prod
 FROM nginx:latest
 
 # Copy the built Angular app to the default Nginx public folder
-COPY --from=builder /usr/src/app/dist/* /usr/share/nginx/html/
+ARG PROJECT_NAME=default_angular_project
+
+COPY --from=builder /usr/src/app/dist/${PROJECT_NAME}/browser* /usr/share/nginx/html/
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
