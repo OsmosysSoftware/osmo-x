@@ -14,6 +14,7 @@ import { ProviderAndNotificationResponse } from '../providers/provider.model';
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.scss'],
+  standalone: false,
 })
 export class NotificationsComponent implements OnInit {
   notifications: Notification[] = [];

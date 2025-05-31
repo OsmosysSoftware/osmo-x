@@ -14,11 +14,19 @@ import { Type } from 'class-transformer';
 class AllowedPropertiesConstraint implements ValidatorConstraintInterface {
   validate(message: unknown) {
     const allowedKeys = ['GCM', 'APNS_SANDBOX', 'APNS', 'default'];
+    const inputKeys = Object.keys(message);
+
+    // Check if the object is empty
+    if (inputKeys.length === 0) {
+      return false;
+    }
+
+    // Check if ALL present keys are within the allowed list
     return Object.keys(message).every((key) => allowedKeys.includes(key));
   }
 
   defaultMessage() {
-    return 'Invalid properties found in the message payload. Allowed properties are GCM, APNS_SANDBOX, APNS, and default.';
+    return 'Invalid properties found in the message payload. Input object must contain at least one of the allowed properties. Allowed properties are GCM, APNS_SANDBOX, APNS, and default.';
   }
 }
 

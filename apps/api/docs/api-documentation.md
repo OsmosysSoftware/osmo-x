@@ -167,11 +167,13 @@ curl --location 'http://localhost:3000/notifications' \
       "createdBy": "sampleFoundationApp",
       "updatedBy": "sampleFoundationApp",
       "result": null,
+      "notificationSentOn": null,
       "id": 92,
       "deliveryStatus": 1,
       "createdOn": "2024-02-12T07:24:21.000Z",
       "updatedOn": "2024-02-12T07:24:21.000Z",
-      "status": 1
+      "status": 1,
+      "retryCount": 0
     }
   }
 }
