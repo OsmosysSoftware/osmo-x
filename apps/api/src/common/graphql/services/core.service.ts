@@ -55,7 +55,11 @@ export abstract class CoreService<TEntity> {
       queryBuilder.andWhere(
         new Brackets((qb) => {
           searchableFields.forEach((field) => {
-            qb.orWhere(`${alias}.${field} LIKE :search`, { search: `%${options.search}%` });
+            this.isJsonbColumn(field)
+              ? qb.orWhere(`CAST(${alias}.${field} AS text) LIKE :search`, {
+                  search: `%${options.search}%`,
+                })
+              : qb.orWhere(`${alias}.${field} LIKE :search`, { search: `%${options.search}%` });
           });
         }),
       );
