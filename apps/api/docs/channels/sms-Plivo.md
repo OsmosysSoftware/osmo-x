@@ -49,7 +49,7 @@ Here's a sample request body:
 
 | Package Name | Version | Description                                          |
 | ------------ | ------- | ---------------------------------------------------- |
-| plivo        | ^4.69.6 | Plivo client for sending SMS and making voice calls. |
+| plivo        | ^4.70.0 | Plivo client for sending SMS and making voice calls. |
 
 ### References
 
