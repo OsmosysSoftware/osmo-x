@@ -78,7 +78,8 @@ export abstract class CoreService<TEntity> {
           condition += ` = :${paramName}`;
           break;
         case 'contains':
-          condition += ` LIKE :${paramName}`;
+          // PostgreSQL-specific: cast jsonb field to text to allow pattern matching
+          condition = `CAST(${alias}.${field} AS text) LIKE :${paramName}`;
           break;
         case 'gt':
           condition += ` > :${paramName}`;
