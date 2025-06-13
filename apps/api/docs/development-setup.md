@@ -7,7 +7,7 @@ This document outlines the steps required to set up your OsmoX for development. 
 Before setting up OsmoX for development, ensure you have the following prerequisites with the specified versions:
 
 - **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
-- **Node.js** Node.js v20.x or higher. Can be installed via `nvm` using `nvm install 20` and used with `nvm use 20`.
+- **Node.js** Node.js v22.x or higher. Can be installed via `nvm` using `nvm install 22` and used with `nvm use 22`.
 - **Git:** Git v2.x or higher.
 - **PostgreSQL:** PostgreSQL v16.x or higher.
 - **Redis:** Redis v6.x or higher
