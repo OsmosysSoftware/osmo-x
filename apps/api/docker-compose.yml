@@ -1,6 +1,7 @@
 services:
   osmox-api:
     image: osmox-api-${COMPOSE_PROJECT_NAME}
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
