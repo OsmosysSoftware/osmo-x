@@ -104,6 +104,7 @@ const consumers = [
     ProvidersService,
     QueueService,
     ArchivedNotificationsService,
+    RequestLoggerMiddleware,
     ...consumers,
   ],
   exports: [
