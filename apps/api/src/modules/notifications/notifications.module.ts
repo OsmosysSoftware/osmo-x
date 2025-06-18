@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Notification } from './entities/notification.entity';
 import { RetryNotification } from './entities/retry-notification.entity';
@@ -46,6 +46,7 @@ import { SmsSnsModule } from '../providers/sms-sns/sms-sns.module';
 import { JwtService } from '@nestjs/jwt';
 import { ArchivedNotificationsModule } from '../archived-notifications/archived-notifications.module';
 import { ArchivedNotificationsService } from '../archived-notifications/archived-notifications.service';
+import { RequestLoggerMiddleware } from 'src/common/logger/request-logger.middleware';
 
 const providerModules = [
   MailgunModule,
@@ -117,4 +118,10 @@ const consumers = [
   ],
   controllers: [NotificationsController],
 })
-export class NotificationsModule {}
+export class NotificationsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer
+      .apply(RequestLoggerMiddleware)
+      .forRoutes({ path: 'notifications', method: RequestMethod.POST });
+  }
+}
