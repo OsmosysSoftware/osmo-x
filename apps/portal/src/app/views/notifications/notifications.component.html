@@ -21,7 +21,7 @@
         [showClear]="true"
         (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
       ></p-select>
-      <p-calendar
+      <p-datepicker
         [(ngModel)]="selectedFromDate"
         [iconDisplay]="'input'"
         [showIcon]="true"
@@ -32,8 +32,8 @@
         [showClear]="true"
         (onClear)="loadNotificationsLazy({ first: 0, rows: this.pageSize }); onFromDateClear()"
         (onSelect)="loadNotificationsLazy({ first: 0, rows: this.pageSize }); onFromDateChange()"
-      ></p-calendar>
-      <p-calendar
+      ></p-datepicker>
+      <p-datepicker
         [(ngModel)]="selectedToDate"
         [iconDisplay]="'input'"
         [showIcon]="true"
@@ -45,7 +45,7 @@
         [showClear]="true"
         (onClear)="loadNotificationsLazy({ first: 0, rows: this.pageSize }); onToDateClear()"
         (onSelect)="loadNotificationsLazy({ first: 0, rows: this.pageSize }); onToDateChange()"
-      ></p-calendar>
+      ></p-datepicker>
       <p-select
         [options]="applications"
         [(ngModel)]="selectedApplication"
