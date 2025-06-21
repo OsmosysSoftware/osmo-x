@@ -4,7 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { CalendarModule } from 'primeng/calendar';
+import { DatePickerModule } from 'primeng/datepicker';
 import { PrimeNG } from 'primeng/config';
 import LaraLightBlue from '@primeng/themes/lara';
 import { AppRoutingModule } from './app-routing.module';
@@ -38,7 +38,7 @@ function initializePrimeNG(primeng: PrimeNG) {
     FormsModule,
     PrimeNgModule,
     HttpClientModule,
-    CalendarModule,
+    DatePickerModule,
     FooterComponent,
     GraphQLModule,
   ],
