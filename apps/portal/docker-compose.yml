@@ -6,6 +6,6 @@ services:
         PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
       dockerfile: Dockerfile
     image: osmox-portal-${COMPOSE_PROJECT_NAME}
-    restart: always
+    restart: unless-stopped
     ports:
       - '127.0.0.1:${SERVER_PORT}:80'
