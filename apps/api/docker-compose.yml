@@ -19,7 +19,7 @@ services:
 
   osmox-postgres:
     image: postgres:latest
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: ${DB_USERNAME}
@@ -37,7 +37,7 @@ services:
 
   osmox-redis:
     image: redis:latest
-    restart: always
+    restart: unless-stopped
     ports:
       - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
     healthcheck:
