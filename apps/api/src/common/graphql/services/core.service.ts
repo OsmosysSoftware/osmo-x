@@ -11,8 +11,15 @@ export abstract class CoreService<TEntity> {
   // List of date fields for comparison handling
   private dateFields: string[] = ['createdOn', 'updatedOn']; // Customize based on your entity fields
 
+  // List of jsonb fields used for data search
+  private jsonbFields: string[] = ['data', 'result', 'configuration', 'whitelistRecipients']; // Customize based on your entity fields
+
   private isDateField(field: string): boolean {
     return this.dateFields.includes(field);
+  }
+
+  private isJsonbColumn(field: string): boolean {
+    return this.jsonbFields.includes(field);
   }
 
   async findAll(
@@ -48,7 +55,11 @@ export abstract class CoreService<TEntity> {
       queryBuilder.andWhere(
         new Brackets((qb) => {
           searchableFields.forEach((field) => {
-            qb.orWhere(`${alias}.${field} LIKE :search`, { search: `%${options.search}%` });
+            this.isJsonbColumn(field)
+              ? qb.orWhere(`CAST(${alias}.${field} AS text) LIKE :search`, {
+                  search: `%${options.search}%`,
+                })
+              : qb.orWhere(`${alias}.${field} LIKE :search`, { search: `%${options.search}%` });
           });
         }),
       );
@@ -78,7 +89,10 @@ export abstract class CoreService<TEntity> {
           condition += ` = :${paramName}`;
           break;
         case 'contains':
-          condition += ` LIKE :${paramName}`;
+          // Only cast jsonb fields in Postgres
+          condition = this.isJsonbColumn(field)
+            ? `CAST(${alias}.${field} AS text) LIKE :${paramName}`
+            : `${alias}.${field} LIKE :${paramName}`;
           break;
         case 'gt':
           condition += ` > :${paramName}`;

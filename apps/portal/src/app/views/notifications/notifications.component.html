@@ -5,58 +5,58 @@
 
   <div class="p-grid">
     <div class="p-col-12 p-md-3 filter-row">
-      <p-dropdown
+      <p-select
         [options]="providers"
         [(ngModel)]="selectedProvider"
         placeholder="Select a Provider"
-        class="grid-dropdown"
+        class="grid-select"
         [showClear]="true"
         (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
-      ></p-dropdown>
-      <p-dropdown
+      ></p-select>
+      <p-select
         [options]="deliveryStatuses"
         [(ngModel)]="selectedDeliveryStatus"
         placeholder="Select a Delivery Status Type"
-        class="grid-dropdown"
+        class="grid-select"
         [showClear]="true"
         (onChange)="loadNotificationsLazy({ first: 0, rows: this.pageSize })"
-      ></p-dropdown>
-      <p-calendar
+      ></p-select>
+      <p-datepicker
         [(ngModel)]="selectedFromDate"
         [iconDisplay]="'input'"
         [showIcon]="true"
         [maxDate]="maxDateFrom"
         placeholder="Select Date From"
-        class="grid-dropdown"
+        class="grid-select"
         [readonlyInput]="true"
         [showClear]="true"
         (onClear)="loadNotificationsLazy({ first: 0, rows: this.pageSize }); onFromDateClear()"
         (onSelect)="loadNotificationsLazy({ first: 0, rows: this.pageSize }); onFromDateChange()"
-      ></p-calendar>
-      <p-calendar
+      ></p-datepicker>
+      <p-datepicker
         [(ngModel)]="selectedToDate"
         [iconDisplay]="'input'"
         [showIcon]="true"
         [maxDate]="maxDateTo"
         [minDate]="minDateTo"
         placeholder="Select Date To"
-        class="grid-dropdown"
+        class="grid-select"
         [readonlyInput]="true"
         [showClear]="true"
         (onClear)="loadNotificationsLazy({ first: 0, rows: this.pageSize }); onToDateClear()"
         (onSelect)="loadNotificationsLazy({ first: 0, rows: this.pageSize }); onToDateChange()"
-      ></p-calendar>
-      <p-dropdown
+      ></p-datepicker>
+      <p-select
         [options]="applications"
         [(ngModel)]="selectedApplication"
         placeholder="Select an Application"
-        class="grid-dropdown"
+        class="grid-select"
         [showClear]="false"
         (onChange)="
           loadProvidersAndNotificationsForSelectedApplication({ first: 0, rows: this.pageSize })
         "
         *ngIf="applications.length !== 0"
-      ></p-dropdown>
+      ></p-select>
     </div>
     <div class="grid-row">
       <div class="p-col-12 p-md-3 filter-row grid-row-left">
