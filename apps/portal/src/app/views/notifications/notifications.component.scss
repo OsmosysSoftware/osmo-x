@@ -15,12 +15,7 @@ h2 {
   margin-right: 10px;
 }
 
-.p-dropdown,
-.p-dropdown-items {
-  width: 100%;
-}
-
-.grid-dropdown,
+.grid-select,
 .grid-input,
 .grid-button {
   margin-right: 1%;
@@ -28,11 +23,6 @@ h2 {
 
 .filter-row {
   margin-bottom: 1%;
-}
-
-::ng-deep .p-calendar .p-calendar-clear-icon {
-  margin-right: 1.5rem;
-  margin-top: 0;
 }
 
 .table-container {
