@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { ArchivedNotification } from 'src/modules/archived-notifications/entities/archived-notification.entity';
+import { ProviderChainMember } from 'src/modules/provider-chain-members/entities/provider-chain-member.entity';
 
 @Entity({ name: 'notify_providers' })
 @ObjectType()
@@ -79,6 +80,13 @@ export class Provider {
     (archivedNotification) => archivedNotification.providerDetails,
   )
   archivedNotifications: ArchivedNotification[];
+
+  @OneToMany(
+    () => ProviderChainMember,
+    (ProviderChainMember) => ProviderChainMember.providerDetails,
+  )
+  @Field(() => [ProviderChainMember], { nullable: true })
+  providerChainMembers: ProviderChainMember[];
 
   constructor(provider: Partial<Provider>) {
     Object.assign(this, provider);
