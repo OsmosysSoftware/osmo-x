@@ -176,7 +176,7 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
       }),
     );
 
-    // 4. Create Indexes for notify_provider_chains
+    // 5. Create Indexes for notify_provider_chains
     await queryRunner.createIndex(
       'notify_provider_chains',
       new TableIndex({
@@ -201,7 +201,7 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
       }),
     );
 
-    // 5. Create Indexes for notify_provider_chain_members
+    // 6. Create Indexes for notify_provider_chain_members
     await queryRunner.createIndex(
       'notify_provider_chain_members',
       new TableIndex({
@@ -226,7 +226,7 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
       }),
     );
 
-    // 6. Add Unique Constraints for both tables
+    // 7. Add Unique Constraints for both tables
     await queryRunner.createUniqueConstraint(
       'notify_provider_chains',
       new TableUnique({
@@ -251,7 +251,7 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
       }),
     );
 
-    // 7. Table modifications for notify_notifications
+    // 8. Table modifications for notify_notifications
     await queryRunner.addColumn(
       'notify_notifications',
       new TableColumn({
@@ -280,7 +280,7 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
       }),
     );
 
-    // 8. Table modifications for notify_archived_notifications
+    // 9. Table modifications for notify_archived_notifications
     await queryRunner.addColumn(
       'notify_archived_notifications',
       new TableColumn({
