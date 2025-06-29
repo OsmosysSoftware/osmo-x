@@ -64,7 +64,7 @@ export class ProviderChainMember {
   @Field(() => ProviderChain)
   providerChainDetails: ProviderChain;
 
-  @ManyToOne(() => Provider, (provider) => provider.notifications)
+  @ManyToOne(() => Provider, (provider) => provider.providerChainMembers)
   @JoinColumn({ name: 'provider_id' })
   @Field(() => Provider)
   providerDetails: Provider;
