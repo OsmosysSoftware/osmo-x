@@ -311,49 +311,44 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    {
-      // 1. Revert changes from table notify_archived_notifications
-      await queryRunner.dropIndex(
-        'notify_archived_notifications',
-        'IDX_ARCHIVED_NOTIFICATIONS_PROVIDER_CHAIN',
-      );
-      await queryRunner.dropForeignKey(
-        'notify_archived_notifications',
-        'FK_ARCHIVED_NOTIFICATIONS_PROVIDER_CHAIN',
-      );
-      await queryRunner.dropColumn('notify_archived_notifications', 'provider_chain_id');
+    // 1. Revert changes from table notify_archived_notifications
+    await queryRunner.dropIndex(
+      'notify_archived_notifications',
+      'IDX_ARCHIVED_NOTIFICATIONS_PROVIDER_CHAIN',
+    );
+    await queryRunner.dropForeignKey(
+      'notify_archived_notifications',
+      'FK_ARCHIVED_NOTIFICATIONS_PROVIDER_CHAIN',
+    );
+    await queryRunner.dropColumn('notify_archived_notifications', 'provider_chain_id');
 
-      // 2. Revert changes from table notify_notifications
-      await queryRunner.dropIndex('notify_notifications', 'IDX_NOTIFICATIONS_PROVIDER_CHAIN');
-      await queryRunner.dropForeignKey('notify_notifications', 'FK_NOTIFICATIONS_PROVIDER_CHAIN');
-      await queryRunner.dropColumn('notify_notifications', 'provider_chain_id');
+    // 2. Revert changes from table notify_notifications
+    await queryRunner.dropIndex('notify_notifications', 'IDX_NOTIFICATIONS_PROVIDER_CHAIN');
+    await queryRunner.dropForeignKey('notify_notifications', 'FK_NOTIFICATIONS_PROVIDER_CHAIN');
+    await queryRunner.dropColumn('notify_notifications', 'provider_chain_id');
 
-      // 3. Drop Unique Constraints
-      await queryRunner.dropUniqueConstraint('notify_provider_chain_members', 'UQ_CHAIN_PROVIDER');
-      await queryRunner.dropUniqueConstraint('notify_provider_chain_members', 'UQ_CHAIN_PRIORITY');
-      await queryRunner.dropUniqueConstraint('notify_provider_chains', 'UQ_APP_CHAIN_NAME');
+    // 3. Drop Unique Constraints
+    await queryRunner.dropUniqueConstraint('notify_provider_chain_members', 'UQ_CHAIN_PROVIDER');
+    await queryRunner.dropUniqueConstraint('notify_provider_chain_members', 'UQ_CHAIN_PRIORITY');
+    await queryRunner.dropUniqueConstraint('notify_provider_chains', 'UQ_APP_CHAIN_NAME');
 
-      // 4. Drop Indexes
-      await queryRunner.dropIndex('notify_provider_chain_members', 'IDX_CHAIN_MEMBERS_STATUS');
-      await queryRunner.dropIndex('notify_provider_chain_members', 'IDX_CHAIN_MEMBERS_PROVIDER');
-      await queryRunner.dropIndex('notify_provider_chain_members', 'IDX_CHAIN_MEMBERS_CHAIN_ORDER');
+    // 4. Drop Indexes
+    await queryRunner.dropIndex('notify_provider_chain_members', 'IDX_CHAIN_MEMBERS_STATUS');
+    await queryRunner.dropIndex('notify_provider_chain_members', 'IDX_CHAIN_MEMBERS_PROVIDER');
+    await queryRunner.dropIndex('notify_provider_chain_members', 'IDX_CHAIN_MEMBERS_CHAIN_ORDER');
 
-      await queryRunner.dropIndex('notify_provider_chains', 'IDX_CHAINS_DEFAULT');
-      await queryRunner.dropIndex('notify_provider_chains', 'IDX_CHAINS_STATUS');
-      await queryRunner.dropIndex('notify_provider_chains', 'IDX_CHAINS_APPLICATION_CHANNEL');
+    await queryRunner.dropIndex('notify_provider_chains', 'IDX_CHAINS_DEFAULT');
+    await queryRunner.dropIndex('notify_provider_chains', 'IDX_CHAINS_STATUS');
+    await queryRunner.dropIndex('notify_provider_chains', 'IDX_CHAINS_APPLICATION_CHANNEL');
 
-      // 5. Drop Foreign Key Constraints
-      await queryRunner.dropForeignKey(
-        'notify_provider_chain_members',
-        'FK_CHAIN_MEMBERS_PROVIDER',
-      );
-      await queryRunner.dropForeignKey('notify_provider_chain_members', 'FK_CHAIN_MEMBERS_CHAIN');
-      await queryRunner.dropForeignKey('notify_provider_chains', 'FK_PROVIDER_CHAINS_CHANNEL_TYPE');
-      await queryRunner.dropForeignKey('notify_provider_chains', 'FK_PROVIDER_CHAINS_APPLICATION');
+    // 5. Drop Foreign Key Constraints
+    await queryRunner.dropForeignKey('notify_provider_chain_members', 'FK_CHAIN_MEMBERS_PROVIDER');
+    await queryRunner.dropForeignKey('notify_provider_chain_members', 'FK_CHAIN_MEMBERS_CHAIN');
+    await queryRunner.dropForeignKey('notify_provider_chains', 'FK_PROVIDER_CHAINS_CHANNEL_TYPE');
+    await queryRunner.dropForeignKey('notify_provider_chains', 'FK_PROVIDER_CHAINS_APPLICATION');
 
-      // 6. Drop tables in reverse order of creation to respect dependencies
-      await queryRunner.dropTable('notify_provider_chain_members');
-      await queryRunner.dropTable('notify_provider_chains');
-    }
+    // 6. Drop tables in reverse order of creation to respect dependencies
+    await queryRunner.dropTable('notify_provider_chain_members');
+    await queryRunner.dropTable('notify_provider_chains');
   }
 }
