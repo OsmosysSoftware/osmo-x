@@ -14,6 +14,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { Application } from 'src/modules/applications/entities/application.entity';
 import { Provider } from 'src/modules/providers/entities/provider.entity';
+import { ProviderChain } from 'src/modules/provider-chains/entities/provider-chain.entity';
 
 @Entity({ name: 'notify_archived_notifications' })
 @ObjectType()
@@ -94,6 +95,11 @@ export class ArchivedNotification {
   @IsOptional()
   notificationSentOn: Date;
 
+  @Column({ name: 'provider_chain_id', nullable: true })
+  @Field({ nullable: true })
+  @IsOptional()
+  providerChainId: number;
+
   @ManyToOne(() => Application, (application) => application.archivedNotifications)
   @JoinColumn({ name: 'application_id' })
   @Field(() => Application)
@@ -103,4 +109,12 @@ export class ArchivedNotification {
   @JoinColumn({ name: 'provider_id' })
   @Field(() => Provider)
   providerDetails: Provider;
+
+  @ManyToOne(() => ProviderChain, (providerChain) => providerChain.archivedNotifications)
+  @JoinColumn({
+    name: 'provider_chain_id', // DB column name on THIS entity
+    referencedColumnName: 'chainId', // PROPERTY name on the REFERENCED entity (ProviderChain)
+  })
+  @Field(() => ProviderChain, { nullable: true })
+  providerChainDetails: ProviderChain;
 }
