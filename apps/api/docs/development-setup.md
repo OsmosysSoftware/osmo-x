@@ -82,7 +82,7 @@ This script will periodically call OsmoX APIs that facilitate the following proc
 - Provider Confirmation of all `Awaiting Confirmation` notifications
 - Archiving of all completed notifications in `notify_notifications` table
 
-## ALTERNATIVELY - Dockerize the application and use local database instead of dockerized database
+## ALTERNATIVELY – Dockerize the application and use a local database instead of the dockerized one
 
 Follow this guide to [Dockerize the application and use local db instead of dockerized db](./use-local-db-instead-of-dockerized-db/README.md)
 
