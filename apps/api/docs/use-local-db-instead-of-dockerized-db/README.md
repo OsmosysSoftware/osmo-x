@@ -53,13 +53,14 @@ Set up `osmox-api` docker container to use local postgres database
    DB_DOCKER_PORT=5433 # IGNORE. Will not be used for current setup
    ```
 
-1. Build and run the docker compose command
+5. Build and run the docker compose command
 
    ```bash
+   # In osmo-x/apps/api
    docker compose up --build
    ```
 
-2. To dockerize the application normally, remove the override file and build the containers again
+6. To dockerize the application normally, remove the override file and build the containers again
 
    ```bash
    docker compose down -v
