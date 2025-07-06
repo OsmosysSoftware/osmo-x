@@ -1,0 +1,11 @@
+services:
+  osmox-postgres:
+    # Set a custom healthcheck that always passes immediately to satisfy `condition: service_healthy` check
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"] # This command always exits with 0 (success)
+      interval: 1s
+      retries: 1
+      start_period: 0s
+      timeout: 1s
+    ports: [] # Clear port mappings
+    volumes: [] # Clear volumes
