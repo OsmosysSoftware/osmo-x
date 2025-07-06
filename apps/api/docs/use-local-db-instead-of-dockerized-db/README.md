@@ -35,6 +35,8 @@ Set up `osmox-api` docker container to use local postgres database
 
    1. You need to set `DB_HOST` to your machine's IP address:
      - This is the IP address that other devices on your local network (including Docker containers) can use to reach your machine.
+     - You can simply set `DB_HOST=host.docker.internal` on most setups.
+     - If that does not work for your Docker engine, fall back to using the machine’s IP address:
    2. How to find your host IP:
      - **Windows:** Open Command Prompt/PowerShell, type `ipconfig`, look for IPv4 Address.
      - **macOS/Linux:** Open Terminal, type `ip addr`, look for your active network interface (e.g., en0, eth0, docker0) IP address.
@@ -43,7 +45,7 @@ Set up `osmox-api` docker container to use local postgres database
    ```env
    # Database configuration
    DB_TYPE=postgres
-   DB_HOST=<IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
+   DB_HOST=<IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE> # Value "host.docker.internal" should work on most setups
    DB_PORT=<POSTGRES-PORT-FOR-LOCAL-MACHINE> # Set the port used by postgres of your local machine
    DB_USERNAME=your-username
    DB_PASSWORD=your-password
@@ -51,13 +53,13 @@ Set up `osmox-api` docker container to use local postgres database
    DB_DOCKER_PORT=5433 # IGNORE. Will not be used for current setup
    ```
 
-5. Build and run the docker compose command
+1. Build and run the docker compose command
 
    ```bash
    docker compose up --build
    ```
 
-6. To dockerize the application normally, remove the override file and build the containers again
+2. To dockerize the application normally, remove the override file and build the containers again
 
    ```bash
    docker compose down -v
