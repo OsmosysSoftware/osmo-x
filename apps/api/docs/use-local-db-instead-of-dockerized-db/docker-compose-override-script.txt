@@ -1,4 +1,3 @@
-# References: https://docs.docker.com/reference/compose-file/merge/
 services:
   osmox-api:
     depends_on: !override

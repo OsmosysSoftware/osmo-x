@@ -74,4 +74,5 @@ Set up `osmox-api` docker container to use local postgres database
 
 ## References
 
-- [Merge Multiple Docker Compose Files](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/)
+- https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/
+- https://docs.docker.com/reference/compose-file/merge/
