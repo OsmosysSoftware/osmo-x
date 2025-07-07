@@ -1,2 +1,11 @@
+# References: https://docs.docker.com/reference/compose-file/merge/
 services:
-  osmox-postgres: null
+  osmox-api:
+    depends_on: !override
+      osmox-redis:
+        condition: service_healthy
+
+  osmox-postgres: !reset null
+
+volumes:
+  osmox-postgres-data-saas: !reset null

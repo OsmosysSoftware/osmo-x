@@ -4,8 +4,8 @@ Set up `osmox-api` docker container to use local postgres database
 
 ## Description
 
-- Override the existing docker compose file to create an empty postgres container and volume
-- Use postgres db of local machine for dockerized api solution
+- Override the existing Docker Compose file to exclude creation of the PostgreSQL container and its associated volume
+- Utilize local PostgreSQL database as the data source for a Dockerized API
 
 ## Steps
 
