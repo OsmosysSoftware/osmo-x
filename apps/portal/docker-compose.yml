@@ -2,8 +2,6 @@ services:
   osmox-portal:
     build:
       context: .
-      args:
-        PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
       dockerfile: Dockerfile
     image: osmox-portal-${COMPOSE_PROJECT_NAME}
     restart: unless-stopped
