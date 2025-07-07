@@ -23,7 +23,7 @@ RUN npm run build:prod
 FROM nginx:latest
 
 # Copy the built Angular app to the default Nginx public folder
-COPY --from=builder /usr/src/app/dist/osmox-portal/browser* /usr/share/nginx/html/
+COPY --from=builder /usr/src/app/dist/osmox-portal/browser /usr/share/nginx/html/
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
