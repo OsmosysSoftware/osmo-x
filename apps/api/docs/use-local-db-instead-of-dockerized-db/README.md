@@ -16,9 +16,10 @@ Set up `osmox-api` docker container to use local postgres database
    cd osmo-x/apps/api/docs/use-local-db-instead-of-dockerized-db/
    ```
 
-2. Create `docker-compose.override.yml` where `docker-compose.yml` exists
+2. Create `docker-compose.override.yml` where `docker-compose.yml` exists and copy the contents of `docker-compose-override-script.txt` in it
 
    ```bash
+   # copy script from .txt file and create override script in osmo-x/apps/api
    cp docker-compose-override-script.txt ../../docker-compose.override.yml
    ```
 
