@@ -1,0 +1,10 @@
+services:
+  osmox-api:
+    depends_on: !override
+      osmox-redis:
+        condition: service_healthy
+
+  osmox-postgres: !reset null
+
+volumes:
+  osmox-postgres-data-saas: !reset null
