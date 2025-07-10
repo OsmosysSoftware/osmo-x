@@ -13,6 +13,15 @@ export default new DataSource({
   username: configService.getOrThrow<string>('DB_USERNAME'),
   password: configService.getOrThrow<string>('DB_PASSWORD'),
   database: configService.getOrThrow<string>('DB_NAME'),
+  ssl:
+    configService.getOrThrow<string>('DB_SSL_ENABLED') === 'true'
+      ? {
+          rejectUnauthorized:
+            configService.getOrThrow<string>('DB_SSL_REJECT_UNAUTHORIZED') === 'true'
+              ? true
+              : false,
+        }
+      : false,
   entities: [],
   migrations: ['src/database/migrations/**'],
   migrationsTableName: 'notify_migrations',
