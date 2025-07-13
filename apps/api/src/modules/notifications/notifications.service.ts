@@ -87,6 +87,8 @@ export class NotificationsService extends CoreService<Notification> {
           throw new BadRequestException(message);
         }
 
+        // Set related notification data if providerChain is used for request
+        notification.providerChainId = providerChainEntry.chainId;
         notification.providerId = firstPriorityProviderId;
       } catch (error) {
         if (error instanceof BadRequestException) {
