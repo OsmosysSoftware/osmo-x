@@ -20,6 +20,9 @@ import { ArchivedNotificationsService } from '../archived-notifications/archived
 import { SingleNotificationResponse } from './dtos/single-notification.response.dto';
 import { TEST_MODE_RESULT_JSON } from 'src/common/constants/miscellaneous';
 import { Application } from '../applications/entities/application.entity';
+import { ProviderChainsService } from '../provider-chains/provider-chains.service';
+import { Provider } from '../providers/entities/provider.entity';
+import { ProviderChain } from '../provider-chains/entities/provider-chain.entity';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -36,6 +39,7 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly applicationsService: ApplicationsService,
     private readonly providersService: ProvidersService,
     private readonly archivedNotificationsService: ArchivedNotificationsService,
+    private readonly providerChainsService: ProviderChainsService,
   ) {
     super(notificationRepository);
   }
@@ -44,7 +48,11 @@ export class NotificationsService extends CoreService<Notification> {
     this.logger.log('Creating notification...');
 
     // ApiKeyGuard validates the provider and application details
-    const providerEntry = await this.providersService.getById(notificationData.providerId);
+    const providerEntry = await this.getProviderDetailsBasedOnRequest(
+      notificationData.providerId,
+      notificationData.providerChain,
+    );
+
     const notification = new Notification(notificationData);
 
     // Get channel type and applicationId from providerId & set the values
@@ -75,6 +83,46 @@ export class NotificationsService extends CoreService<Notification> {
       `New Notification created. Saving notification in DB: ${JSON.stringify(notification)}`,
     );
     return this.notificationRepository.save(notification);
+  }
+
+  // Check if providerId or providerChain has been passed and return related entry
+  async getProviderDetailsBasedOnRequest(
+    inputProviderId: number | null = null,
+    inputProviderChain: string | null = null,
+  ): Promise<Provider | ProviderChain> {
+    try {
+      if (inputProviderId && inputProviderChain) {
+        // Case 1: Both inputs are provided - throw an error
+        throw new Error(
+          `Conflicting request: Both ProviderId (${inputProviderId}) and ProviderChain (${inputProviderChain}) were provided. Please provide only one.`,
+        );
+      } else if (inputProviderId) {
+        // Case 2: Only inputProviderId is provided
+        this.logger.debug(`Request uses ProviderId: ${inputProviderId}`);
+        return await this.providersService.getById(inputProviderId);
+      } else if (inputProviderChain) {
+        // Case 3: Only inputProviderChain is provided
+        this.logger.debug(`Request uses ProviderChain: ${inputProviderChain}`);
+        return await this.providerChainsService.getByProviderChainName(inputProviderChain);
+      } else {
+        // Case 4: Neither input is provided - also an error state
+        throw new Error(
+          'Invalid request: At least one of inputProviderId or inputProviderChain must be provided.',
+        );
+      }
+    } catch (error) {
+      this.logger.error(`Error in getProviderDetailsBasedOnRequest: ${error.message}`);
+
+      if (error instanceof Error) {
+        throw new Error(
+          `Error fetching details from request (providerId: ${inputProviderId}, providerChain: ${inputProviderChain}): ${error.message}`,
+        );
+      } else {
+        throw new Error(
+          `An unexpected error occurred while fetching details (providerId: ${inputProviderId}, providerChain: ${inputProviderChain}).`,
+        );
+      }
+    }
   }
 
   // Get application details using applicationId
