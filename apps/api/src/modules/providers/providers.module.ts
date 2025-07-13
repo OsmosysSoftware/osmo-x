@@ -12,8 +12,16 @@ import { UsersService } from '../users/users.service';
 import { Logger } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
+import { ProviderChainsService } from '../provider-chains/provider-chains.service';
 @Module({
-  imports: [TypeOrmModule.forFeature([Provider]), UsersModule, ApplicationsModule, JwtModule],
+  imports: [
+    TypeOrmModule.forFeature([Provider]),
+    UsersModule,
+    ApplicationsModule,
+    JwtModule,
+    ProviderChainsModule,
+  ],
   providers: [
     UsersService,
     ApplicationsService,
@@ -24,7 +32,14 @@ import { ConfigService } from '@nestjs/config';
     IsDataValidConstraint,
     ProvidersResolver,
     Logger,
+    ProviderChainsService,
   ],
-  exports: [TypeOrmModule, ProvidersService, UsersService, ApplicationsService],
+  exports: [
+    TypeOrmModule,
+    ProvidersService,
+    UsersService,
+    ApplicationsService,
+    ProviderChainsService,
+  ],
 })
 export class ProvidersModule {}
