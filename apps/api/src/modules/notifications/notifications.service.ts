@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
@@ -23,6 +23,7 @@ import { Application } from '../applications/entities/application.entity';
 import { ProviderChainsService } from '../provider-chains/provider-chains.service';
 import { Provider } from '../providers/entities/provider.entity';
 import { ProviderChain } from '../provider-chains/entities/provider-chain.entity';
+import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -40,6 +41,7 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly providersService: ProvidersService,
     private readonly archivedNotificationsService: ArchivedNotificationsService,
     private readonly providerChainsService: ProviderChainsService,
+    private readonly providerChainMembersService: ProviderChainMembersService,
   ) {
     super(notificationRepository);
   }
@@ -65,6 +67,37 @@ export class NotificationsService extends CoreService<Notification> {
     // Set correct application name
     notification.createdBy = applicationEntry.name;
     notification.updatedBy = applicationEntry.name;
+
+    // TODO: Temporary logic. Update as required
+    // If providerChain is used for request, set the active providerId with the highest priority in notification
+    if (notificationData.providerChain && !notificationData.providerId) {
+      try {
+        const providerChainEntry = await this.providerChainsService.getByProviderChainName(
+          notificationData.providerChain,
+        );
+
+        const firstPriorityProviderId =
+          await this.providerChainMembersService.getFirstPriorityProviderIdByChainId(
+            providerChainEntry.chainId,
+          );
+
+        if (!firstPriorityProviderId) {
+          const message = `No active providers found for providerChain ${notificationData.providerChain}`;
+          this.logger.error(message);
+          throw new BadRequestException(message);
+        }
+
+        notification.providerId = firstPriorityProviderId;
+      } catch (error) {
+        if (error instanceof BadRequestException) {
+          throw error;
+        }
+
+        const errorMsg = `Failed to fetch providerId for providerChain ${notificationData.providerChain}: ${error.message}`;
+        this.logger.error(errorMsg, error.stack);
+        throw new Error(errorMsg);
+      }
+    }
 
     // Handle notification creation when application is in Test Mode
     if ((await this.checkApplicationIsInTestMode(applicationEntry)) === true) {
