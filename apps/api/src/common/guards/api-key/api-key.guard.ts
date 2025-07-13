@@ -107,9 +107,7 @@ export class ApiKeyGuard implements CanActivate {
       this.logger.error(
         `Could not fetch applicationId from Request providerId: ${requestProviderId}, Request providerChain: ${requestProviderChainName}`,
       );
-      throw new BadRequestException(
-        `Could not fetch applicationId from Request providerId: ${requestProviderId}, Request providerChain: ${requestProviderChainName}`,
-      );
+      throw new BadRequestException('Invalid providerId or providerChain');
     }
 
     // Get API keys for application that owns the providerId or providerChain
