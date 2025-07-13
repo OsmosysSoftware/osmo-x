@@ -152,7 +152,7 @@ export class ApiKeyGuard implements CanActivate {
       }
 
       // Check if provider is enabled or not
-      if (providerEntry.isEnabled != IsEnabledStatus.TRUE) {
+      if (providerEntry.isEnabled !== IsEnabledStatus.TRUE) {
         this.logger.error(`Provider ${providerEntry.name} is not enabled`);
         throw new BadRequestException(`Provider ${providerEntry.name} is not enabled`);
       }
