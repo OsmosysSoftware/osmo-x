@@ -25,6 +25,7 @@ import { VcTwilioDataDto } from 'src/modules/notifications/dtos/providers/vcTwil
 import { AwsSesDataDto } from 'src/modules/notifications/dtos/providers/awsSes-data.dto';
 import { SmsSnsDataDto } from 'src/modules/notifications/dtos/providers/smsSns-data.dto';
 import { ProviderChainsService } from 'src/modules/provider-chains/provider-chains.service';
+import { ProviderChainMembersService } from 'src/modules/provider-chain-members/provider-chain-members.service';
 
 @ValidatorConstraint({ name: 'isDataValidConstraint', async: true })
 @Injectable()
@@ -32,13 +33,13 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
   constructor(
     private readonly providersService: ProvidersService,
     private readonly providerChainsService: ProviderChainsService,
+    private readonly providerChainMembersService: ProviderChainMembersService,
     private logger: Logger = new Logger(IsDataValidConstraint.name),
   ) {}
 
   async validate(value: object, args: ValidationArguments): Promise<boolean> {
     this.logger.debug('Request data validation started');
     const object = args.object as { providerId: number; providerChain: string; data: object };
-    let inputChannelType = null;
 
     // Method to validate data
     const validateAndThrowError = async (validationData: object): Promise<void> => {
@@ -51,6 +52,103 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
       }
     };
 
+    // Method to validate request data based on channel type
+    const validateRequestDataBasedOnChannelType = async (
+      inputChannelType: number,
+    ): Promise<boolean> => {
+      this.logger.debug(`Validate request body for channel type: ${inputChannelType}`);
+
+      switch (inputChannelType) {
+        case ChannelType.SMTP: {
+          const smtpData = new SMTPDataDto();
+          Object.assign(smtpData, value);
+          await validateAndThrowError(smtpData);
+          return true;
+        }
+
+        case ChannelType.MAILGUN: {
+          const mailgunData = new MailgunDataDto();
+          Object.assign(mailgunData, value);
+          await validateAndThrowError(mailgunData);
+          return true;
+        }
+
+        case ChannelType.WA_360_DAILOG: {
+          const wa360DialogData = new Wa360DialogDataDto();
+          Object.assign(wa360DialogData, value);
+          await validateAndThrowError(wa360DialogData);
+          return true;
+        }
+
+        case ChannelType.WA_TWILIO: {
+          const waTwilioData = new WaTwilioDataDto();
+          Object.assign(waTwilioData, value);
+          await validateAndThrowError(waTwilioData);
+          return true;
+        }
+
+        case ChannelType.SMS_TWILIO: {
+          const smsTwilioData = new SmsTwilioDataDto();
+          Object.assign(smsTwilioData, value);
+          await validateAndThrowError(smsTwilioData);
+          return true;
+        }
+
+        case ChannelType.SMS_PLIVO: {
+          const smsPlivoData = new SmsPlivoDataDto();
+          Object.assign(smsPlivoData, value);
+          await validateAndThrowError(smsPlivoData);
+          return true;
+        }
+
+        case ChannelType.WA_TWILIO_BUSINESS: {
+          const waTwilioBusinessData = new WaTwilioBusinessDataDto();
+          Object.assign(waTwilioBusinessData, value);
+          await validateAndThrowError(waTwilioBusinessData);
+          return true;
+        }
+
+        case ChannelType.SMS_KAPSYSTEM: {
+          const kapsystemData = new SmsKapsystemDataDto();
+          Object.assign(kapsystemData, value);
+          await validateAndThrowError(kapsystemData);
+          return true;
+        }
+
+        case ChannelType.PUSH_SNS: {
+          const pushSnsData = new PushSnsDataDto();
+          Object.assign(pushSnsData, value);
+          await validateAndThrowError(pushSnsData);
+          return true;
+        }
+
+        case ChannelType.VC_TWILIO: {
+          const vcTwilioData = new VcTwilioDataDto();
+          Object.assign(vcTwilioData, value);
+          await validateAndThrowError(vcTwilioData);
+          return true;
+        }
+
+        case ChannelType.AWS_SES: {
+          const awsSesData = new AwsSesDataDto();
+          Object.assign(awsSesData, value);
+          await validateAndThrowError(awsSesData);
+          return true;
+        }
+
+        case ChannelType.SMS_SNS: {
+          const snsSmsData = new SmsSnsDataDto();
+          Object.assign(snsSmsData, value);
+          await validateAndThrowError(snsSmsData);
+          return true;
+        }
+
+        default: {
+          return false;
+        }
+      }
+    };
+
     if (object.providerId && !object.providerChain) {
       // Notification request uses providerId
       try {
@@ -60,10 +158,11 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
           throw new BadRequestException(`Provider with ID ${object.providerId} not found.`);
         }
 
-        inputChannelType = providerEntry.channelType;
         this.logger.debug(
-          `Fetched channel type: ${inputChannelType} from provider with Id: ${object.providerId}`,
+          `Fetched channel type: ${providerEntry.channelType} from provider with Id: ${object.providerId}`,
         );
+
+        return await validateRequestDataBasedOnChannelType(providerEntry.channelType);
       } catch (error) {
         if (error instanceof BadRequestException) {
           throw error;
@@ -88,10 +187,38 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
           throw new BadRequestException(`ProviderChain ${object.providerChain} not found.`);
         }
 
-        inputChannelType = providerChainEntry.channelType;
-        this.logger.debug(
-          `Fetched channel type: ${inputChannelType} from provider chain: ${object.providerChain}`,
-        );
+        const allProviderChainMembersFromChainId =
+          await this.providerChainMembersService.getAllProviderChainMembersByChainId(
+            providerChainEntry.chainId,
+          );
+
+        if (!allProviderChainMembersFromChainId || allProviderChainMembersFromChainId.length <= 0) {
+          throw new BadRequestException(
+            `ProviderChain ${object.providerChain} does not have any members.`,
+          );
+        }
+
+        for (const providerChainMemberEntry of allProviderChainMembersFromChainId) {
+          this.logger.debug(`Check for ProviderChainMember ${providerChainMemberEntry.id}`);
+          const inputProviderEntry = await this.providersService.getById(
+            providerChainMemberEntry.providerId,
+          );
+
+          const isHealthy = await validateRequestDataBasedOnChannelType(
+            inputProviderEntry.channelType,
+          );
+
+          if (!isHealthy) {
+            // If any one entry fails validation return false
+            this.logger.error(
+              `Validation failed for ProviderChainMember ${providerChainMemberEntry.id} of ProviderChain ${object.providerChain}`,
+            );
+            return false;
+          }
+        }
+
+        // Return true only when all entries pass validation
+        return true;
       } catch (error) {
         if (error instanceof BadRequestException) {
           throw error;
@@ -105,99 +232,9 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
           `Unexpected error while fetching ProviderChain ${object.providerChain}: ${error.message}`,
         );
       }
-    }
-
-    // Build and validate request data based on channel type
-    this.logger.debug(`Validate request body for channel type: ${inputChannelType}`);
-
-    switch (inputChannelType) {
-      case ChannelType.SMTP: {
-        const smtpData = new SMTPDataDto();
-        Object.assign(smtpData, value);
-        await validateAndThrowError(smtpData);
-        return true;
-      }
-
-      case ChannelType.MAILGUN: {
-        const mailgunData = new MailgunDataDto();
-        Object.assign(mailgunData, value);
-        await validateAndThrowError(mailgunData);
-        return true;
-      }
-
-      case ChannelType.WA_360_DAILOG: {
-        const wa360DialogData = new Wa360DialogDataDto();
-        Object.assign(wa360DialogData, value);
-        await validateAndThrowError(wa360DialogData);
-        return true;
-      }
-
-      case ChannelType.WA_TWILIO: {
-        const waTwilioData = new WaTwilioDataDto();
-        Object.assign(waTwilioData, value);
-        await validateAndThrowError(waTwilioData);
-        return true;
-      }
-
-      case ChannelType.SMS_TWILIO: {
-        const smsTwilioData = new SmsTwilioDataDto();
-        Object.assign(smsTwilioData, value);
-        await validateAndThrowError(smsTwilioData);
-        return true;
-      }
-
-      case ChannelType.SMS_PLIVO: {
-        const smsPlivoData = new SmsPlivoDataDto();
-        Object.assign(smsPlivoData, value);
-        await validateAndThrowError(smsPlivoData);
-        return true;
-      }
-
-      case ChannelType.WA_TWILIO_BUSINESS: {
-        const waTwilioBusinessData = new WaTwilioBusinessDataDto();
-        Object.assign(waTwilioBusinessData, value);
-        await validateAndThrowError(waTwilioBusinessData);
-        return true;
-      }
-
-      case ChannelType.SMS_KAPSYSTEM: {
-        const kapsystemData = new SmsKapsystemDataDto();
-        Object.assign(kapsystemData, value);
-        await validateAndThrowError(kapsystemData);
-        return true;
-      }
-
-      case ChannelType.PUSH_SNS: {
-        const pushSnsData = new PushSnsDataDto();
-        Object.assign(pushSnsData, value);
-        await validateAndThrowError(pushSnsData);
-        return true;
-      }
-
-      case ChannelType.VC_TWILIO: {
-        const vcTwilioData = new VcTwilioDataDto();
-        Object.assign(vcTwilioData, value);
-        await validateAndThrowError(vcTwilioData);
-        return true;
-      }
-
-      case ChannelType.AWS_SES: {
-        const awsSesData = new AwsSesDataDto();
-        Object.assign(awsSesData, value);
-        await validateAndThrowError(awsSesData);
-        return true;
-      }
-
-      case ChannelType.SMS_SNS: {
-        const snsSmsData = new SmsSnsDataDto();
-        Object.assign(snsSmsData, value);
-        await validateAndThrowError(snsSmsData);
-        return true;
-      }
-
-      default: {
-        return false;
-      }
+    } else {
+      this.logger.error('IsDataValid Validation Failed');
+      return false;
     }
   }
 }

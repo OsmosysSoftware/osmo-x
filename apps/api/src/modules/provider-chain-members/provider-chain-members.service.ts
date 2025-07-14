@@ -28,6 +28,25 @@ export class ProviderChainMembersService {
     return providerChainMemberEntry?.providerId ?? null;
   }
 
+  async getAllProviderChainMembersByChainId(
+    providerChainId: number,
+  ): Promise<ProviderChainMember[] | null> {
+    const providerChainMembers = await this.providerChainMembersRepository.find({
+      where: {
+        chainId: providerChainId,
+        isActive: Status.ACTIVE,
+        status: Status.ACTIVE,
+      },
+    });
+
+    if (!providerChainMembers.length) {
+      this.logger.debug(`No active providers found for providerChainId ${providerChainId}`);
+      return null;
+    }
+
+    return providerChainMembers;
+  }
+
   async getNextPriorityProvider(
     providerChainId: number,
     currentProviderId: number,

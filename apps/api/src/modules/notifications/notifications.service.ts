@@ -57,8 +57,7 @@ export class NotificationsService extends CoreService<Notification> {
 
     const notification = new Notification(notificationData);
 
-    // Get channel type and applicationId from providerId & set the values
-    notification.channelType = providerEntry.channelType;
+    // Get applicationId from providerId & set the values
     notification.applicationId = providerEntry.applicationId;
 
     // Fetch application details using applicationId
@@ -69,8 +68,9 @@ export class NotificationsService extends CoreService<Notification> {
     notification.updatedBy = applicationEntry.name;
 
     // TODO: Temporary logic. Update as required
-    // If providerChain is used for request, set the active providerId with the highest priority in notification
+    // Set correct notification data based on what was passed in the request
     if (notificationData.providerChain && !notificationData.providerId) {
+      // If providerChain is used for request, set the active providerId with the highest priority in notification
       try {
         const providerChainEntry = await this.providerChainsService.getByProviderChainName(
           notificationData.providerChain,
@@ -87,9 +87,13 @@ export class NotificationsService extends CoreService<Notification> {
           throw new BadRequestException(message);
         }
 
+        const firstPriorityProviderEntry =
+          await this.providersService.getById(firstPriorityProviderId);
+
         // Set related notification data if providerChain is used for request
         notification.providerChainId = providerChainEntry.chainId;
         notification.providerId = firstPriorityProviderId;
+        notification.channelType = firstPriorityProviderEntry.channelType;
       } catch (error) {
         if (error instanceof BadRequestException) {
           throw error;
@@ -99,6 +103,11 @@ export class NotificationsService extends CoreService<Notification> {
         this.logger.error(errorMsg, error.stack);
         throw new Error(errorMsg);
       }
+    } else if (notificationData.providerId && !notificationData.providerChain) {
+      // If providerId is passed in request, providerEntry should return data from providers table
+      // Request providerId is used to set notification.providerId so no need to add it again
+      // Set channelType when providerId is used for request
+      notification.channelType = providerEntry.channelType;
     }
 
     // Handle notification creation when application is in Test Mode
