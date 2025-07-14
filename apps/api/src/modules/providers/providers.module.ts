@@ -14,6 +14,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
 import { ProviderChainsService } from '../provider-chains/provider-chains.service';
+import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
+import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Provider]),
@@ -21,6 +23,7 @@ import { ProviderChainsService } from '../provider-chains/provider-chains.servic
     ApplicationsModule,
     JwtModule,
     ProviderChainsModule,
+    ProviderChainMembersModule,
   ],
   providers: [
     UsersService,
@@ -33,6 +36,7 @@ import { ProviderChainsService } from '../provider-chains/provider-chains.servic
     ProvidersResolver,
     Logger,
     ProviderChainsService,
+    ProviderChainMembersService,
   ],
   exports: [
     TypeOrmModule,
@@ -40,6 +44,7 @@ import { ProviderChainsService } from '../provider-chains/provider-chains.servic
     UsersService,
     ApplicationsService,
     ProviderChainsService,
+    ProviderChainMembersService,
   ],
 })
 export class ProvidersModule {}
