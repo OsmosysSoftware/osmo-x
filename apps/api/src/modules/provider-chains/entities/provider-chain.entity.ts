@@ -9,9 +9,8 @@ import {
   OneToMany,
 } from 'typeorm';
 import { IsEnum, IsOptional } from 'class-validator';
-import { IsDefaultStatus, Status } from 'src/common/constants/database';
+import { IsDefaultStatus, ProviderType, Status } from 'src/common/constants/database';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { ChannelType } from 'src/common/constants/notifications';
 import { Application } from 'src/modules/applications/entities/application.entity';
 import { ProviderChainMember } from 'src/modules/provider-chain-members/entities/provider-chain-member.entity';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
@@ -33,7 +32,7 @@ export class ProviderChain {
   applicationId: number;
 
   @Column({ name: 'channel_type', type: 'smallint' })
-  @IsEnum(ChannelType)
+  @IsEnum(ProviderType)
   @Field()
   channelType: number;
 
