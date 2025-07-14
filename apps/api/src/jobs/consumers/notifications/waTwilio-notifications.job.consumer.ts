@@ -14,6 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
+import { ProviderChainMembersService } from 'src/modules/provider-chain-members/provider-chain-members.service';
 
 @Injectable()
 export class WaTwilioNotificationsConsumer extends NotificationConsumer {
@@ -29,6 +30,7 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
     notificationsQueueService: NotificationQueueProducer,
     webhookService: WebhookService,
     configService: ConfigService,
+    providerChainMembersService: ProviderChainMembersService,
   ) {
     super(
       notificationRepository,
@@ -37,6 +39,7 @@ export class WaTwilioNotificationsConsumer extends NotificationConsumer {
       notificationsQueueService,
       webhookService,
       configService,
+      providerChainMembersService,
     );
   }
 

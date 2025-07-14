@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
+import { ProviderChainMembersService } from 'src/modules/provider-chain-members/provider-chain-members.service';
 
 @Injectable()
 export abstract class NotificationConsumer {
@@ -27,6 +28,7 @@ export abstract class NotificationConsumer {
     private readonly notificationQueueService: NotificationQueueProducer,
     protected readonly webhookService: WebhookService,
     private readonly configService: ConfigService,
+    private readonly providerChainMembersService: ProviderChainMembersService,
   ) {
     this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
   }
@@ -96,6 +98,28 @@ export abstract class NotificationConsumer {
           `Notification with ID ${notification.id} has attempted max allowed retries (sending), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
+
+        if (notification.providerChainId) {
+          const nextPriorityProviderId =
+            await this.providerChainMembersService.getNextPriorityProvider(
+              notification.providerChainId,
+              notification.providerId,
+            );
+
+          if (nextPriorityProviderId) {
+            notification.deliveryStatus = DeliveryStatus.PENDING;
+            notification.providerId = nextPriorityProviderId;
+            notification.retryCount = 0;
+            this.logger.log(
+              `Next priority provider ${notification.providerId} from provider chain ${notification.providerChainId} will be used for notification ${notification.id}. Setting delivery status as ${DeliveryStatus.PENDING}`,
+            );
+          } else {
+            this.logger.log(
+              `Next priority provider not found for notification ${notification.id}. Delivery status will not be changed.`,
+            );
+          }
+        }
+
         await this.notificationRepository.save(notification);
         // Call webhook for all providers (skip and non skip) when delivery status is FAILED
         await this.notificationQueueService.addNotificationToQueue(
@@ -163,7 +187,7 @@ export abstract class NotificationConsumer {
         );
         this.logger.log('Provider response: ' + JSON.stringify(response.result));
 
-        // Check to prevent program to constantly keep checking for confirmation status
+        // Check to prevent program from constantly re-checking for confirmation status
         if (notification.retryCount >= this.maxRetryCount) {
           throw new Error(
             `Max retry count threshold reached by Notification ID: ${notification.id}`,
@@ -189,6 +213,28 @@ export abstract class NotificationConsumer {
           `Notification with ID ${notification.id} has attempted max allowed retries (provider confirmation), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
+
+        if (notification.providerChainId) {
+          const nextPriorityProviderId =
+            await this.providerChainMembersService.getNextPriorityProvider(
+              notification.providerChainId,
+              notification.providerId,
+            );
+
+          if (nextPriorityProviderId) {
+            notification.deliveryStatus = DeliveryStatus.PENDING;
+            notification.providerId = nextPriorityProviderId;
+            notification.retryCount = 0;
+            this.logger.log(
+              `Next priority provider ${notification.providerId} from provider chain ${notification.providerChainId} will be used for notification ${notification.id}. Setting delivery status as ${DeliveryStatus.PENDING}`,
+            );
+          } else {
+            this.logger.log(
+              `Next priority provider not found for notification ${notification.id}.`,
+            );
+          }
+        }
+
         await this.notificationRepository.save(notification);
         await this.notificationQueueService.addNotificationToQueue(
           QueueAction.WEBHOOK,
