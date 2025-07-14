@@ -142,17 +142,6 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
       }),
     );
 
-    await queryRunner.createForeignKey(
-      'notify_provider_chains',
-      new TableForeignKey({
-        columnNames: ['channel_type'],
-        referencedColumnNames: ['master_id'],
-        referencedTableName: 'notify_master_providers',
-        onDelete: 'CASCADE',
-        name: 'FK_PROVIDER_CHAINS_CHANNEL_TYPE',
-      }),
-    );
-
     // 4. Add Foreign Key Constraints for notify_provider_chain_members
     await queryRunner.createForeignKey(
       'notify_provider_chain_members',
@@ -344,7 +333,6 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
     // 5. Drop Foreign Key Constraints
     await queryRunner.dropForeignKey('notify_provider_chain_members', 'FK_CHAIN_MEMBERS_PROVIDER');
     await queryRunner.dropForeignKey('notify_provider_chain_members', 'FK_CHAIN_MEMBERS_CHAIN');
-    await queryRunner.dropForeignKey('notify_provider_chains', 'FK_PROVIDER_CHAINS_CHANNEL_TYPE');
     await queryRunner.dropForeignKey('notify_provider_chains', 'FK_PROVIDER_CHAINS_APPLICATION');
 
     // 6. Drop tables in reverse order of creation to respect dependencies
