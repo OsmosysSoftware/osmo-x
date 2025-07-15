@@ -101,27 +101,41 @@ export abstract class NotificationConsumer {
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
 
+        // Provider Fallback Failover logic for providers that skip confirmation
         if (notification.providerChainId) {
-          const nextPriorityProviderId =
-            await this.providerChainMembersService.getNextPriorityProvider(
-              notification.providerChainId,
-              notification.providerId,
-            );
+          try {
+            const nextPriorityProviderId =
+              await this.providerChainMembersService.getNextPriorityProvider(
+                notification.providerChainId,
+                notification.providerId,
+              );
 
-          const nextPriorityProviderEntry =
-            await this.providersService.getById(nextPriorityProviderId);
+            if (nextPriorityProviderId) {
+              const nextPriorityProviderEntry =
+                await this.providersService.getById(nextPriorityProviderId);
 
-          if (nextPriorityProviderId && nextPriorityProviderEntry) {
-            notification.deliveryStatus = DeliveryStatus.PENDING;
-            notification.channelType = nextPriorityProviderEntry.channelType;
-            notification.providerId = nextPriorityProviderId;
-            notification.retryCount = 0;
-            this.logger.log(
-              `Next priority provider ${notification.providerId} from provider chain ${notification.providerChainId} will be used for notification ${notification.id}. Setting delivery status as ${DeliveryStatus.PENDING}`,
-            );
-          } else {
-            this.logger.log(
-              `Next priority provider not found for notification ${notification.id}. Delivery status will not be changed.`,
+              if (nextPriorityProviderEntry) {
+                notification.deliveryStatus = DeliveryStatus.PENDING;
+                notification.channelType = nextPriorityProviderEntry.channelType;
+                notification.providerId = nextPriorityProviderId;
+                notification.retryCount = 0;
+                this.logger.log(
+                  `Next priority provider ${notification.providerId} from provider chain ${notification.providerChainId} will be used for notification ${notification.id}. Setting delivery status as ${DeliveryStatus.PENDING}`,
+                );
+              } else {
+                this.logger.error(
+                  `Provider ${nextPriorityProviderId} not found in database for notification ${notification.id}`,
+                );
+              }
+            } else {
+              this.logger.log(
+                `Next priority provider not found for notification ${notification.id}. Delivery status will not be changed.`,
+              );
+            }
+          } catch (error) {
+            this.logger.error(
+              `Error during provider failover for notification ${notification.id}: ${error.message}`,
+              error.stack,
             );
           }
         }
@@ -220,27 +234,41 @@ export abstract class NotificationConsumer {
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
 
+        // Provider Fallback Failover logic for providers that do provider confirmation
         if (notification.providerChainId) {
-          const nextPriorityProviderId =
-            await this.providerChainMembersService.getNextPriorityProvider(
-              notification.providerChainId,
-              notification.providerId,
-            );
+          try {
+            const nextPriorityProviderId =
+              await this.providerChainMembersService.getNextPriorityProvider(
+                notification.providerChainId,
+                notification.providerId,
+              );
 
-          const nextPriorityProviderEntry =
-            await this.providersService.getById(nextPriorityProviderId);
+            if (nextPriorityProviderId) {
+              const nextPriorityProviderEntry =
+                await this.providersService.getById(nextPriorityProviderId);
 
-          if (nextPriorityProviderId && nextPriorityProviderEntry) {
-            notification.deliveryStatus = DeliveryStatus.PENDING;
-            notification.channelType = nextPriorityProviderEntry.channelType;
-            notification.providerId = nextPriorityProviderId;
-            notification.retryCount = 0;
-            this.logger.log(
-              `Next priority provider ${notification.providerId} from provider chain ${notification.providerChainId} will be used for notification ${notification.id}. Setting delivery status as ${DeliveryStatus.PENDING}`,
-            );
-          } else {
-            this.logger.log(
-              `Next priority provider not found for notification ${notification.id}.`,
+              if (nextPriorityProviderEntry) {
+                notification.deliveryStatus = DeliveryStatus.PENDING;
+                notification.channelType = nextPriorityProviderEntry.channelType;
+                notification.providerId = nextPriorityProviderId;
+                notification.retryCount = 0;
+                this.logger.log(
+                  `Next priority provider ${notification.providerId} from provider chain ${notification.providerChainId} will be used for notification ${notification.id}. Setting delivery status as ${DeliveryStatus.PENDING}`,
+                );
+              } else {
+                this.logger.error(
+                  `Provider ${nextPriorityProviderId} not found in database for notification ${notification.id}`,
+                );
+              }
+            } else {
+              this.logger.log(
+                `Next priority provider not found for notification ${notification.id}. Delivery status will not be changed.`,
+              );
+            }
+          } catch (error) {
+            this.logger.error(
+              `Error during provider failover for notification ${notification.id}: ${error.message}`,
+              error.stack,
             );
           }
         }
