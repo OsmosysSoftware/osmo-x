@@ -155,17 +155,10 @@ export class NotificationsService extends CoreService<Notification> {
         );
       }
     } catch (error) {
-      this.logger.error(`Error in getProviderDetailsBasedOnRequest: ${error.message}`);
+      const msg = `Unexpected error occurred while fetching details (providerId: ${inputProviderId}, providerChain: ${inputProviderChain}): ${error.message}`;
 
-      if (error instanceof Error) {
-        throw new Error(
-          `Error fetching details from request (providerId: ${inputProviderId}, providerChain: ${inputProviderChain}): ${error.message}`,
-        );
-      } else {
-        throw new Error(
-          `An unexpected error occurred while fetching details (providerId: ${inputProviderId}, providerChain: ${inputProviderChain}).`,
-        );
-      }
+      this.logger.error(msg);
+      throw new Error(msg);
     }
   }
 
