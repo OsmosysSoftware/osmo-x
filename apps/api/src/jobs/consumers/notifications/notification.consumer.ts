@@ -13,6 +13,7 @@ import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { ProviderChainMembersService } from 'src/modules/provider-chain-members/provider-chain-members.service';
+import { ProvidersService } from 'src/modules/providers/providers.service';
 
 @Injectable()
 export abstract class NotificationConsumer {
@@ -29,6 +30,7 @@ export abstract class NotificationConsumer {
     protected readonly webhookService: WebhookService,
     private readonly configService: ConfigService,
     private readonly providerChainMembersService: ProviderChainMembersService,
+    private readonly providersService: ProvidersService,
   ) {
     this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
   }
@@ -106,8 +108,12 @@ export abstract class NotificationConsumer {
               notification.providerId,
             );
 
-          if (nextPriorityProviderId) {
+          const nextPriorityProviderEntry =
+            await this.providersService.getById(nextPriorityProviderId);
+
+          if (nextPriorityProviderId && nextPriorityProviderEntry) {
             notification.deliveryStatus = DeliveryStatus.PENDING;
+            notification.channelType = nextPriorityProviderEntry.channelType;
             notification.providerId = nextPriorityProviderId;
             notification.retryCount = 0;
             this.logger.log(
@@ -221,8 +227,12 @@ export abstract class NotificationConsumer {
               notification.providerId,
             );
 
-          if (nextPriorityProviderId) {
+          const nextPriorityProviderEntry =
+            await this.providersService.getById(nextPriorityProviderId);
+
+          if (nextPriorityProviderId && nextPriorityProviderEntry) {
             notification.deliveryStatus = DeliveryStatus.PENDING;
+            notification.channelType = nextPriorityProviderEntry.channelType;
             notification.providerId = nextPriorityProviderId;
             notification.retryCount = 0;
             this.logger.log(

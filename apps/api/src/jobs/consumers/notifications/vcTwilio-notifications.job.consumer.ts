@@ -15,6 +15,7 @@ import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { ProviderChainMembersService } from 'src/modules/provider-chain-members/provider-chain-members.service';
+import { ProvidersService } from 'src/modules/providers/providers.service';
 
 @Injectable()
 export class VcTwilioNotificationsConsumer extends NotificationConsumer {
@@ -31,6 +32,7 @@ export class VcTwilioNotificationsConsumer extends NotificationConsumer {
     webhookService: WebhookService,
     configService: ConfigService,
     providerChainMembersService: ProviderChainMembersService,
+    providersService: ProvidersService,
   ) {
     super(
       notificationRepository,
@@ -40,6 +42,7 @@ export class VcTwilioNotificationsConsumer extends NotificationConsumer {
       webhookService,
       configService,
       providerChainMembersService,
+      providersService,
     );
   }
 
