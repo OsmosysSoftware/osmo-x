@@ -69,7 +69,7 @@ export class ProviderChainMember {
   @Field(() => Provider)
   providerDetails: Provider;
 
-  constructor(providerChain: Partial<ProviderChainMember>) {
-    Object.assign(this, providerChain);
+  constructor(providerChainMember: Partial<ProviderChainMember>) {
+    Object.assign(this, providerChainMember);
   }
 }

@@ -12,6 +12,8 @@ import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
+import { ProviderChainMembersService } from 'src/modules/provider-chain-members/provider-chain-members.service';
+import { ProvidersService } from 'src/modules/providers/providers.service';
 
 @Injectable()
 export abstract class NotificationConsumer {
@@ -27,6 +29,8 @@ export abstract class NotificationConsumer {
     private readonly notificationQueueService: NotificationQueueProducer,
     protected readonly webhookService: WebhookService,
     private readonly configService: ConfigService,
+    private readonly providerChainMembersService: ProviderChainMembersService,
+    private readonly providersService: ProvidersService,
   ) {
     this.maxRetryCount = +this.configService.get('MAX_RETRY_COUNT', 3);
   }
@@ -96,6 +100,46 @@ export abstract class NotificationConsumer {
           `Notification with ID ${notification.id} has attempted max allowed retries (sending), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
+
+        // Provider Fallback Failover logic for providers that skip confirmation
+        if (notification.providerChainId) {
+          try {
+            const nextPriorityProviderId =
+              await this.providerChainMembersService.getNextPriorityProvider(
+                notification.providerChainId,
+                notification.providerId,
+              );
+
+            if (nextPriorityProviderId) {
+              const nextPriorityProviderEntry =
+                await this.providersService.getById(nextPriorityProviderId);
+
+              if (nextPriorityProviderEntry) {
+                notification.deliveryStatus = DeliveryStatus.PENDING;
+                notification.channelType = nextPriorityProviderEntry.channelType;
+                notification.providerId = nextPriorityProviderId;
+                notification.retryCount = 0;
+                this.logger.log(
+                  `Next priority provider ${notification.providerId} from provider chain ${notification.providerChainId} will be used for notification ${notification.id}. Setting delivery status as ${DeliveryStatus.PENDING}`,
+                );
+              } else {
+                this.logger.error(
+                  `Provider ${nextPriorityProviderId} not found in database for notification ${notification.id}`,
+                );
+              }
+            } else {
+              this.logger.log(
+                `Next priority provider not found for notification ${notification.id}. Delivery status will not be changed.`,
+              );
+            }
+          } catch (error) {
+            this.logger.error(
+              `Error during provider failover for notification ${notification.id}: ${error.message}`,
+              error.stack,
+            );
+          }
+        }
+
         await this.notificationRepository.save(notification);
         // Call webhook for all providers (skip and non skip) when delivery status is FAILED
         await this.notificationQueueService.addNotificationToQueue(
@@ -163,7 +207,7 @@ export abstract class NotificationConsumer {
         );
         this.logger.log('Provider response: ' + JSON.stringify(response.result));
 
-        // Check to prevent program to constantly keep checking for confirmation status
+        // Check to prevent program from constantly re-checking for confirmation status
         if (notification.retryCount >= this.maxRetryCount) {
           throw new Error(
             `Max retry count threshold reached by Notification ID: ${notification.id}`,
@@ -189,6 +233,46 @@ export abstract class NotificationConsumer {
           `Notification with ID ${notification.id} has attempted max allowed retries (provider confirmation), setting delivery status to ${DeliveryStatus.FAILED}`,
         );
         notification.deliveryStatus = DeliveryStatus.FAILED;
+
+        // Provider Fallback Failover logic for providers that do provider confirmation
+        if (notification.providerChainId) {
+          try {
+            const nextPriorityProviderId =
+              await this.providerChainMembersService.getNextPriorityProvider(
+                notification.providerChainId,
+                notification.providerId,
+              );
+
+            if (nextPriorityProviderId) {
+              const nextPriorityProviderEntry =
+                await this.providersService.getById(nextPriorityProviderId);
+
+              if (nextPriorityProviderEntry) {
+                notification.deliveryStatus = DeliveryStatus.PENDING;
+                notification.channelType = nextPriorityProviderEntry.channelType;
+                notification.providerId = nextPriorityProviderId;
+                notification.retryCount = 0;
+                this.logger.log(
+                  `Next priority provider ${notification.providerId} from provider chain ${notification.providerChainId} will be used for notification ${notification.id}. Setting delivery status as ${DeliveryStatus.PENDING}`,
+                );
+              } else {
+                this.logger.error(
+                  `Provider ${nextPriorityProviderId} not found in database for notification ${notification.id}`,
+                );
+              }
+            } else {
+              this.logger.log(
+                `Next priority provider not found for notification ${notification.id}. Delivery status will not be changed.`,
+              );
+            }
+          } catch (error) {
+            this.logger.error(
+              `Error during provider failover for notification ${notification.id}: ${error.message}`,
+              error.stack,
+            );
+          }
+        }
+
         await this.notificationRepository.save(notification);
         await this.notificationQueueService.addNotificationToQueue(
           QueueAction.WEBHOOK,
