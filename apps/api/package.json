@@ -1,6 +1,6 @@
 {
   "name": "osmox",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Centralized multi-channel notification management component for streamlined communication across email, SMS, WhatsApp, and push notifications.",
   "author": "Osmosys Software Solutions Private Limited",
   "license": "MIT",
