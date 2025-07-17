@@ -112,10 +112,14 @@ export class AddTableProviderTypes1752740502422 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 1. Revert changes from notify_master_providers
-    await queryRunner.dropForeignKey(
-      'notify_master_providers',
-      'FK_MASTER_PROVIDERS_PROVIDER_TYPE',
+    const table = await queryRunner.getTable('notify_master_providers');
+    const foreignKey = table?.foreignKeys.find(
+      (fk) => fk.name === 'FK_MASTER_PROVIDERS_PROVIDER_TYPE',
     );
+
+    if (foreignKey) {
+      await queryRunner.dropForeignKey('notify_master_providers', foreignKey);
+    }
 
     await queryRunner.query(`
       UPDATE notify_master_providers
