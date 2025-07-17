@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey, TableUnique } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
 export class AddTableProviderTypes1752740502422 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -49,16 +49,7 @@ export class AddTableProviderTypes1752740502422 implements MigrationInterface {
       true,
     );
 
-    // 2. Add Unique Constraints
-    await queryRunner.createUniqueConstraint(
-      'notify_provider_types',
-      new TableUnique({
-        columnNames: ['provider_type_id', 'name'],
-        name: 'UQ_PROVIDER_TYPE_NAME',
-      }),
-    );
-
-    // 3. Seed Data
+    // 2. Seed Data
     const providerTypesData = [
       {
         name: 'Email',
@@ -95,14 +86,18 @@ export class AddTableProviderTypes1752740502422 implements MigrationInterface {
         .execute();
     }
 
-    // 4. Update provider_type for WA_TWILIO in notify_master_providers
+    // 3. Update provider_type for WA_TWILIO in notify_master_providers
     await queryRunner.query(`
       UPDATE notify_master_providers
-      SET provider_type = 6
+      SET provider_type = (
+        SELECT provider_type_id
+        FROM notify_provider_types
+        WHERE name = 'WhatsApp Direct'
+      )
       WHERE name = 'WA_TWILIO';
     `);
 
-    // 5. Add Foreign Key Constraints for notify_master_providers
+    // 4. Add Foreign Key Constraints for notify_master_providers
     await queryRunner.createForeignKey(
       'notify_master_providers',
       new TableForeignKey({
@@ -129,7 +124,6 @@ export class AddTableProviderTypes1752740502422 implements MigrationInterface {
     `);
 
     // 2. Drop table notify_provider_types
-    await queryRunner.dropUniqueConstraint('notify_provider_types', 'UQ_PROVIDER_TYPE_NAME');
     await queryRunner.dropTable('notify_provider_types');
   }
 }
