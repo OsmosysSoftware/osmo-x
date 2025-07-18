@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ArchivedNotification } from './entities/archived-notification.entity';
-import { DataSource, In, QueryRunner, Repository } from 'typeorm';
+import { DataSource, In, LessThan, Not, QueryRunner, Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { ConfigService } from '@nestjs/config';
 import { DeliveryStatus } from 'src/common/constants/notifications';
@@ -9,6 +9,10 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ArchivedNotificationResponse } from './dtos/archived-notification-response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CoreService } from 'src/common/graphql/services/core.service';
+import ms = require('ms');
+import * as path from 'path';
+import * as fs from 'fs';
+import { format } from '@fast-csv/format';
 
 @Injectable()
 export class ArchivedNotificationsService extends CoreService<ArchivedNotification> {
@@ -146,5 +150,150 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       },
     });
     return archivedNotification;
+  }
+
+  async deleteArchivedNotificationsCron(): Promise<void> {
+    try {
+      const enableArchivedNotificationDeletion = this.configService.get<string>(
+        'ENABLE_ARCHIVED_NOTIFICATION_DELETION',
+        'false',
+      );
+
+      if (enableArchivedNotificationDeletion.toLowerCase() === 'true') {
+        this.logger.log('Running archived notification deletion cron task');
+        await this.softDeleteArchivedEntriesAndGenerateCsvBackup();
+        this.logger.log(`Archive notification deletion cron task completed`);
+      } else {
+        this.logger.log('Archived Notification Deletion Cron is disabled');
+      }
+    } catch (error) {
+      this.logger.error(`Cron job failed: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  async softDeleteArchivedEntriesAndGenerateCsvBackup(): Promise<void> {
+    try {
+      const deleteArchivedNotificationsOlderThan = this.configService.get<string>(
+        'DELETE_ARCHIVED_NOTIFICATIONS_OLDER_THAN',
+        '90d',
+      );
+
+      const maxRetentionMs = ms('10y');
+      const retentionDurationMs = ms(deleteArchivedNotificationsOlderThan);
+
+      // Guard rail: prevent excessive deletion
+      if (retentionDurationMs > maxRetentionMs) {
+        throw new Error('Retention period exceeds the allowed 10-year maximum.');
+      }
+
+      const cutoffTimestamp = new Date(Date.now() - retentionDurationMs);
+
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      try {
+        // Fetch entries to soft delete
+        const archivedEntries = await queryRunner.manager.find(ArchivedNotification, {
+          where: {
+            createdOn: LessThan(cutoffTimestamp),
+            status: Status.ACTIVE,
+          },
+          order: {
+            createdOn: 'DESC',
+          },
+        });
+
+        if (archivedEntries.length === 0) {
+          this.logger.log('No entries to archive.');
+          await queryRunner.release();
+          return;
+        }
+
+        const idsToDelete = archivedEntries.map((entry) => entry.id);
+        this.logger.log(`Archived Notification IDs to be deleted: ${idsToDelete}`);
+
+        // Create directory, filename and path for backups
+        const backupsDir = 'backups';
+        const backupFileName = `archived_notifications_backup_${this.getFormattedTimestamp()}.csv`;
+        const backupFilePath = path.join(backupsDir, backupFileName);
+
+        // Ensure the backups directory exists
+        if (!fs.existsSync(backupsDir)) {
+          fs.mkdirSync(backupsDir, { recursive: true });
+        }
+
+        // Export to CSV before deletion
+        await this.writeToCsv(archivedEntries, backupFilePath);
+
+        // Perform soft delete
+        await queryRunner.manager.update(
+          ArchivedNotification,
+          {
+            createdOn: LessThan(cutoffTimestamp),
+            status: Not(Status.INACTIVE),
+          },
+          { status: Status.INACTIVE },
+        );
+
+        await queryRunner.commitTransaction();
+        this.logger.log(
+          `Transaction successful. Soft-deleted ${archivedEntries.length} entries. Backup at ${backupFilePath}`,
+        );
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        this.logger.error('Error during soft delete. Rolled back.', error.stack);
+        throw error;
+      } finally {
+        await queryRunner.release();
+      }
+    } catch (error) {
+      this.logger.error(`Failed to delete archived notifications: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  private async writeToCsv(data: ArchivedNotification[], filePath: string): Promise<void> {
+    try {
+      // Update with json like nested fields as per archived-notification.entity file
+      const nestedFields = ['data', 'result'];
+
+      return new Promise((resolve, reject) => {
+        const ws = fs.createWriteStream(filePath);
+        const csvStream = format({ headers: true });
+
+        csvStream.pipe(ws).on('finish', resolve).on('error', reject);
+
+        for (const row of data) {
+          // Ensure data of nested fields is stringified before being added to csv
+          const safeRow = Object.fromEntries(
+            Object.entries(row).map(([key, value]) => [
+              key,
+              nestedFields.includes(key) && value !== null && typeof value === 'object'
+                ? JSON.stringify(value)
+                : value,
+            ]),
+          );
+
+          csvStream.write(safeRow);
+        }
+
+        csvStream.end();
+      });
+    } catch (error) {
+      this.logger.error(`Could not create backup file: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  private getFormattedTimestamp(): string {
+    const now = new Date();
+    const yyyy = now.getFullYear().toString();
+    const MM = (now.getMonth() + 1).toString().padStart(2, '0');
+    const dd = now.getDate().toString().padStart(2, '0');
+    const hh = now.getHours().toString().padStart(2, '0');
+    const mm = now.getMinutes().toString().padStart(2, '0');
+    return `${yyyy}${MM}${dd}${hh}${mm}`;
   }
 }
