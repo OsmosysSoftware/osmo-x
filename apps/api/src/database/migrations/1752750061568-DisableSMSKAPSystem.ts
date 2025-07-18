@@ -24,13 +24,6 @@ export class DisableSMSKAPSystem1752750061568 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `UPDATE notify_archived_notifications
-      SET status = 0
-      WHERE channel_type = $1`,
-      [masterId],
-    );
-
-    await queryRunner.query(
       `UPDATE notify_notifications
       SET status = 0
       WHERE channel_type = $1`,
