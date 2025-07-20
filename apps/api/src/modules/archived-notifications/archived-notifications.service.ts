@@ -182,9 +182,15 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       const maxRetentionMs = ms('10y');
       const retentionDurationMs = ms(deleteArchivedNotificationsOlderThan);
 
-      // Guard rail: prevent excessive deletion
-      if (retentionDurationMs > maxRetentionMs) {
-        throw new Error('Retention period exceeds the allowed 10-year maximum.');
+      // Guard rails
+      if (
+        typeof retentionDurationMs !== 'number' ||
+        retentionDurationMs < 0 ||
+        retentionDurationMs > maxRetentionMs
+      ) {
+        throw new Error(
+          'Invalid retention period. It must be a positive duration not exceeding 10 years.',
+        );
       }
 
       const cutoffTimestamp = new Date(Date.now() - retentionDurationMs);
