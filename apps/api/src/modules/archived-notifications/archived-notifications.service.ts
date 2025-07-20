@@ -226,8 +226,12 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
         const backupFilePath = path.join(backupsDir, backupFileName);
 
         // Ensure the backups directory exists
-        if (!fs.existsSync(backupsDir)) {
-          fs.mkdirSync(backupsDir, { recursive: true });
+        try {
+          if (!fs.existsSync(backupsDir)) {
+            fs.mkdirSync(backupsDir, { recursive: true });
+          }
+        } catch (error) {
+          throw new Error(`Failed to create backup directory at "${backupsDir}": ${error}`);
         }
 
         // Export to CSV before deletion
