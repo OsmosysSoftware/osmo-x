@@ -12,9 +12,10 @@ export const ProviderType = {
   OTHER: 0,
   EMAIL: 1,
   SMS: 2,
-  WHATSAPP: 3,
+  WHATSAPP_BUSINESS_TEMPLATE: 3,
   PUSH_NOTIFICATION: 4,
   VOICE_CALL: 5,
+  WHATSAPP_DIRECT: 6,
 };
 
 export const IsEnabledStatus = {
