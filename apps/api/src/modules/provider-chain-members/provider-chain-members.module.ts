@@ -6,6 +6,6 @@ import { ProviderChainMembersService } from './provider-chain-members.service';
 @Module({
   imports: [TypeOrmModule.forFeature([ProviderChainMember])],
   providers: [Logger, ProviderChainMembersService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, ProviderChainMembersService],
 })
 export class ProviderChainMembersModule {}
