@@ -52,13 +52,13 @@ Before running the test cases, make sure you have the following prerequisites in
     1. For console output
 
        ```bash
-       newman run OsmoX.postman_collection.json -e OsmoX.postman_environment.json
+       newman run OsmoX.postman_collection.json -e OsmoX-API.postman_environment.json
        ```
 
     2. For HTML report
 
        ```bash
-       newman run OsmoX.postman_collection.json -e OsmoX.postman_environment.json -r html
+       newman run OsmoX.postman_collection.json -e OsmoX-API.postman_environment.json -r html
        ```
 
     Specify the path to the collection and environment file as required.
