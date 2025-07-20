@@ -34,7 +34,7 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
             isNullable: false,
           },
           {
-            name: 'channel_type',
+            name: 'provider_type',
             type: 'smallint',
             isNullable: false,
           },
@@ -169,7 +169,7 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
     await queryRunner.createIndex(
       'notify_provider_chains',
       new TableIndex({
-        columnNames: ['application_id', 'channel_type'],
+        columnNames: ['application_id', 'provider_type'],
         name: 'IDX_CHAINS_APPLICATION_CHANNEL',
       }),
     );
@@ -185,7 +185,7 @@ export class FallbackProviderChanges1751022743600 implements MigrationInterface 
     await queryRunner.createIndex(
       'notify_provider_chains',
       new TableIndex({
-        columnNames: ['application_id', 'channel_type', 'is_default'],
+        columnNames: ['application_id', 'provider_type', 'is_default'],
         name: 'IDX_CHAINS_DEFAULT',
       }),
     );

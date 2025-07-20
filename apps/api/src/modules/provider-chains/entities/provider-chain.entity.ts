@@ -31,10 +31,10 @@ export class ProviderChain {
   @Field()
   applicationId: number;
 
-  @Column({ name: 'channel_type', type: 'smallint' })
+  @Column({ name: 'provider_type', type: 'smallint' })
   @IsEnum(ProviderType)
   @Field()
-  channelType: number;
+  providerType: number;
 
   @Column({
     name: 'description',
