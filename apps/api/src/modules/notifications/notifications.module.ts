@@ -30,8 +30,6 @@ import { ProvidersService } from '../providers/providers.service';
 import { SmsPlivoModule } from '../providers/sms-plivo/sms-plivo.module';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
 import { WaTwilioBusinessModule } from '../providers/wa-twilio-business/wa-twilio-business.module';
-import { SmsKapsystemModule } from '../providers/sms-kapsystem/sms-kapsystem.module';
-import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
 import { QueueService } from './queues/queue.service';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
@@ -58,7 +56,6 @@ const providerModules = [
   SmsTwilioModule,
   SmsPlivoModule,
   WaTwilioBusinessModule,
-  SmsKapsystemModule,
   PushSnsModule,
   VcTwilioModule,
   AwsSesModule,
@@ -79,7 +76,6 @@ const consumers = [
   SmsTwilioNotificationsConsumer,
   SmsPlivoNotificationsConsumer,
   WaTwilioBusinessNotificationsConsumer,
-  SmsKapsystemNotificationsConsumer,
   PushSnsNotificationConsumer,
   VcTwilioNotificationsConsumer,
   AwsSesNotificationConsumer,

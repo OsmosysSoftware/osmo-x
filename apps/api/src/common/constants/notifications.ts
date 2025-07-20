@@ -15,7 +15,7 @@ export const ChannelType = {
   SMS_TWILIO: 5,
   SMS_PLIVO: 6,
   WA_TWILIO_BUSINESS: 7,
-  SMS_KAPSYSTEM: 8,
+  // We no longer support SMS_KAPSYSTEM: 8,
   PUSH_SNS: 9,
   VC_TWILIO: 10,
   AWS_SES: 11,
@@ -53,10 +53,6 @@ export const ProviderDeliveryStatus = {
     SUCCESS_STATES: ['sent', 'delivered', 'read'],
     FAILURE_STATES: ['failed'],
   },
-  SMS_KAPSYSTEM: {
-    SUCCESS_STATES: ['DELIVRD'],
-    FAILURE_STATES: ['EXPIRED', 'UNDELIV', 'FAILED'],
-  },
   VC_TWILIO: {
     SUCCESS_STATES: ['completed'],
     FAILURE_STATES: ['canceled', 'busy', 'no-answer', 'failed'],
@@ -64,7 +60,6 @@ export const ProviderDeliveryStatus = {
 };
 
 export const SkipProviderConfirmationChannels = [
-  ChannelType.SMS_KAPSYSTEM,
   ChannelType.WA_360_DAILOG,
   ChannelType.PUSH_SNS,
   ChannelType.SMTP,
@@ -80,7 +75,6 @@ export const RecipientKeyForChannelType = {
   [ChannelType.SMS_TWILIO]: 'to',
   [ChannelType.SMS_PLIVO]: 'to',
   [ChannelType.WA_TWILIO_BUSINESS]: 'to',
-  [ChannelType.SMS_KAPSYSTEM]: 'to',
   [ChannelType.PUSH_SNS]: 'target',
   [ChannelType.VC_TWILIO]: 'to',
   [ChannelType.AWS_SES]: 'to',
