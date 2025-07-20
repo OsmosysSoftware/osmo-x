@@ -67,6 +67,8 @@ const providerModules = [
   UsersModule,
   ProvidersModule,
   SmsSnsModule,
+  ProviderChainsModule,
+  ProviderChainMembersModule,
 ];
 
 const consumers = [
@@ -90,8 +92,6 @@ const consumers = [
     ...providerModules,
     WebhookModule,
     ArchivedNotificationsModule,
-    ProviderChainsModule,
-    ProviderChainMembersModule,
   ],
   providers: [
     NotificationsService,
