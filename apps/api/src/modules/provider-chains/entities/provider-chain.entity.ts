@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { IsEnum, IsOptional } from 'class-validator';
-import { IsDefaultStatus, ProviderType, Status } from 'src/common/constants/database';
+import { IsEnabledStatus, ProviderType, Status } from 'src/common/constants/database';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Application } from 'src/modules/applications/entities/application.entity';
 import { ProviderChainMember } from 'src/modules/provider-chain-members/entities/provider-chain-member.entity';
@@ -49,9 +49,9 @@ export class ProviderChain {
     name: 'is_default',
     type: 'smallint',
     width: 1,
-    default: IsDefaultStatus.FALSE,
+    default: IsEnabledStatus.FALSE,
   })
-  @IsEnum(IsDefaultStatus)
+  @IsEnum(IsEnabledStatus)
   @Field()
   isDefault: number;
 
