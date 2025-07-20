@@ -42,7 +42,7 @@ export class ProviderChain {
     nullable: true,
   })
   @IsOptional()
-  @Field()
+  @Field({ nullable: true })
   description: string;
 
   @Column({
