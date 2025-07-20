@@ -83,7 +83,7 @@ export class Provider {
 
   @OneToMany(
     () => ProviderChainMember,
-    (ProviderChainMember) => ProviderChainMember.providerDetails,
+    (providerChainMember) => providerChainMember.providerDetails,
   )
   @Field(() => [ProviderChainMember], { nullable: true })
   providerChainMembers: ProviderChainMember[];
