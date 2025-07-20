@@ -148,7 +148,7 @@ export class FallbackProviderChanges1752904253632 implements MigrationInterface 
         columnNames: ['provider_type'],
         referencedColumnNames: ['provider_type_id'],
         referencedTableName: 'notify_provider_types',
-        onDelete: 'SET NULL',
+        onDelete: 'RESTRICT',
         name: 'FK_PROVIDER_CHAINS_PROVIDER_TYPE',
       }),
     );
