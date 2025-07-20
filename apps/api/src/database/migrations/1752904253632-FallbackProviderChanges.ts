@@ -8,7 +8,7 @@ import {
   TableUnique,
 } from 'typeorm';
 
-export class FallbackProviderChanges1751022743600 implements MigrationInterface {
+export class FallbackProviderChanges1752904253632 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // 1. Create notify_provider_chains table
     await queryRunner.createTable(
