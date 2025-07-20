@@ -12,6 +12,8 @@ import { ConfigService } from '@nestjs/config';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
+import { ProviderChainMembersService } from 'src/modules/provider-chain-members/provider-chain-members.service';
+import { ProvidersService } from 'src/modules/providers/providers.service';
 
 @Injectable()
 export class MailgunNotificationConsumer extends NotificationConsumer {
@@ -27,6 +29,8 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
     notificationsQueueService: NotificationQueueProducer,
     webhookService: WebhookService,
     configService: ConfigService,
+    providerChainMembersService: ProviderChainMembersService,
+    providersService: ProvidersService,
   ) {
     super(
       notificationRepository,
@@ -35,6 +39,8 @@ export class MailgunNotificationConsumer extends NotificationConsumer {
       notificationsQueueService,
       webhookService,
       configService,
+      providerChainMembersService,
+      providersService,
     );
   }
 
