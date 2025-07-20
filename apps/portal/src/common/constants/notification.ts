@@ -16,7 +16,7 @@ export const ChannelType = {
   SMS_TWILIO: 5,
   SMS_PLIVO: 6,
   WA_TWILIO_BUSINESS: 7,
-  SMS_KAPSYSTEM: 8,
+  // We no longer support SMS_KAPSYSTEM: 8,
   PUSH_SNS: 9,
   VC_TWILIO: 10,
   AWS_SES: 11,
@@ -72,13 +72,6 @@ export const ChannelTypeMap = {
     providerName: 'Twilio Business',
     providerIcon: 'assets/icons/twilio.svg',
     style: 'whatsapp',
-  },
-  [ChannelType.SMS_KAPSYSTEM]: {
-    serviceIcon: 'assets/icons/sms.svg',
-    altText: 'SMS',
-    providerName: 'KAP System',
-    providerIcon: 'assets/icons/kaps.png',
-    style: 'sms',
   },
   [ChannelType.PUSH_SNS]: {
     serviceIcon: 'assets/icons/pushnotification.svg',
