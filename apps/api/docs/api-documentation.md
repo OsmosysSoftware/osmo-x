@@ -934,8 +934,8 @@ curl --location 'http://localhost:3000/graphql' \
             "providers": [
                 {
                     "providerId": 4,
-                    "name": "KAPS Pinestem",
-                    "channelType": 8,
+                    "name": "Twilio WhatsApp Business Pinestem",
+                    "channelType": 7,
                     "configuration": {},
                     "isEnabled": 1,
                     "userId": 1,
@@ -953,20 +953,9 @@ curl --location 'http://localhost:3000/graphql' \
                     "createdOn": "2024-06-21T09:46:27.000Z",
                     "updatedOn": "2024-06-21T09:46:27.000Z",
                     "status": 1
-                },
-                {
-                    "providerId": 7,
-                    "name": "Mailgun PineStem",
-                    "channelType": 2,
-                    "configuration": {},
-                    "isEnabled": 1,
-                    "userId": 1,
-                    "createdOn": "2024-06-23T09:30:39.000Z",
-                    "updatedOn": "2024-06-23T09:30:39.000Z",
-                    "status": 1
                 }
             ],
-            "total": 3,
+            "total": 2,
             "offset": 0,
             "limit": 5
         }

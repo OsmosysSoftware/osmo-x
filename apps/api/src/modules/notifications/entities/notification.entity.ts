@@ -16,6 +16,7 @@ import { GraphQLJSONObject } from 'graphql-type-json';
 import { Application } from 'src/modules/applications/entities/application.entity';
 import { Provider } from 'src/modules/providers/entities/provider.entity';
 import { RetryNotification } from './retry-notification.entity';
+import { ProviderChain } from 'src/modules/provider-chains/entities/provider-chain.entity';
 
 @Entity({ name: 'notify_notifications' })
 @ObjectType()
@@ -92,6 +93,11 @@ export class Notification {
   @IsOptional()
   notificationSentOn: Date;
 
+  @Column({ name: 'provider_chain_id', nullable: true })
+  @Field({ nullable: true })
+  @IsOptional()
+  providerChainId: number;
+
   @ManyToOne(() => Application, (application) => application.notifications)
   @JoinColumn({ name: 'application_id' })
   @Field(() => Application)
@@ -101,6 +107,14 @@ export class Notification {
   @JoinColumn({ name: 'provider_id' })
   @Field(() => Provider)
   providerDetails: Provider;
+
+  @ManyToOne(() => ProviderChain, (providerChain) => providerChain.notifications)
+  @JoinColumn({
+    name: 'provider_chain_id', // DB column name on THIS entity
+    referencedColumnName: 'chainId', // PROPERTY name on the REFERENCED entity (ProviderChain)
+  })
+  @Field(() => ProviderChain, { nullable: true })
+  providerChainDetails: ProviderChain;
 
   // TODO: Remove the retries relation in Notification and RetryNotification as the foreign key has been removed
   // Ensure archivedNotification and Notification entities have same parameters save for extra id
