@@ -11,7 +11,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import ms = require('ms');
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
+import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import { format } from '@fast-csv/format';
 
 @Injectable()
@@ -195,6 +196,11 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
       const cutoffTimestamp = new Date(Date.now() - retentionDurationMs);
 
+      // Create directory, filename and path for backups
+      const backupsDir = 'backups';
+      const backupFileName = `archived_notifications_backup_${this.getFormattedTimestamp()}.csv`;
+      const backupFilePath = path.join(backupsDir, backupFileName);
+
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
@@ -218,15 +224,10 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
           return;
         }
 
-        // Create directory, filename and path for backups
-        const backupsDir = 'backups';
-        const backupFileName = `archived_notifications_backup_${this.getFormattedTimestamp()}.csv`;
-        const backupFilePath = path.join(backupsDir, backupFileName);
-
         // Ensure the backups directory exists
         try {
-          if (!fs.existsSync(backupsDir)) {
-            fs.mkdirSync(backupsDir, { recursive: true });
+          if (!existsSync(backupsDir)) {
+            mkdirSync(backupsDir, { recursive: true });
           }
         } catch (error) {
           throw new Error(`Failed to create backup directory at "${backupsDir}": ${error}`);
@@ -246,6 +247,19 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       } catch (error) {
         await queryRunner.rollbackTransaction();
         this.logger.error('Error during deletion. Rolled back.', error.stack);
+
+        // Delete CSV file if it was created
+        if (backupFilePath) {
+          try {
+            await fs.unlink(backupFilePath);
+            this.logger.log('CSV backup deleted due to rollback.');
+          } catch (unlinkError) {
+            this.logger.error(
+              `Failed to delete backup file after rollback: ${unlinkError.message}`,
+            );
+          }
+        }
+
         throw error;
       } finally {
         await queryRunner.release();
@@ -262,7 +276,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       const nestedFields = ['data', 'result'];
 
       return new Promise((resolve, reject) => {
-        const ws = fs.createWriteStream(filePath);
+        const ws = createWriteStream(filePath);
         const csvStream = format({ headers: true });
 
         csvStream.pipe(ws).on('finish', resolve).on('error', reject);
@@ -296,6 +310,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     const dd = now.getDate().toString().padStart(2, '0');
     const hh = now.getHours().toString().padStart(2, '0');
     const mm = now.getMinutes().toString().padStart(2, '0');
-    return `${yyyy}${MM}${dd}${hh}${mm}`;
+    const ss = now.getSeconds().toString().padStart(2, '0');
+    return `${yyyy}${MM}${dd}_${hh}${mm}${ss}`;
   }
 }
