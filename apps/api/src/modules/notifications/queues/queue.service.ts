@@ -6,7 +6,6 @@ import { ChannelType, QueueAction } from 'src/common/constants/notifications';
 import { AwsSesNotificationConsumer } from 'src/jobs/consumers/notifications/awsSes-notifications.job.consumer';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
-import { SmsKapsystemNotificationsConsumer } from 'src/jobs/consumers/notifications/smsKapsystem-notifications.job.consumer';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
 import { SmsSnsNotificationConsumer } from 'src/jobs/consumers/notifications/smsSns-notifications.job.consumer';
 import { SmsTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/smsTwilio-notifications.job.consumer';
@@ -37,7 +36,6 @@ export class QueueService {
     private readonly smsTwilioNotificationConsumer: SmsTwilioNotificationsConsumer,
     private readonly smsPlivoNotificationConsumer: SmsPlivoNotificationsConsumer,
     private readonly waTwilioBusinessNotificationConsumer: WaTwilioBusinessNotificationsConsumer,
-    private readonly smsKapsystemNotificationConsumer: SmsKapsystemNotificationsConsumer,
     private readonly pushSnsNotificationConsumer: PushSnsNotificationConsumer,
     private readonly vcTwilioNotificationsConsumer: VcTwilioNotificationsConsumer,
     private readonly awsSesNotificationConsumer: AwsSesNotificationConsumer,
@@ -166,12 +164,6 @@ export class QueueService {
             job.data.id,
           );
           break;
-        // SMS_KAPSYSTEM cases
-        case `${QueueAction.SEND}-${ChannelType.SMS_KAPSYSTEM}`:
-          await this.smsKapsystemNotificationConsumer.processSmsKapsystemNotificationQueue(
-            job.data.id,
-          );
-          break;
         // PUSH_SNS cases
         case `${QueueAction.SEND}-${ChannelType.PUSH_SNS}`:
           await this.pushSnsNotificationConsumer.processPushSnsNotificationQueue(job.data.id);
@@ -201,7 +193,6 @@ export class QueueService {
         case `${QueueAction.WEBHOOK}-${ChannelType.SMS_TWILIO}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.SMS_PLIVO}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.WA_TWILIO_BUSINESS}`:
-        case `${QueueAction.WEBHOOK}-${ChannelType.SMS_KAPSYSTEM}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.PUSH_SNS}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.VC_TWILIO}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.AWS_SES}`:
