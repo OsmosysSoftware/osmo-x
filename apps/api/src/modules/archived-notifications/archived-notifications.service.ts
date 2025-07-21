@@ -213,7 +213,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
         if (archivedEntries.length === 0) {
           this.logger.log('No entries to archive.');
-          await queryRunner.release();
+          await queryRunner.commitTransaction();
           return;
         }
 
