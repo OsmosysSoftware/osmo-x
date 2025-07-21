@@ -185,7 +185,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       // Guard rails
       if (
         typeof retentionDurationMs !== 'number' ||
-        retentionDurationMs < 0 ||
+        retentionDurationMs <= 0 ||
         retentionDurationMs > maxRetentionMs
       ) {
         throw new Error(
@@ -207,8 +207,9 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
             status: Status.ACTIVE,
           },
           order: {
-            createdOn: 'DESC',
+            createdOn: 'ASC',
           },
+          take: 500,
         });
 
         if (archivedEntries.length === 0) {
@@ -216,9 +217,6 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
           await queryRunner.commitTransaction();
           return;
         }
-
-        const idsToDelete = archivedEntries.map((entry) => entry.id);
-        this.logger.log(`Archived Notification IDs to be deleted: ${idsToDelete}`);
 
         // Create directory, filename and path for backups
         const backupsDir = 'backups';
@@ -238,10 +236,8 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
         await this.writeToCsv(archivedEntries, backupFilePath);
 
         // Perform deletion
-        await queryRunner.manager.delete(ArchivedNotification, {
-          createdOn: LessThan(cutoffTimestamp),
-          status: Status.ACTIVE,
-        });
+        const idsToDelete = archivedEntries.map((entry) => entry.id);
+        await queryRunner.manager.delete(ArchivedNotification, idsToDelete);
 
         await queryRunner.commitTransaction();
         this.logger.log(
