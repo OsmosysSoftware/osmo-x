@@ -47,6 +47,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ArchivedNotificationsModule } from '../archived-notifications/archived-notifications.module';
 import { ArchivedNotificationsService } from '../archived-notifications/archived-notifications.service';
 import { RequestLoggerMiddleware } from 'src/common/logger/request-logger.middleware';
+import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
+import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
 
 const providerModules = [
   MailgunModule,
@@ -65,6 +67,8 @@ const providerModules = [
   UsersModule,
   ProvidersModule,
   SmsSnsModule,
+  ProviderChainsModule,
+  ProviderChainMembersModule,
 ];
 
 const consumers = [

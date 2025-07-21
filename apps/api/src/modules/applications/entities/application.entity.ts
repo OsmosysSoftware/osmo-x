@@ -13,6 +13,7 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { ServerApiKey } from 'src/modules/server-api-keys/entities/server-api-key.entity';
 import { ArchivedNotification } from 'src/modules/archived-notifications/entities/archived-notification.entity';
 import { GraphQLJSONObject } from 'graphql-type-json';
+import { ProviderChain } from 'src/modules/provider-chains/entities/provider-chain.entity';
 
 @Entity({ name: 'notify_applications' })
 @ObjectType()
@@ -75,6 +76,10 @@ export class Application {
     (archivedNotification) => archivedNotification.applicationDetails,
   )
   archivedNotifications: ArchivedNotification[];
+
+  @OneToMany(() => ProviderChain, (providerChain) => providerChain.applicationDetails)
+  @Field(() => [ProviderChain], { nullable: true })
+  providerChains: ProviderChain[];
 
   constructor(application: Partial<Application>) {
     Object.assign(this, application);
