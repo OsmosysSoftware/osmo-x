@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ArchivedNotification } from './entities/archived-notification.entity';
-import { DataSource, In, LessThan, Not, QueryRunner, Repository } from 'typeorm';
+import { DataSource, In, LessThan, QueryRunner, Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { ConfigService } from '@nestjs/config';
 import { DeliveryStatus } from 'src/common/constants/notifications';
@@ -161,7 +161,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
       if (enableArchivedNotificationDeletion.toLowerCase() === 'true') {
         this.logger.log('Running archived notification deletion cron task');
-        await this.softDeleteArchivedEntriesAndGenerateCsvBackup();
+        await this.deleteArchivedEntriesAndGenerateCsvBackup();
         this.logger.log(`Archive notification deletion cron task completed`);
       } else {
         this.logger.log('Archived Notification Deletion Cron is disabled');
@@ -172,7 +172,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     }
   }
 
-  async softDeleteArchivedEntriesAndGenerateCsvBackup(): Promise<void> {
+  async deleteArchivedEntriesAndGenerateCsvBackup(): Promise<void> {
     try {
       const deleteArchivedNotificationsOlderThan = this.configService.get<string>(
         'DELETE_ARCHIVED_NOTIFICATIONS_OLDER_THAN',
@@ -200,7 +200,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       await queryRunner.startTransaction();
 
       try {
-        // Fetch entries to soft delete
+        // Fetch entries to delete
         const archivedEntries = await queryRunner.manager.find(ArchivedNotification, {
           where: {
             createdOn: LessThan(cutoffTimestamp),
@@ -237,23 +237,19 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
         // Export to CSV before deletion
         await this.writeToCsv(archivedEntries, backupFilePath);
 
-        // Perform soft delete
-        await queryRunner.manager.update(
-          ArchivedNotification,
-          {
-            createdOn: LessThan(cutoffTimestamp),
-            status: Not(Status.INACTIVE),
-          },
-          { status: Status.INACTIVE },
-        );
+        // Perform deletion
+        await queryRunner.manager.delete(ArchivedNotification, {
+          createdOn: LessThan(cutoffTimestamp),
+          status: Status.ACTIVE,
+        });
 
         await queryRunner.commitTransaction();
         this.logger.log(
-          `Transaction successful. Soft-deleted ${archivedEntries.length} entries. Backup at ${backupFilePath}`,
+          `Transaction successful. Deleted ${archivedEntries.length} entries. Backup at ${backupFilePath}`,
         );
       } catch (error) {
         await queryRunner.rollbackTransaction();
-        this.logger.error('Error during soft delete. Rolled back.', error.stack);
+        this.logger.error('Error during deletion. Rolled back.', error.stack);
         throw error;
       } finally {
         await queryRunner.release();
