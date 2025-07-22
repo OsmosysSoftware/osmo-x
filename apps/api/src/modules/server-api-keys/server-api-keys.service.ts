@@ -48,7 +48,7 @@ export class ServerApiKeysService extends CoreService<ServerApiKey> {
 
   async getAllServerApiKeys(options: QueryOptionsDto): Promise<ServerApiKey[]> {
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
-    const searchableFields = ['createdBy', 'data', 'result'];
+    const searchableFields = [];
 
     const { items } = await super.findAll(
       options,

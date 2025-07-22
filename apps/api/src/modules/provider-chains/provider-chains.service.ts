@@ -29,7 +29,7 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
 
   async getAllProviderChains(options: QueryOptionsDto): Promise<ProviderChainResponse> {
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
-    const searchableFields = ['name'];
+    const searchableFields = ['chainName'];
 
     const { items, total } = await super.findAll(
       options,

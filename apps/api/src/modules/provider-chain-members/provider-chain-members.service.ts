@@ -35,7 +35,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
 
   async getAllProviderChainMembers(options: QueryOptionsDto): Promise<ProviderChainMemberResponse> {
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
-    const searchableFields = ['name'];
+    const searchableFields = [];
 
     const { items, total } = await super.findAll(
       options,
