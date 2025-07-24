@@ -43,6 +43,15 @@ export abstract class CoreService<TEntity> {
       queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
     }
 
+    if (alias === 'providerChain') {
+      queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
+    }
+
+    if (alias === 'providerChainMember') {
+      queryBuilder.leftJoinAndSelect(`${alias}.providerDetails`, 'provider');
+      queryBuilder.leftJoinAndSelect(`${alias}.providerChainDetails`, 'provider-chain');
+    }
+
     // Apply base conditions
     baseConditions.forEach((condition) => {
       queryBuilder.andWhere(`${alias}.${condition.field} = :${condition.field}`, {
