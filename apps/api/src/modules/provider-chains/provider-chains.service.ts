@@ -8,6 +8,7 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ProviderChainResponse } from './dto/provider-chain-response.dto';
 import { CreateProviderChainInput } from './dto/create-provider-chain.input';
 import { ApplicationsService } from '../applications/applications.service';
+import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
 
 @Injectable()
 export class ProviderChainsService extends CoreService<ProviderChain> {
@@ -16,8 +17,19 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
     @InjectRepository(ProviderChain)
     private readonly providerChainRepository: Repository<ProviderChain>,
     private readonly applicationsService: ApplicationsService,
+    private readonly providerChainMembersService: ProviderChainMembersService,
   ) {
     super(providerChainRepository);
+  }
+
+  async getById(chainId: number): Promise<ProviderChain | null> {
+    if (chainId === undefined || chainId === null) {
+      return null;
+    }
+
+    return this.providerChainRepository.findOne({
+      where: { chainId, status: Status.ACTIVE },
+    });
   }
 
   async getByProviderChainName(providerChainName: string): Promise<ProviderChain | null> {
@@ -28,6 +40,58 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
     return this.providerChainRepository.findOne({
       where: { chainName: providerChainName, status: Status.ACTIVE },
     });
+  }
+
+  async createProviderChain(providerChainData: CreateProviderChainInput): Promise<ProviderChain> {
+    try {
+      const providerChainExists = await this.getByProviderChainName(providerChainData.chainName);
+
+      if (providerChainExists) {
+        throw new BadRequestException('Provider Chain with same name already exists.');
+      }
+
+      const applicationExists = await this.applicationsService.findById(
+        providerChainData.applicationId,
+      );
+
+      if (!applicationExists) {
+        throw new BadRequestException('Invalid applicationId.');
+      }
+
+      const providerChain = this.providerChainRepository.create(providerChainData);
+      return this.providerChainRepository.save(providerChain);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async softDeleteProviderChain(chainId: number): Promise<boolean> {
+    try {
+      const providerChainEntry = await this.getById(chainId);
+
+      if (!providerChainEntry) {
+        throw new BadRequestException('Provider chain does not exist');
+      }
+
+      const providerChainMemberEntries =
+        await this.providerChainMembersService.getAllProviderChainMembersByChainId(chainId);
+
+      if (providerChainMemberEntries && providerChainMemberEntries.length > 0) {
+        for (const providerChainMember of providerChainMemberEntries) {
+          await this.providerChainMembersService.softDeleteProviderChainMember(
+            providerChainMember.id,
+          );
+        }
+      }
+
+      await this.providerChainRepository.update(chainId, {
+        status: Status.INACTIVE,
+      });
+      this.logger.log(`Deleted provider chain ${chainId}`);
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getAllProviderChains(options: QueryOptionsDto): Promise<ProviderChainResponse> {
@@ -41,24 +105,5 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
       baseConditions,
     );
     return new ProviderChainResponse(items, total, options.offset, options.limit);
-  }
-
-  async createProviderChain(providerChainData: CreateProviderChainInput): Promise<ProviderChain> {
-    const providerChainExists = await this.getByProviderChainName(providerChainData.chainName);
-
-    if (providerChainExists) {
-      throw new BadRequestException('Provider Chain with same name already exists.');
-    }
-
-    const applicationExists = await this.applicationsService.findById(
-      providerChainData.applicationId,
-    );
-
-    if (!applicationExists) {
-      throw new BadRequestException('Invalid applicationId.');
-    }
-
-    const providerChain = this.providerChainRepository.create(providerChainData);
-    return this.providerChainRepository.save(providerChain);
   }
 }

@@ -1,7 +1,9 @@
-import { Body, Controller, HttpException, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Delete, HttpException, Logger, Post } from '@nestjs/common';
 import { ProviderChainsService } from './provider-chains.service';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { CreateProviderChainInput } from './dto/create-provider-chain.input';
+import { DeleteProviderChainInput } from './dto/delete-provider-chain.input';
+import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
 
 @Controller('provider-chains')
 export class ProviderChainsController {
@@ -9,6 +11,7 @@ export class ProviderChainsController {
     private readonly providerChainsService: ProviderChainsService,
     private readonly jsend: JsendFormatter,
     private logger: Logger = new Logger(ProviderChainsController.name),
+    private readonly providerChainMembersService: ProviderChainMembersService,
   ) {}
 
   @Post()
@@ -27,6 +30,37 @@ export class ProviderChainsController {
       }
 
       this.logger.error('Error while creating provider chain');
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+      throw error;
+    }
+  }
+
+  @Delete()
+  async deleteProviderChain(
+    @Body() providerChainInput: DeleteProviderChainInput,
+  ): Promise<Record<string, unknown>> {
+    try {
+      this.logger.debug(`Provider chain id to delete: ${providerChainInput.chainId}`);
+      const entries = await this.providerChainMembersService.getAllProviderChainMembersByChainId(
+        providerChainInput.chainId,
+      );
+      const providerChainMembersDeleted = entries ? entries.map((entry) => entry.id) : null;
+
+      const deletedProviderChain = await this.providerChainsService.softDeleteProviderChain(
+        providerChainInput.chainId,
+      );
+      this.logger.log('Provider chain deleted successfully.');
+      return this.jsend.success({
+        chainId: providerChainInput.chainId,
+        deleted: deletedProviderChain,
+        providerChainMembersDeleted: providerChainMembersDeleted,
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      this.logger.error('Error while deleting provider chain');
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       throw error;
     }
