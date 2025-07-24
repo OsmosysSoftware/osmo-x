@@ -1,4 +1,4 @@
-import { Controller, HttpException, Logger, Post } from '@nestjs/common';
+import { Controller, Delete, HttpException, Logger, Post } from '@nestjs/common';
 import { ArchivedNotificationsService } from './archived-notifications.service';
 
 @Controller('archived-notifications')
@@ -20,6 +20,23 @@ export class ArchivedNotificationsController {
       }
 
       this.logger.error('Error while archiving notifications');
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+      throw error;
+    }
+  }
+
+  @Delete('delete')
+  async deleteArchivedNotifications(): Promise<void> {
+    try {
+      this.logger.debug('Deleting archived notifications...');
+      await this.archivedNotificationService.deleteArchivedNotificationsCron();
+      this.logger.log('End of delete archived notifications Cron');
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      this.logger.error('Error while deleting notifications');
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       throw error;
     }
