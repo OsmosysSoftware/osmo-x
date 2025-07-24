@@ -195,55 +195,99 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       }
 
       const cutoffTimestamp = new Date(Date.now() - retentionDurationMs);
+      const batchSize = 500;
+      let flagBackupFileCreated = false;
+      let archivedEntriesBatch: ArchivedNotification[] = [];
+
+      // Update with json like nested fields as per archived-notification.entity file
+      const nestedFields = ['data', 'result'];
 
       // Create directory, filename and path for backups
       const backupsDir = 'backups';
       const backupFileName = `archived_notifications_backup_${this.getFormattedTimestamp()}.csv`;
       const backupFilePath = path.join(backupsDir, backupFileName);
 
+      // Fast-CSV stream
+      const csvStream = format({ headers: true });
+      csvStream.pipe(createWriteStream(backupFilePath));
+
+      // Ensure the backups directory exists
+      try {
+        if (!existsSync(backupsDir)) {
+          mkdirSync(backupsDir, { recursive: true });
+        }
+      } catch (error) {
+        throw new Error(`Failed to create backup directory at "${backupsDir}": ${error.message}`);
+      }
+
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
       try {
-        // Fetch entries to delete
-        const archivedEntries = await queryRunner.manager.find(ArchivedNotification, {
-          where: {
-            createdOn: LessThan(cutoffTimestamp),
-            status: Status.ACTIVE,
-          },
-          order: {
-            createdOn: 'ASC',
-          },
-          take: 500,
-        });
+        do {
+          // Fetch entries to delete
+          archivedEntriesBatch = await queryRunner.manager.find(ArchivedNotification, {
+            where: {
+              createdOn: LessThan(cutoffTimestamp),
+              status: Status.ACTIVE,
+            },
+            order: {
+              createdOn: 'ASC',
+            },
+            take: batchSize,
+          });
 
-        if (archivedEntries.length === 0) {
-          this.logger.log('No entries to archive.');
-          await queryRunner.commitTransaction();
-          return;
-        }
-
-        // Ensure the backups directory exists
-        try {
-          if (!existsSync(backupsDir)) {
-            mkdirSync(backupsDir, { recursive: true });
+          if (archivedEntriesBatch.length === 0) {
+            this.logger.log(
+              `No more archived entries older than ${cutoffTimestamp} left to delete`,
+            );
+            break;
           }
-        } catch (error) {
-          throw new Error(`Failed to create backup directory at "${backupsDir}": ${error}`);
-        }
 
-        // Export to CSV before deletion
-        await this.writeToCsv(archivedEntries, backupFilePath);
+          // Perform deletion
+          const idsToDelete = archivedEntriesBatch.map((entry) => entry.id);
+          await queryRunner.manager.delete(ArchivedNotification, idsToDelete);
 
-        // Perform deletion
-        const idsToDelete = archivedEntries.map((entry) => entry.id);
-        await queryRunner.manager.delete(ArchivedNotification, idsToDelete);
+          // Export to CSV
+          for (const row of archivedEntriesBatch) {
+            // Ensure data of nested fields is stringified before being added to csv
+            const safeRow = Object.fromEntries(
+              Object.entries(row).map(([key, value]) => [
+                key,
+                nestedFields.includes(key) && value !== null && typeof value === 'object'
+                  ? JSON.stringify(value)
+                  : value,
+              ]),
+            );
+
+            csvStream.write(safeRow);
+          }
+
+          flagBackupFileCreated = true;
+        } while (archivedEntriesBatch.length === batchSize);
 
         await queryRunner.commitTransaction();
-        this.logger.log(
-          `Transaction successful. Deleted ${archivedEntries.length} entries. Backup at ${backupFilePath}`,
-        );
+        this.logger.log('Transaction Successful.');
+
+        if (flagBackupFileCreated) {
+          this.logger.log(
+            `Deleted archived entries older than ${cutoffTimestamp}. Backup file created at ${backupFilePath}`,
+          );
+        } else {
+          this.logger.log(`No entries found older than ${cutoffTimestamp}.`);
+
+          if (backupFilePath) {
+            try {
+              await fs.unlink(backupFilePath);
+              this.logger.log('Unnecessary CSV file has been deleted');
+            } catch (unlinkError) {
+              this.logger.error(
+                `Failed to delete unnecessary CSV file ${backupFileName}: ${unlinkError.message}`,
+              );
+            }
+          }
+        }
       } catch (error) {
         await queryRunner.rollbackTransaction();
         this.logger.error('Error during deletion. Rolled back.', error.stack);
@@ -266,39 +310,6 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       }
     } catch (error) {
       this.logger.error(`Failed to delete archived notifications: ${error.message}`, error.stack);
-      throw error;
-    }
-  }
-
-  private async writeToCsv(data: ArchivedNotification[], filePath: string): Promise<void> {
-    try {
-      // Update with json like nested fields as per archived-notification.entity file
-      const nestedFields = ['data', 'result'];
-
-      return new Promise((resolve, reject) => {
-        const ws = createWriteStream(filePath);
-        const csvStream = format({ headers: true });
-
-        csvStream.pipe(ws).on('finish', resolve).on('error', reject);
-
-        for (const row of data) {
-          // Ensure data of nested fields is stringified before being added to csv
-          const safeRow = Object.fromEntries(
-            Object.entries(row).map(([key, value]) => [
-              key,
-              nestedFields.includes(key) && value !== null && typeof value === 'object'
-                ? JSON.stringify(value)
-                : value,
-            ]),
-          );
-
-          csvStream.write(safeRow);
-        }
-
-        csvStream.end();
-      });
-    } catch (error) {
-      this.logger.error(`Could not create backup file: ${error.message}`, error.stack);
       throw error;
     }
   }
