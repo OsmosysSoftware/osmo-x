@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProviderChainMember } from './entities/provider-chain-member.entity';
 import { Repository } from 'typeorm';
@@ -17,6 +17,16 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     super(providerChainMembersRepository);
   }
 
+  async getById(id: number): Promise<ProviderChainMember | null> {
+    if (id === undefined || id === null) {
+      return null;
+    }
+
+    return this.providerChainMembersRepository.findOne({
+      where: { id, status: Status.ACTIVE },
+    });
+  }
+
   async getFirstPriorityProviderIdByChainId(providerChainId: number): Promise<number | null> {
     const providerChainMemberEntry = await this.providerChainMembersRepository.findOne({
       where: {
@@ -31,6 +41,41 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     });
 
     return providerChainMemberEntry?.providerId ?? null;
+  }
+
+  async getAllProviderChainMembersByChainId(
+    providerChainId: number,
+  ): Promise<ProviderChainMember[] | null> {
+    const providerChainMembers = await this.providerChainMembersRepository.find({
+      where: {
+        chainId: providerChainId,
+        isActive: Status.ACTIVE,
+        status: Status.ACTIVE,
+      },
+    });
+
+    if (!providerChainMembers.length) {
+      this.logger.debug(
+        `No active provider chain members found for providerChainId ${providerChainId}`,
+      );
+      return null;
+    }
+
+    return providerChainMembers;
+  }
+
+  async softDeleteProviderChainMember(providerChainMemberId: number): Promise<boolean> {
+    const providerChainMemberEntry = await this.getById(providerChainMemberId);
+
+    if (!providerChainMemberEntry) {
+      throw new BadRequestException('Provider chain member does not exist');
+    }
+
+    await this.providerChainMembersRepository.update(providerChainMemberId, {
+      status: Status.INACTIVE,
+    });
+    this.logger.log(`Deleted provider chain member ${providerChainMemberId}`);
+    return true;
   }
 
   async getAllProviderChainMembers(options: QueryOptionsDto): Promise<ProviderChainMemberResponse> {
