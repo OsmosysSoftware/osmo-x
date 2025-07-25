@@ -38,21 +38,21 @@ export class ProviderChainsController {
 
   @Delete()
   async deleteProviderChain(
-    @Body() providerChainInput: DeleteProviderChainInput,
+    @Body() deleteProviderChainInput: DeleteProviderChainInput,
   ): Promise<Record<string, unknown>> {
     try {
-      this.logger.debug(`Provider chain id to delete: ${providerChainInput}`);
+      this.logger.debug(`Provider chain id to delete: ${deleteProviderChainInput.chainId}`);
       const entries = await this.providerChainMembersService.getAllProviderChainMembersByChainId(
-        providerChainInput.chainId,
+        deleteProviderChainInput.chainId,
       );
       const providerChainMembersDeleted = entries ? entries.map((entry) => entry.id) : null;
 
       const deletedProviderChain = await this.providerChainsService.softDeleteProviderChain(
-        providerChainInput.chainId,
+        deleteProviderChainInput.chainId,
       );
       this.logger.log('Provider chain deleted successfully.');
       return this.jsend.success({
-        chainId: providerChainInput.chainId,
+        chainId: deleteProviderChainInput.chainId,
         deleted: deletedProviderChain,
         providerChainMembersDeleted: providerChainMembersDeleted,
       });
