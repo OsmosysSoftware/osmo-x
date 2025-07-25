@@ -9,6 +9,7 @@ import { ProviderChainResponse } from './dto/provider-chain-response.dto';
 import { CreateProviderChainInput } from './dto/create-provider-chain.input';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
+import { UpdateProviderChainInput } from './dto/update-provider-chain.input';
 
 @Injectable()
 export class ProviderChainsService extends CoreService<ProviderChain> {
@@ -89,6 +90,77 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
       });
       this.logger.log(`Deleted provider chain ${chainId}`);
       return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateProviderChain(
+    updateProviderChainData: UpdateProviderChainInput,
+  ): Promise<ProviderChain> {
+    try {
+      const providerChainEntry = await this.getById(updateProviderChainData.chainId);
+
+      if (!providerChainEntry) {
+        throw new BadRequestException('Provider chain with inputted id does not exist.');
+      }
+
+      // 1. Update chain name
+      if (updateProviderChainData.chainName) {
+        const poviderChainWithInputNameExists = await this.getByProviderChainName(
+          updateProviderChainData.chainName,
+        );
+
+        if (
+          poviderChainWithInputNameExists &&
+          poviderChainWithInputNameExists.chainId !== updateProviderChainData.chainId
+        ) {
+          throw new BadRequestException('Provider chain with same name already exists.');
+        }
+
+        providerChainEntry.chainName = updateProviderChainData.chainName;
+      }
+
+      // 2. Update application Id
+      if (updateProviderChainData.applicationId) {
+        const applicationExists = await this.applicationsService.findById(
+          updateProviderChainData.applicationId,
+        );
+
+        if (!applicationExists) {
+          throw new BadRequestException('Invalid applicationId.');
+        }
+
+        providerChainEntry.applicationId = updateProviderChainData.applicationId;
+      }
+
+      // 3. Update providerType
+      if (updateProviderChainData.providerType) {
+        const listOfProviderChainMembers =
+          await this.providerChainMembersService.getAllProviderChainMembersByChainId(
+            providerChainEntry.chainId,
+          );
+
+        if (listOfProviderChainMembers && listOfProviderChainMembers.length > 0) {
+          throw new BadRequestException(
+            'Delete all existing provider chain members before updating providerType',
+          );
+        }
+
+        providerChainEntry.providerType = updateProviderChainData.providerType;
+      }
+
+      // 4. Update description
+      if (updateProviderChainData.description) {
+        providerChainEntry.description = updateProviderChainData.description;
+      }
+
+      // 5. Update isDefault
+      if (updateProviderChainData.isDefault) {
+        providerChainEntry.isDefault = updateProviderChainData.isDefault;
+      }
+
+      return this.providerChainRepository.save(providerChainEntry);
     } catch (error) {
       throw error;
     }
