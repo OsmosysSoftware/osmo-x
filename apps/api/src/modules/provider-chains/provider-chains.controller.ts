@@ -11,7 +11,7 @@ export class ProviderChainsController {
   constructor(
     private readonly providerChainsService: ProviderChainsService,
     private readonly jsend: JsendFormatter,
-    private logger: Logger = new Logger(ProviderChainsController.name),
+    private readonly logger: Logger = new Logger(ProviderChainsController.name),
     private readonly providerChainMembersService: ProviderChainMembersService,
   ) {}
 
