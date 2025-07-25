@@ -107,13 +107,13 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
 
       // 1. Update chain name
       if (updateProviderChainData.chainName) {
-        const poviderChainWithInputNameExists = await this.getByProviderChainName(
+        const providerChainWithInputNameExists = await this.getByProviderChainName(
           updateProviderChainData.chainName,
         );
 
         if (
-          poviderChainWithInputNameExists &&
-          poviderChainWithInputNameExists.chainId !== updateProviderChainData.chainId
+          providerChainWithInputNameExists &&
+          providerChainWithInputNameExists.chainId !== updateProviderChainData.chainId
         ) {
           throw new BadRequestException('Provider chain with same name already exists.');
         }
