@@ -8,13 +8,9 @@ import { ConfigService } from '@nestjs/config';
 import { ProviderChainsController } from './provider-chains.controller';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { ApplicationsModule } from '../applications/applications.module';
-import { ApplicationsService } from '../applications/applications.service';
 import { UsersModule } from '../users/users.module';
-import { UsersService } from '../users/users.service';
 import { ProvidersModule } from '../providers/providers.module';
-import { ProvidersService } from '../providers/providers.service';
 import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
-import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
 
 @Module({
   imports: [
@@ -32,10 +28,6 @@ import { ProviderChainMembersService } from '../provider-chain-members/provider-
     JwtService,
     ConfigService,
     JsendFormatter,
-    ApplicationsService,
-    UsersService,
-    ProvidersService,
-    ProviderChainMembersService,
   ],
   exports: [TypeOrmModule, ProviderChainsService],
   controllers: [ProviderChainsController],
