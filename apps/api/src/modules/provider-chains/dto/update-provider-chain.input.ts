@@ -1,8 +1,6 @@
-import { InputType } from '@nestjs/graphql';
 import { IsString, IsOptional, IsNumber, IsEnum } from 'class-validator';
 import { IsEnabledStatus, ProviderType } from 'src/common/constants/database';
 
-@InputType()
 export class UpdateProviderChainInput {
   @IsNumber()
   chainId: number;
