@@ -20,6 +20,16 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
     super(providerChainRepository);
   }
 
+  async getById(chainId: number): Promise<ProviderChain | null> {
+    if (chainId === undefined || chainId === null) {
+      return null;
+    }
+
+    return this.providerChainRepository.findOne({
+      where: { chainId, status: Status.ACTIVE },
+    });
+  }
+
   async getByProviderChainName(providerChainName: string): Promise<ProviderChain | null> {
     if (providerChainName === undefined || providerChainName === null) {
       return null;
