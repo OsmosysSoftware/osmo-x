@@ -14,7 +14,7 @@ export class ProviderChainMembersController {
   ) {}
 
   @Post()
-  async addProviderChain(
+  async createProviderChainMember(
     @Body() providerChainMemberData: CreateProviderChainMemberInput,
   ): Promise<Record<string, unknown>> {
     try {
