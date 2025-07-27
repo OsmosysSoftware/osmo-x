@@ -1,11 +1,13 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { IsEnabledStatus, ProviderType } from 'src/common/constants/database';
 
 export class CreateProviderChainInput {
   @IsString()
+  @IsNotEmpty()
   chainName: string;
 
   @IsNumber()
+  @IsNotEmpty()
   applicationId: number;
 
   @IsNumber()
