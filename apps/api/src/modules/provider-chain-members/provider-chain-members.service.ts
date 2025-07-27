@@ -42,7 +42,6 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     const providerChainMemberEntry = await this.providerChainMemberRepository.findOne({
       where: {
         chainId: providerChainId,
-        isActive: Status.ACTIVE,
         status: Status.ACTIVE,
       },
       order: {
@@ -59,7 +58,6 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     const providerChainMemberEntry = await this.providerChainMemberRepository.findOne({
       where: {
         chainId: providerChainId,
-        isActive: Status.ACTIVE,
         status: Status.ACTIVE,
       },
       order: {
@@ -96,13 +94,16 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
         );
       }
 
-      if (
+      const ifProviderHasAlreadyBeenAddedToProviderChain =
         await this.checkIfProviderHasAlreadyBeenAddedToProviderChain(
           providerChainMemberData.chainId,
           providerChainMemberData.providerId,
-        )
-      ) {
-        throw new BadRequestException('Provider has already been added to the chain');
+        );
+
+      if (ifProviderHasAlreadyBeenAddedToProviderChain) {
+        throw new BadRequestException(
+          'Provider has already been added to the chain. It may or may not have been deleted.',
+        );
       }
 
       const masterProviderExists = await this.masterProvidersService.getById(
@@ -145,8 +146,6 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       where: {
         chainId: chainId,
         providerId: providerId,
-        isActive: Status.ACTIVE,
-        status: Status.ACTIVE,
       },
     });
 
