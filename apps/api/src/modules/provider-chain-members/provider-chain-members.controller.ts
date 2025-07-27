@@ -104,7 +104,7 @@ export class ProviderChainMembersController {
         throw error;
       }
 
-      this.logger.error('Error while restoring provider priority order');
+      this.logger.error('Error while restoring provider chain member');
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       throw error;
     }

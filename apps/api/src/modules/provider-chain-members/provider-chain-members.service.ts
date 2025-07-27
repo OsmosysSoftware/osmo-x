@@ -315,7 +315,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       } catch (error) {
         await queryRunner.rollbackTransaction();
         this.logger.error(
-          `Error while updating priority order. Rolling back transaction: ${error.message}`,
+          `Error while soft deleting chain member. Rolling back transaction: ${error.message}`,
         );
         throw error;
       } finally {
