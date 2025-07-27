@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProviderChainMember } from './entities/provider-chain-member.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, MoreThan, Repository } from 'typeorm';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
@@ -11,6 +11,7 @@ import { ProviderChainsService } from '../provider-chains/provider-chains.servic
 import { ProvidersService } from '../providers/providers.service';
 import { MasterProvidersService } from '../master-providers/master-providers.service';
 import { UpdateProviderPriorityOrderInput } from './dto/update-provider-priority-order.input';
+import { DeleteProviderChainMemberInput } from './dto/delete-chain-member-by-provider.input';
 
 @Injectable()
 export class ProviderChainMembersService extends CoreService<ProviderChainMember> {
@@ -239,6 +240,87 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
         chainId: updateData.chainId,
         status: Status.ACTIVE,
       });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async softDeleteChainMemberUsingProviderID(
+    deletionData: DeleteProviderChainMemberInput,
+  ): Promise<ProviderChainMember> {
+    try {
+      const providerChainExists = await this.providerChainsService.getById(deletionData.chainId);
+
+      if (!providerChainExists) {
+        throw new BadRequestException('Provider Chain does not exist.');
+      }
+
+      const ifProviderHasAlreadyBeenAddedToProviderChain =
+        await this.checkIfProviderHasAlreadyBeenAddedToProviderChain(
+          deletionData.chainId,
+          deletionData.providerId,
+        );
+
+      if (!ifProviderHasAlreadyBeenAddedToProviderChain) {
+        throw new BadRequestException('Provider does not exist in the chain.');
+      }
+
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      try {
+        // Step 1: Get the member to delete
+        const chainMemberToDelete = await queryRunner.manager.findOne(ProviderChainMember, {
+          where: {
+            chainId: deletionData.chainId,
+            providerId: deletionData.providerId,
+            status: Status.ACTIVE,
+          },
+        });
+
+        if (!chainMemberToDelete) {
+          throw new BadRequestException('Chain member has already been deleted');
+        }
+
+        const deletedPriority = chainMemberToDelete.priorityOrder;
+
+        // Step 2: Soft delete the member
+        chainMemberToDelete.status = Status.INACTIVE;
+        chainMemberToDelete.priorityOrder = -1 * chainMemberToDelete.id;
+        await queryRunner.manager.save(ProviderChainMember, chainMemberToDelete);
+
+        // Step 3: Fetch affected members
+        const membersToShift = await queryRunner.manager.find(ProviderChainMember, {
+          where: {
+            chainId: deletionData.chainId,
+            status: Status.ACTIVE,
+            priorityOrder: MoreThan(deletedPriority),
+          },
+          order: { priorityOrder: 'ASC' },
+        });
+
+        // Step 4: Shift priority order in memory
+        for (const member of membersToShift) {
+          member.priorityOrder -= 1;
+        }
+
+        // Step 5: Batch save
+        if (membersToShift.length > 0) {
+          await queryRunner.manager.save(ProviderChainMember, membersToShift);
+        }
+
+        await queryRunner.commitTransaction();
+        return chainMemberToDelete;
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        this.logger.error(
+          `Error while updating priority order. Rolling back transaction: ${error.message}`,
+        );
+        throw error;
+      } finally {
+        await queryRunner.release();
+      }
     } catch (error) {
       throw error;
     }

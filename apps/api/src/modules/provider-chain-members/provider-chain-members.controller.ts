@@ -1,8 +1,9 @@
-import { Body, Controller, HttpException, Logger, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, HttpException, Logger, Post, Put } from '@nestjs/common';
 import { ProviderChainMembersService } from './provider-chain-members.service';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { CreateProviderChainMemberInput } from './dto/create-provider-chain-member.input';
 import { UpdateProviderPriorityOrderInput } from './dto/update-provider-priority-order.input';
+import { DeleteProviderChainMemberInput } from './dto/delete-chain-member-by-provider.input';
 
 @Controller('provider-chain-members')
 export class ProviderChainMembersController {
@@ -55,6 +56,34 @@ export class ProviderChainMembersController {
       }
 
       this.logger.error('Error while updating provider priority order');
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+      throw error;
+    }
+  }
+
+  @Delete()
+  async deleteProviderChainMemberByProviderId(
+    @Body() deleteProviderChainMemberInput: DeleteProviderChainMemberInput,
+  ): Promise<Record<string, unknown>> {
+    try {
+      this.logger.debug(
+        `Provider chain id to delete: ${JSON.stringify(deleteProviderChainMemberInput)}`,
+      );
+      const deletedProviderChainMember =
+        await this.providerChainMembersService.softDeleteChainMemberUsingProviderID(
+          deleteProviderChainMemberInput,
+        );
+
+      this.logger.log('Provider chain deleted successfully.');
+      return this.jsend.success({
+        deletedProviderChainMember: deletedProviderChainMember,
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      this.logger.error('Error while deleting chain member');
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       throw error;
     }
