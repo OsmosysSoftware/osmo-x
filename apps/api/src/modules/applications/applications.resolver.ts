@@ -5,7 +5,7 @@ import { CreateApplicationInput } from './dto/create-application.input';
 import { Application } from './entities/application.entity';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ApplicationResponse } from './dto/application-response.dto';
-import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
+import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { UserRoles } from 'src/common/constants/database';

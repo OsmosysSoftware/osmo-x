@@ -3,7 +3,7 @@ import { WebhookService } from './webhook.service';
 import { Webhook } from './entities/webhook.entity';
 import { UseGuards } from '@nestjs/common';
 import { CreateWebhookInput } from './dto/create-webhook.input';
-import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
+import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 
 @Resolver(() => Webhook)
 @UseGuards(GqlAuthGuard)
