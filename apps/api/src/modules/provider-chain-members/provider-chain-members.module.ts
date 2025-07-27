@@ -9,6 +9,9 @@ import { ProviderChainMembersController } from './provider-chain-members.control
 import { ProvidersModule } from '../providers/providers.module';
 import { ProviderChainsService } from '../provider-chains/provider-chains.service';
 import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
+import { JsendFormatter } from 'src/common/jsend-formatter';
+import { MasterProvidersModule } from '../master-providers/master-providers.module';
+import { MasterProvidersService } from '../master-providers/master-providers.service';
 
 @Module({
   imports: [
@@ -16,6 +19,7 @@ import { ProviderChainsModule } from '../provider-chains/provider-chains.module'
     JwtModule,
     ProvidersModule,
     forwardRef(() => ProviderChainsModule),
+    MasterProvidersModule,
   ],
   providers: [
     Logger,
@@ -24,6 +28,8 @@ import { ProviderChainsModule } from '../provider-chains/provider-chains.module'
     JwtService,
     ConfigService,
     ProviderChainsService,
+    JsendFormatter,
+    MasterProvidersService,
   ],
   exports: [TypeOrmModule, ProviderChainMembersService],
   controllers: [ProviderChainMembersController],
