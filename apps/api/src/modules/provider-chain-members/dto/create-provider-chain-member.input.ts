@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber } from 'class-validator';
-import { IsEnabledStatus } from 'src/common/constants/database';
+import { Status } from 'src/common/constants/database';
 
 export class CreateProviderChainMemberInput {
   @IsNumber()
@@ -9,6 +9,6 @@ export class CreateProviderChainMemberInput {
   providerId: number;
 
   @IsNumber()
-  @IsEnum(IsEnabledStatus)
+  @IsEnum(Status)
   isActive: number;
 }
