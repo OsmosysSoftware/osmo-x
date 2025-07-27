@@ -326,6 +326,45 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     }
   }
 
+  async restoreDeletedChainMember(
+    deletedChainMemberData: DeleteProviderChainMemberInput,
+  ): Promise<ProviderChainMember> {
+    try {
+      const providerChainExists = await this.providerChainsService.getById(
+        deletedChainMemberData.chainId,
+      );
+
+      if (!providerChainExists) {
+        throw new BadRequestException('Provider Chain does not exist.');
+      }
+
+      const deletedChainMemberEntry = await this.providerChainMemberRepository.findOne({
+        where: {
+          chainId: deletedChainMemberData.chainId,
+          providerId: deletedChainMemberData.providerId,
+          status: Status.INACTIVE,
+        },
+      });
+
+      if (!deletedChainMemberEntry) {
+        throw new BadRequestException('Provider Id not found or is already active');
+      }
+
+      const lastPriorityMember = await this.getLastPriorityProviderChainMemberByChainId(
+        deletedChainMemberData.chainId,
+      );
+
+      deletedChainMemberEntry.priorityOrder = lastPriorityMember
+        ? lastPriorityMember.priorityOrder + 1
+        : 1;
+
+      deletedChainMemberEntry.status = Status.ACTIVE;
+      return this.providerChainMemberRepository.save(deletedChainMemberEntry);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getAllProviderChainMembers(options: QueryOptionsDto): Promise<ProviderChainMemberResponse> {
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
     const searchableFields = [];

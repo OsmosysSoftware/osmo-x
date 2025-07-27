@@ -66,15 +66,13 @@ export class ProviderChainMembersController {
     @Body() deleteProviderChainMemberInput: DeleteProviderChainMemberInput,
   ): Promise<Record<string, unknown>> {
     try {
-      this.logger.debug(
-        `Provider chain id to delete: ${JSON.stringify(deleteProviderChainMemberInput)}`,
-      );
+      this.logger.debug(`Deletion request Data: ${JSON.stringify(deleteProviderChainMemberInput)}`);
       const deletedProviderChainMember =
         await this.providerChainMembersService.softDeleteChainMemberUsingProviderID(
           deleteProviderChainMemberInput,
         );
 
-      this.logger.log('Provider chain deleted successfully.');
+      this.logger.log('Provider chain member deleted successfully.');
       return this.jsend.success({
         deletedProviderChainMember: deletedProviderChainMember,
       });
@@ -83,7 +81,30 @@ export class ProviderChainMembersController {
         throw error;
       }
 
-      this.logger.error('Error while deleting chain member');
+      this.logger.error('Error while deleting provider chain member');
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+      throw error;
+    }
+  }
+
+  @Put('restore')
+  async restoreChainMemberUsingProviderId(
+    @Body() restoreProviderChainMemberInput: DeleteProviderChainMemberInput,
+  ): Promise<Record<string, unknown>> {
+    try {
+      this.logger.debug(`Restore Request Data: ${JSON.stringify(restoreProviderChainMemberInput)}`);
+      const updatedProviderChainMembers =
+        await this.providerChainMembersService.restoreDeletedChainMember(
+          restoreProviderChainMemberInput,
+        );
+      this.logger.log('Provider chain member restored successfully.');
+      return this.jsend.success({ updatedProviderChainMembers: updatedProviderChainMembers });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      this.logger.error('Error while restoring provider priority order');
       this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
       throw error;
     }
