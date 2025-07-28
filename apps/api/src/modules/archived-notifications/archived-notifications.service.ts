@@ -267,6 +267,9 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
           flagBackupFileCreated = true;
         } while (archivedEntriesBatch.length === batchSize);
 
+        // End the Fast-CSV stream
+        csvStream.end();
+
         await queryRunner.commitTransaction();
         this.logger.log('Transaction Successful.');
 
