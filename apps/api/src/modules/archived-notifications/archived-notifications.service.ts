@@ -207,10 +207,6 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       const backupFileName = `archived_notifications_backup_${this.getFormattedTimestamp()}.csv`;
       const backupFilePath = path.join(backupsDir, backupFileName);
 
-      // Fast-CSV stream
-      const csvStream = format({ headers: true });
-      csvStream.pipe(createWriteStream(backupFilePath));
-
       // Ensure the backups directory exists
       try {
         if (!existsSync(backupsDir)) {
@@ -219,6 +215,10 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       } catch (error) {
         throw new Error(`Failed to create backup directory at "${backupsDir}": ${error.message}`);
       }
+
+      // Fast-CSV stream
+      const csvStream = format({ headers: true });
+      csvStream.pipe(createWriteStream(backupFilePath));
 
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
