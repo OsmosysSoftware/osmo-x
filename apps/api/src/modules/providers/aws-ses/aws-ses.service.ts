@@ -140,12 +140,26 @@ export class AwsSesService {
         }
 
         const contentType = mime.lookup(attachment.filename) || 'application/octet-stream';
+
         return {
           filename: attachment.filename,
-          content: Buffer.isBuffer(content) ? content : Buffer.from(content as string, 'utf-8'),
+          content: await this.normalizeContent(content, attachment.filename),
           contentType,
         };
       }),
     );
+  }
+
+  async normalizeContent(content: string | Buffer | Stream, filename: string): Promise<Buffer> {
+    if (Buffer.isBuffer(content)) return content;
+
+    const ext = filename?.split('.').pop()?.toLowerCase();
+    const isText = ['txt', 'csv', 'html', 'json', 'xml'].includes(ext);
+
+    if (typeof content === 'string') {
+      return Buffer.from(content, isText ? 'utf-8' : 'base64');
+    }
+
+    throw new Error('Unsupported file content type');
   }
 }
