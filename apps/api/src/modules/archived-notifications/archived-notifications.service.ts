@@ -287,6 +287,9 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
           }
         } while (archivedEntriesBatch.length === batchSize);
 
+        // End the Fast-CSV stream
+        csvStream.end();
+
         await queryRunner.commitTransaction();
         this.logger.log('Transaction Successful.');
 
