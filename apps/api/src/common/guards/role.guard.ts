@@ -25,10 +25,16 @@ export class RolesGuard implements CanActivate {
     }
 
     // Determine request based on context type
-    const req =
-      context.getType<'graphql' | 'http'>() === 'graphql'
-        ? GqlExecutionContext.create(context).getContext().req
-        : context.switchToHttp().getRequest();
+    const contextType = context.getType<'graphql' | 'http'>();
+    let req = null;
+
+    if (contextType === 'graphql') {
+      req = GqlExecutionContext.create(context).getContext().req;
+    } else if (contextType === 'http') {
+      req = context.switchToHttp().getRequest();
+    } else {
+      return false; // Unsupported context type
+    }
 
     const authorizationHeader = req.headers?.authorization;
 
