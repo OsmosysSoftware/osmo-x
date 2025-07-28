@@ -150,16 +150,23 @@ export class AwsSesService {
     );
   }
 
-  async normalizeContent(content: string | Buffer | Stream, filename: string): Promise<Buffer> {
-    if (Buffer.isBuffer(content)) return content;
+  private async normalizeContent(
+    content: string | Buffer | Stream,
+    filename: string,
+  ): Promise<Buffer> {
+    try {
+      if (Buffer.isBuffer(content)) return content;
 
-    const ext = filename?.split('.').pop()?.toLowerCase();
-    const isText = ['txt', 'csv', 'html', 'json', 'xml'].includes(ext);
+      const extension = filename?.split('.').pop()?.toLowerCase();
+      const isText = ['txt', 'csv', 'html', 'json', 'xml'].includes(extension);
 
-    if (typeof content === 'string') {
-      return Buffer.from(content, isText ? 'utf-8' : 'base64');
+      if (typeof content === 'string') {
+        return Buffer.from(content, isText ? 'utf-8' : 'base64');
+      }
+
+      throw new Error('Unsupported file content type');
+    } catch (error) {
+      throw new Error(`An unexpected error occurred decoding the file content: ${error.message}`);
     }
-
-    throw new Error('Unsupported file content type');
   }
 }
