@@ -32,22 +32,15 @@ export abstract class CoreService<TEntity> {
 
     const queryBuilder = this.repository.createQueryBuilder(alias);
 
-    // Perform a Left Join to fetch and display related applicationDetails & providerDetails
-    // For 'notification' or 'archivedNotification' findAll
+    // Perform a Left Join to fetch and display related entityDetails
     if (alias === 'notification' || alias === 'archivedNotification') {
       queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
       queryBuilder.leftJoinAndSelect(`${alias}.providerDetails`, 'provider');
-    }
-
-    if (alias === 'serverApiKeys') {
+    } else if (alias === 'serverApiKeys') {
       queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
-    }
-
-    if (alias === 'providerChain') {
+    } else if (alias === 'providerChain') {
       queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
-    }
-
-    if (alias === 'providerChainMember') {
+    } else if (alias === 'providerChainMember') {
       queryBuilder.leftJoinAndSelect(`${alias}.providerDetails`, 'provider');
       queryBuilder.leftJoinAndSelect(`${alias}.providerChainDetails`, 'provider-chain');
     }
