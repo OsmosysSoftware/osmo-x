@@ -155,13 +155,22 @@ export class AwsSesService {
     filename: string,
   ): Promise<Buffer> {
     try {
-      if (Buffer.isBuffer(content)) return content;
+      if (Buffer.isBuffer(content)) {
+        return content;
+      }
 
       const extension = filename?.split('.').pop()?.toLowerCase();
-      const isText = ['txt', 'csv', 'html', 'json', 'xml'].includes(extension);
+      const textExtensions = ['txt', 'csv', 'html', 'json', 'xml'];
+      const isText = textExtensions.includes(extension);
 
       if (typeof content === 'string') {
-        return Buffer.from(content, isText ? 'utf-8' : 'base64');
+        try {
+          return Buffer.from(content, isText ? 'utf-8' : 'base64');
+        } catch (decodeError) {
+          throw new Error(
+            `Failed to decode ${isText ? 'UTF-8' : 'base64'} content: ${decodeError.message}`,
+          );
+        }
       }
 
       throw new Error('Unsupported file content type');
