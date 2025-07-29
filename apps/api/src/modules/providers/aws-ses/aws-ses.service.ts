@@ -159,6 +159,15 @@ export class AwsSesService {
         return content;
       }
 
+      if (content instanceof Stream) {
+        return new Promise<Buffer>((resolve, reject) => {
+          const chunks: Uint8Array[] = [];
+          content.on('data', (chunk) => chunks.push(chunk));
+          content.on('end', () => resolve(Buffer.concat(chunks)));
+          content.on('error', (err) => reject(new Error(`Stream error: ${err.message}`)));
+        });
+      }
+
       const extension = filename?.split('.').pop()?.toLowerCase();
       const textExtensions = ['txt', 'csv', 'html', 'json', 'xml'];
       const isText = textExtensions.includes(extension);
@@ -173,7 +182,7 @@ export class AwsSesService {
         }
       }
 
-      throw new Error('Unsupported file content type');
+      throw new Error('Unsupported content type: expected Buffer, string, or Stream');
     } catch (error) {
       throw new Error(`An unexpected error occurred decoding the file content: ${error.message}`);
     }
