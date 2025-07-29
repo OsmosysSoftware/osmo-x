@@ -155,10 +155,25 @@ export class AwsSesService {
     filename: string,
   ): Promise<Buffer> {
     try {
+      // Case 1: Already a Buffer
       if (Buffer.isBuffer(content)) {
         return content;
       }
 
+      // Case 2: Serialized Buffer object (e.g., from JSON)
+      if (
+        content &&
+        typeof content === 'object' &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (content as any).type === 'Buffer' &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Array.isArray((content as any).data)
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return Buffer.from((content as any).data);
+      }
+
+      // Case 3: Stream
       if (content instanceof Stream) {
         return new Promise<Buffer>((resolve, reject) => {
           const chunks: Uint8Array[] = [];
@@ -168,6 +183,7 @@ export class AwsSesService {
         });
       }
 
+      // Case 4: String content (text or base64)
       const extension = filename?.split('.').pop()?.toLowerCase();
       const textExtensions = ['txt', 'csv', 'html', 'json', 'xml'];
       const isText = textExtensions.includes(extension);
