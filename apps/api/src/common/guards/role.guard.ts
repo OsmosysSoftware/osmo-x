@@ -24,9 +24,19 @@ export class RolesGuard implements CanActivate {
       return true; // Allow access if no roles are specified
     }
 
-    const ctx = GqlExecutionContext.create(context);
-    const req = ctx.getContext().req;
-    const authorizationHeader = req.headers.authorization;
+    // Determine request based on context type
+    const contextType = context.getType<'graphql' | 'http'>();
+    let req = null;
+
+    if (contextType === 'graphql') {
+      req = GqlExecutionContext.create(context).getContext().req;
+    } else if (contextType === 'http') {
+      req = context.switchToHttp().getRequest();
+    } else {
+      return false; // Unsupported context type
+    }
+
+    const authorizationHeader = req.headers?.authorization;
 
     if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
       return false; // No or invalid authorization token

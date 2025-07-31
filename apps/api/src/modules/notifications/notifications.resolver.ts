@@ -4,7 +4,7 @@ import { Notification } from './entities/notification.entity';
 import { UseGuards } from '@nestjs/common';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
-import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
+import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 import { SingleNotificationResponse } from './dtos/single-notification.response.dto';
 
 @Resolver(() => Notification)

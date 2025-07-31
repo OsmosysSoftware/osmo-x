@@ -1,6 +1,6 @@
 import { Resolver, Mutation, Args, Int } from '@nestjs/graphql';
 import { ServerApiKeysService } from './server-api-keys.service';
-import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
+import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { ServerApiKey } from './entities/server-api-key.entity';
 

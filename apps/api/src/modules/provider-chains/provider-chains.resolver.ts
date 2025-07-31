@@ -3,7 +3,7 @@ import { ProviderChain } from './entities/provider-chain.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
+import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { ProviderChainsService } from './provider-chains.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
