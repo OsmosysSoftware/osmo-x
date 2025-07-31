@@ -75,7 +75,6 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     const providerChainMembers = await this.providerChainMemberRepository.find({
       where: {
         chainId: providerChainId,
-        isActive: Status.ACTIVE,
         status: Status.ACTIVE,
       },
     });
