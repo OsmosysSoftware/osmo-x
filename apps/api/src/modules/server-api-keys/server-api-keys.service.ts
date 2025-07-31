@@ -3,15 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 import { ServerApiKey } from './entities/server-api-key.entity';
 import { Status } from 'src/common/constants/database';
+import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
+import { CoreService } from 'src/common/graphql/services/core.service';
 import { hashApiKey } from 'src/common/utils/bcrypt';
 import * as crypto from 'crypto';
 
 @Injectable()
-export class ServerApiKeysService {
+export class ServerApiKeysService extends CoreService<ServerApiKey> {
   constructor(
     @InjectRepository(ServerApiKey)
     private readonly serverApiKeyRepository: Repository<ServerApiKey>,
-  ) {}
+  ) {
+    super(serverApiKeyRepository);
+  }
 
   async findByServerApiKey(apiKey: string): Promise<ServerApiKey | undefined> {
     return this.serverApiKeyRepository.findOne({ where: { apiKey, status: Status.ACTIVE } });
@@ -40,5 +44,18 @@ export class ServerApiKeysService {
     await this.serverApiKeyRepository.save(serverApiKey);
 
     return originalApiKey;
+  }
+
+  async getAllServerApiKeys(options: QueryOptionsDto): Promise<ServerApiKey[]> {
+    const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
+    const searchableFields = [];
+
+    const { items } = await super.findAll(
+      options,
+      'serverApiKeys',
+      searchableFields,
+      baseConditions,
+    );
+    return items;
   }
 }
