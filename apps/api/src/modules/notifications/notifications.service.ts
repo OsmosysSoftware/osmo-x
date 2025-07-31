@@ -133,12 +133,30 @@ export class NotificationsService extends CoreService<Notification> {
           const notificationRecipientsArray =
             typeof notificationRecipientRaw === 'string'
               ? notificationRecipientRaw.split(',').map((recipient) => recipient.trim())
-              : [notificationRecipientRaw];
+              : Array.isArray(notificationRecipientRaw)
+                ? notificationRecipientRaw
+                : [notificationRecipientRaw];
           this.logger.debug(`Notification recipient list: ${notificationRecipientsArray}`);
 
-          // Confirm if a whitelisted recipient is in request body
-          const exists = (whitelistRecipientValues as string[]).some((item) =>
-            notificationRecipientsArray.includes(item),
+          // Confirm if a whitelisted recipient is in request body (Case insensitive)
+          const normalizedWhitelistRecipientValues = (whitelistRecipientValues as unknown[]).map(
+            (val) => (typeof val === 'string' ? val.toLowerCase() : val),
+          );
+
+          this.logger.debug(
+            `Normalized whitelist recipient values: ${JSON.stringify(normalizedWhitelistRecipientValues)}`,
+          );
+
+          const normalizeNotificationRecipientsArray = notificationRecipientsArray.map((val) =>
+            typeof val === 'string' ? val.toLowerCase() : val,
+          );
+
+          this.logger.debug(
+            `Normalized notification recipient list: ${JSON.stringify(normalizeNotificationRecipientsArray)}`,
+          );
+
+          const exists = normalizedWhitelistRecipientValues.some((item) =>
+            normalizeNotificationRecipientsArray.includes(item),
           );
           return exists;
         }
