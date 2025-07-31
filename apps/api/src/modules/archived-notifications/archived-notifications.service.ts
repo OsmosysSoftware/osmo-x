@@ -14,6 +14,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import { format } from '@fast-csv/format';
+import { RetryNotification } from '../notifications/entities/retry-notification.entity';
 
 @Injectable()
 export class ArchivedNotificationsService extends CoreService<ArchivedNotification> {
@@ -265,6 +266,25 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
           }
 
           flagBackupFileCreated = true;
+
+          // Delete the retry entries as well
+          const notificationIdsThatHaveBeenDeleted = archivedEntriesBatch.map(
+            (entry) => entry.notificationId,
+          );
+
+          const retryEntriesBatch = await queryRunner.manager.find(RetryNotification, {
+            where: {
+              notification_id: In(notificationIdsThatHaveBeenDeleted),
+            },
+            order: {
+              createdOn: 'ASC',
+            },
+          });
+
+          if (retryEntriesBatch.length > 0) {
+            const retryIdsToDelete = retryEntriesBatch.map((entry) => entry.id);
+            await queryRunner.manager.delete(RetryNotification, retryIdsToDelete);
+          }
         } while (archivedEntriesBatch.length === batchSize);
 
         // End the Fast-CSV stream
