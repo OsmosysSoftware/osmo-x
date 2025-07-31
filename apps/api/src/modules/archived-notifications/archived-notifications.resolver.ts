@@ -4,7 +4,7 @@ import { ArchivedNotification } from './entities/archived-notification.entity';
 import { UseGuards } from '@nestjs/common';
 import { ArchivedNotificationResponse } from './dtos/archived-notification-response.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
-import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
+import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 
 @Resolver(() => ArchivedNotification)
 @UseGuards(GqlAuthGuard)
