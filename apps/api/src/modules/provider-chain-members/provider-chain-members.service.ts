@@ -69,6 +69,41 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     return providerChainMemberEntry ? providerChainMemberEntry : null;
   }
 
+  async getAllProviderChainMembersByChainId(
+    providerChainId: number,
+  ): Promise<ProviderChainMember[] | null> {
+    const providerChainMembers = await this.providerChainMemberRepository.find({
+      where: {
+        chainId: providerChainId,
+        isActive: Status.ACTIVE,
+        status: Status.ACTIVE,
+      },
+    });
+
+    if (!providerChainMembers.length) {
+      this.logger.debug(
+        `No active provider chain members found for providerChainId ${providerChainId}`,
+      );
+      return null;
+    }
+
+    return providerChainMembers;
+  }
+
+  async softDeleteProviderChainMember(providerChainMemberId: number): Promise<boolean> {
+    const providerChainMemberEntry = await this.getById(providerChainMemberId);
+
+    if (!providerChainMemberEntry) {
+      throw new BadRequestException('Provider chain member does not exist');
+    }
+
+    await this.providerChainMemberRepository.update(providerChainMemberId, {
+      status: Status.INACTIVE,
+    });
+    this.logger.log(`Deleted provider chain member ${providerChainMemberId}`);
+    return true;
+  }
+
   async createProviderChainMember(
     providerChainMemberData: CreateProviderChainMemberInput,
   ): Promise<ProviderChainMember> {
