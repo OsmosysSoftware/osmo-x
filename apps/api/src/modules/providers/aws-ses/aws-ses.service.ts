@@ -140,12 +140,67 @@ export class AwsSesService {
         }
 
         const contentType = mime.lookup(attachment.filename) || 'application/octet-stream';
+
         return {
           filename: attachment.filename,
-          content: Buffer.isBuffer(content) ? content : Buffer.from(content as string, 'utf-8'),
+          content: await this.normalizeContent(content, attachment.filename),
           contentType,
         };
       }),
     );
+  }
+
+  private async normalizeContent(
+    content: string | Buffer | Stream,
+    filename: string,
+  ): Promise<Buffer> {
+    try {
+      // Case 1: Already a Buffer
+      if (Buffer.isBuffer(content)) {
+        return content;
+      }
+
+      // Case 2: Serialized Buffer object (e.g., from JSON)
+      if (
+        content &&
+        typeof content === 'object' &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (content as any).type === 'Buffer' &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Array.isArray((content as any).data)
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return Buffer.from((content as any).data);
+      }
+
+      // Case 3: Stream
+      if (content instanceof Stream) {
+        return new Promise<Buffer>((resolve, reject) => {
+          const chunks: Uint8Array[] = [];
+          content.on('data', (chunk) => chunks.push(chunk));
+          content.on('end', () => resolve(Buffer.concat(chunks)));
+          content.on('error', (err) => reject(new Error(`Stream error: ${err.message}`)));
+        });
+      }
+
+      // Case 4: String content (text or base64)
+      const extension = filename?.split('.').pop()?.toLowerCase();
+      const textExtensions = ['txt', 'csv', 'html', 'json', 'xml'];
+      const isText = textExtensions.includes(extension);
+
+      if (typeof content === 'string') {
+        try {
+          return Buffer.from(content, isText ? 'utf-8' : 'base64');
+        } catch (decodeError) {
+          throw new Error(
+            `Failed to decode ${isText ? 'UTF-8' : 'base64'} content: ${decodeError.message}`,
+          );
+        }
+      }
+
+      throw new Error('Unsupported content type: expected Buffer, string, or Stream');
+    } catch (error) {
+      throw new Error(`An unexpected error occurred decoding the file content: ${error.message}`);
+    }
   }
 }
