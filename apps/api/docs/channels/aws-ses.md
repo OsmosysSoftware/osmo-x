@@ -55,7 +55,24 @@ Here's a sample request body:
   }
 }
 ```
+
 For further payload information check the following link: [AWS SDK SendEmailCommand](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/ses/command/SendEmailCommand/)
+
+### File Content Encoding Instructions
+
+When adding an attachment, you need to pass the file content using the `content` keyword
+
+**1. For Text-Based Files**
+   - If your file has one of the following extensions: `txt`, `csv`, `html`, `json`, or `xml`:
+   - Encode the file content as a **UTF-8** string.
+   - Pass this **UTF-8 string** to the `content` field.
+
+**2. For Other File Types**
+   - e.g., PDFs, images, spreadsheets, etc.:
+   - Encode the file content using **Base64**.
+   - Pass the **Base64 encoded string** to the `content` field.
+
+Make sure that the encoding matches the file type. Incorrect encoding may cause the file to be unreadable or rejected.
 
 ### Documentation links
 

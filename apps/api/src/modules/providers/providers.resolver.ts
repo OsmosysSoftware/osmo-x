@@ -5,7 +5,7 @@ import { Provider } from './entities/provider.entity';
 import { ProvidersService } from './providers.service';
 import { CreateProviderInput } from './dto/create-provider.input';
 import { ProviderResponse } from './dto/provider-response.dto';
-import { GqlAuthGuard } from 'src/common/guards/api-key/gql-auth.guard';
+import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { RolesGuard } from 'src/common/guards/role.guard';
