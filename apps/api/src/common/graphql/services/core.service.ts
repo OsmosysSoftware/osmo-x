@@ -35,8 +35,6 @@ export abstract class CoreService<TEntity> {
     // Perform a Left Join to fetch and display related entityDetails
     if (alias === 'notification' || alias === 'archivedNotification') {
       queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
-    } else if (alias === 'serverApiKeys') {
-      queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
     } else if (alias === 'providerChain') {
       queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
     } else if (alias === 'providerChainMember') {
