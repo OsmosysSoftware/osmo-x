@@ -47,6 +47,7 @@ import { ArchivedNotificationsService } from '../archived-notifications/archived
 import { RequestLoggerMiddleware } from 'src/common/logger/request-logger.middleware';
 import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
 import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
+import { MasterProvidersModule } from '../master-providers/master-providers.module';
 
 const providerModules = [
   MailgunModule,
@@ -66,6 +67,7 @@ const providerModules = [
   SmsSnsModule,
   ProviderChainsModule,
   ProviderChainMembersModule,
+  MasterProvidersModule,
 ];
 
 const consumers = [

@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { forwardRef, Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProviderChain } from './entities/provider-chain.entity';
 import { ProviderChainsService } from './provider-chains.service';
@@ -19,7 +19,7 @@ import { ProviderChainMembersModule } from '../provider-chain-members/provider-c
     ApplicationsModule,
     UsersModule,
     ProvidersModule,
-    ProviderChainMembersModule,
+    forwardRef(() => ProviderChainMembersModule),
   ],
   providers: [
     Logger,
