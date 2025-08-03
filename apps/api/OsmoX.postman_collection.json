@@ -1692,246 +1692,6 @@
 			"description": "Collection of requests pertaining to creating notifications for the Twilio WhatsApp channel type using templates."
 		},
 		{
-			"name": "KAPS SMS Notifications",
-			"item": [
-				{
-					"name": "Send KAPS SMS Notification - Success",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"  pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData).to.have.property(\"status\", \"success\");",
-									"  pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response contains a valid 'notification' object\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									"pm.test(\"Response 'channelType' is 8\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 8);",
-									"});",
-									"pm.test(\"Response 'deliveryStatus' is 1\", function () {",
-									"  var jsonData = pm.response.json();",
-									"  pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 8 also has channelType 8\n    \"providerId\": 8,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\":\"1601100000000005964\",\n        \"to\": \"+918900100002,+918900100003\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the KAPS SMS channel type."
-					},
-					"response": []
-				},
-				{
-					"name": "Send KAPS SMS Notification - Mismatch in ChannelType",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response code is 400 Bad Request\", function () {",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"});",
-									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property(\"status\", \"fail\");",
-									"    pm.expect(jsonData).to.have.property(\"data\");",
-									"});",
-									"pm.test(\"Response does not contain a valid 'notification' object\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.data).to.not.have.property(\"notification\").to.be.an(\"object\");",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 100 does not have channelType 8\n    \"providerId\": 100,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\":\"1601100000000005964\",\n        \"to\": \"+918900100002,+918900100003\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the KAPS SMS channel type."
-					},
-					"response": []
-				},
-				{
-					"name": "Send KAPS SMS Notification - Missing To Field",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"  pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response for Invalid Data (Missing 'to' Value)\", function () {",
-									"  pm.expect(pm.response.code).to.equal(400);",
-									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"  pm.expect(pm.response.json().data[0]).to.equal(\"to should not be empty\");",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 8,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\":\"1601100000000005964\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the KAPS SMS channel type when missing the `to` field."
-					},
-					"response": []
-				},
-				{
-					"name": "Send KAPS SMS Notification - Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"  pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Failed request with invalid x-api-key\", function () {",
-									"  pm.expect(pm.response.code).to.equal(401);",
-									"  pm.expect(pm.response.json().status).to.equal(\"fail\");",
-									"  pm.expect(pm.response.json().data).to.equal(\"Invalid x-api-key\");",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "bad-api-key",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"providerId\": 8,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\": \"1601100000000005964\",\n        \"to\": \"+918900100002,+918900100003\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
-						},
-						"url": {
-							"raw": "localhost:3000/notifications",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows representing failure in creating new notification for the KAPS SMS channel type when passing invalid API key."
-					},
-					"response": []
-				}
-			],
-			"description": "Collection of requests pertaining to creating notifications for the KAPS SMS channel type."
-		},
-		{
 			"name": "Push Notification",
 			"item": [
 				{
@@ -3114,7 +2874,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationSentOn\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3170,7 +2930,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  notifications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationSentOn\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  notifications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3364,7 +3124,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  archivedNotifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications{\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      notificationId\r\n      notificationSentOn\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  archivedNotifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications{\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      notificationId\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -3420,7 +3180,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  archivedNotifications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      notificationId\r\n      notificationSentOn\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  archivedNotifications(\r\n    options: {\r\n      unknownValue: \"Some unknown parameter\"\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      notificationId\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},

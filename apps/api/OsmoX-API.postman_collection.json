@@ -326,51 +326,6 @@
 					"response": []
 				},
 				{
-					"name": "KAPS - SMS",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "x-api-key",
-								"value": "{{x-api-key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    // Assuming providerId 8 also has channelType 8\n    \"providerId\": 8,\n    \"data\": {\n        \"indiaDltContentTemplateId\": \"1707160146562806652\",\n        \"indiaDltPrincipalEntityId\":\"1601100000000005964\",\n        \"to\": \"+918900100002,+918900100003\",\n        \"text\": \"This is a test message from OsmoX.\\nThank you for using our service.\"\n    }\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/notifications",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"notifications"
-							]
-						},
-						"description": "Allows successfully creating new notification for the KAPS SMS channel type."
-					},
-					"response": []
-				},
-				{
 					"name": "AWS - PushNotification - Android",
 					"event": [
 						{
@@ -679,7 +634,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n    #   search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationSentOn\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -777,7 +732,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query {\r\n  archivedNotifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationId\r\n      notificationSentOn\r\n      providerDetails {\r\n        providerId\r\n        name\r\n        channelType\r\n        isEnabled\r\n        configuration\r\n        applicationId\r\n        userId\r\n        status\r\n      }\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
+								"query": "query {\r\n  archivedNotifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationId\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -1413,54 +1368,6 @@
 							"mode": "graphql",
 							"graphql": {
 								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 7\n        configuration: {\n            TWILIO_WA_ACCOUNT_SID: \"<YOUR_TWILIO_WA_ACCOUNT_SID>\",\n            TWILIO_WA_AUTH_TOKEN: \"<YOUR_TWILIO_WA_AUTH_TOKEN>\",\n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
-								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/graphql",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"graphql"
-							]
-						},
-						"description": "Allows successfully creating a provider based on the options passed."
-					},
-					"response": []
-				},
-				{
-					"name": "Create KAPSystem SMS Provider",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{auth-token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "graphql",
-							"graphql": {
-								"query": "mutation CreateProvider($applicationId: Float!) {\n    provider(createProviderInput: {\n        applicationId: $applicationId,\n        channelType: 8\n        configuration: {\n            KAP_SMS_BASE_API_URL:\"http://<api-domain>/api/v3/sendsms/plain\",\n            KAP_SMS_ACCOUNT_USERNAME: \"<YOUR_KAP_SMS_ACCOUNT_USERNAME>\", \n            KAP_SMS_ACCOUNT_PASSWORD: \"<YOUR_KAP_SMS_ACCOUNT_PASSWORD>\",  \n            KAP_SMS_FROM: \"KAPMSG\" \n        },\n        isEnabled: 1,\n        name: \"<New Provider Name>\",\n        userId: 1,\n    }) {\n        providerId\n        applicationId\n        channelType\n        configuration\n        isEnabled\n        name\n        userId\n        createdOn\n        updatedOn\n        status\n    }\n}",
 								"variables": "{\n  \"applicationId\": {{applicationId}}\n}"
 							}
 						},
@@ -2119,50 +2026,6 @@
 							]
 						},
 						"description": "Reference: [https://www.twilio.com/docs/whatsapp/tutorial/send-whatsapp-notification-messages-templates#send-a-whatsapp-message-using-a-template](https://www.twilio.com/docs/whatsapp/tutorial/send-whatsapp-notification-messages-templates#send-a-whatsapp-message-using-a-template)"
-					},
-					"response": []
-				},
-				{
-					"name": "KAPS SMS cURL",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{KAP_SMS_BASE_API_URL}}?username={{KAP_SMS_ACCOUNT_USERNAME}}&password={{KAP_SMS_ACCOUNT_PASSWORD}}&from={{KAP_SMS_FROM}}&indiaDltContentTemplateId=1707160146562806652&indiaDltPrincipalEntityId=1601100000000005964&to=+918900100002&text=This is a test message from OsmoX.",
-							"host": [
-								"{{KAP_SMS_BASE_API_URL}}"
-							],
-							"query": [
-								{
-									"key": "username",
-									"value": "{{KAP_SMS_ACCOUNT_USERNAME}}"
-								},
-								{
-									"key": "password",
-									"value": "{{KAP_SMS_ACCOUNT_PASSWORD}}"
-								},
-								{
-									"key": "from",
-									"value": "{{KAP_SMS_FROM}}"
-								},
-								{
-									"key": "indiaDltContentTemplateId",
-									"value": "1707160146562806652"
-								},
-								{
-									"key": "indiaDltPrincipalEntityId",
-									"value": "1601100000000005964"
-								},
-								{
-									"key": "to",
-									"value": "+918900100002"
-								},
-								{
-									"key": "text",
-									"value": "This is a test message from OsmoX."
-								}
-							]
-						}
 					},
 					"response": []
 				},

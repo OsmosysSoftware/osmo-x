@@ -42,6 +42,7 @@ Before you begin, ensure you have the following software installed:
    ```bash
    pip install -r requirements.txt
    ```
+
 3. Each script accepts arguments for log directory relative to the `scripts` folder.
    1. `--log-dir`: ../logs
    2. `--output-dir`: .
