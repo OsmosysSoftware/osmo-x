@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProviderChainMember } from './entities/provider-chain-member.entity';
 import { DataSource, MoreThan, Repository } from 'typeorm';
@@ -19,6 +19,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
   constructor(
     @InjectRepository(ProviderChainMember)
     private readonly providerChainMemberRepository: Repository<ProviderChainMember>,
+    @Inject(forwardRef(() => ProviderChainsService))
     private readonly providerChainsService: ProviderChainsService,
     private readonly providersService: ProvidersService,
     private readonly masterProvidersService: MasterProvidersService,
