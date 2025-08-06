@@ -85,4 +85,4 @@ Make sure that the encoding matches the file type. Incorrect encoding may cause 
 
 | Package Name        | Version  | Description                                                               |
 | ------------------- | -------- | ------------------------------------------------------------------------- |
-| @aws-sdk/client-ses | ^3.775.0 | AWS SDK for JavaScript, used to interact with AWS services including SES. |
+| @aws-sdk/client-ses | ^3.855.0 | AWS SDK for JavaScript, used to interact with AWS services including SES. |
