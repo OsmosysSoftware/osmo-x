@@ -1,11 +1,25 @@
-import { Body, Controller, Delete, HttpException, Logger, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpException,
+  Logger,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ProviderChainMembersService } from './provider-chain-members.service';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { CreateProviderChainMemberInput } from './dto/create-provider-chain-member.input';
 import { UpdateProviderPriorityOrderInput } from './dto/update-provider-priority-order.input';
 import { DeleteProviderChainMemberInput } from './dto/delete-chain-member-by-provider.input';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRoles } from 'src/common/constants/database';
+import { RolesGuard } from 'src/common/guards/role.guard';
 
 @Controller('provider-chain-members')
+@Roles(UserRoles.ADMIN)
+@UseGuards(RolesGuard)
 export class ProviderChainMembersController {
   constructor(
     private readonly providerChainMembersService: ProviderChainMembersService,
