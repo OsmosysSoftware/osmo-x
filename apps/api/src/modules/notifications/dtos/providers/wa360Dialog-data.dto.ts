@@ -48,6 +48,13 @@ class TemplateDto {
 }
 
 export class Wa360DialogDataDto {
+  @IsString()
+  @IsNotEmpty()
+  messaging_product: string;
+
+  @IsString()
+  recipient_type: string;
+
   @IsNotEmpty()
   to: string;
 

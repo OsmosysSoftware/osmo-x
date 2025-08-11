@@ -4,6 +4,8 @@ import { ProvidersService } from '../providers.service';
 import { firstValueFrom } from 'rxjs';
 
 export interface Wa360DialogData {
+  messaging_product: string;
+  recipient_type?: string;
   to: string;
   type: string;
   template?: {
@@ -19,7 +21,9 @@ export interface Wa360DialogData {
     body: string;
   };
 }
+
 export interface Wa360DialogResponse {
+  messaging_product: string;
   contacts: {
     input: string;
     wa_id: string;
