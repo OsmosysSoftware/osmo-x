@@ -72,8 +72,8 @@ export class ApiKeyGuard implements CanActivate {
 
   async validateApiKeyHeader(
     serverApiKeyHeader: string,
-    requestProviderId: number = null,
-    requestProviderChainName: string = null,
+    requestProviderId: number | null = null,
+    requestProviderChainName: string | null = null,
   ): Promise<boolean> {
     this.logger.debug('validateApiKeyHeader started');
     let apiKeyToken = null;
