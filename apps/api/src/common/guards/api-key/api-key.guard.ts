@@ -140,14 +140,15 @@ export class ApiKeyGuard implements CanActivate {
     if (requestProviderId && !requestProviderChainName) {
       // Get the provider entry from providerId
       const providerEntry = await this.providersService.getById(requestProviderId);
-      this.logger.debug(
-        `Fetched provider by ID ${requestProviderId} (name="${providerEntry.name}", applicationId=${providerEntry.applicationId})`,
-      );
 
       if (!providerEntry) {
         this.logger.error('Provider does not exist');
         throw new BadRequestException('Provider does not exist');
       }
+
+      this.logger.debug(
+        `Fetched provider by ID ${requestProviderId} (name="${providerEntry.name}", applicationId=${providerEntry.applicationId})`,
+      );
 
       // Check if provider is enabled or not
       if (providerEntry.isEnabled !== IsEnabledStatus.TRUE) {
@@ -160,14 +161,15 @@ export class ApiKeyGuard implements CanActivate {
       // Confirm the providerChain entry from providerChainName exists
       const providerChainEntry =
         await this.providerChainsService.getByProviderChainName(requestProviderChainName);
-      this.logger.debug(
-        `Fetched providerChain "${requestProviderChainName}" (chainId=${providerChainEntry.chainId}, applicationId=${providerChainEntry.applicationId})`,
-      );
 
       if (!providerChainEntry) {
         this.logger.error('Provider Chain does not exist');
         throw new BadRequestException('Provider Chain does not exist');
       }
+
+      this.logger.debug(
+        `Fetched providerChain "${requestProviderChainName}" (chainId=${providerChainEntry.chainId}, applicationId=${providerChainEntry.applicationId})`,
+      );
 
       return providerChainEntry.applicationId;
     }
