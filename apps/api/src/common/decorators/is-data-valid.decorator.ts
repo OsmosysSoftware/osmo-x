@@ -197,6 +197,12 @@ export class IsDataValidConstraint implements ValidatorConstraintInterface {
             providerChainMemberEntry.providerId,
           );
 
+          if (!inputProviderEntry) {
+            throw new BadRequestException(
+              `Provider with ID ${providerChainMemberEntry.providerId} (chain member ${providerChainMemberEntry.id}) not found.`,
+            );
+          }
+
           const isHealthy = await validateRequestDataBasedOnChannelType(
             inputProviderEntry.channelType,
           );
