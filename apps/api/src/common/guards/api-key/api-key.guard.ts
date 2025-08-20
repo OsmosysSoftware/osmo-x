@@ -55,8 +55,8 @@ export class ApiKeyGuard implements CanActivate {
     const req = ctx.getContext().req;
     this.logger.debug('Fetching request header and provider related data for GraphQL');
     const serverApiKeyHeader = req.headers['x-api-key'];
-    const requestProviderId = request.body.providerId;
-    const requestProviderChainName = request.body.providerChain;
+    const requestProviderId = req.body?.providerId ?? null;
+    const requestProviderChainName = req.body?.providerChain ?? null;
     const validationResult = await this.validateApiKeyHeader(
       serverApiKeyHeader,
       requestProviderId,
