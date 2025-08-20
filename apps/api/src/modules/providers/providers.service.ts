@@ -23,11 +23,7 @@ export class ProvidersService extends CoreService<Provider> {
     super(providerRepository);
   }
 
-  async getById(providerId: number): Promise<Provider | null> {
-    if (providerId === undefined || providerId === null) {
-      return null;
-    }
-
+  async getById(providerId: number): Promise<Provider | undefined> {
     return this.providerRepository.findOne({ where: { providerId, status: Status.ACTIVE } });
   }
 
