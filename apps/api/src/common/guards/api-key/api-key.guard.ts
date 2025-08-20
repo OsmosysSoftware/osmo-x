@@ -141,7 +141,7 @@ export class ApiKeyGuard implements CanActivate {
       // Get the provider entry from providerId
       const providerEntry = await this.providersService.getById(requestProviderId);
       this.logger.debug(
-        `Fetched providerEntry from DB (using request providerId): ${JSON.stringify(providerEntry)}`,
+        `Fetched provider by ID ${requestProviderId} (name="${providerEntry.name}", applicationId=${providerEntry.applicationId})`,
       );
 
       if (!providerEntry) {
@@ -161,7 +161,7 @@ export class ApiKeyGuard implements CanActivate {
       const providerChainEntry =
         await this.providerChainsService.getByProviderChainName(requestProviderChainName);
       this.logger.debug(
-        `Fetched providerChainEntry from DB (using request providerChainName): ${JSON.stringify(providerChainEntry)}`,
+        `Fetched providerChain "${requestProviderChainName}" (chainId=${providerChainEntry.chainId}, applicationId=${providerChainEntry.applicationId})`,
       );
 
       if (!providerChainEntry) {
