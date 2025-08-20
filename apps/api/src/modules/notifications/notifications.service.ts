@@ -71,15 +71,26 @@ export class NotificationsService extends CoreService<Notification> {
     if (notificationData.providerChain && !notificationData.providerId) {
       // Case 1: If providerChain is used for request
       try {
-        const providerChainEntry = await this.providerChainsService.getByProviderChainName(
-          notificationData.providerChain,
-        );
+        // providerEntry was resolved above and will be a ProviderChain in this case
+        const providerChainEntry = providerEntry as ProviderChain;
+
+        if (!providerChainEntry) {
+          throw new BadRequestException(
+            `ProviderChain ${notificationData.providerChain} not found.`,
+          );
+        }
 
         // Set the chain member with the highest priority as providerId for the notification
         const firstPriorityProviderChainMember =
           await this.providerChainMembersService.getFirstPriorityProviderChainMemberByChainId(
             providerChainEntry.chainId,
           );
+
+        if (!firstPriorityProviderChainMember) {
+          throw new BadRequestException(
+            `ProviderChain ${notificationData.providerChain} does not have any active members.`,
+          );
+        }
 
         const firstPriorityProviderId = firstPriorityProviderChainMember.providerId;
 
@@ -92,6 +103,12 @@ export class NotificationsService extends CoreService<Notification> {
         const firstPriorityProviderEntry =
           await this.providersService.getById(firstPriorityProviderId);
 
+        if (!firstPriorityProviderEntry) {
+          throw new BadRequestException(
+            `Provider ${firstPriorityProviderId} not found for ProviderChain ${notificationData.providerChain}`,
+          );
+        }
+
         // Set related notification data when providerChain is used for request
         notification.providerChainId = providerChainEntry.chainId;
         notification.providerId = firstPriorityProviderId;
@@ -101,15 +118,22 @@ export class NotificationsService extends CoreService<Notification> {
           throw error;
         }
 
-        const errorMsg = `Failed to fetch providerId for providerChain ${notificationData.providerChain}: ${error.message}`;
-        this.logger.error(errorMsg, error.stack);
-        throw new Error(errorMsg);
+        this.logger.error(
+          `Failed to resolve provider from providerChain ${notificationData.providerChain}: ${error.message}`,
+          error.stack,
+        );
+        throw error;
       }
     } else if (notificationData.providerId && !notificationData.providerChain) {
       // Case 2: If providerId is used for request
       // Request data providerId is used to set notification.providerId, so no need to add it again
       // Set channelType when providerId is used for request
-      const simpleProviderEntry = await this.providersService.getById(notificationData.providerId);
+      const simpleProviderEntry = providerEntry as Provider;
+
+      if (!simpleProviderEntry) {
+        throw new BadRequestException(`Provider with ID ${notificationData.providerId} not found.`);
+      }
+
       notification.channelType = simpleProviderEntry.channelType;
     }
 
