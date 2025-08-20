@@ -48,8 +48,6 @@ import { RequestLoggerMiddleware } from 'src/common/logger/request-logger.middle
 import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
 import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
 import { MasterProvidersModule } from '../master-providers/master-providers.module';
-import { ProviderChainsService } from '../provider-chains/provider-chains.service';
-import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
 
 const providerModules = [
   MailgunModule,
@@ -84,8 +82,6 @@ const consumers = [
   VcTwilioNotificationsConsumer,
   AwsSesNotificationConsumer,
   SmsSnsNotificationConsumer,
-  ProviderChainsService,
-  ProviderChainMembersService,
 ];
 
 @Module({
