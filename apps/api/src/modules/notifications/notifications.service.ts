@@ -161,32 +161,36 @@ export class NotificationsService extends CoreService<Notification> {
     inputProviderId: number | null = null,
     inputProviderChain: string | null = null,
   ): Promise<Provider | ProviderChain> {
-    try {
-      if (inputProviderId && inputProviderChain) {
-        // Case 1: Both inputs are provided - throw an error
-        throw new Error(
-          `Conflicting request: Both ProviderId (${inputProviderId}) and ProviderChain (${inputProviderChain}) were provided. Please provide only one.`,
-        );
-      } else if (inputProviderId) {
-        // Case 2: Only inputProviderId is provided
-        this.logger.debug(`Request uses ProviderId: ${inputProviderId}`);
-        return await this.providersService.getById(inputProviderId);
-      } else if (inputProviderChain) {
-        // Case 3: Only inputProviderChain is provided
-        this.logger.debug(`Request uses ProviderChain: ${inputProviderChain}`);
-        return await this.providerChainsService.getByProviderChainName(inputProviderChain);
-      } else {
-        // Case 4: Neither input is provided - also an error state
-        throw new Error(
-          'Invalid request: At least one of inputProviderId or inputProviderChain must be provided.',
-        );
-      }
-    } catch (error) {
-      const msg = `Unexpected error occurred while fetching details (providerId: ${inputProviderId}, providerChain: ${inputProviderChain}): ${error.message}`;
-
-      this.logger.error(msg);
-      throw new Error(msg);
+    if (inputProviderId && inputProviderChain) {
+      throw new BadRequestException(
+        `Conflicting request: both providerId (${inputProviderId}) and providerChain (${inputProviderChain}) were provided. Provide only one.`,
+      );
     }
+
+    if (inputProviderId) {
+      this.logger.debug(`Request uses providerId: ${inputProviderId}`);
+      const providerEntry = await this.providersService.getById(inputProviderId);
+
+      if (!providerEntry) {
+        throw new NotFoundException(`Provider with ID ${inputProviderId} not found.`);
+      }
+
+      return providerEntry;
+    }
+
+    if (inputProviderChain) {
+      this.logger.debug(`Request uses providerChain: ${inputProviderChain}`);
+      const providerChainEntry =
+        await this.providerChainsService.getByProviderChainName(inputProviderChain);
+
+      if (!providerChainEntry) {
+        throw new NotFoundException(`ProviderChain "${inputProviderChain}" not found.`);
+      }
+
+      return providerChainEntry;
+    }
+
+    throw new BadRequestException('Invalid request: provide either providerId or providerChain.');
   }
 
   // Get application details using applicationId
