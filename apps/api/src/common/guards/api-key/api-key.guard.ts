@@ -134,8 +134,8 @@ export class ApiKeyGuard implements CanActivate {
   }
 
   async fetchApplicationIdFromInputProviderIdOrProviderChain(
-    requestProviderId: number,
-    requestProviderChainName: string,
+    requestProviderId: number | null,
+    requestProviderChainName: string | null,
   ): Promise<number | null> {
     if (requestProviderId && !requestProviderChainName) {
       // Get the provider entry from providerId
