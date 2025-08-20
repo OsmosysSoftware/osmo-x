@@ -37,8 +37,8 @@ export class ApiKeyGuard implements CanActivate {
     if (request && request.headers) {
       this.logger.debug('Fetching request header and provider related data for HTTP');
       const serverApiKeyHeader = request.headers['x-api-key'];
-      const requestProviderId = request.body.providerId;
-      const requestProviderChainName = request.body.providerChain;
+      const requestProviderId = request.body?.providerId ?? null;
+      const requestProviderChainName = request.body?.providerChain ?? null;
       const validationResult = await this.validateApiKeyHeader(
         serverApiKeyHeader,
         requestProviderId,
