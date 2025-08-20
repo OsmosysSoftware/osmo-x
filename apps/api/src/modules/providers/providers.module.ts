@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { Provider } from './entities/provider.entity';
@@ -12,8 +12,21 @@ import { UsersService } from '../users/users.service';
 import { Logger } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { ProviderChainsService } from '../provider-chains/provider-chains.service';
+import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
+import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
+import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
+import { MasterProvidersModule } from '../master-providers/master-providers.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([Provider]), UsersModule, ApplicationsModule, JwtModule],
+  imports: [
+    TypeOrmModule.forFeature([Provider]),
+    UsersModule,
+    ApplicationsModule,
+    JwtModule,
+    forwardRef(() => ProviderChainsModule),
+    forwardRef(() => ProviderChainMembersModule),
+    MasterProvidersModule,
+  ],
   providers: [
     UsersService,
     ApplicationsService,
@@ -24,7 +37,16 @@ import { ConfigService } from '@nestjs/config';
     IsDataValidConstraint,
     ProvidersResolver,
     Logger,
+    ProviderChainsService,
+    ProviderChainMembersService,
   ],
-  exports: [TypeOrmModule, ProvidersService, UsersService, ApplicationsService],
+  exports: [
+    TypeOrmModule,
+    ProvidersService,
+    UsersService,
+    ApplicationsService,
+    ProviderChainsService,
+    ProviderChainMembersService,
+  ],
 })
 export class ProvidersModule {}

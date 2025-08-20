@@ -17,7 +17,7 @@ import { MasterProvidersService } from '../master-providers/master-providers.ser
   imports: [
     TypeOrmModule.forFeature([ProviderChainMember]),
     JwtModule,
-    ProvidersModule,
+    forwardRef(() => ProvidersModule),
     forwardRef(() => ProviderChainsModule),
     MasterProvidersModule,
   ],
