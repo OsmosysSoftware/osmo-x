@@ -108,7 +108,7 @@ export class MailgunService {
       const response = await this.mailgunClient.events.get(this.mailgunDomain, {
         'message-id': sanitizedMessageId,
       });
-      this.logger.debug(`Mailgun email Delivery status: ${response}`);
+      this.logger.debug(`Mailgun email Delivery status: ${JSON.stringify(response)}`);
       return response;
     } catch (error) {
       throw new Error(`Failed to fetch delivery status: ${error.message}`);
