@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
@@ -20,6 +20,10 @@ import { ArchivedNotificationsService } from '../archived-notifications/archived
 import { SingleNotificationResponse } from './dtos/single-notification.response.dto';
 import { TEST_MODE_RESULT_JSON } from 'src/common/constants/miscellaneous';
 import { Application } from '../applications/entities/application.entity';
+import { ProviderChainsService } from '../provider-chains/provider-chains.service';
+import { Provider } from '../providers/entities/provider.entity';
+import { ProviderChain } from '../provider-chains/entities/provider-chain.entity';
+import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -36,6 +40,8 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly applicationsService: ApplicationsService,
     private readonly providersService: ProvidersService,
     private readonly archivedNotificationsService: ArchivedNotificationsService,
+    private readonly providerChainsService: ProviderChainsService,
+    private readonly providerChainMembersService: ProviderChainMembersService,
   ) {
     super(notificationRepository);
   }
@@ -44,11 +50,14 @@ export class NotificationsService extends CoreService<Notification> {
     this.logger.log('Creating notification...');
 
     // ApiKeyGuard validates the provider and application details
-    const providerEntry = await this.providersService.getById(notificationData.providerId);
+    const providerEntry = await this.getProviderDetailsBasedOnRequest(
+      notificationData.providerId,
+      notificationData.providerChain,
+    );
+
     const notification = new Notification(notificationData);
 
-    // Get channel type and applicationId from providerId & set the values
-    notification.channelType = providerEntry.channelType;
+    // Get applicationId from provider entry (input provider or providerChain)
     notification.applicationId = providerEntry.applicationId;
 
     // Fetch application details using applicationId
@@ -57,6 +66,76 @@ export class NotificationsService extends CoreService<Notification> {
     // Set correct application name
     notification.createdBy = applicationEntry.name;
     notification.updatedBy = applicationEntry.name;
+
+    // Set correct notification data based on what was passed in the request
+    if (notificationData.providerChain && !notificationData.providerId) {
+      // Case 1: If providerChain is used for request
+      try {
+        // providerEntry was resolved above and will be a ProviderChain in this case
+        const providerChainEntry = providerEntry as ProviderChain;
+
+        if (!providerChainEntry) {
+          throw new BadRequestException(
+            `ProviderChain ${notificationData.providerChain} not found.`,
+          );
+        }
+
+        // Set the chain member with the highest priority as providerId for the notification
+        const firstPriorityProviderChainMember =
+          await this.providerChainMembersService.getFirstPriorityProviderChainMemberByChainId(
+            providerChainEntry.chainId,
+          );
+
+        if (!firstPriorityProviderChainMember) {
+          throw new BadRequestException(
+            `ProviderChain ${notificationData.providerChain} does not have any active members.`,
+          );
+        }
+
+        const firstPriorityProviderId = firstPriorityProviderChainMember.providerId;
+
+        if (!firstPriorityProviderId) {
+          const message = `No active providers found for providerChain ${notificationData.providerChain}`;
+          this.logger.error(message);
+          throw new BadRequestException(message);
+        }
+
+        const firstPriorityProviderEntry =
+          await this.providersService.getById(firstPriorityProviderId);
+
+        if (!firstPriorityProviderEntry) {
+          throw new BadRequestException(
+            `Provider ${firstPriorityProviderId} not found for ProviderChain ${notificationData.providerChain}`,
+          );
+        }
+
+        // Set related notification data when providerChain is used for request
+        notification.providerChainId = providerChainEntry.chainId;
+        notification.providerId = firstPriorityProviderId;
+        notification.channelType = firstPriorityProviderEntry.channelType;
+      } catch (error) {
+        if (error instanceof BadRequestException) {
+          throw error;
+        }
+
+        this.logger.error(
+          `Failed to resolve provider from providerChain ${notificationData.providerChain}: ${error.message}`,
+          error.stack,
+        );
+        throw error;
+      }
+    } else if (notificationData.providerId && !notificationData.providerChain) {
+      // Case 2: If providerId is used for request
+      // Request data providerId is used to set notification.providerId, so no need to add it again
+      // Set channelType when providerId is used for request
+      const simpleProviderEntry = providerEntry as Provider;
+
+      if (!simpleProviderEntry) {
+        throw new BadRequestException(`Provider with ID ${notificationData.providerId} not found.`);
+      }
+
+      notification.channelType = simpleProviderEntry.channelType;
+    }
 
     // Handle notification creation when application is in Test Mode
     if ((await this.checkApplicationIsInTestMode(applicationEntry)) === true) {
@@ -75,6 +154,43 @@ export class NotificationsService extends CoreService<Notification> {
       `New Notification created. Saving notification in DB: ${JSON.stringify(notification)}`,
     );
     return this.notificationRepository.save(notification);
+  }
+
+  // Check if providerId or providerChain has been passed and return related entry
+  async getProviderDetailsBasedOnRequest(
+    inputProviderId: number | null = null,
+    inputProviderChain: string | null = null,
+  ): Promise<Provider | ProviderChain> {
+    if (inputProviderId && inputProviderChain) {
+      throw new BadRequestException(
+        `Conflicting request: both providerId (${inputProviderId}) and providerChain (${inputProviderChain}) were provided. Provide only one.`,
+      );
+    }
+
+    if (inputProviderId) {
+      this.logger.debug(`Request uses providerId: ${inputProviderId}`);
+      const providerEntry = await this.providersService.getById(inputProviderId);
+
+      if (!providerEntry) {
+        throw new NotFoundException(`Provider with ID ${inputProviderId} not found.`);
+      }
+
+      return providerEntry;
+    }
+
+    if (inputProviderChain) {
+      this.logger.debug(`Request uses providerChain: ${inputProviderChain}`);
+      const providerChainEntry =
+        await this.providerChainsService.getByProviderChainName(inputProviderChain);
+
+      if (!providerChainEntry) {
+        throw new NotFoundException(`ProviderChain "${inputProviderChain}" not found.`);
+      }
+
+      return providerChainEntry;
+    }
+
+    throw new BadRequestException('Invalid request: provide either providerId or providerChain.');
   }
 
   // Get application details using applicationId
