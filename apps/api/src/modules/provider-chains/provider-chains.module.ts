@@ -18,7 +18,7 @@ import { ProviderChainMembersModule } from '../provider-chain-members/provider-c
     JwtModule,
     ApplicationsModule,
     UsersModule,
-    ProvidersModule,
+    forwardRef(() => ProvidersModule),
     forwardRef(() => ProviderChainMembersModule),
   ],
   providers: [

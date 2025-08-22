@@ -9,6 +9,8 @@ import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { SmsSnsData, SmsSnsService } from 'src/modules/providers/sms-sns/sms-sns.service';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
+import { ProviderChainMembersService } from 'src/modules/provider-chain-members/provider-chain-members.service';
+import { ProvidersService } from 'src/modules/providers/providers.service';
 
 @Injectable()
 export class SmsSnsNotificationConsumer extends NotificationConsumer {
@@ -24,6 +26,8 @@ export class SmsSnsNotificationConsumer extends NotificationConsumer {
     notificationsQueueService: NotificationQueueProducer,
     configService: ConfigService,
     webhookService: WebhookService,
+    providerChainMembersService: ProviderChainMembersService,
+    providersService: ProvidersService,
   ) {
     super(
       notificationRepository,
@@ -32,6 +36,8 @@ export class SmsSnsNotificationConsumer extends NotificationConsumer {
       notificationsQueueService,
       webhookService,
       configService,
+      providerChainMembersService,
+      providersService,
     );
   }
 
