@@ -436,7 +436,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
         return null;
       }
 
-      // Step 2: Find next provider with higher priorityOrder
+      // Step 2: Fetch chain member that is next in the priority list
       const nextPriorityProviderId = await this.providerChainMemberRepository.findOne({
         where: {
           chainId: providerChainId,
@@ -450,6 +450,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
         select: ['providerId'],
       });
 
+      // Step 3: Return the next priority provider id if it exists
       return nextPriorityProviderId?.providerId ?? null;
     } catch (error) {
       const msg = `Error fetching next priority provider for providerId ${currentProviderId} on chain ${providerChainId}: ${error.message}`;
