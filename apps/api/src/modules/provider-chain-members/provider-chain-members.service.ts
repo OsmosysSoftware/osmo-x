@@ -412,4 +412,51 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     );
     return new ProviderChainMemberResponse(items, total, options.offset, options.limit);
   }
+
+  async getNextPriorityProvider(
+    providerChainId: number,
+    currentProviderId: number,
+  ): Promise<number | null> {
+    try {
+      // Step 1: Find current provider's priority
+      const currentProviderChainMemberEntry = await this.providerChainMemberRepository.findOne({
+        where: {
+          chainId: providerChainId,
+          providerId: currentProviderId,
+          isActive: Status.ACTIVE,
+          status: Status.ACTIVE,
+        },
+        select: ['priorityOrder'],
+      });
+
+      if (!currentProviderChainMemberEntry) {
+        this.logger.warn(
+          `No active member found for providerId ${currentProviderId} on chain ${providerChainId}`,
+        );
+        return null;
+      }
+
+      // Step 2: Fetch chain member that is next in the priority list
+      const nextPriorityProviderId = await this.providerChainMemberRepository.findOne({
+        where: {
+          chainId: providerChainId,
+          priorityOrder: MoreThan(currentProviderChainMemberEntry.priorityOrder),
+          isActive: Status.ACTIVE,
+          status: Status.ACTIVE,
+        },
+        order: {
+          priorityOrder: 'ASC',
+        },
+        select: ['providerId'],
+      });
+
+      // Step 3: Return the next priority provider id if it exists
+      return nextPriorityProviderId?.providerId ?? null;
+    } catch (error) {
+      const msg = `Error fetching next priority provider for providerId ${currentProviderId} on chain ${providerChainId}: ${error.message}`;
+      this.logger.error(msg, error.stack);
+      // FIXME: Temporary logic of returning null to avoid throwing uncaught errors
+      return null;
+    }
+  }
 }

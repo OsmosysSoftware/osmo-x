@@ -10,6 +10,8 @@ import { WebhookService } from 'src/modules/webhook/webhook.service';
 import { AwsSesData, AwsSesService } from 'src/modules/providers/aws-ses/aws-ses.service';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
+import { ProviderChainMembersService } from 'src/modules/provider-chain-members/provider-chain-members.service';
+import { ProvidersService } from 'src/modules/providers/providers.service';
 
 @Injectable()
 export class AwsSesNotificationConsumer extends NotificationConsumer {
@@ -25,6 +27,8 @@ export class AwsSesNotificationConsumer extends NotificationConsumer {
     notificationsQueueService: NotificationQueueProducer,
     configService: ConfigService,
     webhookService: WebhookService,
+    providerChainMembersService: ProviderChainMembersService,
+    providersService: ProvidersService,
   ) {
     super(
       notificationRepository,
@@ -33,6 +37,8 @@ export class AwsSesNotificationConsumer extends NotificationConsumer {
       notificationsQueueService,
       webhookService,
       configService,
+      providerChainMembersService,
+      providersService,
     );
   }
 
