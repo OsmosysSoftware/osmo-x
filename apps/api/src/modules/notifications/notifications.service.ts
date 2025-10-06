@@ -6,6 +6,7 @@ import {
   DeliveryStatus,
   QueueAction,
   RecipientKeyForChannelType,
+  AllRecipientsWhitelistedExpression,
 } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
@@ -270,6 +271,18 @@ export class NotificationsService extends CoreService<Notification> {
           this.logger.debug(
             `Normalized notification recipient list: ${JSON.stringify(normalizeNotificationRecipientsArray)}`,
           );
+
+          // Whitelist All Recipients Feature: All recipients are whitelisted if "*" is set for provider
+          if (
+            normalizedWhitelistRecipientValues.length === 1 &&
+            normalizedWhitelistRecipientValues[0] === AllRecipientsWhitelistedExpression
+          ) {
+            this.logger.debug(
+              `All recipients whitelisted for provider ${notificationEntry.providerId}. Notification will be created normally`,
+            );
+
+            return true;
+          }
 
           const exists = normalizedWhitelistRecipientValues.some((item) =>
             normalizeNotificationRecipientsArray.includes(item),

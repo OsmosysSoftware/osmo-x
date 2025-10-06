@@ -80,3 +80,5 @@ export const RecipientKeyForChannelType = {
   [ChannelType.AWS_SES]: 'to',
   [ChannelType.SMS_SNS]: 'to',
 };
+
+export const AllRecipientsWhitelistedExpression = '*';
