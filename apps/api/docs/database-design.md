@@ -20,6 +20,9 @@ The database schema consists of the following tables:
 - **notify_server_api_keys:** Contains details about different API keys for the different applications
 - **notify_users:** Contains details about all the users
 - **notify_webhooks:** Contains webhook urls for providers
+- **notify_provider_types:** Contains provider type catalog (e.g., SMS, Email, WhatsApp)
+- **notify_provider_chains:** Contains per‑application provider chains by provider type
+- **notify_provider_chain_members:** Contains ordered members within a provider chain
 
 This schema can be visualized in the following image:
 
@@ -86,7 +89,7 @@ Consider a pattern like this:
     "pattern": "^[0-19]10$",
     "type": "number",
   },
-  "apikey2": "value2" // Additional key-value entries
+  "apikey2": "value2", // Additional key-value entries
 }
 ```
 
@@ -131,7 +134,6 @@ Consider a pattern like this:
 | retry_count          | integer      | True     | 0                   | Identifies the retry count for the notification                                                                                                                                                                |
 | notification_sent_on | timestamp    | False    | NULL                | Stores the time when notification was sent to end provider for processing                                                                                                                                      |
 
-
 ### notify_providers
 
 | Attribute      | Data Type    | Not Null | Default             | Description                                                                                                                                                                                                                    |
@@ -153,10 +155,10 @@ Consider a pattern like this:
 
 ```jsonc
 {
-  "SMTP_HOST":"some.smtp.host",
-  "SMTP_PORT":123,
-  "SMTP_USERNAME":"someusername",
-  "SMTP_PASSWORD":"somepassword"
+  "SMTP_HOST": "some.smtp.host",
+  "SMTP_PORT": 123,
+  "SMTP_USERNAME": "someusername",
+  "SMTP_PASSWORD": "somepassword",
 }
 ```
 
@@ -198,3 +200,41 @@ Guide on [Webhook Integration](./webhook-guide.md)
 | created_on  | timestamp    | True     | current_timestamp() | Stores the timestamp for the creation of the notification                      |
 | updated_on  | timestamp    | True     | current_timestamp() | Stores the timestamp for the last update to the notification                   |
 | status      | smallint     | True     | 1                   | Stores whether the notification must be considered as active(1) or inactive(0) |
+
+### notify_provider_types
+
+| Attribute        | Data Type    | Not Null | Default             | Description                                                                    |
+| ---------------- | ------------ | -------- | ------------------- | ------------------------------------------------------------------------------ |
+| provider_type_id | serial4      | True     |                     | Primary key, unique identifier for the provider_type_id                        |
+| name             | varchar(255) | True     |                     | Name of the provider type                                                      |
+| description      | text         | False    |                     | Add optional description for provider_type                                     |
+| created_on       | timestamp    | True     | current_timestamp() | Stores the timestamp for the creation of the notification                      |
+| updated_on       | timestamp    | True     | current_timestamp() | Stores the timestamp for the last update to the notification                   |
+| status           | smallint     | True     | 1                   | Stores whether the notification must be considered as active(1) or inactive(0) |
+
+### notify_provider_chains
+
+| Attribute      | Data Type    | Not Null | Default             | Description                                                                    |
+| -------------- | ------------ | -------- | ------------------- | ------------------------------------------------------------------------------ |
+| chain_id       | serial4      | True     |                     | Primary key, unique identifier for the chain_id                                |
+| chain_name     | varchar(255) | True     |                     | Name of the provider chain                                                     |
+| application_id | int4         | True     |                     | Foreign Key, unique identifier for the application                             |
+| provider_type  | int2         | True     | 1                   | Foreign Key, the type of the provider, e.g., SMS, Email, WhatsApp, etc         |
+| description    | text         | False    |                     | Add optional description for provider chain                                    |
+| is_default     | int2         | True     | 0                   | Set whether provider chain is used by default                                  |
+| created_on     | timestamp    | True     | current_timestamp() | Stores the timestamp for the creation of the notification                      |
+| updated_on     | timestamp    | True     | current_timestamp() | Stores the timestamp for the last update to the notification                   |
+| status         | smallint     | True     | 1                   | Stores whether the notification must be considered as active(1) or inactive(0) |
+
+### notify_provider_chain_members
+
+| Attribute      | Data Type | Not Null | Default             | Description                                                                                                                    |
+| -------------- | --------- | -------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| id             | serial4   | True     |                     | Primary key, unique identifier for the chain_member_id                                                                         |
+| chain_id       | int4      | True     |                     | Foreign key, unique identifier for the chain_id that the member belongs to                                                     |
+| provider_id    | int4      | True     |                     | Foreign key, unique identifier for the provider                                                                                |
+| priority_order | int2      | True     |                     | Order in which the chain member will attempt to process the notification using the related provider. (1=first, 2=second, etc.) |
+| is_active      | int2      | True     | 1                   | Set whether chain member is active (1) or inactive (0)                                                                         |
+| created_on     | timestamp | True     | current_timestamp() | Stores the timestamp for the creation of the notification                                                                      |
+| updated_on     | timestamp | True     | current_timestamp() | Stores the timestamp for the last update to the notification                                                                   |
+| status         | smallint  | True     | 1                   | Stores whether the notification must be considered as active(1) or inactive(0)                                                 |
