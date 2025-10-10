@@ -20,6 +20,9 @@ The database schema consists of the following tables:
 - **notify_server_api_keys:** Contains details about different API keys for the different applications
 - **notify_users:** Contains details about all the users
 - **notify_webhooks:** Contains webhook urls for providers
+- **notify_provider_types:** Contains provider type catalog (e.g., SMS, Email, WhatsApp)
+- **notify_provider_chains:** Contains per‑application provider chains by provider type
+- **notify_provider_chain_members:** Contains ordered members within a provider chain
 
 This schema can be visualized in the following image:
 
@@ -204,7 +207,7 @@ Guide on [Webhook Integration](./webhook-guide.md)
 | ---------------- | ------------ | -------- | ------------------- | ------------------------------------------------------------------------------ |
 | provider_type_id | serial4      | True     |                     | Primary key, unique identifier for the provider_type_id                        |
 | name             | varchar(255) | True     |                     | Name of the provider type                                                      |
-| description      | text         | False    |                     |                                                                                | Add optional description for provider_type |
+| description      | text         | False    |                     | Add optional description for provider_type                                     |
 | created_on       | timestamp    | True     | current_timestamp() | Stores the timestamp for the creation of the notification                      |
 | updated_on       | timestamp    | True     | current_timestamp() | Stores the timestamp for the last update to the notification                   |
 | status           | smallint     | True     | 1                   | Stores whether the notification must be considered as active(1) or inactive(0) |
@@ -230,7 +233,7 @@ Guide on [Webhook Integration](./webhook-guide.md)
 | id             | serial4   | True     |                     | Primary key, unique identifier for the chain_member_id                                                                         |
 | chain_id       | int4      | True     |                     | Foreign key, unique identifier for the chain_id that the member belongs to                                                     |
 | provider_id    | int4      | True     |                     | Foreign key, unique identifier for the provider                                                                                |
-| priority_order | int2      | True     |                     | Order in which the chain member will attempt to process the notification using the related provider. (1=first, 2=second, etc.) | Add optional description for provider chain |
+| priority_order | int2      | True     |                     | Order in which the chain member will attempt to process the notification using the related provider. (1=first, 2=second, etc.) |
 | is_active      | int2      | True     | 1                   | Set whether chain member is active (1) or inactive (0)                                                                         |
 | created_on     | timestamp | True     | current_timestamp() | Stores the timestamp for the creation of the notification                                                                      |
 | updated_on     | timestamp | True     | current_timestamp() | Stores the timestamp for the last update to the notification                                                                   |
