@@ -10,6 +10,7 @@ The **Test Mode** feature in OsmoX enables administrators to toggle a testing en
 ## Fields used for Test Mode
 
 ### testModeEnabled
+
 This is binary flag to enable or disable test mode for an `application`.
 
 - The flag `testModeEnabled` can have the following values:
@@ -19,6 +20,7 @@ This is binary flag to enable or disable test mode for an `application`.
 - These notifications will be automatically moved to SUCCESS status and a dummy response JSON will be set for them.
 
 ### whitelistRecipients
+
 A JSON specifying `providers` and related recipients that will process notifications normally even if the `application` is in test mode.
 
 - Can be **_null_** (no whitelist, meaning no restrictions) - (Default Value)
@@ -34,11 +36,17 @@ A JSON specifying `providers` and related recipients that will process notificat
 
 - Whitelist can be added/updated even if `application` is not in test mode.
 
-Example JSON to add whitelisted recipients for `provider` ids `6` and `18`:
+**NOTE:**
+- If you want **all recipients of a provider to be whitelisted**, set the special escape character `["*"]` as **_recipient_**.
+- This allows you to **use a provider normally even when related application is in test mode**.
+
+Example JSON to add whitelisted recipients for `provider` ids `6`, `18` and `21`:
+
 ```json
 {
   "6": ["abcrecipient@gmail.com"],
-  "18": ["+18900100002", "+18900100003", "+18900100004"]
+  "18": ["+18900100002", "+18900100003", "+18900100004"],
+  "21": ["*"]
 }
 ```
 
@@ -132,6 +140,7 @@ All notifications created by `providers` of an `application` with test mode **_e
 Users can filter the notifications on the above parameters for verification.
 
 ## Notes
+
 - Always validate the whitelist JSON before submission to avoid errors (e.g., use a JSON validator tool).
 - The [OsmoX API Postman Collection](./../OsmoX-API.postman_collection.json) contains sample requests that can be used for all OsmoX API calls mentioned in the guide.
 - Database schema for table [notify_applications](./database-design.md#notify_applications)
