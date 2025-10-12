@@ -1320,10 +1320,10 @@ query {
 **cURL**
 
 ```sh
-curl --location 'http://localhost:3000/graphql' \
+curl --location 'localhost:3000/graphql' \
+--header 'Authorization: Bearer mysecuretoken' \
 --header 'Content-Type: application/json' \
---header 'Authorization: Bearer OsmoX-test-key' \
---data '{"query":"query {\r\n  providers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providers {\r\n        providerId\r\n        name\r\n        channelType\r\n        configuration\r\n        isEnabled\r\n        userId\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
+--data '{"query":"query {\r\n  providerChainMembers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providerChainMembers{\r\n        id\r\n        chainId\r\n        providerChainDetails {\r\n            chainId\r\n            chainName\r\n            description\r\n            providerType\r\n            applicationId\r\n            createdOn\r\n            updatedOn\r\n            status\r\n        }\r\n        priorityOrder\r\n        isActive\r\n        providerId\r\n        providerDetails {\r\n            providerId\r\n            name\r\n            channelType\r\n            isEnabled\r\n            configuration\r\n            applicationId\r\n            userId\r\n            status\r\n        }\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
 ```
 
 **Sample response**
