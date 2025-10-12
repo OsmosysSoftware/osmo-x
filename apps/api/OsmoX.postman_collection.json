@@ -4855,7 +4855,7 @@
 			"name": "Update Provider Chain",
 			"item": [
 				{
-					"name": "Create new Provider Chain - Success",
+					"name": "Update Provider Chain - Success",
 					"event": [
 						{
 							"listen": "test",
@@ -4923,7 +4923,7 @@
 					"response": []
 				},
 				{
-					"name": "Create new Provider Chain - Error - Chain Id does not exist",
+					"name": "Update Provider Chain - Error - Chain Id does not exist",
 					"event": [
 						{
 							"listen": "test",
