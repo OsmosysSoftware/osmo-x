@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "94e8e403-1d7b-4516-af46-e7865654e4b5",
+		"_postman_id": "1770c348-7985-42e3-ad6b-f5cd38fdc812",
 		"name": "OsmoX-API",
 		"description": "List of all APIs used in OsmoX",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -2495,7 +2495,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "This group contains actual API request confirmations done to 3rd party provider for easier debugging and verification"
 		},
 		{
 			"name": "Provider Chain",
@@ -2660,7 +2661,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "These API calls are responsible for all operations related to Provider Chains such as creation, display etc."
 		},
 		{
 			"name": "Provider Chain Member",
@@ -2864,7 +2866,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "These API calls are responsible for all operations related to Provider Chain Members such as creation, display etc."
 		}
 	]
 }
