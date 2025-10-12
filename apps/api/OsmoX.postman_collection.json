@@ -4636,7 +4636,7 @@
 								"graphql"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successfully fetching all provider chains based on the options passed."
 					},
 					"response": []
 				},
@@ -4704,7 +4704,7 @@
 								"graphql"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successfully fetching all provider chains based on the options passed."
 					},
 					"response": []
 				}
@@ -4778,73 +4778,7 @@
 								"provider-chains"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
-					},
-					"response": []
-				},
-				{
-					"name": "Create new Provider Chain - Error - Application already exists",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response is valid JSON\", function () {",
-									"    pm.response.to.be.json;",
-									"});",
-									"pm.test(\"Response code 400 and has valid 'data' property\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(pm.response.code).to.equal(400);",
-									"    pm.expect(jsonData).to.have.property(\"status\").to.have.string(\"fail\");",
-									"    pm.expect(jsonData).to.have.property(\"data\");",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{auth-token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"chainName\": \"new-chain-name\",\n    \"applicationId\": 1,\n    \"providerType\": 4, // email, sms, whatsapp etc.\n    \"description\": \"sample description\",\n    \"isDefault\": 0\n}"
-						},
-						"url": {
-							"raw": "http://localhost:3000/provider-chains",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"provider-chains"
-							]
-						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful creation of new Provider Chain based on the options passed."
 					},
 					"response": []
 				},
@@ -4910,7 +4844,7 @@
 								"provider-chains"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful creation of new Provider Chain based on the options passed."
 					},
 					"response": []
 				}
@@ -4984,7 +4918,7 @@
 								"provider-chains"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows updating a Provider Chain based on the options passed."
 					},
 					"response": []
 				},
@@ -5050,7 +4984,7 @@
 								"provider-chains"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows updating a Provider Chain based on the options passed."
 					},
 					"response": []
 				}
@@ -5121,7 +5055,7 @@
 								"provider-chains"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful deletion of Provider Chain based on the options passed."
 					},
 					"response": []
 				},
@@ -5186,7 +5120,7 @@
 								"provider-chains"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful deletion of Provider Chain based on the options passed."
 					},
 					"response": []
 				}
@@ -5267,7 +5201,7 @@
 								"graphql"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successfully fetching all provider chain members based on the options passed."
 					},
 					"response": []
 				},
@@ -5335,7 +5269,7 @@
 								"graphql"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successfully fetching all provider chain members based on the options passed."
 					},
 					"response": []
 				}
@@ -5409,7 +5343,7 @@
 								"provider-chain-members"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful creation of new Provider Chain Member based on the options passed."
 					},
 					"response": []
 				},
@@ -5475,7 +5409,7 @@
 								"provider-chain-members"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful creation of new Provider Chain Member based on the options passed."
 					},
 					"response": []
 				},
@@ -5541,7 +5475,7 @@
 								"provider-chain-members"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful creation of new Provider Chain Member based on the options passed."
 					},
 					"response": []
 				}
@@ -5616,7 +5550,7 @@
 								"priority-order"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows updating Priority Order for Provider Chain Members based on the options passed."
 					},
 					"response": []
 				},
@@ -5683,7 +5617,7 @@
 								"priority-order"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows updating Priority Order for Provider Chain Members based on the options passed."
 					},
 					"response": []
 				}
@@ -5754,7 +5688,7 @@
 								"provider-chain-members"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful deletion of Provider Chain Member based on the options passed."
 					},
 					"response": []
 				},
@@ -5819,7 +5753,7 @@
 								"provider-chain-members"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful deletion of Provider Chain Member based on the options passed."
 					},
 					"response": []
 				}
@@ -5894,7 +5828,7 @@
 								"restore"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful restoration of Provider Chain Member based on the options passed."
 					},
 					"response": []
 				},
@@ -5961,7 +5895,7 @@
 								"restore"
 							]
 						},
-						"description": "Allows successfully generating a new server key based on the options passed."
+						"description": "Allows successful restoration of Provider Chain Member based on the options passed."
 					},
 					"response": []
 				}
