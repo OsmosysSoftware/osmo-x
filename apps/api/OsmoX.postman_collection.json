@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "336711a4-7ddf-4f32-b136-4aa09b0e284b",
+		"_postman_id": "0848a52e-3ad6-4f86-b5fa-a487fc7ff8c6",
 		"name": "OsmoX",
 		"description": "OsmoX API helps creating new notifications, fetching existing notifications as well as perform authorization related tasks.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -4709,7 +4709,7 @@
 					"response": []
 				}
 			],
-			"description": "Collection of requests pertaining to generation of server keys."
+			"description": "Collection of requests pertaining to fetching all Provider Chains."
 		},
 		{
 			"name": "Create new Provider Chain",
@@ -4781,9 +4781,281 @@
 						"description": "Allows successfully generating a new server key based on the options passed."
 					},
 					"response": []
+				},
+				{
+					"name": "Create new Provider Chain - Error - Application already exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code 400 and has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(jsonData).to.have.property(\"status\").to.have.string(\"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainName\": \"new-chain-name\",\n    \"applicationId\": 1,\n    \"providerType\": 4, // email, sms, whatsapp etc.\n    \"description\": \"sample description\",\n    \"isDefault\": 0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chains",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chains"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Provider Chain - Error - empty ApplicationId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code 400 and has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(jsonData).to.have.property(\"status\").to.have.string(\"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainName\": \"new-chain-name\",\n    \"providerType\": 4, // email, sms, whatsapp etc.\n    \"description\": \"sample description\",\n    \"isDefault\": 0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chains",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chains"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
 				}
 			],
-			"description": "Collection of requests pertaining to generation of server keys."
+			"description": "Collection of requests pertaining to creation of a new provider chain."
+		},
+		{
+			"name": "Update Provider Chain",
+			"item": [
+				{
+					"name": "Create new Provider Chain - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'data' has valid 'providerChain' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"providerChain\")",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": 7,\n    \"chainName\": \"updated-chain-name\",\n    \"applicationId\": 1,\n    \"providerType\": 3,\n    \"description\": \"sample updated description\",\n    \"isDefault\": 0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chains",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chains"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Provider Chain - Error - Chain Id does not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code 400 and has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(jsonData).to.have.property(\"status\").to.have.string(\"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": -7,\n    \"chainName\": \"updated-chain-name\",\n    \"applicationId\": 1,\n    \"providerType\": 3,\n    \"description\": \"sample updated description\",\n    \"isDefault\": 0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chains",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chains"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to updating a provider chain."
 		},
 		{
 			"name": "Delete Provider Chain",
@@ -4919,7 +5191,782 @@
 					"response": []
 				}
 			],
-			"description": "Collection of requests pertaining to generation of server keys."
+			"description": "Collection of requests pertaining to deleting a provider chain."
+		},
+		{
+			"name": "Fetch all Provider Chain Members",
+			"item": [
+				{
+					"name": "Fetch all Provider Chain Members - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'providerChainMembers' object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property(\"providerChainMembers\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response contains a valid 'providerChainMembers' array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.providerChainMembers).to.have.property(\"providerChainMembers\").to.be.an(\"array\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\n  providerChainMembers(\n    options: {\n      limit: 5\n      offset: 0\n      sortBy: \"createdOn\"\n      sortOrder: ASC\n      filters: [{ field: \"providerId\", operator: \"gt\", value: \"3\" }]\n    }\n  ) {\n    providerChainMembers{\n        id\n        chainId\n        providerChainDetails {\n            chainId\n            chainName\n            description\n            providerType\n            applicationId\n            createdOn\n            updatedOn\n            status\n        }\n        priorityOrder\n        isActive\n        providerId\n        providerDetails {\n            providerId\n            name\n            channelType\n            isEnabled\n            configuration\n            applicationId\n            userId\n            status\n        }\n        createdOn\n        updatedOn\n        status\n    }\n    total,\n    offset,\n    limit\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch all Provider Chain Members - Bad Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response for creating new application with bad request\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.json().errors).to.be.an(\"array\");",
+									"    pm.expect(pm.response.json().errors[0].message).to.be.a(\"string\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\n  providerChainMembers(\n    options: {\n      limit: 5\n      offset: 0\n      sortBy: \"createdOn\"\n      sortOrder: ASC\n      unknownValue: \"Some unknown parameter\"\n      filters: [{ field: \"providerId\", operator: \"gt\", value: \"3\" }]\n    }\n  ) {\n    providerChainMembers{\n        id\n        chainId\n        providerChainDetails {\n            chainId\n            chainName\n            description\n            providerType\n            applicationId\n            createdOn\n            updatedOn\n            status\n        }\n        priorityOrder\n        isActive\n        providerId\n        providerDetails {\n            providerId\n            name\n            channelType\n            isEnabled\n            configuration\n            applicationId\n            userId\n            status\n        }\n        createdOn\n        updatedOn\n        status\n    }\n    total,\n    offset,\n    limit\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to fetching all Provider Chain Members."
+		},
+		{
+			"name": "Create new Provider Chain Member",
+			"item": [
+				{
+					"name": "Create new Provider Chain Member - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'data' has valid 'providerChainMember' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"providerChainMember\")",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": 10,\n    \"providerId\": 23,\n    \"isActive\": 1\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chain-members",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chain-members"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Provider Chain Member - Error - Provider Chain does not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code 400 and has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(jsonData).to.have.property(\"status\").to.have.string(\"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": -10,\n    \"providerId\": 23,\n    \"isActive\": 1\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chain-members",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chain-members"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Provider Chain - Error - empty ProviderId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code 400 and has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(jsonData).to.have.property(\"status\").to.have.string(\"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": 10,\n    \"isActive\": 1\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chain-members",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chain-members"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to creation of a new provider chain member."
+		},
+		{
+			"name": "Update Priority Order for Provider Chain Members",
+			"item": [
+				{
+					"name": "Update Priority Order for Provider Chain Members - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'data' has valid 'updatedProviderChainMembers' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"updatedProviderChainMembers\")",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": 10,\n    \"newProviderPriorityOrder\": [3, 23]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chain-members/priority-order",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chain-members",
+								"priority-order"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Priority Order for Provider Chain Member - Error - Missing/Extra providers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code 400 and has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(jsonData).to.have.property(\"status\").to.have.string(\"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": 10,\n    \"newProviderPriorityOrder\": [23, 1, 2]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chain-members/priority-order",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chain-members",
+								"priority-order"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to updating Priority Order for Provider Chain Members."
+		},
+		{
+			"name": "Delete Provider Chain Member",
+			"item": [
+				{
+					"name": "Delete Provider Chain Member - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": 10,\n    \"providerId\": 23\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chain-members",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chain-members"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Provider Chain Member - Error - provider is not part of chain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code 400 and 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": 10,\n    \"providerId\": -23\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chain-members",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chain-members"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to deleting a provider chain member."
+		},
+		{
+			"name": "Restore deleted Provider Chain Member",
+			"item": [
+				{
+					"name": "Restore deleted Provider Chain Member - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");",
+									"});",
+									"pm.test(\"Response 'data' has valid 'updatedProviderChainMembers' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.have.property(\"updatedProviderChainMembers\")",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": 10,\n    \"providerId\": 23\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chain-members/restore",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chain-members",
+								"restore"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Restore deleted Provider Chain Member - Error - Chain Member is not deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"pm.test(\"Response code 400 and has valid 'data' property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(jsonData).to.have.property(\"status\").to.have.string(\"fail\");",
+									"    pm.expect(jsonData).to.have.property(\"data\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth-token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chainId\": 10,\n    \"providerId\": -23\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/provider-chain-members/restore",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"provider-chain-members",
+								"restore"
+							]
+						},
+						"description": "Allows successfully generating a new server key based on the options passed."
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of requests pertaining to restoring a provider chain member."
 		}
 	]
 }
