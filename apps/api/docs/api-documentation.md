@@ -1433,7 +1433,7 @@ Deleted chain member priority order is set as negative of the chain id. This ens
 
 Priority order is automatically updated for rest of the undeleted chain members if any.
 
-**Endpoint:** `http://localhost:3000/provider-chains`
+**Endpoint:** `http://localhost:3000/provider-chain-members`
 
 **Method:** `DELETE`
 
