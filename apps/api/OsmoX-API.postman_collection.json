@@ -2546,7 +2546,7 @@
 								"graphql"
 							]
 						},
-						"description": "Allows successfully fetching all providers based on the options passed."
+						"description": "Allows successfully fetching all provider chains based on the options passed."
 					},
 					"response": []
 				},
@@ -2712,7 +2712,7 @@
 								"graphql"
 							]
 						},
-						"description": "Allows successfully fetching all providers based on the options passed."
+						"description": "Allows successfully fetching all provider chain members based on the options passed."
 					},
 					"response": []
 				},
