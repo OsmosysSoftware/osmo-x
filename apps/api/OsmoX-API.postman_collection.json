@@ -2568,7 +2568,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"chainName\": \"new-chain-name\",\n    \"applicationId\": {{applicationId}},\n    \"providerType\": 4, // email, sms, whatsapp etc.\n    \"description\": \"sample description\",\n    \"isDefault\": 0\n}",
+							"raw": "{\n    \"chainName\": \"new-chain-name\",\n    \"applicationId\": {{applicationId}},\n    \"providerType\": 4,\n    \"description\": \"sample description\",\n    \"isDefault\": 0\n}",
 							"options": {
 								"raw": {
 									"language": "json"
