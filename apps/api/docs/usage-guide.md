@@ -87,10 +87,9 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
   "data": {
     "notification": {
       "providerId": 1,
-      "channelType": 1,
       "data": {
         "from": "sender@example.com",
-        "to": "recipient@example.com",
+        "to": "receiver@example.com",
         "subject": "Test subject",
         "text": "This is a test notification",
         "html": "<b>This is a test notification</b>"
@@ -98,8 +97,10 @@ Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include
       "applicationId": 1,
       "createdBy": "OsmoX",
       "updatedBy": "OsmoX",
+      "channelType": 1,
       "result": null,
       "notificationSentOn": null,
+      "providerChainId": null,
       "id": 36,
       "deliveryStatus": 1,
       "createdOn": "2023-09-08T13:11:52.000Z",
