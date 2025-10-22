@@ -168,6 +168,7 @@ curl --location 'http://localhost:3000/notifications' \
       "updatedBy": "sampleFoundationApp",
       "result": null,
       "notificationSentOn": null,
+      "providerChainId": null,
       "id": 92,
       "deliveryStatus": 1,
       "createdOn": "2024-02-12T07:24:21.000Z",
