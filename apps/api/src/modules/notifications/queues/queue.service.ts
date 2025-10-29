@@ -298,11 +298,23 @@ export class QueueService {
 
     for (const [queueName, queue] of this.queues.entries()) {
       try {
-        const completedRemoved = await queue.clean(gracePeriod, 0, 'completed');
-        const failedRemoved = await queue.clean(gracePeriod, 0, 'failed');
+        const batchSize = 100;
+        let completedCount = 0;
+        let failedCount = 0;
 
-        const completedCount = completedRemoved.length;
-        const failedCount = failedRemoved.length;
+        // Clean completed jobs in batches
+        let completedBatch;
+        do {
+          completedBatch = await queue.clean(gracePeriod, batchSize, 'completed');
+          completedCount += completedBatch.length;
+        } while (completedBatch.length === batchSize);
+
+        // Clean failed jobs in batches
+        let failedBatch;
+        do {
+          failedBatch = await queue.clean(gracePeriod, batchSize, 'failed');
+          failedCount += failedBatch.length;
+        } while (failedBatch.length === batchSize);
 
         totalCompleted += completedCount;
         totalFailed += failedCount;

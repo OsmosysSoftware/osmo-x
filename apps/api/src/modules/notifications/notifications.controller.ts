@@ -47,7 +47,7 @@ export class NotificationsController {
 
     if (isNaN(grace) || grace < 0) {
       throw new BadRequestException(
-        'Invalid gracePeriod parameter. Must be a positive number in milliseconds.',
+        'Invalid gracePeriod parameter. Must be a non-negative number in milliseconds.',
       );
     }
 
