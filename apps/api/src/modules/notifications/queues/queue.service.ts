@@ -26,8 +26,8 @@ export class QueueService {
   private workerConcurrency: number;
   private idleTimeout: number;
   private cleanupInterval: number;
-  private removeOnComplete: number | boolean;
-  private removeOnFail: number | boolean;
+  private removeOnComplete: number | boolean | { count: number };
+  private removeOnFail: number | boolean | { count: number };
 
   constructor(
     private readonly configService: ConfigService,

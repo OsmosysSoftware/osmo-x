@@ -52,8 +52,8 @@ async function listQueues(
 
   await redis.quit();
 
-  const queues = uniqueQueueNames.map((name) => ({
-    name,
+  const queues = uniqueQueueNames.map((name: string) => ({
+    name: name as string,
     queue: new Queue(name, { connection: redisConfig }),
   }));
 
