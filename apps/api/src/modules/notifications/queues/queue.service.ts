@@ -304,6 +304,7 @@ export class QueueService {
 
         // Clean completed jobs in batches
         let completedBatch;
+
         do {
           completedBatch = await queue.clean(gracePeriod, batchSize, 'completed');
           completedCount += completedBatch.length;
@@ -311,6 +312,7 @@ export class QueueService {
 
         // Clean failed jobs in batches
         let failedBatch;
+
         do {
           failedBatch = await queue.clean(gracePeriod, batchSize, 'failed');
           failedCount += failedBatch.length;
