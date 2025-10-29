@@ -285,9 +285,7 @@ export class QueueService {
     }
   }
 
-  async cleanupCompletedAndFailedJobs(
-    gracePeriod: number = 0,
-  ): Promise<{
+  async cleanupCompletedAndFailedJobs(gracePeriod: number = 0): Promise<{
     totalCompleted: number;
     totalFailed: number;
     queues: Array<{ name: string; completed: number; failed: number }>;
