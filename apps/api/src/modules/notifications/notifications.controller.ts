@@ -1,9 +1,22 @@
-import { Controller, Post, Body, Logger, HttpException, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Logger,
+  HttpException,
+  UseGuards,
+  Query,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
 import { QueueService } from './queues/queue.service';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRoles } from 'src/common/constants/database';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -25,18 +38,20 @@ export class NotificationsController {
   }
 
   @Post('redis/cleanup')
+  @UseGuards(RolesGuard)
+  @Roles(UserRoles.ADMIN)
   async cleanupRedisJobs(
     @Query('gracePeriod') gracePeriod?: string,
   ): Promise<Record<string, unknown>> {
+    const grace = gracePeriod ? parseInt(gracePeriod, 10) : 0;
+
+    if (isNaN(grace) || grace < 0) {
+      throw new BadRequestException(
+        'Invalid gracePeriod parameter. Must be a positive number in milliseconds.',
+      );
+    }
+
     try {
-      const grace = gracePeriod ? parseInt(gracePeriod, 10) : 0;
-
-      if (isNaN(grace) || grace < 0) {
-        return this.jsend.fail({
-          message: 'Invalid gracePeriod parameter. Must be a positive number in milliseconds.',
-        });
-      }
-
       this.logger.log(`Starting Redis job cleanup with grace period: ${grace}ms`);
       const result = await this.queueService.cleanupCompletedAndFailedJobs(grace);
 
@@ -58,10 +73,7 @@ export class NotificationsController {
         throw error;
       }
 
-      return this.jsend.error({
-        message: 'Failed to cleanup Redis jobs',
-        error: error.message,
-      });
+      throw new InternalServerErrorException('Failed to cleanup Redis jobs');
     }
   }
 

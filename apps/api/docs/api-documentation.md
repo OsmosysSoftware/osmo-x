@@ -931,19 +931,26 @@ Removes completed and failed jobs from all BullMQ queues in Redis.
 
 **Method:** `POST`
 
+**Authentication:** Required (Admin role only)
+
+**Headers:**
+- `Authorization: Bearer <admin-jwt-token>`
+
 **Query Parameters:**
 - `gracePeriod` (optional): Time in milliseconds. Only jobs older than this will be removed. Default: `0` (all jobs)
 
 **Example 1: Clean all jobs**
 
 ```sh
-curl -X POST http://localhost:3000/notifications/redis/cleanup
+curl -X POST http://localhost:3000/notifications/redis/cleanup \
+  -H "Authorization: Bearer <admin-jwt-token>"
 ```
 
 **Example 2: Clean jobs older than 1 hour**
 
 ```sh
-curl -X POST "http://localhost:3000/notifications/redis/cleanup?gracePeriod=3600000"
+curl -X POST "http://localhost:3000/notifications/redis/cleanup?gracePeriod=3600000" \
+  -H "Authorization: Bearer <admin-jwt-token>"
 ```
 
 **Sample Response (Success)**
@@ -993,9 +1000,11 @@ curl -X POST "http://localhost:3000/notifications/redis/cleanup?gracePeriod=3600
 ```
 
 **Notes:**
-- This endpoint does not require authentication
+- This endpoint requires Admin authentication via JWT Bearer token
 - Cleanup is performed on all active queues
 - The operation may take several seconds depending on the number of jobs
+- Returns 401 Unauthorized if the token is missing or invalid
+- Returns 403 Forbidden if the user does not have Admin role
 - See [Redis Cleanup Guide](./redis-cleanup-guide.md) for detailed information on automatic cleanup configuration
 
 ## Webhook
