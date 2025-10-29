@@ -919,6 +919,85 @@ curl --location 'http://localhost:3000/graphql' \
 }
 ```
 
+## Redis Queue Cleanup
+
+This endpoint allows manual cleanup of completed and failed jobs from Redis queues to reduce memory usage.
+
+### Cleanup Redis Jobs
+
+Removes completed and failed jobs from all BullMQ queues in Redis.
+
+**Endpoint:** `http://localhost:3000/notifications/redis/cleanup`
+
+**Method:** `POST`
+
+**Query Parameters:**
+- `gracePeriod` (optional): Time in milliseconds. Only jobs older than this will be removed. Default: `0` (all jobs)
+
+**Example 1: Clean all jobs**
+
+```sh
+curl -X POST http://localhost:3000/notifications/redis/cleanup
+```
+
+**Example 2: Clean jobs older than 1 hour**
+
+```sh
+curl -X POST "http://localhost:3000/notifications/redis/cleanup?gracePeriod=3600000"
+```
+
+**Sample Response (Success)**
+
+```json
+{
+  "status": "success",
+  "data": {
+    "message": "Redis job cleanup completed successfully",
+    "summary": {
+      "totalCompletedJobsRemoved": 1543,
+      "totalFailedJobsRemoved": 234,
+      "totalJobsRemoved": 1777,
+      "queuesProcessed": 12
+    },
+    "details": [
+      {
+        "name": "SEND-SMTP-1",
+        "completed": 543,
+        "failed": 23
+      },
+      {
+        "name": "SEND-MAILGUN-2",
+        "completed": 234,
+        "failed": 45
+      },
+      {
+        "name": "WEBHOOK-SMTP-1",
+        "completed": 766,
+        "failed": 166
+      }
+    ]
+  }
+}
+```
+
+**Sample Response (Error)**
+
+```json
+{
+  "status": "error",
+  "message": "Failed to cleanup Redis jobs",
+  "data": {
+    "error": "Connection refused"
+  }
+}
+```
+
+**Notes:**
+- This endpoint does not require authentication
+- Cleanup is performed on all active queues
+- The operation may take several seconds depending on the number of jobs
+- See [Redis Cleanup Guide](./redis-cleanup-guide.md) for detailed information on automatic cleanup configuration
+
 ## Webhook
 
 Kindly go through the [Webhook Guide](./webhook-guide.md).
