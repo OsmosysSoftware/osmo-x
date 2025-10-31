@@ -26,6 +26,8 @@ export class QueueService {
   private workerConcurrency: number;
   private idleTimeout: number;
   private cleanupInterval: number;
+  private removeOnComplete: number | boolean | { count: number };
+  private removeOnFail: number | boolean | { count: number };
 
   constructor(
     private readonly configService: ConfigService,
@@ -57,6 +59,14 @@ export class QueueService {
       this.workerConcurrency = 5;
     }
 
+    // Configure job cleanup settings
+    const removeOnCompleteCount = +this.configService.get<number>('REDIS_REMOVE_ON_COMPLETE', 100);
+    const removeOnFailCount = +this.configService.get<number>('REDIS_REMOVE_ON_FAIL', 1000);
+
+    // If set to 0, keep all jobs; otherwise keep the specified count
+    this.removeOnComplete = removeOnCompleteCount === 0 ? false : { count: removeOnCompleteCount };
+    this.removeOnFail = removeOnFailCount === 0 ? false : { count: removeOnFailCount };
+
     if (this.configService.get('CLEANUP_IDLE_RESOURCES', 'false') === 'true') {
       this.idleTimeout = ms(this.configService.get<string>('IDLE_TIMEOUT', '30m'));
       this.cleanupInterval = ms(this.configService.get<string>('CLEANUP_INTERVAL', '7d'));
@@ -65,7 +75,13 @@ export class QueueService {
   }
 
   private createQueue(queueName: string): Queue {
-    const queue = new Queue(queueName, { connection: this.redisConfig });
+    const queue = new Queue(queueName, {
+      connection: this.redisConfig,
+      defaultJobOptions: {
+        removeOnComplete: this.removeOnComplete,
+        removeOnFail: this.removeOnFail,
+      },
+    });
 
     queue.on('error', (error) => {
       this.logger.error(`Redis connection error in queue ${queueName}:`, error);
@@ -267,5 +283,66 @@ export class QueueService {
       this.queueEvents.delete(queueName);
       this.logger.log(`Queue events removed: ${queueName} due to inactivity.`);
     }
+  }
+
+  async cleanupCompletedAndFailedJobs(gracePeriod: number = 0): Promise<{
+    totalCompleted: number;
+    totalFailed: number;
+    queues: Array<{ name: string; completed: number; failed: number }>;
+  }> {
+    const results = [];
+    let totalCompleted = 0;
+    let totalFailed = 0;
+
+    this.logger.log(`Starting manual Redis job cleanup with grace period: ${gracePeriod}ms`);
+
+    for (const [queueName, queue] of this.queues.entries()) {
+      try {
+        const batchSize = 100;
+        let completedCount = 0;
+        let failedCount = 0;
+
+        // Clean completed jobs in batches
+        let completedBatch;
+
+        do {
+          completedBatch = await queue.clean(gracePeriod, batchSize, 'completed');
+          completedCount += completedBatch.length;
+        } while (completedBatch.length === batchSize);
+
+        // Clean failed jobs in batches
+        let failedBatch;
+
+        do {
+          failedBatch = await queue.clean(gracePeriod, batchSize, 'failed');
+          failedCount += failedBatch.length;
+        } while (failedBatch.length === batchSize);
+
+        totalCompleted += completedCount;
+        totalFailed += failedCount;
+
+        results.push({
+          name: queueName,
+          completed: completedCount,
+          failed: failedCount,
+        });
+
+        this.logger.log(
+          `Queue ${queueName}: Removed ${completedCount} completed jobs, ${failedCount} failed jobs`,
+        );
+      } catch (error) {
+        this.logger.error(`Error cleaning queue ${queueName}:`, error.message);
+      }
+    }
+
+    this.logger.log(
+      `Cleanup complete. Total removed: ${totalCompleted} completed, ${totalFailed} failed`,
+    );
+
+    return {
+      totalCompleted,
+      totalFailed,
+      queues: results,
+    };
   }
 }
