@@ -40,16 +40,16 @@ for i in {1..150}; do
   curl -X POST http://localhost:3000/notifications \
     -H "Content-Type: application/json" \
     -H "x-api-key: YOUR-X-API-KEY" \
-    -d '{
-    "providerId": 1,
-    "data": {
-        "from": "sender@example.com",
-        "to": "receiver@example.com",
-        "subject": "Test subject '$i'",
-        "text": "This is a test notification '$i'",
-        "html": "<b>This is a test notification '$i'</b>"
+    -d "{
+    \"providerId\": 1,
+    \"data\": {
+        \"from\": \"sender@example.com\",
+        \"to\": \"receiver@example.com\",
+        \"subject\": \"Test subject $i\",
+        \"text\": \"This is a test notification $i\",
+        \"html\": \"<b>This is a test notification $i</b>\"
       }
-  }'
+  }"
   sleep 0.5
 done
 ```

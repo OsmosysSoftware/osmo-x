@@ -60,12 +60,33 @@ export class QueueService {
     }
 
     // Configure job cleanup settings
-    const removeOnCompleteCount = +this.configService.get<number>('REDIS_REMOVE_ON_COMPLETE', 100);
-    const removeOnFailCount = +this.configService.get<number>('REDIS_REMOVE_ON_FAIL', 1000);
+    const removeOnCompleteRaw = this.configService.get<string>('REDIS_REMOVE_ON_COMPLETE', '100');
+    const removeOnFailRaw = this.configService.get<string>('REDIS_REMOVE_ON_FAIL', '1000');
 
-    // If set to 0, keep all jobs; otherwise keep the specified count
-    this.removeOnComplete = removeOnCompleteCount === 0 ? false : { count: removeOnCompleteCount };
-    this.removeOnFail = removeOnFailCount === 0 ? false : { count: removeOnFailCount };
+    // Parse and validate removeOnComplete
+    const removeOnCompleteCount = parseInt(removeOnCompleteRaw, 10);
+
+    if (Number.isInteger(removeOnCompleteCount) && removeOnCompleteCount >= 0) {
+      this.removeOnComplete =
+        removeOnCompleteCount === 0 ? false : { count: removeOnCompleteCount };
+    } else {
+      this.logger.warn(
+        `Invalid REDIS_REMOVE_ON_COMPLETE value: ${removeOnCompleteRaw}, using default: 100`,
+      );
+      this.removeOnComplete = { count: 100 };
+    }
+
+    // Parse and validate removeOnFail
+    const removeOnFailCount = parseInt(removeOnFailRaw, 10);
+
+    if (Number.isInteger(removeOnFailCount) && removeOnFailCount >= 0) {
+      this.removeOnFail = removeOnFailCount === 0 ? false : { count: removeOnFailCount };
+    } else {
+      this.logger.warn(
+        `Invalid REDIS_REMOVE_ON_FAIL value: ${removeOnFailRaw}, using default: 1000`,
+      );
+      this.removeOnFail = { count: 1000 };
+    }
 
     if (this.configService.get('CLEANUP_IDLE_RESOURCES', 'false') === 'true') {
       this.idleTimeout = ms(this.configService.get<string>('IDLE_TIMEOUT', '30m'));

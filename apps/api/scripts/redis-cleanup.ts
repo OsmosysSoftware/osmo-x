@@ -41,18 +41,30 @@ async function getRedisConfig(): Promise<{ host: string; port: number }> {
 async function listQueues(
   redisConfig: { host: string; port: number },
 ): Promise<{ name: string; queue: Queue }[]> {
-  // Get all queue keys from Redis
+  // Get all queue keys from Redis using SCAN (non-blocking)
   const Queue = require('bullmq').Queue;
   const Redis = require('ioredis');
   const redis = new Redis(redisConfig);
 
-  const keys = await redis.keys('bull:*:meta');
-  const queueNames = keys.map((key: string) => key.split(':')[1]);
-  const uniqueQueueNames = [...new Set(queueNames)];
+  const queueNames = new Set<string>();
+  let cursor = '0';
+
+  do {
+    const result = await redis.scan(cursor, 'MATCH', 'bull:*:meta', 'COUNT', 100);
+    cursor = result[0];
+    const keys = result[1];
+
+    keys.forEach((key: string) => {
+      const parts = key.split(':');
+      if (parts.length >= 2) {
+        queueNames.add(parts[1]);
+      }
+    });
+  } while (cursor !== '0');
 
   await redis.quit();
 
-  const queues = uniqueQueueNames.map((name: string) => ({
+  const queues = Array.from(queueNames).map((name: string) => ({
     name: name as string,
     queue: new Queue(name, { connection: redisConfig }),
   }));
@@ -67,16 +79,40 @@ async function cleanupQueue(
 ): Promise<CleanupStats> {
   console.log(`\nCleaning up queue: ${queueName}`);
 
-  const completedRemoved = await queue.clean(grace, 0, 'completed');
-  console.log(`  Removed ${completedRemoved.length} completed jobs`);
+  const batchSize = 1000;
+  let totalCompleted = 0;
+  let totalFailed = 0;
 
-  const failedRemoved = await queue.clean(grace, 0, 'failed');
-  console.log(`  Removed ${failedRemoved.length} failed jobs`);
+  // Clean completed jobs in batches
+  let completedBatch: string[];
+
+  do {
+    completedBatch = await queue.clean(grace, batchSize, 'completed');
+    totalCompleted += completedBatch.length;
+    if (completedBatch.length > 0) {
+      console.log(`  Batch: removed ${completedBatch.length} completed jobs`);
+    }
+  } while (completedBatch.length === batchSize);
+
+  console.log(`  Total removed: ${totalCompleted} completed jobs`);
+
+  // Clean failed jobs in batches
+  let failedBatch: string[];
+
+  do {
+    failedBatch = await queue.clean(grace, batchSize, 'failed');
+    totalFailed += failedBatch.length;
+    if (failedBatch.length > 0) {
+      console.log(`  Batch: removed ${failedBatch.length} failed jobs`);
+    }
+  } while (failedBatch.length === batchSize);
+
+  console.log(`  Total removed: ${totalFailed} failed jobs`);
 
   return {
     queueName,
-    completedRemoved: completedRemoved.length,
-    failedRemoved: failedRemoved.length,
+    completedRemoved: totalCompleted,
+    failedRemoved: totalFailed,
   };
 }
 
