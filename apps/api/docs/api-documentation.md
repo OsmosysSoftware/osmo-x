@@ -921,3 +921,610 @@ curl --location 'http://localhost:3000/graphql' \
 ## Webhook
 
 Kindly go through the [Webhook Guide](./webhook-guide.md).
+
+## Provider Chain
+
+This sections lists providers related requests such as creating new provider and fetching all providers.
+
+### Create new Provider Chain
+
+Allows the user with `Admin` role to create a new Provider Chain. Requires passing bearer token for authorization.
+
+**Endpoint:** `http://localhost:3000/provider-chains`
+
+**Method:** `POST`
+
+**Body:** `json`
+
+```jsonc
+{
+    "chainName": "new-chain-name",
+    "applicationId": 1,
+    "providerType": 4,
+    "description": "sample description",
+    "isDefault": 0
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'localhost:3000/provider-chains' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{
+    "chainName": "new-chain-name",
+    "applicationId": 1,
+    "providerType": 4,
+    "description": "sample description",
+    "isDefault": 0
+}'
+```
+
+**Sample response**
+
+```json
+{
+    "status": "success",
+    "data": {
+        "providerChain": {
+            "chainName": "new-chain-name",
+            "applicationId": 1,
+            "providerType": 4,
+            "description": "sample description",
+            "isDefault": 0,
+            "chainId": 9,
+            "createdOn": "2025-10-12T02:00:18.307Z",
+            "updatedOn": "2025-10-12T02:00:18.307Z",
+            "status": 1
+        }
+    }
+}
+```
+
+### Fetch all Provider Chains
+
+Allows the user to fetch all provider chains based on the passed query parameters. Requires passing bearer token for authorization.
+
+The different options that can be used while fetching provider chains are as follows:
+
+- `limit:` Limit the number of results to the provided value
+- `offset:` Offset the result set by the provided value
+- `sortBy:` Sort the results by the provided key
+- `sortOrder:` Sort the results in either `ASC`ending or `DESC`ending order
+- `search:` Search for the provided value in `createdBy`, `data` and `result` and return results matching it
+- `filters:` Filter the results based on the provided `field`, `operator` and `value`. Operator can be `eq` (equal), `ne` (not equal), `contains`, `gt` (greater than) or `lt` (less than)
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method:** `POST`
+
+**Body:** `graphql`
+
+```graphql
+query {
+  providerChains(
+    options: {
+      limit: 5
+      offset: 0
+      sortBy: "createdOn"
+      sortOrder: ASC
+    }
+  ) {
+    providerChains{
+        chainId
+        chainName
+        description
+        providerType
+        applicationId
+        applicationDetails {
+            applicationId
+            name
+            userId
+            status
+            createdOn
+            updatedOn
+        }
+        createdOn
+        updatedOn
+        status
+    }
+    total,
+    offset,
+    limit
+  }
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'localhost:3000/graphql' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{"query":"query {\r\n  providerChains(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providerChains{\r\n        chainId\r\n        chainName\r\n        description\r\n        providerType\r\n        applicationId\r\n        applicationDetails {\r\n            applicationId\r\n            name\r\n            userId\r\n            status\r\n            createdOn\r\n            updatedOn\r\n        }\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
+```
+
+**Sample response**
+
+```json
+{
+    "data": {
+        "providerChains": {
+            "providerChains": [
+                {
+                    "chainId": 1,
+                    "chainName": "email-reliable",
+                    "description": "Email provider chain",
+                    "providerType": 1,
+                    "applicationId": 1,
+                    "applicationDetails": {
+                        "applicationId": 1,
+                        "name": "sampleOsmoXApp",
+                        "userId": 1,
+                        "status": 1,
+                        "createdOn": "2024-04-29T08:06:41.000Z",
+                        "updatedOn": "2025-10-06T08:24:12.413Z"
+                    },
+                    "createdOn": "2025-07-22T11:12:19.214Z",
+                    "updatedOn": "2025-07-25T06:01:15.647Z",
+                    "status": 1
+                },
+                {
+                    "chainId": 2,
+                    "chainName": "sms-reliable",
+                    "description": "Reliable sms provider chain",
+                    "providerType": 2,
+                    "applicationId": 2,
+                    "applicationDetails": {
+                        "applicationId": 2,
+                        "name": "SampleFoundationXApp",
+                        "userId": 2,
+                        "status": 1,
+                        "createdOn": "2024-04-29T08:12:55.000Z",
+                        "updatedOn": "2025-02-27T11:54:29.000Z"
+                    },
+                    "createdOn": "2025-07-22T12:55:32.744Z",
+                    "updatedOn": "2025-08-20T08:24:23.987Z",
+                    "status": 1
+                },
+                {
+                    "chainId": 3,
+                    "chainName": "whatsapp-business-reliable",
+                    "description": "WhatsApp business provider chain",
+                    "providerType": 3,
+                    "applicationId": 1,
+                    "applicationDetails": {
+                        "applicationId": 1,
+                        "name": "sampleOsmoXApp",
+                        "userId": 1,
+                        "status": 1,
+                        "createdOn": "2024-04-29T08:06:41.000Z",
+                        "updatedOn": "2025-10-06T08:24:12.413Z"
+                    },
+                    "createdOn": "2025-07-24T11:18:55.764Z",
+                    "updatedOn": "2025-07-24T12:11:41.744Z",
+                    "status": 1
+                }
+            ],
+            "total": 3,
+            "offset": 0,
+            "limit": 5
+        }
+    }
+}
+```
+
+### Update Provider Chain
+
+Allows the user with `Admin` role to update existing Provider Chain. Requires passing bearer token for authorization.
+
+**Endpoint:** `http://localhost:3000/provider-chains`
+
+**Method:** `PUT`
+
+**Body:** `json`
+
+```jsonc
+{
+    "chainId": 10,
+    "chainName": "updated-chain-name",
+    "applicationId": 1,
+    "providerType": 3,
+    "description": "sample updated description",
+    "isDefault": 0
+}
+```
+
+**cURL**
+
+```sh
+curl --location --request PUT 'localhost:3000/provider-chains' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{
+    "chainId": 10,
+    "chainName": "updated-chain-name",
+    "applicationId": 1,
+    "providerType": 3,
+    "description": "sample updated description",
+    "isDefault": 0
+}'
+```
+
+**Sample response**
+
+```json
+{
+    "status": "success",
+    "data": {
+        "updatedProviderChain": {
+            "chainId": 10,
+            "chainName": "updated-chain-name-4",
+            "applicationId": 1,
+            "providerType": 3,
+            "description": "sample updated description",
+            "isDefault": 0,
+            "createdOn": "2025-10-12T02:01:31.011Z",
+            "updatedOn": "2025-10-12T02:50:33.360Z",
+            "status": 1
+        }
+    }
+}
+```
+
+### Delete Provider Chain
+
+Allows the user with `Admin` role to delete existing Provider Chain. Requires passing bearer token for authorization.
+
+**Endpoint:** `http://localhost:3000/provider-chains`
+
+**Method:** `DELETE`
+
+**Body:** `json`
+
+```jsonc
+{
+    "chainId": 10
+}
+```
+
+**cURL**
+
+```sh
+curl --location --request DELETE 'localhost:3000/provider-chains' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{
+    "chainId": 10
+}'
+```
+
+**Sample response**
+
+```json
+{
+    "status": "success",
+    "data": {
+        "chainId": 10,
+        "deleted": true,
+        "providerChainMembersDeleted": [
+            10
+        ]
+    }
+}
+```
+
+## Provider Chain Members
+
+This sections lists providers related requests such as creating new provider and fetching all providers.
+
+### Create new Provider Chain Member
+
+Allows the user with `Admin` role to create a new Provider Chain Member. Requires passing bearer token for authorization.
+
+**Endpoint:** `http://localhost:3000/provider-chain-members`
+
+**Method:** `POST`
+
+**Body:** `json`
+
+```json
+{
+    "chainId": 10,
+    "providerId": 23,
+    "isActive": 1
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'localhost:3000/provider-chain-members' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{
+    "chainId": 10,
+    "providerId": 23,
+    "isActive": 1
+}'
+```
+
+**Sample response**
+
+```json
+{
+    "status": "success",
+    "data": {
+        "providerChainMember": {
+            "chainId": 10,
+            "providerId": 23,
+            "priorityOrder": 2,
+            "isActive": 1,
+            "id": 12,
+            "createdOn": "2025-10-12T03:06:23.771Z",
+            "updatedOn": "2025-10-12T03:06:23.771Z",
+            "status": 1
+        }
+    }
+}
+```
+
+### Fetch all Provider Chain Members
+
+Allows the user to fetch all providers based on the passed query parameters. Requires passing bearer token for authorization.
+
+The different options that can be used while fetching providers are as follows:
+
+- `limit:` Limit the number of results to the provided value
+- `offset:` Offset the result set by the provided value
+- `sortBy:` Sort the results by the provided key
+- `sortOrder:` Sort the results in either `ASC`ending or `DESC`ending order
+- `search:` Search for the provided value in `createdBy`, `data` and `result` and return results matching it
+- `filters:` Filter the results based on the provided `field`, `operator` and `value`. Operator can be `eq` (equal), `ne` (not equal), `contains`, `gt` (greater than) or `lt` (less than)
+
+**Endpoint:** `http://localhost:3000/graphql`
+
+**Method:** `POST`
+
+**Body:** `graphql`
+
+```graphql
+query {
+  providers(
+    options: {
+      limit: 5
+      offset: 0
+      sortBy: "createdOn"
+      sortOrder: ASC
+    }
+  ) {
+    providers {
+        providerId
+        name
+        channelType
+        configuration
+        isEnabled
+        userId
+        createdOn
+        updatedOn
+        status
+    }
+    total,
+    offset,
+    limit
+  }
+}
+```
+
+**cURL**
+
+```sh
+curl --location 'localhost:3000/graphql' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{"query":"query {\r\n  providerChainMembers(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: ASC\r\n    }\r\n  ) {\r\n    providerChainMembers{\r\n        id\r\n        chainId\r\n        providerChainDetails {\r\n            chainId\r\n            chainName\r\n            description\r\n            providerType\r\n            applicationId\r\n            createdOn\r\n            updatedOn\r\n            status\r\n        }\r\n        priorityOrder\r\n        isActive\r\n        providerId\r\n        providerDetails {\r\n            providerId\r\n            name\r\n            channelType\r\n            isEnabled\r\n            configuration\r\n            applicationId\r\n            userId\r\n            status\r\n        }\r\n        createdOn\r\n        updatedOn\r\n        status\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
+```
+
+**Sample response**
+
+```json
+{
+    "data": {
+        "providers": {
+            "providers": [
+                {
+                    "providerId": 4,
+                    "name": "Twilio WhatsApp Business Pinestem",
+                    "channelType": 7,
+                    "configuration": {},
+                    "isEnabled": 1,
+                    "userId": 1,
+                    "createdOn": "2024-05-20T11:26:36.000Z",
+                    "updatedOn": "2024-05-20T11:26:36.000Z",
+                    "status": 1
+                },
+                {
+                    "providerId": 6,
+                    "name": "Mailgun PineStem",
+                    "channelType": 2,
+                    "configuration": {},
+                    "isEnabled": 1,
+                    "userId": 1,
+                    "createdOn": "2024-06-21T09:46:27.000Z",
+                    "updatedOn": "2024-06-21T09:46:27.000Z",
+                    "status": 1
+                }
+            ],
+            "total": 2,
+            "offset": 0,
+            "limit": 5
+        }
+    }
+}
+```
+
+### Update Provider Chain Member Priotity Order
+
+Allows the user with `Admin` role to update priority order for Provider Chain Members. Requires passing bearer token for authorization.
+
+**Endpoint:** `http://localhost:3000/provider-chain-members/priority-order`
+
+**Method:** `PUT`
+
+**Body:** `json`
+
+```jsonc
+{
+    "chainId": 10,
+    "newProviderPriorityOrder": [23, 3]
+}
+```
+
+**cURL**
+
+```sh
+curl --location --request PUT 'localhost:3000/provider-chain-members/priority-order' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{
+    "chainId": 10,
+    "newProviderPriorityOrder": [23, 3]
+}'
+```
+
+**Sample response**
+
+```json
+{
+    "status": "success",
+    "data": {
+        "updatedProviderChainMembers": [
+            {
+                "id": 12,
+                "chainId": 10,
+                "providerId": 23,
+                "priorityOrder": 1,
+                "isActive": 1,
+                "createdOn": "2025-10-12T03:06:23.771Z",
+                "updatedOn": "2025-10-12T03:07:09.876Z",
+                "status": 1
+            },
+            {
+                "id": 10,
+                "chainId": 10,
+                "providerId": 3,
+                "priorityOrder": 2,
+                "isActive": 1,
+                "createdOn": "2025-10-12T02:59:39.061Z",
+                "updatedOn": "2025-10-12T03:07:09.876Z",
+                "status": 1
+            }
+        ]
+    }
+}
+```
+
+### Delete Provider Chain Member by Provider Id
+
+Allows the user with `Admin` role to delete existing Provider Chain Member. Requires passing bearer token for authorization.
+
+Deleted chain member priority order is set as negative of the chain id. This ensures it does not interfere with provider chain fallback functionailty.
+
+Priority order is automatically updated for rest of the undeleted chain members if any.
+
+**Endpoint:** `http://localhost:3000/provider-chain-members`
+
+**Method:** `DELETE`
+
+**Body:** `json`
+
+```jsonc
+{
+    "chainId": 10,
+    "providerId": 23
+}
+```
+
+**cURL**
+
+```sh
+curl --location --request DELETE 'localhost:3000/provider-chain-members' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{
+    "chainId": 10,
+    "providerId": 23
+}'
+```
+
+**Sample response**
+
+```json
+{
+    "status": "success",
+    "data": {
+        "deletedProviderChainMember": {
+            "id": 12,
+            "chainId": 10,
+            "providerId": 23,
+            "priorityOrder": -12,
+            "isActive": 1,
+            "createdOn": "2025-10-12T03:06:23.771Z",
+            "updatedOn": "2025-10-12T03:10:56.155Z",
+            "status": 0
+        }
+    }
+}
+```
+
+### Restore Provider Chain Member by Provider Id
+
+Allows the user with `Admin` role to restore a deleted Provider Chain Member. Requires passing bearer token for authorization.
+
+Priority order is updated to be 1 greater than number of active chain members.
+
+**Endpoint:** `http://localhost:3000/provider-chain-members/restore`
+
+**Method:** `PUT`
+
+**Body:** `json`
+
+```jsonc
+{
+    "chainId": 10,
+    "providerId": 23
+}
+```
+
+**cURL**
+
+```sh
+curl --location --request PUT 'localhost:3000/provider-chain-members/restore' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{
+    "chainId": 10,
+    "providerId": 23
+}'
+```
+
+**Sample response**
+
+```json
+{
+    "status": "success",
+    "data": {
+        "updatedProviderChainMembers": {
+            "id": 12,
+            "chainId": 10,
+            "providerId": 23,
+            "priorityOrder": 2,
+            "isActive": 1,
+            "createdOn": "2025-10-12T03:06:23.771Z",
+            "updatedOn": "2025-10-12T03:12:00.934Z",
+            "status": 1
+        }
+    }
+}
+```
