@@ -1,13 +1,28 @@
-import { Controller, Post, Body, Logger, HttpException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Logger,
+  HttpException,
+  UseGuards,
+  Query,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
+import { QueueService } from './queues/queue.service';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRoles } from 'src/common/constants/database';
 
 @Controller('notifications')
 export class NotificationsController {
   constructor(
     private readonly notificationService: NotificationsService,
+    private readonly queueService: QueueService,
     private readonly jsend: JsendFormatter,
     private logger: Logger = new Logger(NotificationsController.name),
   ) {}
@@ -20,6 +35,46 @@ export class NotificationsController {
   @Post('confirm')
   async getProviderConfirmation(): Promise<void> {
     this.notificationService.getProviderConfirmation();
+  }
+
+  @Post('redis/cleanup')
+  @UseGuards(RolesGuard)
+  @Roles(UserRoles.ADMIN)
+  async cleanupRedisJobs(
+    @Query('gracePeriod') gracePeriod?: string,
+  ): Promise<Record<string, unknown>> {
+    const grace = gracePeriod ? parseInt(gracePeriod, 10) : 0;
+
+    if (isNaN(grace) || grace < 0) {
+      throw new BadRequestException(
+        'Invalid gracePeriod parameter. Must be a non-negative number in milliseconds.',
+      );
+    }
+
+    try {
+      this.logger.log(`Starting Redis job cleanup with grace period: ${grace}ms`);
+      const result = await this.queueService.cleanupCompletedAndFailedJobs(grace);
+
+      return this.jsend.success({
+        message: 'Redis job cleanup completed successfully',
+        summary: {
+          totalCompletedJobsRemoved: result.totalCompleted,
+          totalFailedJobsRemoved: result.totalFailed,
+          totalJobsRemoved: result.totalCompleted + result.totalFailed,
+          queuesProcessed: result.queues.length,
+        },
+        details: result.queues,
+      });
+    } catch (error) {
+      this.logger.error('Error during Redis job cleanup');
+      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
+
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Failed to cleanup Redis jobs');
+    }
   }
 
   @Post()
