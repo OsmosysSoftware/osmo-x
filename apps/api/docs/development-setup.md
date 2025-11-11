@@ -81,6 +81,7 @@ This script will periodically call OsmoX APIs that facilitate the following proc
 - Processing of all `Pending` notifications
 - Provider Confirmation of all `Awaiting Confirmation` notifications
 - Archiving of all completed notifications in `notify_notifications` table
+- Deleting archived notifications older than X days from `notify_archived_notifications` table (if it is enabled)
 
 ## ALTERNATIVELY – Dockerize the application and use a local database instead of the dockerized one
 
