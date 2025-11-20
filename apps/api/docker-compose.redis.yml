@@ -1,0 +1,27 @@
+services:
+  osmox-api:
+    image: osmox-api-${COMPOSE_PROJECT_NAME}
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
+    depends_on:
+      osmox-redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./logs:/app/logs
+
+  osmox-redis:
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+      timeout: 3s
