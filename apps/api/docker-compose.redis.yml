@@ -8,32 +8,12 @@ services:
     ports:
       - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
     depends_on:
-      osmox-postgres:
-        condition: service_healthy
       osmox-redis:
         condition: service_healthy
     environment:
       NODE_ENV: production
     volumes:
       - ./logs:/app/logs
-
-  osmox-postgres:
-    image: postgres:latest
-    restart: unless-stopped
-    environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_DB: ${DB_NAME}
-    ports:
-      - ${DB_DOCKER_PORT}:5432
-    volumes:
-      - osmox-postgres-data-saas:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 5s
 
   osmox-redis:
     image: redis:latest
@@ -45,6 +25,3 @@ services:
       interval: 5s
       retries: 5
       timeout: 3s
-
-volumes:
-  osmox-postgres-data-saas: {}
