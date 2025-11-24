@@ -27,7 +27,7 @@ services:
     ports:
       - ${DB_DOCKER_PORT}:5432
     volumes:
-      - osmox-postgres-data-saas:/var/lib/postgresql/data
+      - osmox-postgres-data-saas:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
       interval: 10s
