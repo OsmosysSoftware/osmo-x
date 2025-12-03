@@ -72,6 +72,11 @@ This document explains how to run the osmo-x API using the newly added Docker Co
     DB_PASSWORD=your_password
     DB_NAME=osmox_db
     DB_DOCKER_PORT=5433
+
+    #### Redis Configuration
+    REDIS_HOST=host.docker.internal
+    REDIS_PORT=6379
+    REDIS_DOCKER_PORT=6397
     ```
 
 ## Notes for Linux Users
