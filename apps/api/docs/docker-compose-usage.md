@@ -80,3 +80,29 @@ This document explains how to run the osmo-x API using the newly added Docker Co
     ```
 
 ## Notes for Linux Users
+
+* To fetch your machine’s LAN IP (needed when connecting the API container to a locally running DB/Redis), run:
+    ```shell
+    hostname -I | awk '{print $1}'
+    ```
+* Use this IP as your DB_HOST or REDIS_HOST inside Docker, instead of localhost.
+* On Mac and Windows, you may alternatively use:
+    ```shell
+    host.docker.internal
+    ```
+
+## Commands to Stop and Remove Each Setup
+* ### Remove API only:
+    ```shell
+    docker compose -f docker-compose.api.yml down -v
+    ```
+
+* ### Remove API + Redis:
+    ```shell
+    docker compose -f docker-compose.redis.yml down -v
+    ```
+
+* ### Remove API + Postgres:
+    ```shell
+    docker compose -f docker-compose.db.yml down -v
+    ```
