@@ -29,44 +29,49 @@ This document explains how to run the osmo-x API using the newly added Docker Co
 ## Environment Variable Configuration for Docker Compose Setups
 
 * ### GLOBAL (Used in ALL Docker Compose setups)
-  * ```DB_TYPE=postgres```
-
+  ```env
+    DB_TYPE=postgres
+  ```
 * ### API only:
-  * #### Database Configuration
-    * ```DB_HOST=host.docker.internal```
-    * ```DB_PORT=5432```
-    * ```DB_USERNAME=your_username```
-    * ```DB_PASSWORD=your_password```
-    * ```DB_NAME=osmox_db```
-    * ```DB_DOCKER_PORT=5433```
+  ```env
+    #### Database Configuration
+    DB_HOST=host.docker.internal
+    DB_PORT=5432
+    DB_USERNAME=your_username
+    DB_PASSWORD=your_password
+    DB_NAME=osmox_db
+    DB_DOCKER_PORT=5433
 
-  * #### Redis Configuration
-    * ```REDIS_HOST=host.docker.internal```
-    * ```REDIS_PORT=6379```
-    * ```REDIS_DOCKER_PORT=6397```
-
+    #### Redis Configuration
+    REDIS_HOST=host.docker.internal
+    REDIS_PORT=6379
+    REDIS_DOCKER_PORT=6397
+    ```
 * ### API + Redis:
-  * #### Database Configuration 
-    * ```DB_HOST=osmox-postgres```
-    * ```DB_PORT=5432```
-    * ```DB_USERNAME=your_username```
-    * ```DB_PASSWORD=your_password```
-    * ```DB_NAME=osmox_db```
-    * ```DB_DOCKER_PORT=5433```
+  ```env
+    #### Database Configuration 
+    DB_HOST=osmox-postgres
+    DB_PORT=5432
+    DB_USERNAME=your_username
+    DB_PASSWORD=your_password
+    DB_NAME=osmox_db
+    DB_DOCKER_PORT=5433
 
-  * #### Redis Configuration
-    * ```REDIS_HOST=osmox-redis```
-    * ```REDIS_PORT=6379```
-    * ```REDIS_DOCKER_PORT=6397```
+    #### Redis Configuration
+    REDIS_HOST=osmox-redis
+    REDIS_PORT=6379
+    REDIS_DOCKER_PORT=6397
+    ```
 
 * ### API + Postgres:
-  * #### Database Configuration 
-    * ```DB_HOST=osmox-postgres```
-    * ```DB_PORT=5432```
-    * ```DB_USERNAME=your_username```
-    * ```DB_PASSWORD=your_password```
-    * ```DB_NAME=osmox_db```
-    * ```DB_DOCKER_PORT=5433```
-
+    ```env
+    #### Database Configuration 
+    DB_HOST=osmox-postgres
+    DB_PORT=5432
+    DB_USERNAME=your_username
+    DB_PASSWORD=your_password
+    DB_NAME=osmox_db
+    DB_DOCKER_PORT=5433
+    ```
 
 ## Notes for Linux Users
