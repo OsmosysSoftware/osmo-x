@@ -44,28 +44,28 @@ DB_TYPE=postgres
   ```env
   #### Database Configuration
   DB_HOST=host.docker.internal # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
-  DB_PORT=5432
+  DB_PORT=5432 # Set the port used by postgres of your local machine
   DB_USERNAME=your_username
   DB_PASSWORD=your_password
   DB_NAME=osmox_db
-  DB_DOCKER_PORT=5433
+  DB_DOCKER_PORT=5433 # IGNORE. Will not be used for current setup
 
   #### Redis Configuration
   REDIS_HOST=host.docker.internal # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
-  REDIS_PORT=6379
-  REDIS_DOCKER_PORT=6397
+  REDIS_PORT=6379 # Set the port used by redis of your local machine
+  REDIS_DOCKER_PORT=6397 # IGNORE. Will not be used for current setup
   ```
 
 ### API + Redis:
 
   ```env
   #### Database Configuration
-  DB_HOST=osmox-postgres
-  DB_PORT=5432
+  DB_HOST=osmox-postgres # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
+  DB_PORT=5432 # Set the port used by postgres of your local machine
   DB_USERNAME=your_username
   DB_PASSWORD=your_password
   DB_NAME=osmox_db
-  DB_DOCKER_PORT=5433
+  DB_DOCKER_PORT=5433 # IGNORE. Will not be used for current setup
 
   #### Redis Configuration
   REDIS_HOST=osmox-redis
@@ -86,8 +86,8 @@ DB_TYPE=postgres
 
   #### Redis Configuration
   REDIS_HOST=host.docker.internal # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
-  REDIS_PORT=6379
-  REDIS_DOCKER_PORT=6397
+  REDIS_PORT=6379 # Set the port used by redis of your local machine
+  REDIS_DOCKER_PORT=6397 # IGNORE. Will not be used for current setup
   ```
 
 ## Notes for Linux Users
