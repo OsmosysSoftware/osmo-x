@@ -60,7 +60,7 @@ DB_TYPE=postgres
 
   ```env
   #### Database Configuration
-  DB_HOST=osmox-postgres # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
+  DB_HOST=host.docker.internal # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
   DB_PORT=5432 # Set the port used by postgres of your local machine
   DB_USERNAME=your_username
   DB_PASSWORD=your_password
