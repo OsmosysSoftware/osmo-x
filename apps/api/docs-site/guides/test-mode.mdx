@@ -1,0 +1,173 @@
+---
+title: Test Mode
+description: Configure and use test mode for safe notification testing
+icon: flask
+---
+
+# Test Mode Configuration
+
+The **Test Mode** feature in OsmoX enables administrators to toggle a testing environment for an application, allowing functional testing without sending notifications to real recipients.
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Blocked Notifications" icon="ban">
+    Providers associated with test mode enabled applications DO NOT send notifications to end recipients
+  </Card>
+  <Card title="Whitelist Support" icon="list-check">
+    Every application can maintain a whitelist of recipients for which notifications will be processed normally
+  </Card>
+</CardGroup>
+
+## Configuration Fields
+
+### testModeEnabled
+
+A binary flag to enable or disable test mode for an application.
+
+| Value | State | Description |
+|-------|-------|-------------|
+| `1` | ON | Test mode is enabled |
+| `0` | OFF | Test mode is disabled (default) |
+
+<Note>
+  When test mode is enabled, notifications are automatically marked as SUCCESS with a dummy response, without actually being delivered.
+</Note>
+
+### whitelistRecipients
+
+A JSON object specifying providers and related recipients that will process notifications normally even in test mode.
+
+**Format:**
+- Keys: Provider ID (string)
+- Values: Arrays of recipient strings (email addresses, phone numbers)
+
+```json
+{
+  "6": ["abcrecipient@gmail.com"],
+  "18": ["+18900100002", "+18900100003", "+18900100004"],
+  "21": ["*"]
+}
+```
+
+<Warning>
+  Provider IDs used should belong to the application.
+</Warning>
+
+**Special escape character:** Use `["*"]` to whitelist ALL recipients for a provider, allowing it to work normally even in test mode.
+
+## Enabling Test Mode
+
+### For Existing Applications
+
+<Tabs>
+  <Tab title="GraphQL">
+    ```graphql
+    mutation UpdateApplication($applicationId: Float!) {
+      updateApplication(updateApplicationInput: {
+        applicationId: $applicationId,
+        testModeEnabled: 1
+      }) {
+        applicationId
+        name
+        testModeEnabled
+        whitelistRecipients
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="cURL">
+    ```bash
+    curl --location 'localhost:3000/graphql' \
+    --header 'Authorization: Bearer my-secure-token' \
+    --header 'Content-Type: application/json' \
+    --data '{"query":"mutation UpdateApplication($applicationId: Float!) { updateApplication(updateApplicationInput: { applicationId: $applicationId, testModeEnabled: 1 }) { applicationId name testModeEnabled } }","variables":{"applicationId":2}}'
+    ```
+  </Tab>
+</Tabs>
+
+### For New Applications
+
+```graphql
+mutation CreateApplication {
+  application(createApplicationInput: {
+    name: "<newApplicationName>",
+    testModeEnabled: 1
+  }) {
+    applicationId
+    name
+    testModeEnabled
+    whitelistRecipients
+  }
+}
+```
+
+## Configuring Whitelist
+
+### Add Whitelisted Recipients
+
+<Tabs>
+  <Tab title="GraphQL">
+    ```graphql
+    mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {
+      updateApplication(updateApplicationInput: {
+        applicationId: $applicationId,
+        testModeEnabled: 1,
+        whitelistRecipients: $whitelistRecipients
+      }) {
+        applicationId
+        name
+        testModeEnabled
+        whitelistRecipients
+      }
+    }
+    ```
+
+    **Variables:**
+    ```json
+    {
+      "applicationId": 2,
+      "whitelistRecipients": {
+        "16": ["abce@gmail.com", "test@email.co"],
+        "18": ["+918900100002", "+918900100003"]
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="cURL">
+    ```bash
+    curl --location 'localhost:3000/graphql' \
+    --header 'Authorization: Bearer my-secure-token' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{"query":"mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) { updateApplication(updateApplicationInput: { applicationId: $applicationId, testModeEnabled: 1, whitelistRecipients: $whitelistRecipients }) { applicationId name testModeEnabled whitelistRecipients } }","variables":{"applicationId":2,"whitelistRecipients":{"16":["test@email.co"],"18":["+918900100002"]}}}'
+    ```
+  </Tab>
+</Tabs>
+
+<Info>
+  Whitelist can be added or updated even if the application is not in test mode.
+</Info>
+
+## Identifying Test Mode Notifications
+
+Notifications processed in test mode have the following characteristics:
+
+| Field | Value |
+|-------|-------|
+| `delivery_status` | `SUCCESS` (5) |
+| `result` | `{"result": "This is a test mode notification. Notification was not delivered to recipient."}` |
+| `retry_count` | `0` |
+
+## Best Practices
+
+<Steps>
+  <Step title="Validate Whitelist JSON">
+    Always validate your whitelist JSON before submission using a JSON validator tool
+  </Step>
+  <Step title="Use Provider-Specific Whitelists">
+    Configure whitelists per provider to control which channels can send real notifications
+  </Step>
+  <Step title="Wildcard Carefully">
+    Use the `["*"]` wildcard only when you want a specific provider to bypass test mode completely
+  </Step>
+</Steps>

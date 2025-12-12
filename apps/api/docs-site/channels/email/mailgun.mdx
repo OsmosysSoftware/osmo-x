@@ -1,0 +1,150 @@
+---
+title: Mailgun
+description: Send emails using Mailgun API
+icon: envelope
+---
+
+# Mailgun
+
+Mailgun is an email service provider that offers a RESTful API for sending emails from your Node.js application. OsmoX uses the official `mailgun.js` npm module for integration.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `2` (Mailgun) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="MAILGUN_API_KEY" type="string" required>
+  Your Mailgun API key
+</ParamField>
+
+<ParamField path="MAILGUN_HOST" type="string" required>
+  Mailgun host: `api.mailgun.net` for US, `api.eu.mailgun.net` for EU
+</ParamField>
+
+<ParamField path="MAILGUN_DOMAIN" type="string" required>
+  Your Mailgun domain name
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "MAILGUN_API_KEY": "your-api-key",
+  "MAILGUN_HOST": "api.mailgun.net",
+  "MAILGUN_DOMAIN": "your.mailgun.domain"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 2,
+  "data": {
+    "from": "sender@example.com",
+    "to": "recipient@example.com",
+    "cc": "cc@example.com",
+    "bcc": "bcc@example.com",
+    "subject": "Test subject",
+    "text": "This is a test notification",
+    "html": "<b>This is a test notification</b>",
+    "attachments": [
+      {
+        "filename": "names.txt",
+        "content": "John Doe\nJane Doe"
+      }
+    ]
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="from" type="string" required>
+  Sender's email address
+</ParamField>
+
+<ParamField path="to" type="string | string[]" required>
+  Recipient's email address
+</ParamField>
+
+<ParamField path="cc" type="string | string[]">
+  CC email addresses
+</ParamField>
+
+<ParamField path="bcc" type="string | string[]">
+  BCC email addresses
+</ParamField>
+
+<ParamField path="subject" type="string" required>
+  Email subject line
+</ParamField>
+
+<ParamField path="text" type="string">
+  Plain text version of the email
+</ParamField>
+
+<ParamField path="html" type="string">
+  HTML version of the email
+</ParamField>
+
+<ParamField path="attachments" type="array">
+  Array of attachment objects with `filename` and `content`
+</ParamField>
+
+## Attachments with Base64
+
+Mailgun supports multiple MIME types with Buffer from base64. Here's how to create a base64 string:
+
+<Tabs>
+  <Tab title="Node.js">
+    ```javascript
+    const fs = require('fs');
+
+    const filePath = 'path/to/your/file.pdf';
+    const fileData = fs.readFileSync(filePath);
+    const base64String = fileData.toString('base64');
+
+    console.log(base64String);
+    ```
+  </Tab>
+  <Tab title="C#">
+    ```csharp
+    using System;
+    using System.IO;
+
+    class Program
+    {
+        static void Main()
+        {
+            string filePath = "path/to/your/file.pdf";
+            byte[] fileBytes = File.ReadAllBytes(filePath);
+            string base64String = Convert.ToBase64String(fileBytes);
+
+            Console.WriteLine(base64String);
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| mailgun.js | ^10.2.3 | Mailgun client for JavaScript |
+| form-data | ^4.0.0 | Form data handling for HTTP requests |
+
+## Reference
+
+- [Mailgun API Documentation](https://documentation.mailgun.com/en/latest/api-sending.html)
