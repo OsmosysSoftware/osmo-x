@@ -1,0 +1,219 @@
+---
+title: AWS SNS Push Guide
+description: Detailed guide for sending push notifications via AWS SNS
+icon: aws
+---
+
+# AWS SNS Push Notifications Guide
+
+This guide provides detailed information on sending push notifications through AWS SNS.
+
+## Prerequisites
+
+Before sending push notifications, ensure you have:
+
+<CardGroup cols={2}>
+  <Card title="AWS Account" icon="cloud">
+    An active AWS account with SNS access
+  </Card>
+  <Card title="IAM Permissions" icon="user-shield">
+    IAM user with appropriate SNS permissions
+  </Card>
+  <Card title="SNS Topic" icon="bell">
+    An SNS topic configured for your application
+  </Card>
+  <Card title="Platform Application" icon="mobile">
+    Platform application in SNS (GCM for Android, APNS for iOS)
+  </Card>
+</CardGroup>
+
+## Message Payload Structure
+
+The payload consists of two fields:
+
+<ParamField path="message" type="object" required>
+  The properly formatted notification payload (platform-specific)
+</ParamField>
+
+<ParamField path="target" type="string" required>
+  The endpoint ARN for the target device
+</ParamField>
+
+## Platform-Specific Payloads
+
+<Tabs>
+  <Tab title="Android (GCM/FCM)">
+    ```json
+    {
+      "providerId": 10,
+      "data": {
+        "message": {
+          "GCM": "{\"notification\":{\"title\":\"Test Notification\",\"body\":\"This is a test notification\"}}"
+        },
+        "target": "arn:aws:sns:us-west-2:505884080245:endpoint/GCM/MyApp-Android/7fb080a5-..."
+      }
+    }
+    ```
+
+    ### Android Payload Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | `title` | Notification title | `"New Message"` |
+    | `body` | Notification body text | `"You have a new message"` |
+    | `icon` | Icon to display | `"ic_notification"` |
+    | `sound` | Sound to play | `"default"` |
+    | `click_action` | Action on click | `"OPEN_ACTIVITY"` |
+    | `data` | Custom key-value pairs | `{"key1": "value1"}` |
+    | `priority` | Message priority | `"normal"` or `"high"` |
+    | `ttl` | Time to live | `"3600s"` (1 hour) |
+  </Tab>
+
+  <Tab title="iOS (APNS)">
+    ```json
+    {
+      "providerId": 10,
+      "data": {
+        "message": {
+          "APNS_SANDBOX": "{\"aps\":{\"alert\":{\"title\":\"Hello World\",\"body\":\"This is a test message\"},\"sound\":\"default\"}}"
+        },
+        "target": "arn:aws:sns:us-west-2:505884080245:endpoint/APNS_SANDBOX/MyApp-iOS/57711edf-..."
+      }
+    }
+    ```
+
+    <Note>
+      Use `APNS_SANDBOX` for development and `APNS` for production.
+    </Note>
+
+    ### iOS Payload Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | `aps.alert.title` | Notification title | `"New Message"` |
+    | `aps.alert.body` | Notification body | `"You have a new message"` |
+    | `aps.sound` | Sound to play | `"default"` |
+    | `aps.badge` | Badge number | `1` |
+    | `aps.content-available` | Background refresh | `1` |
+    | `aps.category` | Notification category | `"NEW_MESSAGE_CATEGORY"` |
+  </Tab>
+</Tabs>
+
+## Complete Field Reference
+
+### Android (GCM/FCM) Fields
+
+<Accordion title="title">
+  Specifies the notification title displayed in the notification drawer.
+  ```json
+  "title": "New Message"
+  ```
+</Accordion>
+
+<Accordion title="body">
+  Specifies the main content users see in the notification drawer.
+  ```json
+  "body": "You have a new message"
+  ```
+</Accordion>
+
+<Accordion title="icon">
+  Specifies the icon to display with the notification.
+  ```json
+  "icon": "ic_notification"
+  ```
+</Accordion>
+
+<Accordion title="sound">
+  Specifies the sound to play when the notification arrives.
+  ```json
+  "sound": "default"
+  ```
+</Accordion>
+
+<Accordion title="click_action">
+  Defines the action to perform when the user clicks the notification.
+  ```json
+  "click_action": "OPEN_ACTIVITY"
+  ```
+</Accordion>
+
+<Accordion title="data">
+  Provides additional custom data to the application.
+  ```json
+  "data": {"key1": "value1", "key2": "value2"}
+  ```
+</Accordion>
+
+<Accordion title="priority">
+  Sets the priority of the message. Valid values: `"normal"` and `"high"`.
+  ```json
+  "priority": "high"
+  ```
+</Accordion>
+
+<Accordion title="ttl">
+  Time to live. Specifies how long the message should be kept if the device is offline.
+  ```json
+  "ttl": "3600s"
+  ```
+</Accordion>
+
+### iOS (APNS) Fields
+
+<Accordion title="aps.alert">
+  Contains the notification's title and body.
+  ```json
+  "aps": {
+    "alert": {
+      "title": "New Message",
+      "body": "You have a new message"
+    }
+  }
+  ```
+</Accordion>
+
+<Accordion title="aps.badge">
+  Sets the number to display on the app icon.
+  ```json
+  "aps": {
+    "badge": 1
+  }
+  ```
+</Accordion>
+
+<Accordion title="aps.content-available">
+  Indicates new content is available and can trigger background processing.
+  ```json
+  "aps": {
+    "content-available": 1
+  }
+  ```
+</Accordion>
+
+<Accordion title="aps.category">
+  Used to define custom actions for the notification.
+  ```json
+  "aps": {
+    "category": "NEW_MESSAGE_CATEGORY"
+  }
+  ```
+</Accordion>
+
+## Usage in OsmoX
+
+When sending push notifications through OsmoX:
+
+1. Format the message payload according to the target platform
+2. Provide the correct endpoint ARN as the target
+3. OsmoX passes the message to AWS SNS for delivery
+
+<Warning>
+  Ensure the message payload is correctly formatted for the target platform. Incorrect formatting will result in delivery failures.
+</Warning>
+
+## References
+
+- [AWS SNS Custom Platform Payloads](https://docs.aws.amazon.com/sns/latest/dg/sns-send-custom-platform-specific-payloads-mobile-devices.html)
+- [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging)
+- [Apple Push Notification Service](https://developer.apple.com/documentation/usernotifications)

@@ -1,0 +1,90 @@
+---
+title: Twilio WhatsApp Business
+description: Send WhatsApp template messages using Twilio Content Template Builder
+icon: whatsapp
+---
+
+# Twilio WhatsApp Business
+
+This provider sends WhatsApp messages generated using Twilio's Content Template Builder. It's designed for sending pre-approved template messages with dynamic variables.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `7` (Twilio WhatsApp Business) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="TWILIO_WA_ACCOUNT_SID" type="string" required>
+  Twilio account SID
+</ParamField>
+
+<ParamField path="TWILIO_WA_AUTH_TOKEN" type="string" required>
+  Twilio auth token
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "TWILIO_WA_ACCOUNT_SID": "ACXXXXXXXXXXXXXXXXX",
+  "TWILIO_WA_AUTH_TOKEN": "someauthtoken"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 7,
+  "data": {
+    "contentSid": "HXXXXXXXXX",
+    "from": "MGXXXXXXXX",
+    "contentVariables": {
+      "1": "Name",
+      "2": "52"
+    },
+    "to": "+919004812051"
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="contentSid" type="string" required>
+  The Content SID from Twilio Content Template Builder
+</ParamField>
+
+<ParamField path="from" type="string" required>
+  The Messaging Service SID (starts with MG)
+</ParamField>
+
+<ParamField path="to" type="string" required>
+  Recipient's WhatsApp phone number in E.164 format
+</ParamField>
+
+<ParamField path="contentVariables" type="object" required>
+  Template variables as key-value pairs. Keys are numbered positions, values are strings.
+</ParamField>
+
+<Note>
+  All values in `contentVariables` must be strings, even for numbers (e.g., `"52"` not `52`).
+</Note>
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| twilio | ^5.8.0 | Twilio client for messaging |
+
+## Reference
+
+- [Send Templates with Content Template Builder](https://www.twilio.com/docs/content/send-templates-created-with-the-content-template-builder)

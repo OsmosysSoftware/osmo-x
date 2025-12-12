@@ -1,0 +1,239 @@
+---
+title: Database Design
+description: Comprehensive overview of the OsmoX database schema and data dictionary
+icon: database
+---
+
+# Database Design
+
+This document provides a comprehensive and structured overview of the database design for OsmoX. It serves as a reference guide for developers, database administrators, and other stakeholders.
+
+<Note>
+  The tables discussed below are created as part of the database migration.
+</Note>
+
+## Database Schema
+
+The database schema consists of the following tables:
+
+| Table | Description |
+|-------|-------------|
+| `notify_applications` | Details about all the current applications |
+| `notify_archived_notifications` | Completed notifications that have been archived |
+| `notify_master_providers` | Basic provider types and configuration JSON |
+| `notify_migrations` | Migration records |
+| `notify_notification_retries` | Details of notification retries |
+| `notify_notifications` | All notifications created |
+| `notify_providers` | Provider configurations |
+| `notify_server_api_keys` | API keys for different applications |
+| `notify_users` | User accounts |
+| `notify_webhooks` | Webhook URLs for providers |
+| `notify_provider_types` | Provider type catalog (e.g., SMS, Email, WhatsApp) |
+| `notify_provider_chains` | Per-application provider chains by provider type |
+| `notify_provider_chain_members` | Ordered members within a provider chain |
+
+<Frame>
+  <img src="/images/OsmoX_database_schema.png" alt="OsmoX Database Schema" />
+</Frame>
+
+## Data Dictionary
+
+### notify_applications
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| application_id | integer | True | | Primary key, unique identifier for the application |
+| name | varchar(255) | True | | Name of the application |
+| user_id | integer | True | | User ID of the user associated with this application |
+| created_on | timestamp | True | current_timestamp() | Timestamp for the creation |
+| updated_on | timestamp | True | current_timestamp() | Timestamp for the last update |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+| test_mode_enabled | smallint | True | 0 | Test mode enabled(1) or disabled(0) |
+| whitelist_recipients | jsonb | False | NULL | Whitelisted recipients in JSON format |
+
+### notify_notifications
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| id | integer | True | | Primary key |
+| channel_type | smallint | True | | Foreign Key to master_provider |
+| data | jsonb | True | | JSON data (from/to addresses, subject, body) |
+| delivery_status | smallint | True | 1 | Current delivery status |
+| result | jsonb | False | NULL | JSON result after sending attempt |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| created_by | varchar(255) | True | | Service/app that created the notification |
+| updated_by | varchar(255) | True | | Service/app that last updated |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+| application_id | integer | False | NULL | Related application ID |
+| provider_id | integer | False | NULL | Foreign key to provider |
+| retry_count | integer | True | 0 | Retry count |
+| notification_sent_on | timestamp | False | NULL | Time sent to provider |
+
+### notify_archived_notifications
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| id | integer | True | | Primary key |
+| notification_id | integer | True | | Original notification ID (indexed) |
+| channel_type | smallint | True | | Foreign Key to master_provider |
+| data | jsonb | True | | JSON notification data |
+| delivery_status | smallint | True | 1 | Final delivery status (indexed) |
+| result | jsonb | False | NULL | JSON result |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| created_by | varchar(255) | True | | Creator service/app |
+| updated_by | varchar(255) | True | | Last updater service/app |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+| application_id | integer | False | NULL | Related application ID |
+| provider_id | integer | False | NULL | Foreign key to provider |
+| retry_count | integer | True | 0 | Retry count |
+| notification_sent_on | timestamp | False | NULL | Time sent to provider |
+
+### notify_providers
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| provider_id | smallint | True | | Primary key |
+| name | varchar(255) | True | | Provider name |
+| channel_type | smallint | True | | Channel type for notifications |
+| is_enabled | smallint | True | | Whether provider is enabled |
+| configuration | jsonb | True | | Provider configuration JSON |
+| application_id | integer | True | | Application identifier |
+| user_id | integer | True | | Associated user ID |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+
+<Accordion title="Example provider configuration">
+```json
+{
+  "SMTP_HOST": "some.smtp.host",
+  "SMTP_PORT": 123,
+  "SMTP_USERNAME": "someusername",
+  "SMTP_PASSWORD": "somepassword"
+}
+```
+</Accordion>
+
+### notify_master_providers
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| master_id | smallint | True | | Primary key |
+| name | varchar(255) | True | | Provider name |
+| provider_type | smallint | True | 1 | Provider type (SMS, Email, etc.) |
+| configuration | jsonb | True | | Master configuration JSON |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+
+<Accordion title="Example master provider configuration">
+```json
+{
+  "apikey": {
+    "label": "API Key",
+    "id": "apikey",
+    "pattern": "^[0-19]10$",
+    "type": "number"
+  }
+}
+```
+</Accordion>
+
+### notify_provider_chains
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| chain_id | serial4 | True | | Primary key |
+| chain_name | varchar(255) | True | | Chain name |
+| application_id | int4 | True | | Foreign Key to application |
+| provider_type | int2 | True | 1 | Foreign Key to provider type |
+| description | text | False | | Optional description |
+| is_default | int2 | True | 0 | Whether chain is used by default |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+
+### notify_provider_chain_members
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| id | serial4 | True | | Primary key |
+| chain_id | int4 | True | | Foreign key to chain |
+| provider_id | int4 | True | | Foreign key to provider |
+| priority_order | int2 | True | | Processing order (1=first, 2=second, etc.) |
+| is_active | int2 | True | 1 | Active(1) or inactive(0) |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+
+### notify_server_api_keys
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| api_key_id | integer | True | | Primary key |
+| api_key | varchar(255) | True | | Server API key (unique per application) |
+| application_id | integer | True | | Foreign key to application |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+
+### notify_users
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| user_id | integer | True | | Primary key |
+| username | varchar(255) | True | | Username |
+| password | varchar(255) | True | | Hashed password |
+| role | smallint | True | 0 | Role: BASIC (0) or ADMIN (1) |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+
+### notify_webhooks
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| id | integer | True | | Primary key |
+| provider_id | integer | True | | Foreign key to provider |
+| webhookUrl | varchar(255) | False | NULL | Webhook URL to trigger |
+| is_verified | smallint | True | 0 | Whether webhook is verified |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+
+<Info>
+  For details on webhook integration, see the [Webhook Guide](/guides/webhooks).
+</Info>
+
+### notify_provider_types
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| provider_type_id | serial4 | True | | Primary key |
+| name | varchar(255) | True | | Provider type name |
+| description | text | False | | Optional description |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| status | smallint | True | 1 | Active(1) or inactive(0) |
+
+### notify_migrations
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| id | integer | True | | Primary key |
+| timestamp | timestamp | True | | Migration creation timestamp |
+| name | varchar(255) | True | | Migration name |
+
+### notify_notification_retries
+
+| Attribute | Data Type | Not Null | Default | Description |
+|-----------|-----------|----------|---------|-------------|
+| id | integer | True | | Primary key |
+| notification_id | integer | True | | Notification ID in retry loop |
+| retry_count | integer | True | | Retry number |
+| retry_result | jsonb | False | NULL | Retry result |
+| created_on | timestamp | True | current_timestamp() | Creation timestamp |
+| updated_on | timestamp | True | current_timestamp() | Last update timestamp |
+| status | smallint | True | 1 | Active(1) or inactive(0) |

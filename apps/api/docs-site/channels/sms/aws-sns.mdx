@@ -1,0 +1,79 @@
+---
+title: AWS SNS SMS
+description: Send SMS messages using Amazon Simple Notification Service
+icon: message
+---
+
+# AWS SNS SMS
+
+Amazon Simple Notification Service (SNS) is a fully managed messaging service that supports sending SMS messages globally.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `12` (AWS SNS SMS) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="AWS_ACCESS_KEY_ID" type="string" required>
+  Access key for AWS instance
+</ParamField>
+
+<ParamField path="AWS_SECRET_ACCESS_KEY" type="string" required>
+  Secret access key for AWS
+</ParamField>
+
+<ParamField path="AWS_REGION" type="string" required>
+  Region of the AWS instance
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "AWS_ACCESS_KEY_ID": "Aws-Access-key",
+  "AWS_SECRET_ACCESS_KEY": "Aws-Secret-Key",
+  "AWS_REGION": "us-east-1"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 12,
+  "data": {
+    "to": "+919234567890",
+    "message": "This is a test notification"
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="to" type="string" required>
+  Recipient's phone number in E.164 format
+</ParamField>
+
+<ParamField path="message" type="string" required>
+  The SMS message content
+</ParamField>
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| @aws-sdk/client-sns | ^3.855.0 | AWS SDK for JavaScript SNS client |
+
+## References
+
+- [What is AWS SNS](https://docs.aws.amazon.com/sns/latest/dg/welcome.html)
+- [AWS SNS SMS Integration](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/sns-examples-sending-sms.html)

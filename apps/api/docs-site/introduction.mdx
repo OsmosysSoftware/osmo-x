@@ -1,0 +1,83 @@
+---
+title: Introduction
+description: Centralized multi-channel notification management system
+---
+
+# OsmoX
+
+OsmoX is a powerful, centralized notification management system that provides a unified API for sending notifications across multiple channels including email, SMS, WhatsApp, push notifications, and voice calls.
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/getting-started/development">
+    Get OsmoX running locally in minutes
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/getting-started/architecture">
+    Understand how OsmoX works under the hood
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/overview">
+    Explore the REST and GraphQL APIs
+  </Card>
+  <Card title="Channels" icon="paper-plane" href="/channels/email/smtp">
+    Configure notification providers
+  </Card>
+</CardGroup>
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Multi-Channel Support" icon="layer-group">
+    Send notifications via Email, SMS, WhatsApp, Push, and Voice from a single API
+  </Card>
+  <Card title="Provider Chains" icon="link">
+    Configure fallback providers for automatic failover
+  </Card>
+  <Card title="Queue-Based Processing" icon="list-check">
+    Reliable delivery with Bull queues backed by Redis
+  </Card>
+  <Card title="Webhooks" icon="webhook">
+    Real-time delivery status notifications
+  </Card>
+  <Card title="Test Mode" icon="flask">
+    Safe testing with whitelisted recipients
+  </Card>
+  <Card title="Management Portal" icon="gauge">
+    Angular-based UI for configuration and monitoring
+  </Card>
+</CardGroup>
+
+## Supported Providers
+
+| Channel | Providers |
+|---------|-----------|
+| **Email** | SMTP, Mailgun, AWS SES |
+| **SMS** | Twilio, Plivo, AWS SNS |
+| **WhatsApp** | Twilio, Twilio Business, 360Dialog |
+| **Push** | AWS SNS |
+| **Voice** | Twilio |
+
+## Architecture Overview
+
+OsmoX follows a queue-based architecture for reliable notification delivery:
+
+1. **API Layer** - NestJS backend handling REST and GraphQL requests
+2. **Queue System** - Bull queues (Redis-backed) for asynchronous processing
+3. **Provider Integration** - Modular provider implementations for each channel
+4. **Portal** - Angular frontend for management and monitoring
+
+<Note>
+  The scheduler component must be running for notifications to be processed. See the [Development Setup](/getting-started/development) guide for details.
+</Note>
+
+## Getting Started
+
+<Steps>
+  <Step title="Set up the environment">
+    Follow the [Development Setup](/getting-started/development) guide to configure your local environment
+  </Step>
+  <Step title="Configure a provider">
+    Set up at least one notification provider from the [Channels](/channels/email/smtp) section
+  </Step>
+  <Step title="Send your first notification">
+    Use the [API Usage Guide](/api-reference/usage) to send a test notification
+  </Step>
+</Steps>

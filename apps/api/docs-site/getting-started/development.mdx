@@ -1,0 +1,128 @@
+---
+title: Development Setup
+description: Set up OsmoX for local development
+icon: code
+---
+
+# Development Setup
+
+This document outlines the steps required to set up OsmoX for development. By following these steps, you'll be able to run the application locally.
+
+## Prerequisites
+
+Before setting up OsmoX for development, ensure you have the following:
+
+<CardGroup cols={2}>
+  <Card title="Node.js v20.x+" icon="node-js">
+    Install via NVM: `nvm install 20 && nvm use 20`
+  </Card>
+  <Card title="PostgreSQL v16.x+" icon="database">
+    Database server for storing notifications
+  </Card>
+  <Card title="Redis v6.x+" icon="server">
+    Queue backend for Bull
+  </Card>
+  <Card title="Git v2.x+" icon="git-alt">
+    Version control system
+  </Card>
+</CardGroup>
+
+### Verify Services
+
+Ensure Redis and PostgreSQL server are up and running:
+
+```bash
+sudo systemctl status redis
+sudo systemctl status postgresql
+```
+
+## Getting Started
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/OsmosysSoftware/osmo-x.git
+    cd osmo-x/apps/api
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    ```bash
+    npm install
+    ```
+  </Step>
+
+  <Step title="Configure environment">
+    Create a `.env` file from the example:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    Update the following values in your `.env` file:
+
+    | Variable | Description |
+    |----------|-------------|
+    | `SERVER_PORT` | API server port (default: 3000) |
+    | `DB_HOST` | PostgreSQL host |
+    | `DB_PORT` | PostgreSQL port |
+    | `DB_NAME` | Database name |
+    | `DB_USERNAME` | Database username |
+    | `DB_PASSWORD` | Database password |
+    | `REDIS_HOST` | Redis host |
+  </Step>
+
+  <Step title="Run database migrations">
+    Ensure your database server is running, then create the tables:
+
+    ```bash
+    npm run typeorm:run-migration
+    ```
+  </Step>
+
+  <Step title="Start the development server">
+    ```bash
+    npm run start:dev
+    ```
+
+    OsmoX will now be running locally at `http://localhost:3000`.
+  </Step>
+</Steps>
+
+## Start the Scheduler
+
+<Warning>
+  The scheduler is required for processing notifications. Without it, notifications will remain in `Pending` status.
+</Warning>
+
+Start the scheduler script in a separate terminal:
+
+```bash
+# Ensure API directory is active
+cd osmo-x/apps/api
+
+# Start scheduler script
+./scheduler.sh
+```
+
+This script periodically calls OsmoX APIs to:
+
+- Process all `Pending` notifications
+- Confirm all `Awaiting Confirmation` notifications
+- Archive completed notifications
+- Delete old archived notifications (if enabled)
+
+## Docker Alternative
+
+You can also run OsmoX using Docker while using a local database. See the Docker guide in `apps/api/docs/use-local-db-instead-of-dockerized-db/README.md` for details.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Usage Guide" icon="book" href="/api-reference/usage">
+    Learn how to make API calls and send notifications
+  </Card>
+  <Card title="Configure Providers" icon="plug" href="/channels/email/smtp">
+    Set up notification providers for your channels
+  </Card>
+</CardGroup>
