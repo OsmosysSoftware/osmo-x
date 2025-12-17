@@ -1,0 +1,13 @@
+services:
+  osmox-api:
+    image: osmox-api-${COMPOSE_PROJECT_NAME}
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./logs:/app/logs
