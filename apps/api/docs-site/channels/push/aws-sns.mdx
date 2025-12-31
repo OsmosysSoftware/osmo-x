@@ -1,0 +1,103 @@
+---
+title: AWS SNS Push
+description: Send push notifications using Amazon Simple Notification Service
+icon: bell
+---
+
+# AWS SNS Push Notifications
+
+AWS Simple Notification Service (SNS) enables sending push notifications to mobile devices through its API.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `9` (Push Notification SNS) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="AWS_ACCESS_KEY_ID" type="string" required>
+  Access key for AWS instance
+</ParamField>
+
+<ParamField path="AWS_SECRET_ACCESS_KEY" type="string" required>
+  Secret access key for AWS
+</ParamField>
+
+<ParamField path="AWS_REGION" type="string" required>
+  Region of the AWS instance
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "AWS_ACCESS_KEY_ID": "Aws-Access-key",
+  "AWS_SECRET_ACCESS_KEY": "Aws-Secret-Key",
+  "AWS_REGION": "us-west-2"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 10,
+  "data": {
+    "message": {
+      "GCM": "{\"notification\":{\"title\":\"Test Notification\",\"body\":\"This is a test notification\"}}"
+    },
+    "target": "arn:aws:sns:us-west-2:505884080245:endpoint/GCM/Android/7fb080a5-..."
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="message" type="object" required>
+  Platform-specific message payload. The key is the platform (e.g., `GCM` for Android, `APNS` for iOS).
+</ParamField>
+
+<ParamField path="target" type="string" required>
+  The ARN of the endpoint to send the notification to
+</ParamField>
+
+### Message Format for Different Platforms
+
+<Tabs>
+  <Tab title="Android (GCM/FCM)">
+    ```json
+    {
+      "GCM": "{\"notification\":{\"title\":\"Title\",\"body\":\"Message body\"}}"
+    }
+    ```
+  </Tab>
+  <Tab title="iOS (APNS)">
+    ```json
+    {
+      "APNS": "{\"aps\":{\"alert\":{\"title\":\"Title\",\"body\":\"Message body\"}}}"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+  The message payload must be a JSON string, not a JSON object. Notice the escaped quotes in the examples above.
+</Warning>
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| @aws-sdk/client-sns | ^3.855.0 | AWS SDK for JavaScript SNS client |
+
+## References
+
+- [AWS SNS Custom Platform Payloads](https://docs.aws.amazon.com/sns/latest/dg/sns-send-custom-platform-specific-payloads-mobile-devices.html)

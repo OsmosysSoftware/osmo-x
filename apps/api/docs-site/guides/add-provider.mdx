@@ -1,0 +1,245 @@
+---
+title: Add New Provider
+description: Guide for adding a new notification provider to OsmoX
+icon: plus
+---
+
+# Add New Provider
+
+This guide walks you through creating a new provider for sending notifications via your preferred channel in OsmoX.
+
+## Prerequisites
+
+Before adding a new provider, ensure you have set up the OsmoX development environment by following the [Development Setup](/getting-started/development) guide.
+
+## Implementation Steps
+
+<Steps>
+  <Step title="Install Dependencies">
+    Install any required npm packages for your provider:
+
+    ```bash
+    npm install <package_name>
+    ```
+  </Step>
+
+  <Step title="Update the Database">
+    Add your provider to the `notify_master_providers` table with the configuration template and related details.
+
+    Then create an entry in `notify_providers` table with:
+    - Provider configuration details
+    - `is_enabled` field set to `1`
+
+    See the [Database Design](/getting-started/database#notify_master_providers) for field details.
+  </Step>
+
+  <Step title="Update Channel Types Constant">
+    Add your new channel type in `src/common/constants/notifications.ts`:
+
+    ```typescript
+    export const ChannelType = {
+      SMTP: 1,
+      MAILGUN: 2,
+      WA_360_DAILOG: 3,
+      // Add your new channel
+      <CHANNEL_NAME>: <number>,
+    };
+    ```
+
+    <Note>
+      If the provider supports delivery verification, add success/fail states to `ProviderDeliveryStatus`. If not, add it to `SkipProviderConfirmationChannels`.
+    </Note>
+  </Step>
+
+  <Step title="Generate Provider Module">
+    Create a new module using NestJS CLI:
+
+    ```bash
+    npx @nestjs/cli generate module modules/providers/<channel_name>
+    ```
+
+    Move the module from `providers.module.ts` to `notifications.module.ts`:
+
+    ```typescript
+    const providerModules = [
+      // Rest of the modules...
+      NewProviderModule,
+    ]
+    ```
+  </Step>
+
+  <Step title="Generate Service File">
+    Create the service file:
+
+    ```bash
+    npx @nestjs/cli generate service modules/providers/<channel_name>
+    ```
+
+    Move the service to your channel-specific module:
+
+    ```typescript
+    import { Logger, Module } from '@nestjs/common';
+    import { ChannelTypeService } from './channeltype.service';
+    import { ConfigModule } from '@nestjs/config';
+    import { ProvidersModule } from '../providers.module';
+    import { ProvidersService } from '../providers.service';
+
+    @Module({
+      imports: [ConfigModule, ProvidersModule],
+      providers: [ChannelTypeService, ProvidersService, Logger],
+      exports: [ChannelTypeService],
+    })
+    export class ChannelTypeModule {}
+    ```
+  </Step>
+
+  <Step title="Implement Service Logic">
+    In your `.service.ts` file:
+
+    - Import modules from the new dependencies
+    - Create an interface for input data
+    - Create a constructor for initialization and configuration
+    - Create a `send` method (`sendEmail`, `sendSms`, etc.)
+    - Add `getDeliveryStatus` method if the provider supports verification
+    - Add any helper methods as needed
+  </Step>
+
+  <Step title="Add DTO for Validation">
+    Create a DTO file at `src/modules/notifications/dtos/providers/<channel_type>-data.dto.ts`:
+
+    ```typescript
+    export class ExampleProviderDataDto {
+      @IsString()
+      @IsNotEmpty()
+      to: string;
+
+      @IsString()
+      @IsNotEmpty()
+      message: string;
+
+      @IsOptional()
+      @IsString()
+      templateId?: string;
+    }
+    ```
+
+    Update `src/common/decorators/is-data-valid.decorator.ts`:
+
+    ```typescript
+    switch (channelTypeFromProviderId) {
+      case ChannelType.<CHANNEL_TYPE>: {
+        const channelTypeData = new <CHANNEL_TYPE>DataDto();
+        Object.assign(channelTypeData, value);
+        await validateAndThrowError(channelTypeData);
+        return true;
+      }
+      // ...
+    }
+    ```
+  </Step>
+
+  <Step title="Create Job Consumer">
+    Create `src/jobs/consumers/notifications/<channel_name>-notification.job.consumer.ts` with:
+
+    - Constructor injecting `Notification` repository
+    - `process<ChannelType>NotificationQueue` method
+    - `process<ChannelType>NotificationConfirmationQueue` method (if applicable)
+  </Step>
+
+  <Step title="Update Queue Service">
+    In `src/modules/notifications/queues/queue.service.ts`:
+
+    Add dependency injection:
+    ```typescript
+    constructor(
+      private readonly <channel_name>NotificationConsumer: <CHANNEL_NAME>NotificationConsumer,
+    ) {}
+    ```
+
+    Add switch cases in `createWorker`:
+    ```typescript
+    case `${QueueAction.SEND}-${ChannelType.<CHANNEL_NAME>}`:
+      await this.<channel_name>NotificationConsumer.process<CHANNEL_NAME>NotificationQueue(job.data.id);
+      break;
+    case `${QueueAction.DELIVERY_STATUS}-${ChannelType.<CHANNEL_NAME>}`:
+      await this.<channel_name>NotificationConsumer.process<CHANNEL_NAME>NotificationConfirmationQueue(job.data.id);
+      break;
+    case `${QueueAction.WEBHOOK}-${ChannelType.<CHANNEL_NAME>}`:
+      // Webhook handling
+      break;
+    ```
+  </Step>
+
+  <Step title="Create Migration">
+    Add migration file in `src/database/migrations` with format:
+    `<Unix_timestamp>-migrationName.ts`
+
+    Implement both `migration.up()` and `migration.down()` methods.
+  </Step>
+
+  <Step title="Add Documentation">
+    Create `docs/channels/<channel_name>.md` describing:
+    - Environment variables
+    - Provider usage
+    - Sample request body
+    - Additional information
+
+    Update `usage-guide.md` to include the new channel.
+  </Step>
+</Steps>
+
+## Service File Structure
+
+```typescript
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+export interface SendMessageData {
+  to: string;
+  message: string;
+}
+
+@Injectable()
+export class NewProviderService {
+  private readonly logger = new Logger(NewProviderService.name);
+  private client: any;
+
+  constructor(private configService: ConfigService) {
+    // Initialize client with config
+  }
+
+  async sendMessage(data: SendMessageData): Promise<any> {
+    try {
+      const result = await this.client.send({
+        to: data.to,
+        message: data.message,
+      });
+      return result;
+    } catch (error) {
+      this.logger.error('Failed to send message', error);
+      throw error;
+    }
+  }
+
+  async getDeliveryStatus(messageId: string): Promise<string> {
+    // Implement if provider supports delivery verification
+  }
+}
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Error Handling" icon="triangle-exclamation">
+    Always implement proper error handling and update notification status accordingly
+  </Card>
+  <Card title="Logging" icon="file-lines">
+    Add comprehensive logging for debugging and monitoring
+  </Card>
+  <Card title="Configuration" icon="gear">
+    Use `ConfigService.getOrThrow()` to ensure required env vars are present
+  </Card>
+  <Card title="Testing" icon="flask">
+    Write unit tests for your service methods
+  </Card>
+</CardGroup>

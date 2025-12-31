@@ -1,0 +1,129 @@
+---
+title: SMTP
+description: Send emails using Simple Mail Transfer Protocol
+icon: envelope
+---
+
+# SMTP - Simple Mail Transfer Protocol
+
+SMTP (Simple Mail Transfer Protocol) is a protocol used for sending email messages between servers. OsmoX uses Nodemailer, a popular Node.js library, to send emails using SMTP transport.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `1` (SMTP) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="SMTP_HOST" type="string" required>
+  SMTP server hostname
+</ParamField>
+
+<ParamField path="SMTP_PORT" type="number" required>
+  Port number for SMTP (587 for TLS, 465 for SSL)
+</ParamField>
+
+<ParamField path="SMTP_USERNAME" type="string" required>
+  Your SMTP username for authentication
+</ParamField>
+
+<ParamField path="SMTP_PASSWORD" type="string" required>
+  Your SMTP password for authentication
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "SMTP_HOST": "smtp.example.com",
+  "SMTP_PORT": 587,
+  "SMTP_USERNAME": "your-smtp-username",
+  "SMTP_PASSWORD": "your-smtp-password"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 1,
+  "data": {
+    "from": "sender@example.com",
+    "to": "recipient@example.com",
+    "cc": "cc@example.com",
+    "bcc": "bcc@example.com",
+    "subject": "Test subject",
+    "text": "This is a test notification",
+    "html": "<b>This is a test notification</b>",
+    "attachments": [
+      {
+        "filename": "names.txt",
+        "content": "John Doe\nJane Doe"
+      }
+    ],
+    "headers": {
+      "X-Custom-Header": "Custom Value"
+    }
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="from" type="string" required>
+  Sender's email address
+</ParamField>
+
+<ParamField path="to" type="string | string[]" required>
+  Recipient's email address. Can be a single address or comma-separated list
+</ParamField>
+
+<ParamField path="cc" type="string | string[]">
+  CC email addresses
+</ParamField>
+
+<ParamField path="bcc" type="string | string[]">
+  BCC email addresses
+</ParamField>
+
+<ParamField path="subject" type="string" required>
+  Email subject line
+</ParamField>
+
+<ParamField path="text" type="string">
+  Plain text version of the email
+</ParamField>
+
+<ParamField path="html" type="string">
+  HTML version of the email
+</ParamField>
+
+<ParamField path="attachments" type="array">
+  Array of attachment objects with `filename` and `content`
+</ParamField>
+
+<ParamField path="headers" type="object">
+  Additional custom headers to include in the email
+</ParamField>
+
+<Note>
+  Currently, attachments only support text content as shown in the example.
+</Note>
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| nodemailer | ^6.10.0 | Email sending library for Node.js |
+
+## Reference
+
+- [Nodemailer Documentation](https://nodemailer.com/message/)

@@ -1,0 +1,557 @@
+---
+title: API Overview
+description: Complete reference for OsmoX REST and GraphQL APIs
+icon: code
+---
+
+# API Documentation
+
+This document provides a comprehensive overview of the OsmoX API endpoints, their usage, and purpose.
+
+## Postman Collection
+
+Download the Postman collection and environment files to quickly get started:
+
+<CardGroup cols={2}>
+  <Card title="API Collection" icon="file-code" href="https://github.com/OsmosysSoftware/osmo-x/blob/main/apps/api/OsmoX-API.postman_collection.json">
+    Download the Postman collection
+  </Card>
+  <Card title="Environment File" icon="file-lines" href="https://github.com/OsmosysSoftware/osmo-x/blob/main/apps/api/OsmoX-API.postman_environment.json">
+    Download the environment variables
+  </Card>
+</CardGroup>
+
+## Authentication
+
+### Login
+
+Authenticate to receive a JWT token for API access.
+
+<Note>
+  Only users with `Admin` role get the list of all keys. Returns `null` for users with `Basic` role.
+</Note>
+
+**Endpoint:** `POST /graphql`
+
+<CodeGroup>
+```graphql GraphQL
+mutation LoginUser {
+  login(loginUserInput: { username: "admin", password: "mysecurepassword" }) {
+    token
+    __typename
+  }
+}
+```
+
+```bash cURL
+curl --location 'localhost:3000/graphql' \
+--header 'Content-Type: application/json' \
+--data '{"query":"mutation LoginUser {\n  login(loginUserInput: { username: \"admin\", password: \"mysecurepassword\" }) {\n    token\n    __typename\n  }\n}","variables":{}}'
+```
+</CodeGroup>
+
+**Response:**
+```json
+{
+  "data": {
+    "login": {
+      "token": "eymysecuretoken",
+      "__typename": "LoginResponse"
+    }
+  }
+}
+```
+
+The response token is used for Bearer Token Authorization as `Bearer <token>`.
+
+---
+
+## Server API Key
+
+### Generate New Server API Key
+
+Generates a new server API key for the requested application. This key is used as the value for the `x-api-key` header.
+
+**Endpoint:** `POST /graphql`
+
+<CodeGroup>
+```graphql GraphQL
+mutation GenerateApiKey {
+  generateApiKey(applicationId: 1)
+}
+```
+
+```bash cURL
+curl --location 'localhost:3000/graphql' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer mysecuretoken' \
+--data '{"query":"mutation GenerateApiKey {\n  generateApiKey(applicationId: 1)\n}","variables":{}}'
+```
+</CodeGroup>
+
+**Response:**
+```json
+{
+  "data": {
+    "generateApiKey": "mySecureServerApiKey"
+  }
+}
+```
+
+---
+
+## Notifications
+
+### Create Notification
+
+Create a new notification for processing and delivery.
+
+<Warning>
+  Requires passing `x-api-key` token as header for validation.
+</Warning>
+
+**Requirements:**
+- The Provider must have a valid `channelType`
+- The Provider must be enabled
+- The `application id` for the Server API Key and Provider must match
+- The `data` must contain all fields related to the `channelType`
+
+**Endpoint:** `POST /notifications`
+
+<CodeGroup>
+```json Request Body
+{
+  "providerId": 1,
+  "data": {
+    "from": "sender@email.com",
+    "to": "receiver@email.com",
+    "subject": "Test subject",
+    "text": "This is a test notification",
+    "html": "<b>This is a test notification</b>"
+  }
+}
+```
+
+```bash cURL
+curl --location 'http://localhost:3000/notifications' \
+--header 'Content-Type: application/json' \
+--header 'x-api-key: mysecuretoken' \
+--data-raw '{
+  "providerId": 1,
+  "data": {
+    "from": "sender@email.com",
+    "to": "receiver@email.com",
+    "subject": "Test subject",
+    "text": "This is a test notification",
+    "html": "<b>This is a test notification</b>"
+  }
+}'
+```
+</CodeGroup>
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "notification": {
+      "providerId": 1,
+      "channelType": 1,
+      "data": {
+        "from": "sender@email.com",
+        "to": "receiver@email.com",
+        "subject": "Test subject",
+        "text": "This is a test notification",
+        "html": "<b>This is a test notification</b>"
+      },
+      "applicationId": 2,
+      "createdBy": "sampleFoundationApp",
+      "updatedBy": "sampleFoundationApp",
+      "result": null,
+      "notificationSentOn": null,
+      "id": 92,
+      "deliveryStatus": 1,
+      "createdOn": "2024-02-12T07:24:21.000Z",
+      "updatedOn": "2024-02-12T07:24:21.000Z",
+      "status": 1,
+      "retryCount": 0
+    }
+  }
+}
+```
+
+### Fetch All Notifications
+
+Retrieve notifications with filtering, sorting, and pagination.
+
+**Endpoint:** `POST /graphql`
+
+**Query Options:**
+
+| Option | Description |
+|--------|-------------|
+| `limit` | Limit the number of results |
+| `offset` | Offset the result set |
+| `sortBy` | Sort by a specific field |
+| `sortOrder` | `ASC` or `DESC` |
+| `search` | Search in `createdBy`, `data`, and `result` |
+| `filters` | Filter by `field`, `operator` (`eq`, `ne`, `contains`, `gt`, `lt`), and `value` |
+
+<CodeGroup>
+```graphql GraphQL
+query {
+  notifications(
+    options: {
+      limit: 1
+      offset: 0
+      sortBy: "createdOn"
+      sortOrder: DESC
+      search: "sender@email.com"
+      filters: [{ field: "applicationId", operator: "eq", value: "1" }]
+    }
+  ) {
+    notifications {
+      applicationDetails {
+        applicationId
+        name
+        userId
+        status
+        createdOn
+        updatedOn
+      }
+      applicationId
+      channelType
+      createdBy
+      createdOn
+      data
+      deliveryStatus
+      id
+      notificationSentOn
+      providerId
+      result
+      status
+      updatedBy
+      updatedOn
+    }
+    total
+    offset
+    limit
+  }
+}
+```
+
+```bash cURL
+curl --location 'localhost:3000/graphql' \
+--header 'Authorization: Bearer mysecuretoken' \
+--header 'Content-Type: application/json' \
+--data '{"query":"query { notifications(options: { limit: 5, offset: 0, sortBy: \"createdOn\", sortOrder: DESC }) { notifications { id channelType deliveryStatus data result } total offset limit } }","variables":{}}'
+```
+</CodeGroup>
+
+### Fetch Notification by ID
+
+Retrieve a single notification from either active or archived tables.
+
+**Endpoint:** `POST /graphql`
+
+```graphql
+query {
+  notification(notificationId: 150) {
+    applicationId
+    channelType
+    createdBy
+    createdOn
+    data
+    deliveryStatus
+    id
+    notificationSentOn
+    providerId
+    result
+    status
+    updatedBy
+    updatedOn
+  }
+}
+```
+
+---
+
+## Archived Notifications
+
+### Fetch All Archived Notifications
+
+Retrieve archived notifications with the same filtering options as active notifications.
+
+**Endpoint:** `POST /graphql`
+
+```graphql
+query {
+  archivedNotifications(
+    options: {
+      limit: 5
+      offset: 0
+      sortBy: "createdOn"
+      sortOrder: DESC
+    }
+  ) {
+    archivedNotifications {
+      applicationId
+      channelType
+      createdBy
+      createdOn
+      data
+      deliveryStatus
+      id
+      notificationId
+      notificationSentOn
+      providerId
+      result
+      status
+      updatedBy
+      updatedOn
+    }
+    total
+    offset
+    limit
+  }
+}
+```
+
+---
+
+## Applications
+
+### Create Application
+
+Create a new application (Admin role required).
+
+**Endpoint:** `POST /graphql`
+
+<CodeGroup>
+```graphql GraphQL
+mutation CreateApplication($whitelistRecipients: JSONObject!) {
+  application(createApplicationInput: {
+    name: "<newApplicationName>",
+    testModeEnabled: 0,
+    whitelistRecipients: $whitelistRecipients
+  }) {
+    applicationId
+    name
+    userId
+    testModeEnabled
+    whitelistRecipients
+    createdOn
+    updatedOn
+    status
+  }
+}
+```
+
+```json Variables
+{
+  "whitelistRecipients": {
+    "2": ["abc@example.com", "test@email.co"],
+    "5": ["+19800176002", "+19800176003"]
+  }
+}
+```
+</CodeGroup>
+
+### Update Application
+
+Update an existing application's name, test mode, or whitelist recipients.
+
+**Endpoint:** `POST /graphql`
+
+```graphql
+mutation UpdateApplication($applicationId: Float!, $whitelistRecipients: JSONObject!) {
+  updateApplication(updateApplicationInput: {
+    applicationId: $applicationId,
+    name: "<updatedApplicationName>",
+    testModeEnabled: 1,
+    whitelistRecipients: $whitelistRecipients
+  }) {
+    applicationId
+    name
+    userId
+    testModeEnabled
+    whitelistRecipients
+    createdOn
+    updatedOn
+    status
+  }
+}
+```
+
+---
+
+## Providers
+
+### Create Provider
+
+Create a new provider by selecting a channel type from available Master Providers.
+
+**Endpoint:** `POST /graphql`
+
+```graphql
+mutation CreateProvider {
+  provider(createProviderInput: {
+    applicationId: 5,
+    channelType: 2,
+    configuration: {},
+    isEnabled: 1,
+    name: "Mailgun Provider",
+    userId: 1
+  }) {
+    applicationId
+    channelType
+    configuration
+    isEnabled
+    name
+    userId
+    createdOn
+    updatedOn
+    status
+  }
+}
+```
+
+### Fetch All Providers
+
+```graphql
+query {
+  providers(
+    options: {
+      limit: 5
+      offset: 0
+      sortBy: "createdOn"
+      sortOrder: ASC
+    }
+  ) {
+    providers {
+      providerId
+      name
+      channelType
+      configuration
+      isEnabled
+      userId
+      createdOn
+      updatedOn
+      status
+    }
+    total
+    offset
+    limit
+  }
+}
+```
+
+---
+
+## Provider Chains
+
+Provider chains define fallback sequences for notification delivery.
+
+### Create Provider Chain
+
+**Endpoint:** `POST /provider-chains`
+
+```json
+{
+  "chainName": "email-fallback",
+  "applicationId": 1,
+  "providerType": 1,
+  "description": "Email provider chain with fallback",
+  "isDefault": 0
+}
+```
+
+### Update Provider Chain
+
+**Endpoint:** `PUT /provider-chains`
+
+### Delete Provider Chain
+
+**Endpoint:** `DELETE /provider-chains`
+
+---
+
+## Provider Chain Members
+
+### Create Chain Member
+
+**Endpoint:** `POST /provider-chain-members`
+
+```json
+{
+  "chainId": 10,
+  "providerId": 23,
+  "isActive": 1
+}
+```
+
+### Update Priority Order
+
+**Endpoint:** `PUT /provider-chain-members/priority-order`
+
+```json
+{
+  "chainId": 10,
+  "newProviderPriorityOrder": [23, 3]
+}
+```
+
+### Delete Chain Member
+
+**Endpoint:** `DELETE /provider-chain-members`
+
+### Restore Chain Member
+
+**Endpoint:** `PUT /provider-chain-members/restore`
+
+---
+
+## Redis Queue Cleanup
+
+### Cleanup Redis Jobs
+
+Remove completed and failed jobs from all BullMQ queues.
+
+**Endpoint:** `POST /notifications/redis/cleanup`
+
+**Authentication:** Admin role required
+
+**Query Parameters:**
+- `gracePeriod` (optional): Time in milliseconds. Only jobs older than this will be removed. Default: `0`
+
+<CodeGroup>
+```bash Clean All Jobs
+curl -X POST http://localhost:3000/notifications/redis/cleanup \
+  -H "Authorization: Bearer <admin-jwt-token>"
+```
+
+```bash Clean Jobs Older Than 1 Hour
+curl -X POST "http://localhost:3000/notifications/redis/cleanup?gracePeriod=3600000" \
+  -H "Authorization: Bearer <admin-jwt-token>"
+```
+</CodeGroup>
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "message": "Redis job cleanup completed successfully",
+    "summary": {
+      "totalCompletedJobsRemoved": 1543,
+      "totalFailedJobsRemoved": 234,
+      "totalJobsRemoved": 1777,
+      "queuesProcessed": 12
+    }
+  }
+}
+```
+
+<Info>
+  See the [Redis Cleanup Guide](/operations/redis-cleanup) for automated cleanup configuration.
+</Info>

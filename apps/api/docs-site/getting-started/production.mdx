@@ -1,0 +1,186 @@
+---
+title: Production Setup
+description: Deploy OsmoX to a production environment
+icon: server
+---
+
+# Production Setup
+
+This document outlines the steps required to set up OsmoX for production. Following these steps will ensure that your application is configured properly for a production environment.
+
+## Prerequisites
+
+<CardGroup cols={2}>
+  <Card title="Node.js v20.x+" icon="node-js">
+    Install via NVM
+  </Card>
+  <Card title="PostgreSQL v16.x+" icon="database">
+    Production database server
+  </Card>
+  <Card title="Redis v6.x+" icon="server">
+    Queue backend
+  </Card>
+  <Card title="PM2 v5.x+" icon="gauge">
+    Process manager for Node.js
+  </Card>
+  <Card title="Docker v26.1.2" icon="docker">
+    Container runtime (optional)
+  </Card>
+  <Card title="Git v2.x+" icon="git-alt">
+    Version control
+  </Card>
+</CardGroup>
+
+Ensure Redis and PostgreSQL servers are running.
+
+## Environment Configuration
+
+Create the `.env` file with production values:
+
+```bash
+cp .env.example .env
+```
+
+Update these critical production values:
+
+| Variable | Description |
+|----------|-------------|
+| `NODE_ENV` | Set to `production` |
+| `SERVER_PORT` | API server port |
+| `DB_HOST` | PostgreSQL host |
+| `DB_PORT` | PostgreSQL port |
+| `DB_USERNAME` | Database username |
+| `DB_PASSWORD` | Database password |
+| `REDIS_HOST` | Redis host |
+| `REDIS_PORT` | Redis port |
+| `API_KEY_SECRET` | Secret for API key encryption |
+| `JWT_SECRET` | Secret for JWT tokens |
+
+## Build the Application
+
+Before starting the server, build OsmoX:
+
+```bash
+npm run build
+```
+
+This compiles TypeScript code into JavaScript and generates the necessary build files.
+
+## Deployment Options
+
+<Tabs>
+  <Tab title="PM2">
+    ### PM2 Deployment
+
+    **1. Create PM2 Configuration**
+
+    Create an `ecosystem.config.js` file:
+
+    ```javascript
+    module.exports = {
+      apps: [
+        {
+          name: 'OsmoX',
+          script: 'dist/main.js',
+          instances: 1,
+          autorestart: true,
+          watch: false,
+          max_memory_restart: '1G',
+          env: {
+            NODE_ENV: 'production',
+          },
+        },
+      ],
+    };
+    ```
+
+    **2. Start with PM2**
+
+    ```bash
+    pm2 start ecosystem.config.js
+    ```
+
+    **3. Enable Auto-Start on Boot**
+
+    ```bash
+    pm2 startup
+    ```
+
+    Follow any instructions provided by the command.
+
+    **4. Save PM2 Configuration**
+
+    ```bash
+    pm2 save
+    ```
+  </Tab>
+
+  <Tab title="Docker">
+    ### Docker Deployment
+
+    **Step 1: Configure Environment**
+
+    Update your `.env` file with Docker-specific values:
+    - `DB_HOST` - Use the Docker service name
+    - `REDIS_HOST` - Use the Docker service name
+    - `DB_DOCKER_PORT` - Docker-exposed database port
+    - `REDIS_DOCKER_PORT` - Docker-exposed Redis port
+
+    **Step 2: Build Docker Container**
+
+    ```bash
+    docker compose build
+    ```
+
+    **Step 3: Start Containers**
+
+    ```bash
+    docker compose up -d
+    ```
+
+    **Step 4: Run Migrations (First-Time Setup)**
+
+    ```bash
+    # Using container name
+    docker exec -it osmo-x-api-v2-osmox-api-1 npm run typeorm:run-migration
+
+    # OR using docker compose
+    docker exec -it $(docker compose ps -q osmox-api) npm run typeorm:run-migration
+    ```
+  </Tab>
+</Tabs>
+
+## Updating Environment Variables
+
+If you need to update environment variables in a Docker deployment:
+
+<Steps>
+  <Step title="Update .env file">
+    Modify the values in your `.env` file
+  </Step>
+
+  <Step title="Stop containers">
+    ```bash
+    docker compose stop
+    docker compose down -v
+    ```
+  </Step>
+
+  <Step title="Rebuild containers">
+    ```bash
+    docker compose build
+    ```
+  </Step>
+
+  <Step title="Start containers">
+    ```bash
+    docker compose up -d
+    ```
+  </Step>
+</Steps>
+
+## Next Steps
+
+<Card title="Usage Guide" icon="book" href="/api-reference/usage">
+  Learn how to make API calls and send notifications
+</Card>
