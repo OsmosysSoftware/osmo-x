@@ -16,7 +16,7 @@ services:
       - ./logs:/app/logs
 
   osmox-redis:
-    image: redis:latest
+    image: redis:8.4
     restart: unless-stopped
     ports:
       - '127.0.0.1:${REDIS_DOCKER_PORT}:6379'
