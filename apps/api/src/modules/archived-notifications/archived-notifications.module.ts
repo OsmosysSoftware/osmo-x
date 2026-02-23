@@ -1,6 +1,7 @@
 import { forwardRef, Logger, Module } from '@nestjs/common';
 import { ArchivedNotificationsService } from './archived-notifications.service';
 import { ArchivedNotification } from './entities/archived-notification.entity';
+import { RetryNotification } from '../notifications/entities/retry-notification.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { ConfigService } from '@nestjs/config';
@@ -9,7 +10,7 @@ import { ArchivedNotificationsResolver } from './archived-notifications.resolver
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ArchivedNotification]),
+    TypeOrmModule.forFeature([ArchivedNotification, RetryNotification]),
     forwardRef(() => NotificationsModule),
   ],
   providers: [ArchivedNotificationsService, ArchivedNotificationsResolver, Logger, ConfigService],
