@@ -177,7 +177,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
   @Cron('0 0 * * *', { timeZone: 'Asia/Kolkata' }) // Runs every day at midnight IST
   async cleanupOldRetryNotifications(): Promise<void> {
-    const retentionDays = this.configService.get<number>('RETRY_NOTIFICATION_RETENTION_DAYS', 30);
+    const retentionDays = this.configService.get<number>('RETRY_NOTIFICATION_RETENTION_DAYS', 90);
     const cutoffDate = new Date();
 
     cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
