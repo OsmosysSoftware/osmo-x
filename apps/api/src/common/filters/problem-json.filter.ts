@@ -30,9 +30,7 @@ export class ProblemJsonFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+      exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const protocol = request.protocol;
     const hostName = request.get('host');
@@ -101,10 +99,7 @@ export class ProblemJsonFilter implements ExceptionFilter {
     } else {
       // Unknown error (not an HttpException)
       const error = exception as Error;
-      this.logger.error(
-        `Unhandled exception: ${error?.message || 'Unknown error'}`,
-        error?.stack,
-      );
+      this.logger.error(`Unhandled exception: ${error?.message || 'Unknown error'}`, error?.stack);
 
       problemJson = ProblemJsonBuilder.build(
         ErrorCodes.GENERAL_INTERNAL_ERROR,

@@ -42,7 +42,10 @@ export class PaginatedResponse<T> {
   @ApiProperty({ description: 'Array of items', isArray: true })
   items: T[];
 
-  @ApiProperty({ description: 'Self link', example: 'https://host/api/v1/resource?page=1&limit=20' })
+  @ApiProperty({
+    description: 'Self link',
+    example: 'https://host/api/v1/resource?page=1&limit=20',
+  })
   self: string;
 
   @ApiProperty({ description: 'First page link' })
@@ -60,11 +63,7 @@ export class PaginatedResponse<T> {
   @ApiProperty({ description: 'Pagination metadata', type: PageInfoDto })
   page_info: PaginationMeta;
 
-  constructor(
-    items: T[],
-    links: CollectionLinks,
-    pageInfo: PaginationMeta,
-  ) {
+  constructor(items: T[], links: CollectionLinks, pageInfo: PaginationMeta) {
     this.items = items;
     this.self = links.self;
     this.first = links.first;

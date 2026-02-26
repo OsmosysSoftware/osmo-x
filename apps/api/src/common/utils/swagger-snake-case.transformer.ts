@@ -105,9 +105,7 @@ export function transformSwaggerToSnakeCase(document: OpenAPIObject): OpenAPIObj
 
         // Transform response examples
         if ('responses' in operation && operation.responses) {
-          for (const [, resp] of Object.entries(
-            operation.responses as Record<string, unknown>,
-          )) {
+          for (const [, resp] of Object.entries(operation.responses as Record<string, unknown>)) {
             if (!resp || typeof resp !== 'object') continue;
             const responseObj = resp as Record<string, unknown>;
 

@@ -73,12 +73,7 @@ export class LinkBuilder {
   /**
    * Build self link for a single resource
    */
-  static buildSelfLink(
-    protocol: string,
-    host: string,
-    path: string,
-    id: string | number,
-  ): string {
+  static buildSelfLink(protocol: string, host: string, path: string, id: string | number): string {
     return `${protocol}://${host}${path}/${id}`;
   }
 
@@ -108,10 +103,10 @@ export class LinkBuilder {
   /**
    * Extract protocol and host from request
    */
-  static extractBaseUrl(request: {
+  static extractBaseUrl(request: { protocol: string; get: (name: string) => string | undefined }): {
     protocol: string;
-    get: (name: string) => string | undefined;
-  }): { protocol: string; host: string } {
+    host: string;
+  } {
     const protocol = request.protocol || 'http';
     const host = request.get('host') || 'localhost:3000';
 

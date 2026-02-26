@@ -8,12 +8,7 @@
  * Existing endpoints are unaffected.
  */
 
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -67,6 +62,7 @@ export class SnakeCaseInterceptor implements NestInterceptor {
     if (seen.has(obj as object)) {
       return undefined;
     }
+
     seen.add(obj as object);
 
     const transformed: Record<string, unknown> = {};

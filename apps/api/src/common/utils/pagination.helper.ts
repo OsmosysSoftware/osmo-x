@@ -104,11 +104,7 @@ export class PaginationHelper {
   /**
    * Build pagination metadata
    */
-  static buildPaginationMeta(
-    page: number,
-    limit: number,
-    totalItems: number,
-  ): PaginationMeta {
+  static buildPaginationMeta(page: number, limit: number, totalItems: number): PaginationMeta {
     const totalPages = this.calculateTotalPages(totalItems, limit);
 
     return {
