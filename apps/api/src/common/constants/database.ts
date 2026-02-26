@@ -4,8 +4,9 @@ export const Status = {
 };
 
 export const UserRoles = {
-  BASIC: 0,
-  ADMIN: 1,
+  ORG_USER: 0,
+  ORG_ADMIN: 1,
+  SUPER_ADMIN: 2,
 };
 
 export const ProviderType = {

@@ -22,7 +22,7 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 @ApiTags('Provider Chains')
 @ApiBearerAuth()
 @Controller('provider-chains')
-@Roles(UserRoles.ADMIN)
+@Roles(UserRoles.ORG_ADMIN)
 @UseGuards(RolesGuard)
 export class ProviderChainsController {
   constructor(

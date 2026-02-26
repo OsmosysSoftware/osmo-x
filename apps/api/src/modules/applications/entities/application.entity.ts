@@ -5,6 +5,8 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
   Index,
 } from 'typeorm';
 import { IsEnum, IsObject, IsOptional } from 'class-validator';
@@ -15,10 +17,12 @@ import { ServerApiKey } from 'src/modules/server-api-keys/entities/server-api-ke
 import { ArchivedNotification } from 'src/modules/archived-notifications/entities/archived-notification.entity';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { ProviderChain } from 'src/modules/provider-chains/entities/provider-chain.entity';
+import { Organization } from 'src/modules/organizations/entities/organization.entity';
 
 @Entity({ name: 'notify_applications' })
 @ObjectType()
 @Index('IDX_notify_applications_user_id', ['userId'])
+@Index('IDX_notify_applications_organization_id', ['organizationId'])
 export class Application {
   @PrimaryGeneratedColumn({ name: 'application_id' })
   @Field()
@@ -31,6 +35,14 @@ export class Application {
   @Column({ name: 'user_id', comment: 'FK to notify_users - owner of the application' })
   @Field()
   userId: number;
+
+  @Column({
+    name: 'organization_id',
+    nullable: true,
+    comment: 'FK to notify_organizations',
+  })
+  @Field({ nullable: true })
+  organizationId: number;
 
   @Column({
     name: 'test_mode_enabled',
@@ -70,7 +82,6 @@ export class Application {
   @OneToMany(() => Notification, (notification) => notification.applicationDetails)
   notifications: Notification[];
 
-  // create join for fetching data from portal
   @OneToMany(() => ServerApiKey, (serverApiKey) => serverApiKey.applicationDetails)
   serverApiKey: ServerApiKey[];
 
@@ -83,6 +94,10 @@ export class Application {
   @OneToMany(() => ProviderChain, (providerChain) => providerChain.applicationDetails)
   @Field(() => [ProviderChain], { nullable: true })
   providerChains: ProviderChain[];
+
+  @ManyToOne(() => Organization, (organization) => organization.applications)
+  @JoinColumn({ name: 'organization_id' })
+  organizationDetails: Organization;
 
   constructor(application: Partial<Application>) {
     Object.assign(this, application);

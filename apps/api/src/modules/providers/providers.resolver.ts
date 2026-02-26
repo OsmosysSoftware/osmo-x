@@ -11,7 +11,7 @@ import { UserRoles } from 'src/common/constants/database';
 import { RolesGuard } from 'src/common/guards/role.guard';
 
 @Resolver(() => Provider)
-@Roles(UserRoles.ADMIN)
+@Roles(UserRoles.ORG_ADMIN)
 @UseGuards(GqlAuthGuard, RolesGuard)
 export class ProvidersResolver {
   constructor(private readonly providerService: ProvidersService) {}

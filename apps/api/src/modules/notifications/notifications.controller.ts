@@ -57,7 +57,7 @@ export class NotificationsController {
   @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
   @ApiResponse({ status: 500, description: 'Internal server error during cleanup' })
   @UseGuards(RolesGuard)
-  @Roles(UserRoles.ADMIN)
+  @Roles(UserRoles.ORG_ADMIN)
   async cleanupRedisJobs(
     @Query('gracePeriod') gracePeriod?: string,
   ): Promise<Record<string, unknown>> {

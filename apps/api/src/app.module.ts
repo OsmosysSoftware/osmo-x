@@ -14,6 +14,7 @@ import { WebhookModule } from './modules/webhook/webhook.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DatabaseErrorInterceptor } from './database/database-error.interceptor';
 import { ArchivedNotificationsModule } from './modules/archived-notifications/archived-notifications.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
 
 const configService = new ConfigService();
 @Module({
@@ -41,6 +42,7 @@ const configService = new ConfigService();
     }),
     AuthModule,
     ArchivedNotificationsModule,
+    OrganizationsModule,
   ],
   controllers: [AppController],
   providers: [

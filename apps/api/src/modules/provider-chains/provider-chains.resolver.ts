@@ -10,7 +10,7 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ProviderChainResponse } from './dto/provider-chain-response.dto';
 
 @Resolver(() => ProviderChain)
-@Roles(UserRoles.ADMIN)
+@Roles(UserRoles.ORG_ADMIN)
 @UseGuards(GqlAuthGuard, RolesGuard)
 export class ProviderChainsResolver {
   constructor(private readonly providerChainsService: ProviderChainsService) {}

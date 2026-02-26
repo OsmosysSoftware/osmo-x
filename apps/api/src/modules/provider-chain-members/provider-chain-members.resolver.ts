@@ -10,7 +10,7 @@ import { ProviderChainMemberResponse } from './dto/provider-chain-member-respons
 import { ProviderChainMembersService } from './provider-chain-members.service';
 
 @Resolver(() => ProviderChainMember)
-@Roles(UserRoles.ADMIN)
+@Roles(UserRoles.ORG_ADMIN)
 @UseGuards(GqlAuthGuard, RolesGuard)
 export class ProviderChainMembersResolver {
   constructor(private readonly providerChainMembersService: ProviderChainMembersService) {}

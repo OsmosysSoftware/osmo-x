@@ -12,7 +12,7 @@ import { UserRoles } from 'src/common/constants/database';
 import { UpdateApplicationInput } from './dto/update-application.input';
 
 @Resolver(() => Application)
-@Roles(UserRoles.ADMIN)
+@Roles(UserRoles.ORG_ADMIN)
 @UseGuards(GqlAuthGuard, RolesGuard)
 export class ApplicationsResolver {
   constructor(private readonly applicationsService: ApplicationsService) {}

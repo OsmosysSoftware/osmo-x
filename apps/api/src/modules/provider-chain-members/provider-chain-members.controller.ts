@@ -21,7 +21,7 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 @ApiTags('Provider Chain Members')
 @ApiBearerAuth()
 @Controller('provider-chain-members')
-@Roles(UserRoles.ADMIN)
+@Roles(UserRoles.ORG_ADMIN)
 @UseGuards(RolesGuard)
 export class ProviderChainMembersController {
   constructor(
