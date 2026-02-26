@@ -10,6 +10,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as packageJson from '../package.json';
 import { useContainer } from 'class-validator';
 import { urlencoded, json } from 'express';
+import { transformSwaggerToSnakeCase } from './common/utils/swagger-snake-case.transformer';
 
 const logDir = 'logs';
 
@@ -30,9 +31,24 @@ async function bootstrap(): Promise<void> {
     .setDescription(packageJson.description)
     .setVersion(packageJson.version)
     .addBearerAuth()
+    .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'api-key')
+    .addTag('Auth', 'Authentication endpoints')
+    .addTag('Dashboard', 'Dashboard statistics')
+    .addTag('Applications', 'Application management')
+    .addTag('Providers', 'Provider management')
+    .addTag('Master Providers', 'Provider type catalog')
+    .addTag('Provider Chains', 'Provider chain management')
+    .addTag('Provider Chain Members', 'Provider chain member management')
+    .addTag('Notifications', 'Notification management')
+    .addTag('Archived Notifications', 'Archived notification management')
+    .addTag('Users', 'User management')
+    .addTag('API Keys', 'API key management')
+    .addTag('Webhooks', 'Webhook management')
+    .addTag('Organizations', 'Organization management')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  let document = SwaggerModule.createDocument(app, config);
+  document = transformSwaggerToSnakeCase(document);
+  SwaggerModule.setup('api/docs', app, document);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter(new JsendFormatter()));
   app.use(json({ limit: configService.get('REQUEST_MAX_SIZE', '50mb') }));
