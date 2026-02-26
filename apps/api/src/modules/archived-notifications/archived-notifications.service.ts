@@ -10,7 +10,7 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ArchivedNotificationResponse } from './dtos/archived-notification-response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CoreService } from 'src/common/graphql/services/core.service';
-import { Cron } from '@nestjs/schedule';
+import ms = require('ms');
 
 @Injectable()
 export class ArchivedNotificationsService extends CoreService<ArchivedNotification> {
@@ -19,8 +19,6 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
   constructor(
     @InjectRepository(ArchivedNotification)
     private readonly archivedNotificationRepository: Repository<ArchivedNotification>,
-    @InjectRepository(RetryNotification)
-    private readonly retryNotificationRepository: Repository<RetryNotification>,
     private readonly configService: ConfigService,
     private dataSource: DataSource,
   ) {
@@ -152,48 +150,120 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     return archivedNotification;
   }
 
-  @Cron('0 0 * * *', { timeZone: 'Asia/Kolkata' }) // Runs every day at midnight IST
-  async cleanupOldArchivedNotifications(): Promise<void> {
-    const retentionDays = this.configService.get<number>('ARCHIVE_RETENTION_DAYS', 90);
-    const cutoffDate = new Date();
-
-    cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
-
-    this.logger.log(
-      `Running daily cleanup: deleting archived notifications older than ${retentionDays} days (before ${cutoffDate.toISOString()})`,
-    );
-
+  async deleteArchivedNotificationsCron(): Promise<void> {
     try {
-      const result = await this.archivedNotificationRepository.delete({
-        createdOn: LessThan(cutoffDate),
-      });
+      const enableArchivedNotificationDeletion = this.configService.get<string>(
+        'ENABLE_ARCHIVED_NOTIFICATION_DELETION',
+        'false',
+      );
 
-      this.logger.log(`Cleanup complete: deleted ${result.affected ?? 0} archived notification(s)`);
+      if (enableArchivedNotificationDeletion.toLowerCase() === 'true') {
+        this.logger.log('Running archived notification deletion cron task');
+        await this.deleteOldArchivedNotifications();
+        this.logger.log(`Archive notification deletion cron task completed`);
+      } else {
+        this.logger.log('Archived Notification Deletion Cron is disabled');
+      }
     } catch (error) {
-      this.logger.error(`Cleanup failed: ${error.message}`, error.stack);
+      this.logger.error(`Cron job failed: ${error.message}`, error.stack);
       throw error;
     }
   }
 
-  @Cron('0 0 * * *', { timeZone: 'Asia/Kolkata' }) // Runs every day at midnight IST
-  async cleanupOldRetryNotifications(): Promise<void> {
-    const retentionDays = this.configService.get<number>('RETRY_NOTIFICATION_RETENTION_DAYS', 90);
-    const cutoffDate = new Date();
-
-    cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
-
-    this.logger.log(
-      `Running daily cleanup: deleting retry notifications older than ${retentionDays} days (before ${cutoffDate.toISOString()})`,
-    );
-
+  async deleteOldArchivedNotifications(): Promise<void> {
     try {
-      const result = await this.retryNotificationRepository.delete({
-        createdOn: LessThan(cutoffDate),
-      });
+      const deleteArchivedNotificationsOlderThan = this.configService.get<string>(
+        'DELETE_ARCHIVED_NOTIFICATIONS_OLDER_THAN',
+        '90d',
+      );
 
-      this.logger.log(`Cleanup complete: deleted ${result.affected ?? 0} retry notification(s)`);
+      const maxRetentionMs = ms('10y');
+      const retentionDurationMs = ms(deleteArchivedNotificationsOlderThan);
+
+      // Guard rails
+      if (
+        typeof retentionDurationMs !== 'number' ||
+        retentionDurationMs <= 0 ||
+        retentionDurationMs > maxRetentionMs
+      ) {
+        throw new Error(
+          'Invalid retention period. It must be a positive duration not exceeding 10 years.',
+        );
+      }
+
+      const cutoffTimestamp = new Date(Date.now() - retentionDurationMs);
+      const batchSize = 1000;
+      let totalDeletedArchived = 0;
+      let totalDeletedRetries = 0;
+
+      this.logger.log(
+        `Starting deletion of archived notifications and retries older than ${cutoffTimestamp.toISOString()}`,
+      );
+
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      try {
+        let archivedEntriesBatch: ArchivedNotification[] = [];
+
+        do {
+          // Fetch archived entries to delete
+          archivedEntriesBatch = await queryRunner.manager.find(ArchivedNotification, {
+            where: {
+              createdOn: LessThan(cutoffTimestamp),
+              status: Status.ACTIVE,
+            },
+            order: {
+              createdOn: 'ASC',
+            },
+            take: batchSize,
+          });
+
+          this.logger.debug(
+            `Query found ${archivedEntriesBatch.length} records. First record: ${archivedEntriesBatch.length > 0 ? JSON.stringify({ id: archivedEntriesBatch[0].id, notificationId: archivedEntriesBatch[0].notificationId, createdOn: archivedEntriesBatch[0].createdOn }) : 'None'}`,
+          );
+
+          if (archivedEntriesBatch.length === 0) {
+            break;
+          }
+
+          // Get notification IDs for deleting related retry records
+          const notificationIds = archivedEntriesBatch.map((entry) => entry.notificationId);
+
+          // Delete retry entries first (foreign key constraint)
+          const retryDeleteResult = await queryRunner.manager.delete(RetryNotification, {
+            notification_id: In(notificationIds),
+          });
+
+          const retryAffected =
+            typeof retryDeleteResult.affected === 'number' ? retryDeleteResult.affected : 0;
+          totalDeletedRetries += retryAffected;
+
+          // Delete archived notifications
+          const archivedIds = archivedEntriesBatch.map((entry) => entry.id);
+          await queryRunner.manager.delete(ArchivedNotification, archivedIds);
+          totalDeletedArchived += archivedEntriesBatch.length;
+
+          this.logger.debug(
+            `Batch processed: ${archivedEntriesBatch.length} archived notifications, ${retryAffected} retry records deleted`,
+          );
+        } while (archivedEntriesBatch.length === batchSize);
+
+        await queryRunner.commitTransaction();
+
+        this.logger.log(
+          `Successfully deleted ${totalDeletedArchived} archived notifications and ${totalDeletedRetries} retry records older than ${cutoffTimestamp.toISOString()}`,
+        );
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        this.logger.error('Error during deletion. Transaction rolled back.', error.stack);
+        throw error;
+      } finally {
+        await queryRunner.release();
+      }
     } catch (error) {
-      this.logger.error(`Retry notification cleanup failed: ${error.message}`, error.stack);
+      this.logger.error(`Failed to delete archived notifications: ${error.message}`, error.stack);
       throw error;
     }
   }
