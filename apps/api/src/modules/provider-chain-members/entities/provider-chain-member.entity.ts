@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { IsEnum } from 'class-validator';
 import { Status } from 'src/common/constants/database';
@@ -15,20 +16,26 @@ import { Provider } from 'src/modules/providers/entities/provider.entity';
 
 @Entity({ name: 'notify_provider_chain_members' })
 @ObjectType()
+@Index('IDX_notify_provider_chain_members_chain_id', ['chainId'])
+@Index('IDX_notify_provider_chain_members_chain_active', ['chainId', 'isActive'])
 export class ProviderChainMember {
   @PrimaryGeneratedColumn({ name: 'id' })
   @Field()
   id: number;
 
-  @Column({ name: 'chain_id' })
+  @Column({ name: 'chain_id', comment: 'FK to notify_provider_chains' })
   @Field()
   chainId: number;
 
-  @Column({ name: 'provider_id' })
+  @Column({ name: 'provider_id', comment: 'FK to notify_providers' })
   @Field()
   providerId: number;
 
-  @Column({ name: 'priority_order', type: 'smallint' })
+  @Column({
+    name: 'priority_order',
+    type: 'smallint',
+    comment: 'Order in the fallback chain (lower = higher priority)',
+  })
   @Field()
   priorityOrder: number;
 

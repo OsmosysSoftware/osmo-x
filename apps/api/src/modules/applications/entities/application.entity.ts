@@ -5,6 +5,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
   OneToMany,
+  Index,
 } from 'typeorm';
 import { IsEnum, IsObject, IsOptional } from 'class-validator';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
@@ -17,6 +18,7 @@ import { ProviderChain } from 'src/modules/provider-chains/entities/provider-cha
 
 @Entity({ name: 'notify_applications' })
 @ObjectType()
+@Index('IDX_notify_applications_user_id', ['userId'])
 export class Application {
   @PrimaryGeneratedColumn({ name: 'application_id' })
   @Field()
@@ -26,7 +28,7 @@ export class Application {
   @Field()
   name: string;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', comment: 'FK to notify_users - owner of the application' })
   @Field()
   userId: number;
 
@@ -35,6 +37,7 @@ export class Application {
     type: 'smallint',
     width: 1,
     default: IsEnabledStatus.FALSE,
+    comment: '0=Disabled, 1=Enabled - restricts to whitelisted recipients',
   })
   @IsEnum(IsEnabledStatus)
   @Field()

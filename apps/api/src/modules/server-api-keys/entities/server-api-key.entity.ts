@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { IsEnum } from 'class-validator';
 import { Status } from 'src/common/constants/database';
@@ -14,20 +15,22 @@ import { Application } from 'src/modules/applications/entities/application.entit
 
 @Entity({ name: 'notify_server_api_keys' })
 @ObjectType()
+@Index('IDX_notify_server_api_keys_api_key', ['apiKey'], { unique: true })
+@Index('IDX_notify_server_api_keys_application_id', ['applicationId'])
 export class ServerApiKey {
   @PrimaryGeneratedColumn({ name: 'api_key_id' })
   @Field()
   apiKeyId: number;
 
-  @Column({ name: 'api_key' })
+  @Column({ name: 'api_key', comment: 'Hashed API key for server-to-server auth' })
   @Field()
   apiKey: string;
 
-  @Column({ name: 'masked_api_key' })
+  @Column({ name: 'masked_api_key', comment: 'Masked display version of the API key' })
   @Field()
   maskedApiKey: string;
 
-  @Column({ name: 'application_id' })
+  @Column({ name: 'application_id', comment: 'FK to notify_applications' })
   @Field()
   applicationId: number;
 

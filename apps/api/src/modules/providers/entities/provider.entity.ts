@@ -7,6 +7,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -17,6 +18,8 @@ import { ProviderChainMember } from 'src/modules/provider-chain-members/entities
 
 @Entity({ name: 'notify_providers' })
 @ObjectType()
+@Index('IDX_notify_providers_application_id', ['applicationId'])
+@Index('IDX_notify_providers_app_channel', ['applicationId', 'channelType', 'isEnabled'])
 export class Provider {
   @PrimaryGeneratedColumn({ name: 'provider_id' })
   @Field()
@@ -26,7 +29,12 @@ export class Provider {
   @Field()
   name: string;
 
-  @Column({ name: 'channel_type', type: 'smallint', width: 1 })
+  @Column({
+    name: 'channel_type',
+    type: 'smallint',
+    width: 1,
+    comment: 'Notification channel type from ChannelType enum',
+  })
   @IsEnum(ChannelType)
   @Field()
   channelType: number;
@@ -46,11 +54,11 @@ export class Provider {
   @Field(() => GraphQLJSONObject)
   configuration: string;
 
-  @Column({ name: 'application_id' })
+  @Column({ name: 'application_id', comment: 'FK to notify_applications' })
   @Field()
   applicationId: number;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', comment: 'FK to notify_users - creator of the provider' })
   @Field()
   userId: number;
 

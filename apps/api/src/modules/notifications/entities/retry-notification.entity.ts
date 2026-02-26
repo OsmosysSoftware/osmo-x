@@ -6,10 +6,12 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { Notification } from './notification.entity';
 
 @Entity('notify_notification_retries')
+@Index('IDX_notify_notification_retries_notification_id', ['notification_id'])
 export class RetryNotification {
   @PrimaryGeneratedColumn()
   id: number;

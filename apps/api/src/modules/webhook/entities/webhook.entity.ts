@@ -7,16 +7,18 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 
 @Entity('notify_webhooks')
 @ObjectType()
+@Index('IDX_notify_webhooks_provider_id', ['providerId'])
 export class Webhook {
   @PrimaryGeneratedColumn()
   @Field()
   id: number;
 
-  @Column({ name: 'provider_id' })
+  @Column({ name: 'provider_id', comment: 'FK to notify_providers' })
   @Field()
   providerId: number;
 
