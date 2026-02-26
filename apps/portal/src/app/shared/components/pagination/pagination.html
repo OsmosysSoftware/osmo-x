@@ -1,0 +1,16 @@
+@if (!loading()) {
+  <p-paginator
+    [first]="first()"
+    [rows]="rows()"
+    [totalRecords]="totalRecords()"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 50, 100]"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} items"
+    (onPageChange)="onPageChange($event)"
+  />
+} @else {
+  <div class="text-center text-muted-color py-3">
+    <i class="pi pi-spin pi-spinner mr-2"></i>
+    Loading...
+  </div>
+}

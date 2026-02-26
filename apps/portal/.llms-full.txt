@@ -1,0 +1,191 @@
+# PrimeNG v20 Component Documentation Index
+
+This file contains a complete index of PrimeNG v20 components and documentation.
+
+## Official Website
+https://primeng.org
+
+## Getting Started
+- Installation: https://primeng.org/installation
+- Configuration: https://primeng.org/configuration
+- Playground: https://primeng.org/playground
+- Theming: https://primeng.org/theming
+
+## Form Components
+- AutoComplete: https://primeng.org/autocomplete
+- CascadeSelect: https://primeng.org/cascadeselect
+- Checkbox: https://primeng.org/checkbox
+- ColorPicker: https://primeng.org/colorpicker
+- DatePicker: https://primeng.org/datepicker
+- Editor: https://primeng.org/editor
+- FloatLabel: https://primeng.org/floatlabel
+- IconField: https://primeng.org/iconfield
+- IftaLabel: https://primeng.org/iftalabel
+- InputGroup: https://primeng.org/inputgroup
+- InputMask: https://primeng.org/inputmask
+- InputNumber: https://primeng.org/inputnumber
+- InputOtp: https://primeng.org/inputotp
+- InputText: https://primeng.org/inputtext
+- KeyFilter: https://primeng.org/keyfilter
+- Knob: https://primeng.org/knob
+- Listbox: https://primeng.org/listbox
+- MultiSelect: https://primeng.org/multiselect
+- Password: https://primeng.org/password
+- RadioButton: https://primeng.org/radiobutton
+- Rating: https://primeng.org/rating
+- Select: https://primeng.org/select
+- SelectButton: https://primeng.org/selectbutton
+- Slider: https://primeng.org/slider
+- Textarea: https://primeng.org/textarea
+- ToggleButton: https://primeng.org/togglebutton
+- ToggleSwitch: https://primeng.org/toggleswitch
+- TreeSelect: https://primeng.org/treeselect
+
+## Button Components
+- Button: https://primeng.org/button
+- SpeedDial: https://primeng.org/speeddial
+- SplitButton: https://primeng.org/splitbutton
+
+## Data Components
+- DataView: https://primeng.org/dataview
+- OrderList: https://primeng.org/orderlist
+- OrgChart: https://primeng.org/organizationchart
+- Paginator: https://primeng.org/paginator
+- PickList: https://primeng.org/picklist
+- Table: https://primeng.org/table
+- Timeline: https://primeng.org/timeline
+- Tree: https://primeng.org/tree
+- TreeTable: https://primeng.org/treetable
+- VirtualScroller: https://primeng.org/virtualscroller
+
+## Panel Components
+- Accordion: https://primeng.org/accordion
+- Card: https://primeng.org/card
+- Divider: https://primeng.org/divider
+- Fieldset: https://primeng.org/fieldset
+- Panel: https://primeng.org/panel
+- ScrollPanel: https://primeng.org/scrollpanel
+- Splitter: https://primeng.org/splitter
+- Stepper: https://primeng.org/stepper
+- Tabs: https://primeng.org/tabs
+- Toolbar: https://primeng.org/toolbar
+
+## Overlay Components
+- ConfirmDialog: https://primeng.org/confirmdialog
+- ConfirmPopup: https://primeng.org/confirmpopup
+- Dialog: https://primeng.org/dialog
+- Drawer: https://primeng.org/drawer
+- DynamicDialog: https://primeng.org/dynamicdialog
+- Popover: https://primeng.org/popover
+- Tooltip: https://primeng.org/tooltip
+
+## File Components
+- Upload: https://primeng.org/fileupload
+
+## Menu Components
+- Breadcrumb: https://primeng.org/breadcrumb
+- ContextMenu: https://primeng.org/contextmenu
+- Dock: https://primeng.org/dock
+- Menu: https://primeng.org/menu
+- Menubar: https://primeng.org/menubar
+- MegaMenu: https://primeng.org/megamenu
+- PanelMenu: https://primeng.org/panelmenu
+- TieredMenu: https://primeng.org/tieredmenu
+
+## Chart Components
+- Chart.js: https://primeng.org/chart
+
+## Message Components
+- Message: https://primeng.org/message
+- Toast: https://primeng.org/toast
+
+## Media Components
+- Carousel: https://primeng.org/carousel
+- Galleria: https://primeng.org/galleria
+- Image: https://primeng.org/image
+- ImageCompare: https://primeng.org/imagecompare
+
+## Misc Components
+- AnimateOnScroll: https://primeng.org/animateonscroll
+- AutoFocus: https://primeng.org/autofocus
+- Avatar: https://primeng.org/avatar
+- Badge: https://primeng.org/badge
+- Bind: https://primeng.org/bind
+- BlockUI: https://primeng.org/blockui
+- Chip: https://primeng.org/chip
+- ClassNames: https://primeng.org/classnames
+- FocusTrap: https://primeng.org/focustrap
+- Fluid: https://primeng.org/fluid
+- Inplace: https://primeng.org/inplace
+- MeterGroup: https://primeng.org/metergroup
+- ProgressBar: https://primeng.org/progressbar
+- ProgressSpinner: https://primeng.org/progressspinner
+- Ripple: https://primeng.org/ripple
+- ScrollTop: https://primeng.org/scrolltop
+- Skeleton: https://primeng.org/skeleton
+- StyleClass: https://primeng.org/styleclass
+- Tag: https://primeng.org/tag
+- Terminal: https://primeng.org/terminal
+
+## Utilities
+- FilterService: https://primeng.org/filterservice
+
+## Icons
+- Prime Icons: https://primeng.org/icons
+- Custom Icons: https://primeng.org/customicons
+
+## Advanced Features
+- Pass Through: https://primeng.org/passthrough
+- Tailwind CSS: https://primeng.org/tailwind
+
+## Templates & Design
+- Templates: https://primeng.org/templates
+- Figma UI Kit Overview: https://primeng.org/uikit
+- Figma UI Kit Guide: https://primeng.org/uikit/guide
+- Theme Designer Overview: https://primeng.org/designer
+- Theme Designer Guide: https://primeng.org/designer/guide
+- CI Pipeline: https://primeng.org/designer/ci
+
+## Guides
+- Accessibility: https://primeng.org/guides/accessibility
+- PrimeFlex: https://primeng.org/guides/primeflex
+- RTL: https://primeng.org/guides/rtl
+
+## Migration
+- Updating to v20: https://primeng.org/migration/v20
+- Updating to v19: https://primeng.org/migration/v19
+
+## Support & Community
+- Long Term Support: https://primeng.org/lts
+- PRO Support: https://primeng.org/support
+- About Us: https://primeng.org/team
+- Roadmap: https://primeng.org/roadmap
+- Contribution: https://primeng.org/contribution
+
+## Important Notes
+
+### Import Paths (PrimeNG v20)
+In PrimeNG v20, import paths have changed. Components are now imported from their lowercase module names:
+
+```typescript
+// Form inputs
+import { Textarea } from 'primeng/textarea';  // NOT 'primeng/inputtextarea'
+import { InputText } from 'primeng/inputtext';
+import { Select } from 'primeng/select';  // Previously 'dropdown'
+import { Checkbox } from 'primeng/checkbox';
+
+// Always check the component documentation page for the correct import path
+```
+
+### Key Changes in v20
+1. **Directives as Components**: Many directives are now standalone components
+2. **New Theming System**: Uses @primeuix/themes instead of old theme files
+3. **Pass Through Support**: All components support pass through attributes
+4. **Improved Accessibility**: Enhanced ARIA support across all components
+5. **Module Names**: Some module names have changed (e.g., Dropdown → Select)
+
+### When Using PrimeNG Components
+1. Always refer to the official documentation for import paths
+2. Check the component's page for usage examples
+3. Use WebFetch or Context7 to get latest component documentation
+4. PrimeNG v20 requires Angular 18+

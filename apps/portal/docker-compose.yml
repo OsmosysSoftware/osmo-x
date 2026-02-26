@@ -1,9 +1,14 @@
+name: ${COMPOSE_PROJECT_NAME:-osmox-portal}
+
 services:
   osmox-portal:
     build:
       context: .
       dockerfile: Dockerfile
-    image: osmox-portal-${COMPOSE_PROJECT_NAME}
+      args:
+        APP_NAME: osmox-portal
+    image: osmox-portal
+    container_name: osmox-portal
     restart: unless-stopped
     ports:
       - '127.0.0.1:${SERVER_PORT}:80'
