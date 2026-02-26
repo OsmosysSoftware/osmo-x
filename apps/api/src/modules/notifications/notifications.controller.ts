@@ -1,124 +1,153 @@
 import {
-  Controller,
-  Post,
-  Body,
-  Logger,
-  HttpException,
-  UseGuards,
-  Query,
   BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpException,
   InternalServerErrorException,
+  Logger,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
-import { CreateNotificationDto } from './dtos/create-notification.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { Request } from 'express';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginatedResponse } from 'src/common/dto/paginated-response.dto';
+import { LinkBuilder } from 'src/common/utils/link-builder.helper';
+import { NotificationResponseDto } from './dto/notification-response.dto';
+import { QueueService } from './queues/queue.service';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
-import { QueueService } from './queues/queue.service';
-import { RolesGuard } from 'src/common/guards/role.guard';
+import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtPayload } from 'src/common/constants/jwtInterface';
 
 @ApiTags('Notifications')
-@Controller('notifications')
+@ApiBearerAuth()
+@ApiExtraModels(NotificationResponseDto)
+@Controller('api/v1/notifications')
 export class NotificationsController {
+  private logger: Logger = new Logger(NotificationsController.name);
+
   constructor(
-    private readonly notificationService: NotificationsService,
+    private readonly notificationsService: NotificationsService,
     private readonly queueService: QueueService,
     private readonly jsend: JsendFormatter,
-    private logger: Logger = new Logger(NotificationsController.name),
   ) {}
 
+  @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'List notifications' })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of notifications',
+    type: PaginatedResponse,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async findAll(
+    @Query() query: PaginationQueryDto,
+    @CurrentUser() user: JwtPayload,
+    @Req() req: Request,
+  ): Promise<PaginatedResponse<NotificationResponseDto>> {
+    const { items, meta } = await this.notificationsService.getAllNotificationsAsDto(
+      query,
+      user.organizationId,
+    );
+    const { protocol, host } = LinkBuilder.extractBaseUrl(req);
+    const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
+
+    return new PaginatedResponse(items, links, meta);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ORG_ADMIN)
+  @ApiOperation({ summary: 'Get notification by ID' })
+  @ApiResponse({ status: 200, description: 'Notification details', type: NotificationResponseDto })
+  @ApiResponse({ status: 400, description: 'Notification not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async findOne(
+    @Param('id') id: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<NotificationResponseDto> {
+    return this.notificationsService.findByIdAsDto(id, user.organizationId);
+  }
+
   @Post('queue')
-  @ApiOperation({ summary: 'Enqueue pending notifications for processing' })
-  @ApiResponse({ status: 201, description: 'Pending notifications enqueued successfully' })
+  @ApiOperation({ summary: 'Add pending notifications to queue' })
+  @ApiResponse({ status: 201, description: 'Notifications queued successfully' })
   async addNotificationsToQueue(): Promise<void> {
-    this.notificationService.addNotificationsToQueue();
+    return this.notificationsService.addNotificationsToQueue();
   }
 
   @Post('confirm')
-  @ApiOperation({ summary: 'Check provider delivery confirmations for pending notifications' })
-  @ApiResponse({ status: 201, description: 'Provider confirmations checked successfully' })
+  @ApiOperation({ summary: 'Get provider confirmation for notifications' })
+  @ApiResponse({ status: 201, description: 'Provider confirmation processed' })
   async getProviderConfirmation(): Promise<void> {
-    this.notificationService.getProviderConfirmation();
+    return this.notificationsService.getProviderConfirmation();
   }
 
   @Post('redis/cleanup')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Clean up completed and failed Redis queue jobs' })
-  @ApiQuery({
-    name: 'gracePeriod',
-    required: false,
-    description: 'Grace period in milliseconds before cleaning up jobs (default: 0)',
-  })
-  @ApiResponse({ status: 201, description: 'Redis job cleanup completed successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid gracePeriod parameter' })
-  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
-  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
-  @ApiResponse({ status: 500, description: 'Internal server error during cleanup' })
   @UseGuards(RolesGuard)
   @Roles(UserRoles.ORG_ADMIN)
-  async cleanupRedisJobs(
-    @Query('gracePeriod') gracePeriod?: string,
-  ): Promise<Record<string, unknown>> {
-    const grace = gracePeriod ? parseInt(gracePeriod, 10) : 0;
-
-    if (isNaN(grace) || grace < 0) {
-      throw new BadRequestException(
-        'Invalid gracePeriod parameter. Must be a non-negative number in milliseconds.',
-      );
-    }
-
+  @ApiOperation({ summary: 'Cleanup completed and failed Redis jobs' })
+  @ApiQuery({ name: 'gracePeriod', required: false, type: String })
+  @ApiResponse({ status: 201, description: 'Redis cleanup completed' })
+  async cleanupRedisJobs(@Query('gracePeriod') gracePeriod?: string): Promise<object> {
     try {
-      this.logger.log(`Starting Redis job cleanup with grace period: ${grace}ms`);
-      const result = await this.queueService.cleanupCompletedAndFailedJobs(grace);
+      const gracePeriodMs = gracePeriod ? parseInt(gracePeriod, 10) : 0;
 
-      return this.jsend.success({
-        message: 'Redis job cleanup completed successfully',
-        summary: {
-          totalCompletedJobsRemoved: result.totalCompleted,
-          totalFailedJobsRemoved: result.totalFailed,
-          totalJobsRemoved: result.totalCompleted + result.totalFailed,
-          queuesProcessed: result.queues.length,
-        },
-        details: result.queues,
-      });
+      if (isNaN(gracePeriodMs) || gracePeriodMs < 0) {
+        throw new BadRequestException('Invalid grace period value');
+      }
+
+      const result = await this.queueService.cleanupCompletedAndFailedJobs(gracePeriodMs);
+
+      return this.jsend.success(result);
     } catch (error) {
-      this.logger.error('Error during Redis job cleanup');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-
       if (error instanceof HttpException) {
         throw error;
       }
 
-      throw new InternalServerErrorException('Failed to cleanup Redis jobs');
+      this.logger.error('Redis cleanup failed', error);
+
+      throw new InternalServerErrorException('Redis cleanup failed');
     }
   }
 
   @Post()
+  @UseGuards(ApiKeyGuard)
   @ApiOperation({ summary: 'Create a new notification' })
   @ApiResponse({ status: 201, description: 'Notification created successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid notification data' })
-  @ApiResponse({ status: 401, description: 'Unauthorized - valid API key required' })
-  @UseGuards(ApiKeyGuard)
-  async addNotification(
-    @Body() notificationData: CreateNotificationDto,
-  ): Promise<Record<string, unknown>> {
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  async createNotification(@Body() notificationData: CreateNotificationDto): Promise<object> {
     try {
-      // ApiKeyGuard checks if requested providerId is valid, correct channelType and applicationId present
-      this.logger.debug(`Notification Request Data: ${JSON.stringify(notificationData)}`);
-      const createdNotification =
-        await this.notificationService.createNotification(notificationData);
-      this.logger.log('Notification created successfully.');
-      return this.jsend.success({ notification: createdNotification });
+      const notification = await this.notificationsService.createNotification(notificationData);
+
+      return this.jsend.success(notification);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
 
-      this.logger.error('Error while creating notification');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      throw error;
+      this.logger.error('Create notification failed', error);
+
+      throw new InternalServerErrorException('Create notification failed');
     }
   }
 }

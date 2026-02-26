@@ -3,7 +3,7 @@ import { ApplicationsService } from './applications.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Application } from './entities/application.entity';
 import { ApplicationsResolver } from './applications.resolver';
-import { ApplicationsV1Controller } from './applications-v1.controller';
+import { ApplicationsController } from './applications.controller';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
@@ -28,7 +28,7 @@ import { ProvidersService } from '../providers/providers.service';
     Logger,
     ProvidersService,
   ],
-  controllers: [ApplicationsV1Controller],
-  exports: [TypeOrmModule],
+  controllers: [ApplicationsController],
+  exports: [TypeOrmModule, ApplicationsService],
 })
 export class ApplicationsModule {}

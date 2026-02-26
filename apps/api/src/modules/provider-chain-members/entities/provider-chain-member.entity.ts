@@ -56,6 +56,14 @@ export class ProviderChainMember {
   @Field()
   updatedOn: Date;
 
+  @Column({ name: 'created_by', nullable: true })
+  @Field({ nullable: true })
+  createdBy: number;
+
+  @Column({ name: 'updated_by', nullable: true })
+  @Field({ nullable: true })
+  updatedBy: number;
+
   @Column({
     name: 'status',
     type: 'smallint',

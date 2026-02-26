@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   /** GraphQL login - returns simple token (backward compatible) */
-  async login(loginUserInput: LoginUserInput): Promise<LoginResponse> {
+  async loginGraphql(loginUserInput: LoginUserInput): Promise<LoginResponse> {
     try {
       const user = await this.validateUser(loginUserInput.username, loginUserInput.password);
 
@@ -61,8 +61,8 @@ export class AuthService {
     }
   }
 
-  /** REST v1 login - returns access + refresh tokens */
-  async loginV1(loginUserInput: LoginUserInput): Promise<AuthResponseDto> {
+  /** REST login - returns access + refresh tokens */
+  async login(loginUserInput: LoginUserInput): Promise<AuthResponseDto> {
     const user = await this.validateUser(loginUserInput.username, loginUserInput.password);
 
     if (!user) {

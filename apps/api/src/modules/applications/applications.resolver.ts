@@ -4,7 +4,7 @@ import { UseGuards } from '@nestjs/common';
 import { CreateApplicationInput } from './dto/create-application.input';
 import { Application } from './entities/application.entity';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
-import { ApplicationResponse } from './dto/application-response.dto';
+import { ApplicationListResponse } from './dto/application-list.dto';
 import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -23,14 +23,19 @@ export class ApplicationsResolver {
     @Args('createApplicationInput') createApplicationInput: CreateApplicationInput,
   ): Promise<Application> {
     const requestUserId: number = context.req.userId;
-    return await this.applicationsService.createApplication(createApplicationInput, requestUserId);
+    const organizationId: number = context.req.user?.organizationId;
+    return await this.applicationsService.createApplication(
+      createApplicationInput,
+      requestUserId,
+      organizationId,
+    );
   }
 
-  @Query(() => ApplicationResponse, { name: 'applications' })
+  @Query(() => ApplicationListResponse, { name: 'applications' })
   async findAll(
     @Args('options', { type: () => QueryOptionsDto, nullable: true, defaultValue: {} })
     options: QueryOptionsDto,
-  ): Promise<ApplicationResponse> {
+  ): Promise<ApplicationListResponse> {
     return this.applicationsService.getAllApplications(options);
   }
 

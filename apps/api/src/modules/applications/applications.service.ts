@@ -11,13 +11,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateApplicationInput } from './dto/create-application.input';
 import { UsersService } from '../users/users.service';
 import { Status } from 'src/common/constants/database';
-import { ApplicationResponse } from './dto/application-response.dto';
+import { ApplicationListResponse } from './dto/application-list.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationMeta } from 'src/common/utils/pagination.helper';
 import { User } from '../users/entities/user.entity';
 import { UpdateApplicationInput } from './dto/update-application.input';
 import { ProvidersService } from '../providers/providers.service';
 import { ConfigService } from '@nestjs/config';
+import { ApplicationResponseDto } from './dto/application-response.dto';
 
 @Injectable()
 export class ApplicationsService extends CoreService<Application> {
@@ -41,9 +44,19 @@ export class ApplicationsService extends CoreService<Application> {
     return this.applicationsRepository.findOne({ where: { userId, status: Status.ACTIVE } });
   }
 
+  async getApplicationIdsByOrganization(organizationId: number): Promise<number[]> {
+    const apps = await this.applicationsRepository.find({
+      where: { organizationId, status: Status.ACTIVE },
+      select: ['applicationId'],
+    });
+
+    return apps.map((app) => app.applicationId);
+  }
+
   async createApplication(
     applicationInput: CreateApplicationInput,
     requestUserId: number,
+    organizationId: number,
   ): Promise<Application> {
     const userEntryFromContext = await this.getUserEntryFromContext(requestUserId);
 
@@ -51,6 +64,9 @@ export class ApplicationsService extends CoreService<Application> {
       name: applicationInput.name,
       userId: userEntryFromContext.userId,
     });
+
+    newApplicationObject.organizationId = organizationId;
+    newApplicationObject.createdBy = requestUserId;
 
     if (
       applicationInput.testModeEnabled !== null &&
@@ -93,7 +109,7 @@ export class ApplicationsService extends CoreService<Application> {
     }
   }
 
-  async getAllApplications(options: QueryOptionsDto): Promise<ApplicationResponse> {
+  async getAllApplications(options: QueryOptionsDto): Promise<ApplicationListResponse> {
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
     const searchableFields = ['name'];
 
@@ -103,7 +119,7 @@ export class ApplicationsService extends CoreService<Application> {
       searchableFields,
       baseConditions,
     );
-    return new ApplicationResponse(items, total, options.offset, options.limit);
+    return new ApplicationListResponse(items, total, options.offset, options.limit);
   }
 
   async updateApplication(updateApplicationInput: UpdateApplicationInput): Promise<Application> {
@@ -167,6 +183,104 @@ export class ApplicationsService extends CoreService<Application> {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findByIdAsDto(
+    applicationId: number,
+    organizationId: number,
+  ): Promise<ApplicationResponseDto> {
+    const app = await this.findById(applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('Application not found');
+    }
+
+    return this.mapToDto(app);
+  }
+
+  private mapToDto(app: Application): ApplicationResponseDto {
+    return {
+      applicationId: app.applicationId,
+      name: app.name,
+      userId: app.userId,
+      organizationId: app.organizationId,
+      testModeEnabled: app.testModeEnabled,
+      whitelistRecipients: app.whitelistRecipients,
+      status: app.status,
+      createdBy: app.createdBy,
+      updatedBy: app.updatedBy,
+      createdOn: app.createdOn,
+      updatedOn: app.updatedOn,
+    };
+  }
+
+  async getAllApplicationsAsDto(
+    query: PaginationQueryDto,
+    organizationId: number,
+  ): Promise<{ items: ApplicationResponseDto[]; meta: PaginationMeta }> {
+    const baseConditions = [
+      { field: 'status', value: Status.ACTIVE },
+      { field: 'organizationId', value: organizationId },
+    ];
+    const searchableFields = ['name'];
+    const { items, meta } = await super.findAllPaginated(
+      query,
+      'application',
+      searchableFields,
+      baseConditions,
+    );
+
+    return {
+      items: items.map((app) => this.mapToDto(app)),
+      meta,
+    };
+  }
+
+  async createApplicationAsDto(
+    applicationInput: CreateApplicationInput,
+    requestUserId: number,
+    organizationId: number,
+  ): Promise<ApplicationResponseDto> {
+    const app = await this.createApplication(applicationInput, requestUserId, organizationId);
+
+    return this.mapToDto(app);
+  }
+
+  async updateApplicationAsDto(
+    updateApplicationInput: UpdateApplicationInput,
+    organizationId: number,
+    userId?: number,
+  ): Promise<ApplicationResponseDto> {
+    const existing = await this.findById(updateApplicationInput.applicationId);
+
+    if (!existing || existing.organizationId !== organizationId) {
+      throw new BadRequestException('Application not found');
+    }
+
+    if (userId !== undefined) {
+      existing.updatedBy = userId;
+      await this.applicationsRepository.save(existing);
+    }
+
+    const app = await this.updateApplication(updateApplicationInput);
+
+    return this.mapToDto(app);
+  }
+
+  async softDeleteApplicationAsDto(
+    applicationId: number,
+    organizationId: number,
+  ): Promise<boolean> {
+    const app = await this.findById(applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('Application not found');
+    }
+
+    app.status = Status.INACTIVE;
+    await this.applicationsRepository.save(app);
+
+    return true;
   }
 
   async verifyWhitelist(inputWhitelist: string, applicationId?: number): Promise<boolean> {

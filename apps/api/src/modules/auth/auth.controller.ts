@@ -20,7 +20,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Login successful', type: AuthResponseDto })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: LoginUserInput): Promise<AuthResponseDto> {
-    return this.authService.loginV1(loginDto);
+    return this.authService.login(loginDto);
   }
 
   @Post('refresh')
@@ -34,6 +34,17 @@ export class AuthController {
     @CurrentUser() user: JwtPayload,
   ): Promise<AuthResponseDto> {
     return this.authService.refreshToken(user);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Logout (invalidate tokens client-side)' })
+  @ApiResponse({ status: 200, description: 'Logged out successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async logout(): Promise<{ message: string }> {
+    return { message: 'Logged out successfully' };
   }
 
   @Get('me')

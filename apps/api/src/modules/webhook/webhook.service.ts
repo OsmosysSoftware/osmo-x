@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Webhook } from './entities/webhook.entity';
@@ -6,6 +6,9 @@ import axios from 'axios';
 import { CreateWebhookInput } from './dto/create-webhook.input';
 import { Status } from 'src/common/constants/database';
 import { NotificationsService } from '../notifications/notifications.service';
+import { WebhookResponseDto } from './dto/webhook-response.dto';
+import { ProvidersService } from '../providers/providers.service';
+import { ApplicationsService } from '../applications/applications.service';
 
 @Injectable()
 export class WebhookService {
@@ -16,6 +19,9 @@ export class WebhookService {
     private readonly webhookRepository: Repository<Webhook>,
     @Inject(forwardRef(() => NotificationsService))
     protected readonly notificationsService: NotificationsService,
+    @Inject(forwardRef(() => ProvidersService))
+    private readonly providersService: ProvidersService,
+    private readonly applicationsService: ApplicationsService,
   ) {}
 
   async findByProviderId(providerId: number): Promise<Webhook[]> {
@@ -86,5 +92,61 @@ export class WebhookService {
 
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private mapToDto(webhook: Webhook): WebhookResponseDto {
+    return {
+      id: webhook.id,
+      providerId: webhook.providerId,
+      webhookUrl: webhook.webhookUrl,
+      isVerified: webhook.isVerified,
+      status: webhook.status,
+      createdBy: webhook.createdBy,
+      updatedBy: webhook.updatedBy,
+      createdOn: webhook.createdOn,
+      updatedOn: webhook.updatedOn,
+    };
+  }
+
+  async findByProviderIdAsDto(
+    providerId: number,
+    organizationId: number,
+  ): Promise<WebhookResponseDto[]> {
+    const provider = await this.providersService.getById(providerId);
+
+    if (!provider) {
+      throw new BadRequestException('Provider not found');
+    }
+
+    const app = await this.applicationsService.findById(provider.applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('Provider not found');
+    }
+
+    const webhooks = await this.findByProviderId(providerId);
+
+    return webhooks.map((webhook) => this.mapToDto(webhook));
+  }
+
+  async registerWebhookAsDto(
+    webhookInput: CreateWebhookInput,
+    organizationId: number,
+  ): Promise<WebhookResponseDto> {
+    const provider = await this.providersService.getById(webhookInput.providerId);
+
+    if (!provider) {
+      throw new BadRequestException('Provider not found');
+    }
+
+    const app = await this.applicationsService.findById(provider.applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('Provider not found');
+    }
+
+    const webhook = await this.registerWebhook(webhookInput);
+
+    return this.mapToDto(webhook);
   }
 }

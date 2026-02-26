@@ -1,16 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 import { ServerApiKey } from './entities/server-api-key.entity';
 import { Status } from 'src/common/constants/database';
 import { hashApiKey } from 'src/common/utils/bcrypt';
 import * as crypto from 'crypto';
+import { ServerApiKeyResponseDto } from './dto/server-api-key-response.dto';
+import { ApplicationsService } from '../applications/applications.service';
 
 @Injectable()
 export class ServerApiKeysService {
   constructor(
     @InjectRepository(ServerApiKey)
     private readonly serverApiKeyRepository: Repository<ServerApiKey>,
+    private readonly applicationsService: ApplicationsService,
   ) {}
 
   async findByServerApiKey(apiKey: string): Promise<ServerApiKey | undefined> {
@@ -40,5 +43,43 @@ export class ServerApiKeysService {
     await this.serverApiKeyRepository.save(serverApiKey);
 
     return originalApiKey;
+  }
+
+  private mapToDto(key: ServerApiKey): ServerApiKeyResponseDto {
+    return {
+      apiKeyId: key.apiKeyId,
+      maskedApiKey: key.maskedApiKey,
+      applicationId: key.applicationId,
+      status: key.status,
+      createdBy: key.createdBy,
+      updatedBy: key.updatedBy,
+      createdOn: key.createdOn,
+      updatedOn: key.updatedOn,
+    };
+  }
+
+  async findByRelatedApplicationIdAsDto(
+    applicationId: number,
+    organizationId: number,
+  ): Promise<ServerApiKeyResponseDto[]> {
+    const app = await this.applicationsService.findById(applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('Application not found');
+    }
+
+    const keys = await this.findByRelatedApplicationId(applicationId);
+
+    return keys.map((key) => this.mapToDto(key));
+  }
+
+  async generateApiKeyByOrg(applicationId: number, organizationId: number): Promise<string> {
+    const app = await this.applicationsService.findById(applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('Application not found');
+    }
+
+    return this.generateApiKey(applicationId);
   }
 }

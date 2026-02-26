@@ -5,7 +5,7 @@ import { Provider } from './entities/provider.entity';
 import { ProvidersService } from './providers.service';
 import { IsDataValidConstraint } from 'src/common/decorators/is-data-valid.decorator';
 import { ProvidersResolver } from './providers.resolver';
-import { ProvidersV1Controller } from './providers-v1.controller';
+import { ProvidersController } from './providers.controller';
 import { ApplicationsService } from '../applications/applications.service';
 import { ApplicationsModule } from '../applications/applications.module';
 import { UsersModule } from '../users/users.module';
@@ -38,7 +38,7 @@ import { MasterProvidersModule } from '../master-providers/master-providers.modu
     ProvidersResolver,
     Logger,
   ],
-  controllers: [ProvidersV1Controller],
+  controllers: [ProvidersController],
   exports: [
     TypeOrmModule,
     ProvidersService,

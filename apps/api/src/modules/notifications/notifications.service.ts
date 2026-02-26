@@ -14,6 +14,8 @@ import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.helper';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
 import { RetryNotification } from './entities/retry-notification.entity';
@@ -25,6 +27,7 @@ import { ProviderChainsService } from '../provider-chains/provider-chains.servic
 import { Provider } from '../providers/entities/provider.entity';
 import { ProviderChain } from '../provider-chains/entities/provider-chain.entity';
 import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
+import { NotificationResponseDto } from './dto/notification-response.dto';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -473,6 +476,31 @@ export class NotificationsService extends CoreService<Notification> {
     });
   }
 
+  async findById(notificationId: number): Promise<Notification | null> {
+    return this.notificationRepository.findOne({
+      where: { id: notificationId, status: Status.ACTIVE },
+    });
+  }
+
+  async findByIdAsDto(
+    notificationId: number,
+    organizationId: number,
+  ): Promise<NotificationResponseDto> {
+    const notification = await this.findById(notificationId);
+
+    if (!notification) {
+      throw new BadRequestException('Notification not found');
+    }
+
+    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    if (!appIds.includes(notification.applicationId)) {
+      throw new BadRequestException('Notification not found');
+    }
+
+    return this.mapNotificationToDto(notification);
+  }
+
   async findActiveOrArchivedNotificationById(
     notificationId: number,
   ): Promise<SingleNotificationResponse> {
@@ -497,6 +525,59 @@ export class NotificationsService extends CoreService<Notification> {
       this.logger.error(`Error finding notification: ${error.message}`, error.stack);
       return error;
     }
+  }
+
+  private mapNotificationToDto(n: Notification): NotificationResponseDto {
+    return {
+      id: n.id,
+      providerId: n.providerId,
+      channelType: n.channelType,
+      data: n.data,
+      deliveryStatus: n.deliveryStatus,
+      result: n.result,
+      createdBy: n.createdBy,
+      updatedBy: n.updatedBy,
+      status: n.status,
+      applicationId: n.applicationId,
+      retryCount: n.retryCount,
+      notificationSentOn: n.notificationSentOn,
+      providerChainId: n.providerChainId,
+      createdOn: n.createdOn,
+      updatedOn: n.updatedOn,
+    };
+  }
+
+  async getAllNotificationsAsDto(
+    query: PaginationQueryDto,
+    organizationId: number,
+  ): Promise<{ items: NotificationResponseDto[]; meta: PaginationMeta }> {
+    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    if (appIds.length === 0) {
+      const { page, limit } = PaginationHelper.normalizePaginationParams(query);
+
+      return {
+        items: [],
+        meta: PaginationHelper.buildPaginationMeta(page, limit, 0),
+      };
+    }
+
+    const baseConditions = [
+      { field: 'status', value: Status.ACTIVE },
+      { field: 'applicationId', value: appIds, operator: 'in' },
+    ];
+    const searchableFields = ['createdBy', 'data', 'result'];
+    const { items, meta } = await super.findAllPaginated(
+      query,
+      'notification',
+      searchableFields,
+      baseConditions,
+    );
+
+    return {
+      items: items.map((n) => this.mapNotificationToDto(n)),
+      meta,
+    };
   }
 
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {

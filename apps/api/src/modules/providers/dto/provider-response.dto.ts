@@ -1,29 +1,45 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { ApiProperty } from '@nestjs/swagger';
-import { Provider } from '../entities/provider.entity';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-@ObjectType()
-export class ProviderResponse {
-  @ApiProperty({ description: 'List of providers', type: () => [Provider] })
-  @Field(() => [Provider])
-  providers: Provider[];
+export class ProviderResponseDto {
+  @ApiProperty({ description: 'Provider ID', example: 1 })
+  providerId: number;
 
-  @ApiProperty({ description: 'Total number of providers', example: 10 })
-  @Field(() => Int)
-  total: number;
+  @ApiProperty({ description: 'Provider name', example: 'Primary SMTP' })
+  name: string;
 
-  @ApiProperty({ description: 'Offset for pagination', example: 0 })
-  @Field(() => Int)
-  offset: number;
+  @ApiProperty({
+    description: 'Notification channel: 0=SMTP, 1=Mailgun, 2=AWS SES, etc.',
+    example: 0,
+  })
+  channelType: number;
 
-  @ApiProperty({ description: 'Maximum number of results returned', example: 20 })
-  @Field(() => Int)
-  limit: number;
+  @ApiProperty({ description: 'Whether provider is enabled (0=disabled, 1=enabled)', example: 1 })
+  isEnabled: number;
 
-  constructor(items: Provider[], total: number, offset?: number, limit?: number) {
-    this.providers = items;
-    this.total = total;
-    this.offset = offset ?? 0;
-    this.limit = limit ?? items.length;
-  }
+  @ApiProperty({
+    description: 'Provider-specific configuration (host, port, credentials, etc.)',
+    example: { host: 'smtp.example.com', port: 587 },
+  })
+  configuration: string;
+
+  @ApiProperty({ description: 'Associated application ID', example: 1 })
+  applicationId: number;
+
+  @ApiProperty({ description: 'Creator user ID', example: 1 })
+  userId: number;
+
+  @ApiProperty({ description: 'Status: 1=Active, 0=Inactive', example: 1 })
+  status: number;
+
+  @ApiPropertyOptional({ description: 'ID of user who created this record', example: 1 })
+  createdBy: number | null;
+
+  @ApiPropertyOptional({ description: 'ID of user who last updated this record', example: 1 })
+  updatedBy: number | null;
+
+  @ApiProperty({ description: 'Creation timestamp', format: 'date-time' })
+  createdOn: Date;
+
+  @ApiProperty({ description: 'Last update timestamp', format: 'date-time' })
+  updatedOn: Date;
 }

@@ -1,29 +1,36 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { ApiProperty } from '@nestjs/swagger';
-import { ProviderChainMember } from '../entities/provider-chain-member.entity';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-@ObjectType()
-export class ProviderChainMemberResponse {
-  @ApiProperty({ description: 'List of provider chain members', type: () => [ProviderChainMember] })
-  @Field(() => [ProviderChainMember])
-  providerChainMembers: ProviderChainMember[];
+export class ProviderChainMemberResponseDto {
+  @ApiProperty({ description: 'Chain member ID', example: 1 })
+  id: number;
 
-  @ApiProperty({ description: 'Total number of provider chain members', example: 3 })
-  @Field(() => Int)
-  total: number;
+  @ApiProperty({ description: 'Parent chain ID', example: 1 })
+  chainId: number;
 
-  @ApiProperty({ description: 'Offset for pagination', example: 0 })
-  @Field(() => Int)
-  offset: number;
+  @ApiProperty({ description: 'Provider ID', example: 1 })
+  providerId: number;
 
-  @ApiProperty({ description: 'Maximum number of results returned', example: 20 })
-  @Field(() => Int)
-  limit: number;
+  @ApiProperty({
+    description: 'Priority order in the fallback chain (lower = higher priority)',
+    example: 1,
+  })
+  priorityOrder: number;
 
-  constructor(items: ProviderChainMember[], total: number, offset?: number, limit?: number) {
-    this.providerChainMembers = items;
-    this.total = total;
-    this.offset = offset ?? 0;
-    this.limit = limit ?? items.length;
-  }
+  @ApiProperty({ description: 'Whether member is active (0=inactive, 1=active)', example: 1 })
+  isActive: number;
+
+  @ApiProperty({ description: 'Status: 1=Active, 0=Inactive', example: 1 })
+  status: number;
+
+  @ApiPropertyOptional({ description: 'ID of user who created this record', example: 1 })
+  createdBy: number | null;
+
+  @ApiPropertyOptional({ description: 'ID of user who last updated this record', example: 1 })
+  updatedBy: number | null;
+
+  @ApiProperty({ description: 'Creation timestamp', format: 'date-time' })
+  createdOn: Date;
+
+  @ApiProperty({ description: 'Last update timestamp', format: 'date-time' })
+  updatedOn: Date;
 }

@@ -1,147 +1,126 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  HttpException,
-  Logger,
-  Post,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProviderChainMembersService } from './provider-chain-members.service';
-import { JsendFormatter } from 'src/common/jsend-formatter';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRoles } from 'src/common/constants/database';
+import { Request } from 'express';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginatedResponse } from 'src/common/dto/paginated-response.dto';
+import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 import { CreateProviderChainMemberInput } from './dto/create-provider-chain-member.input';
 import { UpdateProviderPriorityOrderInput } from './dto/update-provider-priority-order.input';
 import { DeleteProviderChainMemberInput } from './dto/delete-chain-member-by-provider.input';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRoles } from 'src/common/constants/database';
-import { RolesGuard } from 'src/common/guards/role.guard';
+import { ProviderChainMemberResponseDto } from './dto/provider-chain-member-response.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtPayload } from 'src/common/constants/jwtInterface';
 
 @ApiTags('Provider Chain Members')
 @ApiBearerAuth()
-@Controller('provider-chain-members')
+@ApiExtraModels(ProviderChainMemberResponseDto)
+@Controller('api/v1/provider-chain-members')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRoles.ORG_ADMIN)
-@UseGuards(RolesGuard)
 export class ProviderChainMembersController {
-  constructor(
-    private readonly providerChainMembersService: ProviderChainMembersService,
-    private readonly jsend: JsendFormatter,
-    private readonly logger: Logger = new Logger(ProviderChainMembersController.name),
-  ) {}
+  constructor(private readonly providerChainMembersService: ProviderChainMembersService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'List provider chain members' })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of provider chain members',
+    type: PaginatedResponse,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async findAll(
+    @Query() query: PaginationQueryDto,
+    @CurrentUser() user: JwtPayload,
+    @Req() req: Request,
+  ): Promise<PaginatedResponse<ProviderChainMemberResponseDto>> {
+    const { items, meta } = await this.providerChainMembersService.getAllProviderChainMembersAsDto(
+      query,
+      user.organizationId,
+    );
+    const { protocol, host } = LinkBuilder.extractBaseUrl(req);
+    const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
+
+    return new PaginatedResponse(items, links, meta);
+  }
 
   @Post()
   @ApiOperation({ summary: 'Add a member to a provider chain' })
-  @ApiResponse({ status: 201, description: 'Provider chain member created successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid provider chain member data' })
-  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
-  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
-  async createProviderChainMember(
-    @Body() providerChainMemberData: CreateProviderChainMemberInput,
-  ): Promise<Record<string, unknown>> {
-    try {
-      this.logger.debug(
-        `Provider chain member Request Data: ${JSON.stringify(providerChainMemberData)}`,
-      );
-      const createdProviderChainMember =
-        await this.providerChainMembersService.createProviderChainMember(providerChainMemberData);
-      this.logger.log('Provider chain member created successfully.');
-      return this.jsend.success({ providerChainMember: createdProviderChainMember });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      this.logger.error('Error while creating provider chain member');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      throw error;
-    }
+  @ApiResponse({
+    status: 201,
+    description: 'Provider chain member created successfully',
+    type: ProviderChainMemberResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async create(
+    @Body() createInput: CreateProviderChainMemberInput,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ProviderChainMemberResponseDto> {
+    return this.providerChainMembersService.createProviderChainMemberAsDto(
+      createInput,
+      user.organizationId,
+    );
   }
 
   @Put('priority-order')
-  @ApiOperation({ summary: 'Update priority order of providers in a chain' })
-  @ApiResponse({ status: 200, description: 'Provider priority order updated successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid priority order data' })
-  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
-  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
-  async updateProviderPriorityOrder(
-    @Body() updateProviderPriorityOrderData: UpdateProviderPriorityOrderInput,
-  ): Promise<Record<string, unknown>> {
-    try {
-      this.logger.debug(
-        `Update provider priority order Request Data: ${JSON.stringify(updateProviderPriorityOrderData)}`,
-      );
-      const updatedProviderChainMembers =
-        await this.providerChainMembersService.updateProviderPriorityOrder(
-          updateProviderPriorityOrderData,
-        );
-      this.logger.log('Provider priority order updated successfully.');
-      return this.jsend.success({ updatedProviderChainMembers: updatedProviderChainMembers });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      this.logger.error('Error while updating provider priority order');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      throw error;
-    }
+  @ApiOperation({ summary: 'Update priority order of provider chain members' })
+  @ApiResponse({
+    status: 200,
+    description: 'Priority order updated successfully',
+    type: [ProviderChainMemberResponseDto],
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async updatePriorityOrder(
+    @Body() updateInput: UpdateProviderPriorityOrderInput,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ProviderChainMemberResponseDto[]> {
+    return this.providerChainMembersService.updateProviderPriorityOrderAsDto(
+      updateInput,
+      user.organizationId,
+    );
   }
 
   @Delete()
-  @ApiOperation({ summary: 'Soft-delete a provider chain member by provider ID' })
-  @ApiResponse({ status: 200, description: 'Provider chain member deleted successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
-  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
-  async deleteProviderChainMemberByProviderId(
-    @Body() deleteProviderChainMemberInput: DeleteProviderChainMemberInput,
-  ): Promise<Record<string, unknown>> {
-    try {
-      this.logger.debug(`Deletion request Data: ${JSON.stringify(deleteProviderChainMemberInput)}`);
-      const deletedProviderChainMember =
-        await this.providerChainMembersService.softDeleteChainMemberUsingProviderID(
-          deleteProviderChainMemberInput,
-        );
-
-      this.logger.log('Provider chain member deleted successfully.');
-      return this.jsend.success({
-        deletedProviderChainMember: deletedProviderChainMember,
-      });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      this.logger.error('Error while deleting provider chain member');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      throw error;
-    }
+  @ApiOperation({ summary: 'Remove a member from a provider chain' })
+  @ApiResponse({
+    status: 200,
+    description: 'Provider chain member deleted successfully',
+    type: ProviderChainMemberResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async remove(
+    @Body() deleteInput: DeleteProviderChainMemberInput,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ProviderChainMemberResponseDto> {
+    return this.providerChainMembersService.softDeleteChainMemberUsingProviderIDAsDto(
+      deleteInput,
+      user.organizationId,
+    );
   }
 
   @Put('restore')
-  @ApiOperation({ summary: 'Restore a soft-deleted provider chain member' })
-  @ApiResponse({ status: 200, description: 'Provider chain member restored successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
-  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
-  async restoreChainMemberUsingProviderId(
-    @Body() restoreProviderChainMemberInput: DeleteProviderChainMemberInput,
-  ): Promise<Record<string, unknown>> {
-    try {
-      this.logger.debug(`Restore Request Data: ${JSON.stringify(restoreProviderChainMemberInput)}`);
-      const updatedProviderChainMembers =
-        await this.providerChainMembersService.restoreDeletedChainMember(
-          restoreProviderChainMemberInput,
-        );
-      this.logger.log('Provider chain member restored successfully.');
-      return this.jsend.success({ updatedProviderChainMembers: updatedProviderChainMembers });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      this.logger.error('Error while restoring provider chain member');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      throw error;
-    }
+  @ApiOperation({ summary: 'Restore a deleted provider chain member' })
+  @ApiResponse({
+    status: 200,
+    description: 'Provider chain member restored successfully',
+    type: ProviderChainMemberResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async restore(
+    @Body() restoreInput: DeleteProviderChainMemberInput,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ProviderChainMemberResponseDto> {
+    return this.providerChainMembersService.restoreDeletedChainMemberAsDto(
+      restoreInput,
+      user.organizationId,
+    );
   }
 }

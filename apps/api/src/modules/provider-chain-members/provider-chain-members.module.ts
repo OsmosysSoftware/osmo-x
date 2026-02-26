@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProviderChainMember } from './entities/provider-chain-member.entity';
 import { ProviderChainMembersService } from './provider-chain-members.service';
 import { ProviderChainMembersResolver } from './provider-chain-members.resolver';
-import { ProviderChainMembersV1Controller } from './provider-chain-members-v1.controller';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ProviderChainMembersController } from './provider-chain-members.controller';
@@ -11,6 +10,7 @@ import { ProvidersModule } from '../providers/providers.module';
 import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { MasterProvidersModule } from '../master-providers/master-providers.module';
+import { ApplicationsModule } from '../applications/applications.module';
 
 @Module({
   imports: [
@@ -19,6 +19,7 @@ import { MasterProvidersModule } from '../master-providers/master-providers.modu
     forwardRef(() => ProvidersModule),
     forwardRef(() => ProviderChainsModule),
     MasterProvidersModule,
+    ApplicationsModule,
   ],
   providers: [
     Logger,
@@ -29,6 +30,6 @@ import { MasterProvidersModule } from '../master-providers/master-providers.modu
     JsendFormatter,
   ],
   exports: [TypeOrmModule, ProviderChainMembersService],
-  controllers: [ProviderChainMembersController, ProviderChainMembersV1Controller],
+  controllers: [ProviderChainMembersController],
 })
 export class ProviderChainMembersModule {}

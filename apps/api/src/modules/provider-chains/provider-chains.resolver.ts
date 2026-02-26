@@ -7,7 +7,7 @@ import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { ProviderChainsService } from './provider-chains.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
-import { ProviderChainResponse } from './dto/provider-chain-response.dto';
+import { ProviderChainListResponse } from './dto/provider-chain-list.dto';
 
 @Resolver(() => ProviderChain)
 @Roles(UserRoles.ORG_ADMIN)
@@ -15,11 +15,11 @@ import { ProviderChainResponse } from './dto/provider-chain-response.dto';
 export class ProviderChainsResolver {
   constructor(private readonly providerChainsService: ProviderChainsService) {}
 
-  @Query(() => ProviderChainResponse, { name: 'providerChains' })
+  @Query(() => ProviderChainListResponse, { name: 'providerChains' })
   async findAll(
     @Args('options', { type: () => QueryOptionsDto, nullable: true, defaultValue: {} })
     options: QueryOptionsDto,
-  ): Promise<ProviderChainResponse> {
+  ): Promise<ProviderChainListResponse> {
     return this.providerChainsService.getAllProviderChains(options);
   }
 }

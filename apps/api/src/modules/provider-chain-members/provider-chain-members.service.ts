@@ -5,13 +5,17 @@ import { DataSource, MoreThan, Repository } from 'typeorm';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
-import { ProviderChainMemberResponse } from './dto/provider-chain-member-response.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.helper';
+import { ProviderChainMemberListResponse } from './dto/provider-chain-member-list.dto';
 import { CreateProviderChainMemberInput } from './dto/create-provider-chain-member.input';
 import { ProviderChainsService } from '../provider-chains/provider-chains.service';
 import { ProvidersService } from '../providers/providers.service';
 import { MasterProvidersService } from '../master-providers/master-providers.service';
 import { UpdateProviderPriorityOrderInput } from './dto/update-provider-priority-order.input';
 import { DeleteProviderChainMemberInput } from './dto/delete-chain-member-by-provider.input';
+import { ProviderChainMemberResponseDto } from './dto/provider-chain-member-response.dto';
+import { ApplicationsService } from '../applications/applications.service';
 
 @Injectable()
 export class ProviderChainMembersService extends CoreService<ProviderChainMember> {
@@ -24,6 +28,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     private readonly providersService: ProvidersService,
     private readonly masterProvidersService: MasterProvidersService,
     private readonly dataSource: DataSource,
+    private readonly applicationsService: ApplicationsService,
   ) {
     super(providerChainMemberRepository);
   }
@@ -400,7 +405,115 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     }
   }
 
-  async getAllProviderChainMembers(options: QueryOptionsDto): Promise<ProviderChainMemberResponse> {
+  private async validateChainBelongsToOrg(chainId: number, organizationId: number): Promise<void> {
+    const chain = await this.providerChainsService.getById(chainId);
+
+    if (!chain) {
+      throw new BadRequestException('Provider chain not found');
+    }
+
+    const app = await this.applicationsService.findById(chain.applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('Provider chain not found');
+    }
+  }
+
+  private mapToDto(member: ProviderChainMember): ProviderChainMemberResponseDto {
+    return {
+      id: member.id,
+      chainId: member.chainId,
+      providerId: member.providerId,
+      priorityOrder: member.priorityOrder,
+      isActive: member.isActive,
+      status: member.status,
+      createdBy: member.createdBy,
+      updatedBy: member.updatedBy,
+      createdOn: member.createdOn,
+      updatedOn: member.updatedOn,
+    };
+  }
+
+  async getAllProviderChainMembersAsDto(
+    query: PaginationQueryDto,
+    organizationId: number,
+  ): Promise<{ items: ProviderChainMemberResponseDto[]; meta: PaginationMeta }> {
+    const { page, limit, offset, sort } = PaginationHelper.normalizePaginationParams(query);
+
+    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    if (appIds.length === 0) {
+      return {
+        items: [],
+        meta: PaginationHelper.buildPaginationMeta(page, limit, 0),
+      };
+    }
+
+    const qb = this.providerChainMemberRepository
+      .createQueryBuilder('pcm')
+      .leftJoinAndSelect('pcm.providerDetails', 'provider')
+      .leftJoinAndSelect('pcm.providerChainDetails', 'providerChain')
+      .where('pcm.status = :status', { status: Status.ACTIVE })
+      .andWhere('providerChain.applicationId IN (:...appIds)', { appIds });
+
+    qb.skip(offset);
+    qb.take(limit);
+
+    if (sort) {
+      qb.orderBy(`pcm.${sort.field}`, sort.order === 'desc' ? 'DESC' : 'ASC');
+    }
+
+    const [items, total] = await qb.getManyAndCount();
+
+    return {
+      items: items.map((member) => this.mapToDto(member)),
+      meta: PaginationHelper.buildPaginationMeta(page, limit, total),
+    };
+  }
+
+  async createProviderChainMemberAsDto(
+    providerChainMemberData: CreateProviderChainMemberInput,
+    organizationId: number,
+  ): Promise<ProviderChainMemberResponseDto> {
+    await this.validateChainBelongsToOrg(providerChainMemberData.chainId, organizationId);
+    const member = await this.createProviderChainMember(providerChainMemberData);
+
+    return this.mapToDto(member);
+  }
+
+  async updateProviderPriorityOrderAsDto(
+    updateData: UpdateProviderPriorityOrderInput,
+    organizationId: number,
+  ): Promise<ProviderChainMemberResponseDto[]> {
+    await this.validateChainBelongsToOrg(updateData.chainId, organizationId);
+    const members = await this.updateProviderPriorityOrder(updateData);
+
+    return members.map((member) => this.mapToDto(member));
+  }
+
+  async softDeleteChainMemberUsingProviderIDAsDto(
+    deletionData: DeleteProviderChainMemberInput,
+    organizationId: number,
+  ): Promise<ProviderChainMemberResponseDto> {
+    await this.validateChainBelongsToOrg(deletionData.chainId, organizationId);
+    const member = await this.softDeleteChainMemberUsingProviderID(deletionData);
+
+    return this.mapToDto(member);
+  }
+
+  async restoreDeletedChainMemberAsDto(
+    deletedChainMemberData: DeleteProviderChainMemberInput,
+    organizationId: number,
+  ): Promise<ProviderChainMemberResponseDto> {
+    await this.validateChainBelongsToOrg(deletedChainMemberData.chainId, organizationId);
+    const member = await this.restoreDeletedChainMember(deletedChainMemberData);
+
+    return this.mapToDto(member);
+  }
+
+  async getAllProviderChainMembers(
+    options: QueryOptionsDto,
+  ): Promise<ProviderChainMemberListResponse> {
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
     const searchableFields = [];
 
@@ -410,7 +523,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       searchableFields,
       baseConditions,
     );
-    return new ProviderChainMemberResponse(items, total, options.offset, options.limit);
+    return new ProviderChainMemberListResponse(items, total, options.offset, options.limit);
   }
 
   async getNextPriorityProvider(

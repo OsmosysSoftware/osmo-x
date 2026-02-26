@@ -6,16 +6,7 @@ import { Application } from '../applications/entities/application.entity';
 import { Provider } from '../providers/entities/provider.entity';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { Status } from 'src/common/constants/database';
-
-export interface DashboardStats {
-  totalApplications: number;
-  totalProviders: number;
-  totalNotifications: number;
-  successfulNotifications: number;
-  failedNotifications: number;
-  pendingNotifications: number;
-  successRate: number;
-}
+import { DashboardStatsResponseDto } from './dto/dashboard-stats-response.dto';
 
 @Injectable()
 export class DashboardService {
@@ -28,28 +19,59 @@ export class DashboardService {
     private readonly providerRepository: Repository<Provider>,
   ) {}
 
-  async getStats(): Promise<DashboardStats> {
+  async getStats(organizationId: number): Promise<DashboardStatsResponseDto> {
+    const orgApps = await this.applicationRepository.find({
+      where: { organizationId, status: Status.ACTIVE },
+      select: ['applicationId'],
+    });
+    const appIds = orgApps.map((a) => a.applicationId);
+
+    if (appIds.length === 0) {
+      return {
+        totalApplications: 0,
+        totalProviders: 0,
+        totalNotifications: 0,
+        successfulNotifications: 0,
+        failedNotifications: 0,
+        pendingNotifications: 0,
+        successRate: 0,
+      };
+    }
+
     const [
-      totalApplications,
       totalProviders,
       totalNotifications,
       successfulNotifications,
       failedNotifications,
       pendingNotifications,
     ] = await Promise.all([
-      this.applicationRepository.count({ where: { status: Status.ACTIVE } }),
-      this.providerRepository.count({ where: { status: Status.ACTIVE } }),
-      this.notificationRepository.count(),
-      this.notificationRepository.count({
-        where: { deliveryStatus: DeliveryStatus.SUCCESS },
-      }),
-      this.notificationRepository.count({
-        where: { deliveryStatus: DeliveryStatus.FAILED },
-      }),
-      this.notificationRepository.count({
-        where: { deliveryStatus: DeliveryStatus.PENDING },
-      }),
+      this.providerRepository
+        .createQueryBuilder('p')
+        .where('p.status = :status', { status: Status.ACTIVE })
+        .andWhere('p.applicationId IN (:...appIds)', { appIds })
+        .getCount(),
+      this.notificationRepository
+        .createQueryBuilder('n')
+        .where('n.applicationId IN (:...appIds)', { appIds })
+        .getCount(),
+      this.notificationRepository
+        .createQueryBuilder('n')
+        .where('n.applicationId IN (:...appIds)', { appIds })
+        .andWhere('n.deliveryStatus = :ds', { ds: DeliveryStatus.SUCCESS })
+        .getCount(),
+      this.notificationRepository
+        .createQueryBuilder('n')
+        .where('n.applicationId IN (:...appIds)', { appIds })
+        .andWhere('n.deliveryStatus = :ds', { ds: DeliveryStatus.FAILED })
+        .getCount(),
+      this.notificationRepository
+        .createQueryBuilder('n')
+        .where('n.applicationId IN (:...appIds)', { appIds })
+        .andWhere('n.deliveryStatus = :ds', { ds: DeliveryStatus.PENDING })
+        .getCount(),
     ]);
+
+    const totalApplications = appIds.length;
 
     const successRate =
       totalNotifications > 0
