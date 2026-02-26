@@ -18,6 +18,12 @@ export class WebhookService {
     protected readonly notificationsService: NotificationsService,
   ) {}
 
+  async findByProviderId(providerId: number): Promise<Webhook[]> {
+    return this.webhookRepository.find({
+      where: { providerId, status: Status.ACTIVE },
+    });
+  }
+
   async registerWebhook(webhookInput: CreateWebhookInput): Promise<Webhook> {
     // Check if there is an active webhook with the same provider_id
     const existingWebhook = await this.webhookRepository.findOne({

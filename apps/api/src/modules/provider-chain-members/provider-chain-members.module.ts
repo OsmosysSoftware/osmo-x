@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProviderChainMember } from './entities/provider-chain-member.entity';
 import { ProviderChainMembersService } from './provider-chain-members.service';
 import { ProviderChainMembersResolver } from './provider-chain-members.resolver';
+import { ProviderChainMembersV1Controller } from './provider-chain-members-v1.controller';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ProviderChainMembersController } from './provider-chain-members.controller';
@@ -28,6 +29,6 @@ import { MasterProvidersModule } from '../master-providers/master-providers.modu
     JsendFormatter,
   ],
   exports: [TypeOrmModule, ProviderChainMembersService],
-  controllers: [ProviderChainMembersController],
+  controllers: [ProviderChainMembersController, ProviderChainMembersV1Controller],
 })
 export class ProviderChainMembersModule {}

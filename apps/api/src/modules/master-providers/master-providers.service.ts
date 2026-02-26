@@ -11,6 +11,12 @@ export class MasterProvidersService {
     private readonly masterProviderRepository: Repository<MasterProvider>,
   ) {}
 
+  async findAll(): Promise<MasterProvider[]> {
+    return this.masterProviderRepository.find({
+      where: { status: Status.ACTIVE },
+    });
+  }
+
   async getById(masterId: number): Promise<MasterProvider | null> {
     if (masterId === undefined || masterId === null) {
       return null;

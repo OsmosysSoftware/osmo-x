@@ -18,4 +18,10 @@ export class UsersService {
   async findByUserId(userId: number): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { userId, status: Status.ACTIVE } });
   }
+
+  async findByOrganizationId(organizationId: number): Promise<User[]> {
+    return this.userRepository.find({
+      where: { organizationId, status: Status.ACTIVE },
+    });
+  }
 }
