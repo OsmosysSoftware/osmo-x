@@ -10,7 +10,13 @@
     "lint-staged": "^16.1.0"
   },
   "lint-staged": {
-    "apps/api/**/*.ts": "bash -c 'cd apps/api && npx eslint --fix --max-warnings=0 $0 $@'",
-    "apps/portal/**/*.ts": "bash -c 'cd apps/portal && npx eslint --fix --max-warnings=0 $0 $@'"
+    "apps/api/**/*.ts": [
+      "bash -c 'cd apps/api && npm run lint:fix'",
+      "bash -c 'cd apps/api && npm run format'"
+    ],
+    "apps/portal/**/*.ts": [
+      "bash -c 'cd apps/portal && npm run lint:fix'",
+      "bash -c 'cd apps/portal && npm run format'"
+    ]
   }
 }
