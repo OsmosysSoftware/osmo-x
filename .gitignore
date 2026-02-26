@@ -21,3 +21,4 @@
 # Claude Code
 .claude/*
 !.claude/hookify.*.local.md
+.playwright-mcp/
