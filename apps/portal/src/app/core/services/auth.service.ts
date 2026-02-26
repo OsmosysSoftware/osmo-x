@@ -1,9 +1,16 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, map, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { User, AuthResponse, LoginDto, RefreshTokenDto, JwtPayload } from '../models/auth.model';
+import {
+  User,
+  AuthResponse,
+  LoginDto,
+  RefreshTokenDto,
+  JwtPayload,
+  MeResponse,
+} from '../models/auth.model';
 import { UserRoles, UserRole } from '../constants/roles';
 
 @Injectable({
@@ -109,11 +116,12 @@ export class AuthService {
   }
 
   getProfile(): Observable<User> {
-    return this.http.get<User>(`${environment.apiUrl}/v1/auth/me`).pipe(
-      tap((user) => {
-        this.currentUser.set(user);
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
+    return this.http.get<MeResponse>(`${environment.apiUrl}/v1/auth/me`).pipe(
+      tap((response) => {
+        this.currentUser.set(response.user);
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(response.user));
       }),
+      map((response) => response.user),
     );
   }
 

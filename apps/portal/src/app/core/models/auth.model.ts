@@ -7,7 +7,7 @@ import { UserRole } from '../constants/roles';
 export interface User {
   user_id: number;
   username: string;
-  email?: string;
+  email: string;
   role: UserRole;
   organization_id?: number;
   status: number;
@@ -36,4 +36,8 @@ export interface LoginDto {
 
 export interface RefreshTokenDto {
   refresh_token: string;
+}
+
+export interface MeResponse {
+  user: User;
 }
