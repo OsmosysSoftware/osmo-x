@@ -2,13 +2,24 @@
 // These are temporary manual types until OpenAPI types are generated from the backend.
 // Once the v1 auth endpoints are live, replace these with generated types from api.types.ts.
 
+import { UserRole } from '../constants/roles';
+
 export interface User {
   user_id: number;
   username: string;
   email?: string;
-  role: number; // 0 = ORG_USER, 1 = ORG_ADMIN, 2 = SUPER_ADMIN
+  role: UserRole;
   organization_id?: number;
   status: number;
+}
+
+export interface JwtPayload {
+  sub: number;
+  username: string;
+  role: UserRole;
+  organization_id?: number;
+  iat: number;
+  exp: number;
 }
 
 export interface AuthResponse {

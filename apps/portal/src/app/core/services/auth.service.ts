@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { User, AuthResponse, LoginDto, RefreshTokenDto } from '../models/auth.model';
+import { User, AuthResponse, LoginDto, RefreshTokenDto, JwtPayload } from '../models/auth.model';
+import { UserRoles, UserRole } from '../constants/roles';
 
 @Injectable({
   providedIn: 'root',
@@ -21,8 +22,46 @@ export class AuthService {
   readonly user = computed(() => this.currentUser());
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
 
+  // Role and organization signals
+  readonly userRole = computed<UserRole | null>(() => {
+    const user = this.currentUser();
+
+    return user ? user.role : null;
+  });
+
+  readonly organizationId = computed<number | null>(() => {
+    const user = this.currentUser();
+
+    return user?.organization_id ?? null;
+  });
+
   constructor() {
     this.loadUserFromStorage();
+  }
+
+  /**
+   * Check if current user has ORG_ADMIN role or higher
+   */
+  isOrgAdmin(): boolean {
+    const role = this.userRole();
+
+    return role !== null && role >= UserRoles.ORG_ADMIN;
+  }
+
+  /**
+   * Check if current user has SUPER_ADMIN role
+   */
+  isSuperAdmin(): boolean {
+    return this.userRole() === UserRoles.SUPER_ADMIN;
+  }
+
+  /**
+   * Check if user has at least the specified minimum role
+   */
+  hasMinimumRole(minimumRole: UserRole): boolean {
+    const role = this.userRole();
+
+    return role !== null && role >= minimumRole;
   }
 
   private loadUserFromStorage(): void {
@@ -98,13 +137,29 @@ export class AuthService {
     if (!token) return true;
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const exp = payload.exp * 1000;
+      const payload = this.decodeToken(token);
 
-      return Date.now() >= exp;
+      return Date.now() >= payload.exp * 1000;
     } catch {
       return true;
     }
+  }
+
+  /**
+   * Decode the JWT access token to extract its payload.
+   * Does NOT verify the signature -- that is the backend's responsibility.
+   */
+  decodeToken(token: string): JwtPayload {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(''),
+    );
+
+    return JSON.parse(jsonPayload) as JwtPayload;
   }
 
   private handleAuthSuccess(response: AuthResponse): void {

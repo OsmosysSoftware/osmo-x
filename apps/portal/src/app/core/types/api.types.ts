@@ -5,8 +5,10 @@
 // Placeholder until the OsmoX backend v1 API endpoints are live.
 // Once available, run: npm run generate:api
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface paths {}
 export interface components {
   schemas: Record<string, never>;
 }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface operations {}
