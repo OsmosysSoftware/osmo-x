@@ -1,0 +1,61 @@
+name: ${COMPOSE_PROJECT_NAME:-osmo-x}-redis
+
+services:
+  osmox-redis:
+    image: redis:7-alpine
+    container_name: ${COMPOSE_PROJECT_NAME:-osmo-x}-redis
+    restart: unless-stopped
+    ports:
+      - '${REDIS_DOCKER_PORT:-6397}:6379'
+    volumes:
+      - osmox-redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - osmox-network
+
+  osmox-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: osmox-api-${COMPOSE_PROJECT_NAME:-osmo-x}
+    container_name: ${COMPOSE_PROJECT_NAME:-osmo-x}-api
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:${SERVER_PORT:-3000}:${SERVER_PORT:-3000}'
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      REDIS_HOST: ${COMPOSE_PROJECT_NAME:-osmo-x}-redis
+      REDIS_PORT: 6379
+    depends_on:
+      osmox-redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - osmox-network
+    healthcheck:
+      test: ['CMD', 'node', '-e', "require('http').get('http://localhost:${SERVER_PORT:-3000}/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '${LOG_MAX_SIZE:-10m}'
+        max-file: '${LOG_MAX_FILES:-5}'
+
+volumes:
+  osmox-redis-data:
+    driver: local
+
+networks:
+  osmox-network:
+    driver: bridge

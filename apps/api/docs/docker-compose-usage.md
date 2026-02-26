@@ -100,6 +100,30 @@ docker compose down -v    # Stop and remove volumes (deletes data)
 docker compose up -d --build osmox-api
 ```
 
+## Alternative Configurations
+
+If you already have your own database or Redis, use the separate compose files:
+
+| File | What it runs | Use when |
+| --- | --- | --- |
+| `docker-compose.yml` | API + PostgreSQL + Redis + Dozzle | Full stack (default) |
+| `docker-compose.api.yml` | API only | You have your own DB and Redis |
+| `docker-compose.db.yml` | API + PostgreSQL | You have your own Redis |
+| `docker-compose.redis.yml` | API + Redis | You have your own DB |
+
+```shell
+# API only (configure DB_HOST, REDIS_HOST in .env to point to your services)
+docker compose -f docker-compose.api.yml up -d
+
+# API + PostgreSQL (configure REDIS_HOST in .env)
+docker compose -f docker-compose.db.yml up -d
+
+# API + Redis (configure DB_HOST in .env)
+docker compose -f docker-compose.redis.yml up -d
+```
+
+When using external DB or Redis, set `DB_HOST`/`REDIS_HOST` in `.env` to your service address (e.g., `host.docker.internal` on Mac/Windows, or your machine's LAN IP on Linux).
+
 ## Notes for Linux Users
 
 - To fetch your machine's LAN IP (useful when connecting external services):
