@@ -1,16 +1,33 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
-import { DatePipe } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
+import { DatePipe, JsonPipe } from '@angular/common';
+import { MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
-import { environment } from '../../../../environments/environment';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
+import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
+import { NotificationsService } from '../services/notifications.service';
+import { Notification, PageInfo } from '../../../core/models/api.model';
 
 @Component({
   selector: 'app-notifications-list',
-  imports: [TableModule, CardModule, TagModule, SkeletonModule, DatePipe, PaginationComponent],
+  imports: [
+    TableModule,
+    CardModule,
+    TagModule,
+    ButtonModule,
+    SkeletonModule,
+    DialogModule,
+    DatePipe,
+    JsonPipe,
+    PaginationComponent,
+    StatusBadgeComponent,
+    ChannelTypePipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
@@ -32,25 +49,27 @@ import { environment } from '../../../../environments/environment';
         </p-card>
       } @else {
         <p-card>
-          <p-table [value]="notifications()" [tableStyle]="{ 'min-width': '60rem' }">
+          <p-table
+            [value]="notifications()"
+            [tableStyle]="{ 'min-width': '60rem' }"
+            selectionMode="single"
+            (onRowSelect)="onRowSelect($event)"
+          >
             <ng-template #header>
               <tr>
                 <th>ID</th>
-                <th>Channel</th>
-                <th>Status</th>
-                <th>Application</th>
+                <th>Channel Type</th>
+                <th>Delivery Status</th>
+                <th>Application ID</th>
                 <th>Created</th>
               </tr>
             </ng-template>
             <ng-template #body let-n>
-              <tr>
+              <tr [pSelectableRow]="n" class="cursor-pointer">
                 <td>{{ n.notification_id }}</td>
-                <td>{{ n.channel_type }}</td>
+                <td>{{ n.channel_type | channelType }}</td>
                 <td>
-                  <p-tag
-                    [value]="n.delivery_status"
-                    [severity]="getStatusSeverity(n.delivery_status)"
-                  />
+                  <app-status-badge [status]="n.delivery_status" />
                 </td>
                 <td>{{ n.application_id }}</td>
                 <td>{{ n.created_on | date: 'short' }}</td>
@@ -64,26 +83,81 @@ import { environment } from '../../../../environments/environment';
               </tr>
             </ng-template>
           </p-table>
+
           @if (pageInfo(); as pi) {
             <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
           }
         </p-card>
       }
     </div>
+
+    <p-dialog
+      header="Notification Details"
+      [visible]="detailDialogVisible()"
+      (visibleChange)="detailDialogVisible.set($event)"
+      [modal]="true"
+      [style]="{ width: '700px' }"
+    >
+      @if (selectedNotification(); as n) {
+        <div class="flex flex-col gap-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <span class="font-semibold text-muted-color block mb-1">ID</span>
+              <span>{{ n.notification_id }}</span>
+            </div>
+            <div>
+              <span class="font-semibold text-muted-color block mb-1">Channel Type</span>
+              <span>{{ n.channel_type | channelType }}</span>
+            </div>
+            <div>
+              <span class="font-semibold text-muted-color block mb-1">Delivery Status</span>
+              <app-status-badge [status]="n.delivery_status" />
+            </div>
+            <div>
+              <span class="font-semibold text-muted-color block mb-1">Application ID</span>
+              <span>{{ n.application_id }}</span>
+            </div>
+            <div>
+              <span class="font-semibold text-muted-color block mb-1">Provider ID</span>
+              <span>{{ n.provider_id ?? '—' }}</span>
+            </div>
+            <div>
+              <span class="font-semibold text-muted-color block mb-1">Created</span>
+              <span>{{ n.created_on | date: 'medium' }}</span>
+            </div>
+          </div>
+
+          <div>
+            <span class="font-semibold text-muted-color block mb-1">Data</span>
+            <pre
+              class="bg-surface-100 dark:bg-surface-800 p-4 rounded-lg text-sm overflow-auto max-h-64"
+              >{{ n.data | json }}</pre
+            >
+          </div>
+
+          @if (n.result) {
+            <div>
+              <span class="font-semibold text-muted-color block mb-1">Result</span>
+              <pre
+                class="bg-surface-100 dark:bg-surface-800 p-4 rounded-lg text-sm overflow-auto max-h-64"
+                >{{ n.result | json }}</pre
+              >
+            </div>
+          }
+        </div>
+      }
+    </p-dialog>
   `,
 })
 export class NotificationsListComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/notifications`;
+  private readonly service = inject(NotificationsService);
+  private readonly messageService = inject(MessageService);
 
-  readonly notifications = signal<Record<string, unknown>[]>([]);
+  readonly notifications = signal<Notification[]>([]);
   readonly loading = signal(true);
-  readonly pageInfo = signal<{
-    page: number;
-    limit: number;
-    total_items: number;
-    total_pages: number;
-  } | null>(null);
+  readonly pageInfo = signal<PageInfo | null>(null);
+  readonly selectedNotification = signal<Notification | null>(null);
+  readonly detailDialogVisible = signal(false);
   private currentPage = 1;
 
   ngOnInit(): void {
@@ -92,19 +166,22 @@ export class NotificationsListComponent implements OnInit {
 
   loadNotifications(): void {
     this.loading.set(true);
-    this.http
-      .get<{
-        items: Record<string, unknown>[];
-        page_info: { page: number; limit: number; total_items: number; total_pages: number };
-      }>(this.apiUrl, { params: { page: this.currentPage, limit: 20 } })
-      .subscribe({
-        next: (res) => {
-          this.notifications.set(res.items ?? []);
-          this.pageInfo.set(res.page_info ?? null);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
+
+    this.service.list(this.currentPage, 20).subscribe({
+      next: (res) => {
+        this.notifications.set(res.items ?? []);
+        this.pageInfo.set(res.page_info ?? null);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load notifications',
+        });
+        this.loading.set(false);
+      },
+    });
   }
 
   onPageChange(page: number): void {
@@ -112,18 +189,25 @@ export class NotificationsListComponent implements OnInit {
     this.loadNotifications();
   }
 
-  getStatusSeverity(status: string): 'success' | 'warn' | 'danger' | 'info' | 'secondary' {
-    switch (status) {
-      case 'SUCCESS':
-        return 'success';
-      case 'PENDING':
-        return 'warn';
-      case 'FAILED':
-        return 'danger';
-      case 'IN_PROGRESS':
-        return 'info';
-      default:
-        return 'secondary';
+  onRowSelect(event: { data?: Notification | Notification[] }): void {
+    const notification = Array.isArray(event.data) ? event.data[0] : event.data;
+
+    if (!notification) {
+      return;
     }
+
+    this.service.getById(notification.notification_id).subscribe({
+      next: (notification) => {
+        this.selectedNotification.set(notification);
+        this.detailDialogVisible.set(true);
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load notification details',
+        });
+      },
+    });
   }
 }

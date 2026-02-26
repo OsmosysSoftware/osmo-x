@@ -1,16 +1,16 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DatePipe } from '@angular/common';
-import { PaginationComponent } from '../../../shared/components/pagination/pagination';
-import { environment } from '../../../../environments/environment';
+import { MessageService } from 'primeng/api';
+import { OrganizationsService } from '../services/organizations.service';
+import { Organization } from '../../../core/models/api.model';
 
 @Component({
   selector: 'app-organizations-list',
-  imports: [TableModule, CardModule, TagModule, SkeletonModule, DatePipe, PaginationComponent],
+  imports: [TableModule, CardModule, TagModule, SkeletonModule, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
@@ -64,27 +64,17 @@ import { environment } from '../../../../environments/environment';
               </tr>
             </ng-template>
           </p-table>
-          @if (pageInfo(); as pi) {
-            <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
-          }
         </p-card>
       }
     </div>
   `,
 })
 export class OrganizationsListComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/organizations`;
+  private readonly service = inject(OrganizationsService);
+  private readonly messageService = inject(MessageService);
 
-  readonly organizations = signal<Record<string, unknown>[]>([]);
+  readonly organizations = signal<Organization[]>([]);
   readonly loading = signal(true);
-  readonly pageInfo = signal<{
-    page: number;
-    limit: number;
-    total_items: number;
-    total_pages: number;
-  } | null>(null);
-  private currentPage = 1;
 
   ngOnInit(): void {
     this.loadOrganizations();
@@ -92,23 +82,20 @@ export class OrganizationsListComponent implements OnInit {
 
   loadOrganizations(): void {
     this.loading.set(true);
-    this.http
-      .get<{
-        items: Record<string, unknown>[];
-        page_info: { page: number; limit: number; total_items: number; total_pages: number };
-      }>(this.apiUrl, { params: { page: this.currentPage, limit: 20 } })
-      .subscribe({
-        next: (res) => {
-          this.organizations.set(res.items ?? []);
-          this.pageInfo.set(res.page_info ?? null);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
-  }
 
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.loadOrganizations();
+    this.service.list().subscribe({
+      next: (organizations) => {
+        this.organizations.set(organizations);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load organizations',
+        });
+        this.loading.set(false);
+      },
+    });
   }
 }

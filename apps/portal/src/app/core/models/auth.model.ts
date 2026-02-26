@@ -11,6 +11,8 @@ export interface User {
   role: UserRole;
   organization_id?: number;
   status: number;
+  created_on?: string;
+  updated_on?: string;
 }
 
 export interface JwtPayload {

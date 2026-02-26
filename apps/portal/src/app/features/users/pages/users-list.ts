@@ -1,17 +1,17 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DatePipe } from '@angular/common';
-import { PaginationComponent } from '../../../shared/components/pagination/pagination';
+import { MessageService } from 'primeng/api';
+import { UsersService } from '../services/users.service';
+import { User } from '../../../core/models/auth.model';
 import { UserRoleLabels } from '../../../core/constants/roles';
-import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-users-list',
-  imports: [TableModule, CardModule, TagModule, SkeletonModule, DatePipe, PaginationComponent],
+  imports: [TableModule, CardModule, TagModule, SkeletonModule, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
@@ -48,9 +48,9 @@ import { environment } from '../../../../environments/environment';
               <tr>
                 <td>{{ u.user_id }}</td>
                 <td>{{ u.username }}</td>
-                <td>{{ u.email || '—' }}</td>
+                <td>{{ u.email || '---' }}</td>
                 <td>
-                  <p-tag [value]="getRoleLabel(u.user_role)" severity="info" />
+                  <p-tag [value]="getRoleLabel(u.role)" severity="info" />
                 </td>
                 <td>
                   <p-tag
@@ -67,27 +67,17 @@ import { environment } from '../../../../environments/environment';
               </tr>
             </ng-template>
           </p-table>
-          @if (pageInfo(); as pi) {
-            <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
-          }
         </p-card>
       }
     </div>
   `,
 })
 export class UsersListComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/users`;
+  private readonly service = inject(UsersService);
+  private readonly messageService = inject(MessageService);
 
-  readonly users = signal<Record<string, unknown>[]>([]);
+  readonly users = signal<User[]>([]);
   readonly loading = signal(true);
-  readonly pageInfo = signal<{
-    page: number;
-    limit: number;
-    total_items: number;
-    total_pages: number;
-  } | null>(null);
-  private currentPage = 1;
 
   ngOnInit(): void {
     this.loadUsers();
@@ -95,24 +85,21 @@ export class UsersListComponent implements OnInit {
 
   loadUsers(): void {
     this.loading.set(true);
-    this.http
-      .get<{
-        items: Record<string, unknown>[];
-        page_info: { page: number; limit: number; total_items: number; total_pages: number };
-      }>(this.apiUrl, { params: { page: this.currentPage, limit: 20 } })
-      .subscribe({
-        next: (res) => {
-          this.users.set(res.items ?? []);
-          this.pageInfo.set(res.page_info ?? null);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
-  }
 
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.loadUsers();
+    this.service.list().subscribe({
+      next: (users) => {
+        this.users.set(users);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load users',
+        });
+        this.loading.set(false);
+      },
+    });
   }
 
   getRoleLabel(role: number): string {
