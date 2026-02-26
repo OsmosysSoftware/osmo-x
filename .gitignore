@@ -17,3 +17,7 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 .serena/
+
+# Claude Code
+.claude/*
+!.claude/hookify.*.local.md
