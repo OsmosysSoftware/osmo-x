@@ -39,7 +39,8 @@
               type="text"
               placeholder="Username"
               class="w-full md:w-120"
-              [(ngModel)]="username"
+              [ngModel]="username()"
+              (ngModelChange)="username.set($event)"
               name="username"
               required
               [disabled]="loading()"
@@ -54,7 +55,8 @@
             >
             <p-password
               id="password"
-              [(ngModel)]="password"
+              [ngModel]="password()"
+              (ngModelChange)="password.set($event)"
               name="password"
               placeholder="Password"
               [toggleMask]="true"
@@ -68,7 +70,8 @@
           <div class="flex items-center justify-between mt-2 mb-8 gap-8">
             <div class="flex items-center">
               <p-checkbox
-                [(ngModel)]="rememberMe"
+                [ngModel]="rememberMe()"
+                (ngModelChange)="rememberMe.set($event)"
                 id="rememberMe"
                 name="rememberMe"
                 binary

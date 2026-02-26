@@ -1,6 +1,14 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, PLATFORM_ID, signal, OnInit } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  computed,
+  inject,
+  PLATFORM_ID,
+  signal,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { $t, updatePreset, updateSurfacePalette } from '@primeuix/themes';
@@ -41,6 +49,7 @@ declare interface SurfacesType {
   selector: 'app-configurator',
   standalone: true,
   imports: [CommonModule, FormsModule, SelectButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex flex-col gap-4">
       <div>
@@ -98,16 +107,18 @@ declare interface SurfacesType {
           size="small"
         />
       </div>
-      <div *ngIf="showMenuModeButton()" class="flex flex-col gap-2">
-        <span class="text-sm text-muted-color font-semibold">Menu Mode</span>
-        <p-selectbutton
-          [ngModel]="menuMode()"
-          (ngModelChange)="onMenuModeChange($event)"
-          [options]="menuModeOptions"
-          [allowEmpty]="false"
-          size="small"
-        />
-      </div>
+      @if (showMenuModeButton()) {
+        <div class="flex flex-col gap-2">
+          <span class="text-sm text-muted-color font-semibold">Menu Mode</span>
+          <p-selectbutton
+            [ngModel]="menuMode()"
+            (ngModelChange)="onMenuModeChange($event)"
+            [options]="menuModeOptions"
+            [allowEmpty]="false"
+            size="small"
+          />
+        </div>
+      }
     </div>
   `,
   host: {

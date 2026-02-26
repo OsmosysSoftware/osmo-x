@@ -1,25 +1,33 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { AuthService } from '../../core/services/auth.service';
+import { UserRoles } from '../../core/constants/roles';
 
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, AppMenuitem, RouterModule],
+  imports: [AppMenuitem, RouterModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<ul class="layout-menu">
-    <ng-container *ngFor="let item of model; let i = index">
-      <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
-      <li *ngIf="item.separator" class="menu-separator"></li>
-    </ng-container>
+    @for (item of model(); track item.label; let i = $index) {
+      @if (item.separator) {
+        <li class="menu-separator"></li>
+      } @else {
+        <li app-menuitem [item]="item" [index]="i" [root]="true"></li>
+      }
+    }
   </ul> `,
 })
-export class AppMenu implements OnInit {
-  model: MenuItem[] = [];
+export class AppMenu {
+  private readonly authService = inject(AuthService);
 
-  ngOnInit() {
-    this.model = [
+  readonly model = computed<MenuItem[]>(() => {
+    const isOrgAdmin = this.authService.hasMinimumRole(UserRoles.ORG_ADMIN);
+    const isSuperAdmin = this.authService.isSuperAdmin();
+
+    const items: MenuItem[] = [
       {
         label: 'Home',
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] }],
@@ -28,12 +36,12 @@ export class AppMenu implements OnInit {
         label: 'Notifications',
         items: [
           {
-            label: 'Active',
+            label: 'All Notifications',
             icon: 'pi pi-fw pi-bell',
             routerLink: ['/notifications'],
           },
           {
-            label: 'Archived',
+            label: 'Archived Notifications',
             icon: 'pi pi-fw pi-inbox',
             routerLink: ['/archived-notifications'],
           },
@@ -57,12 +65,33 @@ export class AppMenu implements OnInit {
           { label: 'API Keys', icon: 'pi pi-fw pi-key', routerLink: ['/api-keys'] },
         ],
       },
-      {
-        label: 'Administration',
-        items: [
-          { label: 'Users', icon: 'pi pi-fw pi-users', routerLink: ['/users'] },
-        ],
-      },
     ];
-  }
+
+    const administrationItems: MenuItem[] = [];
+
+    if (isOrgAdmin) {
+      administrationItems.push({
+        label: 'Users',
+        icon: 'pi pi-fw pi-users',
+        routerLink: ['/users'],
+      });
+    }
+
+    if (isSuperAdmin) {
+      administrationItems.push({
+        label: 'Organizations',
+        icon: 'pi pi-fw pi-building',
+        routerLink: ['/organizations'],
+      });
+    }
+
+    if (administrationItems.length > 0) {
+      items.push({
+        label: 'Administration',
+        items: administrationItems,
+      });
+    }
+
+    return items;
+  });
 }
