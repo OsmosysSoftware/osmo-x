@@ -9,6 +9,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { JsendFormatter } from 'src/common/jsend-formatter';
@@ -18,6 +19,7 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 
+@ApiTags('Notifications')
 @Controller('notifications')
 export class NotificationsController {
   constructor(
@@ -28,16 +30,32 @@ export class NotificationsController {
   ) {}
 
   @Post('queue')
+  @ApiOperation({ summary: 'Enqueue pending notifications for processing' })
+  @ApiResponse({ status: 201, description: 'Pending notifications enqueued successfully' })
   async addNotificationsToQueue(): Promise<void> {
     this.notificationService.addNotificationsToQueue();
   }
 
   @Post('confirm')
+  @ApiOperation({ summary: 'Check provider delivery confirmations for pending notifications' })
+  @ApiResponse({ status: 201, description: 'Provider confirmations checked successfully' })
   async getProviderConfirmation(): Promise<void> {
     this.notificationService.getProviderConfirmation();
   }
 
   @Post('redis/cleanup')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Clean up completed and failed Redis queue jobs' })
+  @ApiQuery({
+    name: 'gracePeriod',
+    required: false,
+    description: 'Grace period in milliseconds before cleaning up jobs (default: 0)',
+  })
+  @ApiResponse({ status: 201, description: 'Redis job cleanup completed successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid gracePeriod parameter' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
+  @ApiResponse({ status: 500, description: 'Internal server error during cleanup' })
   @UseGuards(RolesGuard)
   @Roles(UserRoles.ADMIN)
   async cleanupRedisJobs(
@@ -78,6 +96,10 @@ export class NotificationsController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create a new notification' })
+  @ApiResponse({ status: 201, description: 'Notification created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid notification data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - valid API key required' })
   @UseGuards(ApiKeyGuard)
   async addNotification(
     @Body() notificationData: CreateNotificationDto,

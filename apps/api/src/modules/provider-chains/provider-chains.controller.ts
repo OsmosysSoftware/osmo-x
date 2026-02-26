@@ -8,6 +8,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProviderChainsService } from './provider-chains.service';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { CreateProviderChainInput } from './dto/create-provider-chain.input';
@@ -18,6 +19,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { RolesGuard } from 'src/common/guards/role.guard';
 
+@ApiTags('Provider Chains')
+@ApiBearerAuth()
 @Controller('provider-chains')
 @Roles(UserRoles.ADMIN)
 @UseGuards(RolesGuard)
@@ -30,6 +33,11 @@ export class ProviderChainsController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new provider chain' })
+  @ApiResponse({ status: 201, description: 'Provider chain created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid provider chain data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
   async addProviderChain(
     @Body() providerChainData: CreateProviderChainInput,
   ): Promise<Record<string, unknown>> {
@@ -51,6 +59,10 @@ export class ProviderChainsController {
   }
 
   @Delete()
+  @ApiOperation({ summary: 'Soft-delete a provider chain and its members' })
+  @ApiResponse({ status: 200, description: 'Provider chain deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
   async deleteProviderChain(
     @Body() deleteProviderChainInput: DeleteProviderChainInput,
   ): Promise<Record<string, unknown>> {
@@ -82,6 +94,11 @@ export class ProviderChainsController {
   }
 
   @Put()
+  @ApiOperation({ summary: 'Update an existing provider chain' })
+  @ApiResponse({ status: 200, description: 'Provider chain updated successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid provider chain data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
   async updateProviderChain(
     @Body() updateProviderChainData: UpdateProviderChainInput,
   ): Promise<Record<string, unknown>> {

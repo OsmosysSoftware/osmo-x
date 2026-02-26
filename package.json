@@ -10,7 +10,7 @@
     "lint-staged": "^16.1.0"
   },
   "lint-staged": {
-    "apps/api/**/*.ts": "cd apps/api && npx eslint --fix --max-warnings=0",
-    "apps/portal/**/*.ts": "cd apps/portal && npx eslint --fix --max-warnings=0"
+    "apps/api/**/*.ts": "npx eslint --fix --max-warnings=0",
+    "apps/portal/**/*.ts": "npx eslint --fix --max-warnings=0"
   }
 }

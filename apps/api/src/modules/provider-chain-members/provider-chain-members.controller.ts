@@ -8,6 +8,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProviderChainMembersService } from './provider-chain-members.service';
 import { JsendFormatter } from 'src/common/jsend-formatter';
 import { CreateProviderChainMemberInput } from './dto/create-provider-chain-member.input';
@@ -17,6 +18,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { RolesGuard } from 'src/common/guards/role.guard';
 
+@ApiTags('Provider Chain Members')
+@ApiBearerAuth()
 @Controller('provider-chain-members')
 @Roles(UserRoles.ADMIN)
 @UseGuards(RolesGuard)
@@ -28,6 +31,11 @@ export class ProviderChainMembersController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Add a member to a provider chain' })
+  @ApiResponse({ status: 201, description: 'Provider chain member created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid provider chain member data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
   async createProviderChainMember(
     @Body() providerChainMemberData: CreateProviderChainMemberInput,
   ): Promise<Record<string, unknown>> {
@@ -51,6 +59,11 @@ export class ProviderChainMembersController {
   }
 
   @Put('priority-order')
+  @ApiOperation({ summary: 'Update priority order of providers in a chain' })
+  @ApiResponse({ status: 200, description: 'Provider priority order updated successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid priority order data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
   async updateProviderPriorityOrder(
     @Body() updateProviderPriorityOrderData: UpdateProviderPriorityOrderInput,
   ): Promise<Record<string, unknown>> {
@@ -76,6 +89,10 @@ export class ProviderChainMembersController {
   }
 
   @Delete()
+  @ApiOperation({ summary: 'Soft-delete a provider chain member by provider ID' })
+  @ApiResponse({ status: 200, description: 'Provider chain member deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
   async deleteProviderChainMemberByProviderId(
     @Body() deleteProviderChainMemberInput: DeleteProviderChainMemberInput,
   ): Promise<Record<string, unknown>> {
@@ -102,6 +119,10 @@ export class ProviderChainMembersController {
   }
 
   @Put('restore')
+  @ApiOperation({ summary: 'Restore a soft-deleted provider chain member' })
+  @ApiResponse({ status: 200, description: 'Provider chain member restored successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - valid Bearer token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
   async restoreChainMemberUsingProviderId(
     @Body() restoreProviderChainMemberInput: DeleteProviderChainMemberInput,
   ): Promise<Record<string, unknown>> {
