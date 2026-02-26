@@ -25,10 +25,12 @@
     "typeorm:generate-migration": "typeorm-ts-node-commonjs migration:generate -d src/config/typeorm/configuration.ts src/database/migrations/migration",
     "typeorm:run-migration": "typeorm-ts-node-commonjs migration:run -d src/config/typeorm/configuration.ts",
     "typeorm:revert-migration": "typeorm-ts-node-commonjs migration:revert -d src/config/typeorm/configuration.ts",
-    "database:reset": "ts-node src/database/database-reset.ts"
+    "database:reset": "ts-node src/database/database-reset.ts",
+    "generate:openapi": "ts-node -r tsconfig-paths/register src/scripts/generate-openapi.ts"
   },
   "dependencies": {
     "@apollo/server": "^5.0.0",
+    "@as-integrations/express5": "^1.1.2",
     "@aws-sdk/client-ses": "^3.855.0",
     "@aws-sdk/client-sns": "^3.855.0",
     "@nestjs/apollo": "^13.0.0",

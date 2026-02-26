@@ -20,7 +20,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 const configService = new ConfigService();
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
