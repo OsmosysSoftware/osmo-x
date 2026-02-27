@@ -1,7 +1,14 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
-import { CardModule } from 'primeng/card';
+import { DatePipe } from '@angular/common';
+import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -9,7 +16,9 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
-import { DatePipe } from '@angular/common';
+import { ToolbarModule } from 'primeng/toolbar';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { OrganizationsService } from '../services/organizations.service';
 import { Organization } from '../../../core/models/api.model';
@@ -18,8 +27,8 @@ import { Organization } from '../../../core/models/api.model';
   selector: 'app-organizations-list',
   imports: [
     FormsModule,
+    DatePipe,
     TableModule,
-    CardModule,
     TagModule,
     ButtonModule,
     SkeletonModule,
@@ -27,85 +36,129 @@ import { Organization } from '../../../core/models/api.model';
     InputTextModule,
     ConfirmDialogModule,
     TooltipModule,
-    DatePipe,
+    ToolbarModule,
+    IconFieldModule,
+    InputIconModule,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1
-            class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
-          >
+      <p-toolbar class="mb-6">
+        <ng-template #start>
+          <h2 class="m-0 flex items-center gap-2">
             <i class="pi pi-building text-primary"></i>
             Organizations
-          </h1>
-          <p class="text-muted-color mt-2">Manage platform organizations</p>
-        </div>
-        <p-button label="New Organization" icon="pi pi-plus" (onClick)="openCreate()" />
-      </div>
+          </h2>
+        </ng-template>
+        <ng-template #end>
+          <p-button
+            label="New Organization"
+            icon="pi pi-plus"
+            severity="success"
+            (onClick)="openCreate()"
+          />
+        </ng-template>
+      </p-toolbar>
 
       @if (loading()) {
-        <p-card>
-          <p-skeleton height="300px" />
-        </p-card>
+        <p-skeleton height="300px" />
       } @else {
-        <p-card>
-          <p-table [value]="organizations()" [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template #header>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Slug</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-org>
-              <tr>
-                <td>{{ org.organization_id }}</td>
-                <td>{{ org.name }}</td>
-                <td class="font-mono">{{ org.slug }}</td>
-                <td>
-                  <p-tag
-                    [value]="org.status === 1 ? 'Active' : 'Inactive'"
-                    [severity]="org.status === 1 ? 'success' : 'danger'"
+        <p-table
+          #dt
+          [value]="organizations()"
+          [rows]="10"
+          [paginator]="true"
+          [globalFilterFields]="['name', 'slug']"
+          [rowHover]="true"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} organizations"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template #caption>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-color">Manage platform organizations</span>
+              <div class="flex items-center gap-2">
+                <p-iconfield>
+                  <p-inputicon class="pi pi-search" />
+                  <input
+                    pInputText
+                    type="text"
+                    (input)="onGlobalFilter($event)"
+                    placeholder="Search..."
                   />
-                </td>
-                <td>{{ org.created_on | date: 'short' }}</td>
-                <td class="text-center">
-                  <p-button
-                    icon="pi pi-pencil"
-                    [rounded]="true"
-                    [text]="true"
-                    severity="info"
-                    pTooltip="Edit"
-                    tooltipPosition="top"
-                    (onClick)="openEdit(org)"
-                  />
-                  <p-button
-                    icon="pi pi-trash"
-                    [rounded]="true"
-                    [text]="true"
-                    severity="danger"
-                    pTooltip="Delete"
-                    tooltipPosition="top"
-                    (onClick)="confirmDelete(org)"
-                  />
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-              <tr>
-                <td colspan="6" class="text-center py-8 text-muted-color">
-                  No organizations found
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </p-card>
+                </p-iconfield>
+                <p-button
+                  icon="pi pi-refresh"
+                  [rounded]="true"
+                  [outlined]="true"
+                  severity="secondary"
+                  pTooltip="Refresh"
+                  tooltipPosition="top"
+                  (onClick)="loadOrganizations()"
+                />
+              </div>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="organization_id" style="min-width: 6rem">
+                ID <p-sortIcon field="organization_id" />
+              </th>
+              <th pSortableColumn="name" style="min-width: 12rem">
+                Name <p-sortIcon field="name" />
+              </th>
+              <th pSortableColumn="slug" style="min-width: 10rem">
+                Slug <p-sortIcon field="slug" />
+              </th>
+              <th>Status</th>
+              <th pSortableColumn="created_on" style="min-width: 10rem">
+                Created <p-sortIcon field="created_on" />
+              </th>
+              <th class="text-center" style="min-width: 8rem">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-org>
+            <tr>
+              <td>{{ org.organization_id }}</td>
+              <td>{{ org.name }}</td>
+              <td class="font-mono">{{ org.slug }}</td>
+              <td>
+                <p-tag
+                  [value]="org.status === 1 ? 'Active' : 'Inactive'"
+                  [severity]="org.status === 1 ? 'success' : 'danger'"
+                />
+              </td>
+              <td>{{ org.created_on | date: 'short' }}</td>
+              <td class="text-center">
+                <p-button
+                  icon="pi pi-pencil"
+                  class="mr-2"
+                  [rounded]="true"
+                  [outlined]="true"
+                  pTooltip="Edit"
+                  tooltipPosition="top"
+                  (onClick)="openEdit(org)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [rounded]="true"
+                  [outlined]="true"
+                  pTooltip="Delete"
+                  tooltipPosition="top"
+                  (onClick)="confirmDelete(org)"
+                />
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="6" class="text-center py-8 text-muted-color">No organizations found</td>
+            </tr>
+          </ng-template>
+        </p-table>
       }
 
       <!-- Create/Edit Organization Dialog -->
@@ -168,6 +221,8 @@ export class OrganizationsListComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
 
+  readonly dt = viewChild<Table>('dt');
+
   readonly organizations = signal<Organization[]>([]);
   readonly loading = signal(true);
   readonly saving = signal(false);
@@ -199,6 +254,10 @@ export class OrganizationsListComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  onGlobalFilter(event: Event): void {
+    this.dt()?.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
   openCreate(): void {

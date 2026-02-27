@@ -1,8 +1,14 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { CardModule } from 'primeng/card';
+import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -13,6 +19,9 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToolbarModule } from 'primeng/toolbar';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { ProvidersService } from '../services/providers.service';
@@ -32,7 +41,6 @@ interface ChannelOption {
     FormsModule,
     DatePipe,
     TableModule,
-    CardModule,
     TagModule,
     ButtonModule,
     SkeletonModule,
@@ -43,6 +51,9 @@ interface ChannelOption {
     TextareaModule,
     TooltipModule,
     ConfirmDialogModule,
+    ToolbarModule,
+    IconFieldModule,
+    InputIconModule,
     PaginationComponent,
     ChannelTypePipe,
   ],
@@ -50,82 +61,120 @@ interface ChannelOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1
-            class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
-          >
+      <p-toolbar class="mb-6">
+        <ng-template #start>
+          <h2 class="m-0 flex items-center gap-2">
             <i class="pi pi-server text-primary"></i>
             Providers
-          </h1>
-          <p class="text-muted-color mt-2">Manage notification service providers</p>
-        </div>
-        <p-button label="New Provider" icon="pi pi-plus" (onClick)="openCreate()" />
-      </div>
+          </h2>
+        </ng-template>
+        <ng-template #end>
+          <p-button
+            label="New Provider"
+            icon="pi pi-plus"
+            severity="success"
+            (onClick)="openCreate()"
+          />
+        </ng-template>
+      </p-toolbar>
 
       @if (loading()) {
-        <p-card>
-          <p-skeleton height="300px" />
-        </p-card>
+        <p-skeleton height="300px" />
       } @else {
-        <p-card>
-          <p-table [value]="providers()" [tableStyle]="{ 'min-width': '60rem' }">
-            <ng-template #header>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Channel Type</th>
-                <th>Enabled</th>
-                <th>Application</th>
-                <th>Created</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-p>
-              <tr>
-                <td>{{ p.provider_id }}</td>
-                <td>{{ p.name }}</td>
-                <td>{{ p.channel_type | channelType }}</td>
-                <td>
-                  <p-tag
-                    [value]="p.is_enabled === 1 ? 'Yes' : 'No'"
-                    [severity]="p.is_enabled === 1 ? 'success' : 'danger'"
+        <p-table
+          #dt
+          [value]="providers()"
+          [globalFilterFields]="['name']"
+          [rowHover]="true"
+          [tableStyle]="{ 'min-width': '60rem' }"
+        >
+          <ng-template #caption>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-color">Manage notification service providers</span>
+              <div class="flex items-center gap-2">
+                <p-iconfield>
+                  <p-inputicon class="pi pi-search" />
+                  <input
+                    pInputText
+                    type="text"
+                    (input)="onGlobalFilter($event)"
+                    placeholder="Search..."
                   />
-                </td>
-                <td>{{ getApplicationName(p.application_id) }}</td>
-                <td>{{ p.created_on | date: 'short' }}</td>
-                <td class="text-center">
-                  <p-button
-                    icon="pi pi-pencil"
-                    [rounded]="true"
-                    [text]="true"
-                    severity="info"
-                    pTooltip="Edit"
-                    tooltipPosition="top"
-                    (onClick)="openEdit(p)"
-                  />
-                  <p-button
-                    icon="pi pi-trash"
-                    [rounded]="true"
-                    [text]="true"
-                    severity="danger"
-                    pTooltip="Delete"
-                    tooltipPosition="top"
-                    (onClick)="confirmDelete(p)"
-                  />
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-              <tr>
-                <td colspan="7" class="text-center py-8 text-muted-color">No providers found</td>
-              </tr>
-            </ng-template>
-          </p-table>
-          @if (pageInfo(); as pi) {
-            <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
-          }
-        </p-card>
+                </p-iconfield>
+                <p-button
+                  icon="pi pi-refresh"
+                  [rounded]="true"
+                  [outlined]="true"
+                  severity="secondary"
+                  pTooltip="Refresh"
+                  tooltipPosition="top"
+                  (onClick)="loadProviders()"
+                />
+              </div>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="provider_id" style="min-width: 6rem">
+                ID <p-sortIcon field="provider_id" />
+              </th>
+              <th pSortableColumn="name" style="min-width: 12rem">
+                Name <p-sortIcon field="name" />
+              </th>
+              <th>Channel Type</th>
+              <th>Enabled</th>
+              <th>Application</th>
+              <th pSortableColumn="created_on" style="min-width: 10rem">
+                Created <p-sortIcon field="created_on" />
+              </th>
+              <th class="text-center" style="min-width: 8rem">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-p>
+            <tr>
+              <td>{{ p.provider_id }}</td>
+              <td>{{ p.name }}</td>
+              <td>{{ p.channel_type | channelType }}</td>
+              <td>
+                <p-tag
+                  [value]="p.is_enabled === 1 ? 'Yes' : 'No'"
+                  [severity]="p.is_enabled === 1 ? 'success' : 'danger'"
+                />
+              </td>
+              <td>{{ getApplicationName(p.application_id) }}</td>
+              <td>{{ p.created_on | date: 'short' }}</td>
+              <td class="text-center">
+                <p-button
+                  icon="pi pi-pencil"
+                  class="mr-2"
+                  [rounded]="true"
+                  [outlined]="true"
+                  pTooltip="Edit"
+                  tooltipPosition="top"
+                  (onClick)="openEdit(p)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [rounded]="true"
+                  [outlined]="true"
+                  pTooltip="Delete"
+                  tooltipPosition="top"
+                  (onClick)="confirmDelete(p)"
+                />
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="7" class="text-center py-8 text-muted-color">No providers found</td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+        @if (pageInfo(); as pi) {
+          <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
+        }
       }
 
       <!-- Create/Edit Dialog -->
@@ -193,7 +242,7 @@ interface ChannelOption {
               [ngModel]="formConfiguration()"
               (ngModelChange)="formConfiguration.set($event)"
               [rows]="6"
-              placeholder='{"key": "value"}'
+              placeholder="{{ '{' }} &quot;key&quot;: &quot;value&quot; {{ '}' }}"
             ></textarea>
           </div>
         </div>
@@ -223,6 +272,8 @@ export class ProvidersListComponent implements OnInit {
   private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+
+  readonly dt = viewChild<Table>('dt');
 
   readonly providers = signal<Provider[]>([]);
   readonly applications = signal<Application[]>([]);
@@ -272,6 +323,10 @@ export class ProvidersListComponent implements OnInit {
   onPageChange(page: number): void {
     this.currentPage = page;
     this.loadProviders();
+  }
+
+  onGlobalFilter(event: Event): void {
+    this.dt()?.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
   getApplicationName(applicationId: number): string {

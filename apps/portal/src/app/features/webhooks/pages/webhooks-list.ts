@@ -1,7 +1,14 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
-import { CardModule } from 'primeng/card';
+import { DatePipe } from '@angular/common';
+import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -10,7 +17,9 @@ import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
-import { DatePipe } from '@angular/common';
+import { ToolbarModule } from 'primeng/toolbar';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { WebhooksService } from '../services/webhooks.service';
 import { ProvidersService } from '../../providers/services/providers.service';
@@ -20,8 +29,8 @@ import { Webhook, Provider } from '../../../core/models/api.model';
   selector: 'app-webhooks-list',
   imports: [
     FormsModule,
+    DatePipe,
     TableModule,
-    CardModule,
     TagModule,
     ButtonModule,
     SkeletonModule,
@@ -30,109 +39,141 @@ import { Webhook, Provider } from '../../../core/models/api.model';
     InputTextModule,
     ConfirmDialogModule,
     TooltipModule,
-    DatePipe,
+    ToolbarModule,
+    IconFieldModule,
+    InputIconModule,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1
-            class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
-          >
+      <p-toolbar class="mb-6">
+        <ng-template #start>
+          <h2 class="m-0 flex items-center gap-2">
             <i class="pi pi-arrow-right-arrow-left text-primary"></i>
             Webhooks
-          </h1>
-          <p class="text-muted-color mt-2">Manage webhook configurations</p>
+          </h2>
+        </ng-template>
+        <ng-template #end>
+          @if (selectedProviderId()) {
+            <p-button
+              label="New Webhook"
+              icon="pi pi-plus"
+              severity="success"
+              (onClick)="openCreate()"
+            />
+          }
+        </ng-template>
+      </p-toolbar>
+
+      <div class="flex items-center gap-4 mb-4">
+        <div class="flex flex-col gap-2 flex-1" style="max-width: 350px">
+          <label for="provider-select" class="font-semibold">Select Provider</label>
+          <p-select
+            id="provider-select"
+            [options]="providers()"
+            optionLabel="name"
+            optionValue="provider_id"
+            placeholder="Choose a provider"
+            [ngModel]="selectedProviderId()"
+            (ngModelChange)="onProviderSelect($event)"
+            [filter]="true"
+            filterPlaceholder="Search providers"
+            appendTo="body"
+          />
         </div>
       </div>
 
-      <p-card>
-        <div class="flex items-center gap-4 mb-4">
-          <div class="flex flex-col gap-2 flex-1" style="max-width: 350px">
-            <label for="provider-select" class="font-semibold">Select Provider</label>
-            <p-select
-              id="provider-select"
-              [options]="providers()"
-              optionLabel="name"
-              optionValue="provider_id"
-              placeholder="Choose a provider"
-              [ngModel]="selectedProviderId()"
-              (ngModelChange)="onProviderSelect($event)"
-              [filter]="true"
-              filterPlaceholder="Search providers"
-              appendTo="body"
-            />
-          </div>
-
-          @if (selectedProviderId()) {
-            <div class="flex items-end">
-              <p-button label="New Webhook" icon="pi pi-plus" (onClick)="openCreate()" />
+      @if (!selectedProviderId()) {
+        <div class="text-center py-8 text-muted-color">Select a provider to view its webhooks</div>
+      } @else if (loading()) {
+        <p-skeleton height="200px" />
+      } @else {
+        <p-table
+          #dt
+          [value]="webhooks()"
+          [globalFilterFields]="['webhook_url']"
+          [rowHover]="true"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template #caption>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-color">Manage webhook configurations</span>
+              <div class="flex items-center gap-2">
+                <p-iconfield>
+                  <p-inputicon class="pi pi-search" />
+                  <input
+                    pInputText
+                    type="text"
+                    (input)="onGlobalFilter($event)"
+                    placeholder="Search..."
+                  />
+                </p-iconfield>
+                <p-button
+                  icon="pi pi-refresh"
+                  [rounded]="true"
+                  [outlined]="true"
+                  severity="secondary"
+                  pTooltip="Refresh"
+                  tooltipPosition="top"
+                  (onClick)="refreshWebhooks()"
+                />
+              </div>
             </div>
-          }
-        </div>
-
-        @if (!selectedProviderId()) {
-          <div class="text-center py-8 text-muted-color">
-            Select a provider to view its webhooks
-          </div>
-        } @else if (loading()) {
-          <p-skeleton height="200px" />
-        } @else {
-          <p-table [value]="webhooks()" [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template #header>
-              <tr>
-                <th>ID</th>
-                <th>URL</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-w>
-              <tr>
-                <td>{{ w.id }}</td>
-                <td class="max-w-xs truncate">{{ w.webhook_url }}</td>
-                <td>
-                  <p-tag
-                    [value]="w.status === 1 ? 'Active' : 'Inactive'"
-                    [severity]="w.status === 1 ? 'success' : 'danger'"
-                  />
-                </td>
-                <td>{{ w.created_on | date: 'short' }}</td>
-                <td class="text-center">
-                  <p-button
-                    icon="pi pi-pencil"
-                    [rounded]="true"
-                    [text]="true"
-                    severity="info"
-                    pTooltip="Edit"
-                    tooltipPosition="top"
-                    (onClick)="openEdit(w)"
-                  />
-                  <p-button
-                    icon="pi pi-trash"
-                    [rounded]="true"
-                    [text]="true"
-                    severity="danger"
-                    pTooltip="Delete"
-                    tooltipPosition="top"
-                    (onClick)="confirmDelete(w)"
-                  />
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-              <tr>
-                <td colspan="5" class="text-center py-8 text-muted-color">
-                  No webhooks found for this provider
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
-        }
-      </p-card>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="id" style="min-width: 6rem">ID <p-sortIcon field="id" /></th>
+              <th style="min-width: 20rem">URL</th>
+              <th>Status</th>
+              <th pSortableColumn="created_on" style="min-width: 10rem">
+                Created <p-sortIcon field="created_on" />
+              </th>
+              <th class="text-center" style="min-width: 8rem">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-w>
+            <tr>
+              <td>{{ w.id }}</td>
+              <td class="max-w-xs truncate">{{ w.webhook_url }}</td>
+              <td>
+                <p-tag
+                  [value]="w.status === 1 ? 'Active' : 'Inactive'"
+                  [severity]="w.status === 1 ? 'success' : 'danger'"
+                />
+              </td>
+              <td>{{ w.created_on | date: 'short' }}</td>
+              <td class="text-center">
+                <p-button
+                  icon="pi pi-pencil"
+                  class="mr-2"
+                  [rounded]="true"
+                  [outlined]="true"
+                  pTooltip="Edit"
+                  tooltipPosition="top"
+                  (onClick)="openEdit(w)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [rounded]="true"
+                  [outlined]="true"
+                  pTooltip="Delete"
+                  tooltipPosition="top"
+                  (onClick)="confirmDelete(w)"
+                />
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="5" class="text-center py-8 text-muted-color">
+                No webhooks found for this provider
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
     </div>
 
     <!-- Create/Edit Webhook Dialog -->
@@ -180,6 +221,8 @@ export class WebhooksListComponent implements OnInit {
   private readonly providersService = inject(ProvidersService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+
+  readonly dt = viewChild<Table>('dt');
 
   readonly providers = signal<Provider[]>([]);
   readonly webhooks = signal<Webhook[]>([]);
@@ -240,6 +283,18 @@ export class WebhooksListComponent implements OnInit {
     });
   }
 
+  refreshWebhooks(): void {
+    const providerId = this.selectedProviderId();
+
+    if (providerId) {
+      this.loadWebhooks(providerId);
+    }
+  }
+
+  onGlobalFilter(event: Event): void {
+    this.dt()?.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  }
+
   openCreate(): void {
     this.editingWebhook.set(null);
     this.formUrl.set('');
@@ -283,7 +338,7 @@ export class WebhooksListComponent implements OnInit {
         error: () => this.saving.set(false),
       });
     } else {
-      this.webhooksService.create({ url, provider_id: providerId }).subscribe({
+      this.webhooksService.create({ webhook_url: url, provider_id: providerId }).subscribe({
         next: () => {
           this.messageService.add({
             severity: 'success',

@@ -1,11 +1,22 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
-import { TableModule } from 'primeng/table';
-import { CardModule } from 'primeng/card';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { DatePipe, JsonPipe } from '@angular/common';
+import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
-import { DatePipe, JsonPipe } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
+import { ToolbarModule } from 'primeng/toolbar';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
 import { MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
@@ -16,14 +27,18 @@ import { Notification, PageInfo } from '../../../core/models/api.model';
 @Component({
   selector: 'app-notifications-list',
   imports: [
+    DatePipe,
+    JsonPipe,
     TableModule,
-    CardModule,
     TagModule,
     ButtonModule,
     SkeletonModule,
     DialogModule,
-    DatePipe,
-    JsonPipe,
+    TooltipModule,
+    ToolbarModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
     PaginationComponent,
     StatusBadgeComponent,
     ChannelTypePipe,
@@ -31,63 +46,88 @@ import { Notification, PageInfo } from '../../../core/models/api.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1
-            class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
-          >
+      <p-toolbar class="mb-6">
+        <ng-template #start>
+          <h2 class="m-0 flex items-center gap-2">
             <i class="pi pi-bell text-primary"></i>
             Notifications
-          </h1>
-          <p class="text-muted-color mt-2">View and track notification statuses</p>
-        </div>
-      </div>
+          </h2>
+        </ng-template>
+      </p-toolbar>
 
       @if (loading()) {
-        <p-card>
-          <p-skeleton height="300px" />
-        </p-card>
+        <p-skeleton height="300px" />
       } @else {
-        <p-card>
-          <p-table
-            [value]="notifications()"
-            [tableStyle]="{ 'min-width': '60rem' }"
-            selectionMode="single"
-            (onRowSelect)="onRowSelect($event)"
-          >
-            <ng-template #header>
-              <tr>
-                <th>ID</th>
-                <th>Channel Type</th>
-                <th>Delivery Status</th>
-                <th>Application ID</th>
-                <th>Created</th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-n>
-              <tr [pSelectableRow]="n" class="cursor-pointer">
-                <td>{{ n.notification_id }}</td>
-                <td>{{ n.channel_type | channelType }}</td>
-                <td>
-                  <app-status-badge [status]="n.delivery_status" />
-                </td>
-                <td>{{ n.application_id }}</td>
-                <td>{{ n.created_on | date: 'short' }}</td>
-              </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-              <tr>
-                <td colspan="5" class="text-center py-8 text-muted-color">
-                  No notifications found
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
+        <p-table
+          #dt
+          [value]="notifications()"
+          [globalFilterFields]="['notification_id', 'application_id']"
+          [rowHover]="true"
+          [tableStyle]="{ 'min-width': '60rem' }"
+          selectionMode="single"
+          (onRowSelect)="onRowSelect($event)"
+        >
+          <ng-template #caption>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-color">View and track notification statuses</span>
+              <div class="flex items-center gap-2">
+                <p-iconfield>
+                  <p-inputicon class="pi pi-search" />
+                  <input
+                    pInputText
+                    type="text"
+                    (input)="onGlobalFilter($event)"
+                    placeholder="Search..."
+                  />
+                </p-iconfield>
+                <p-button
+                  icon="pi pi-refresh"
+                  [rounded]="true"
+                  [outlined]="true"
+                  severity="secondary"
+                  pTooltip="Refresh"
+                  tooltipPosition="top"
+                  (onClick)="loadNotifications()"
+                />
+              </div>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="notification_id" style="min-width: 6rem">
+                ID <p-sortIcon field="notification_id" />
+              </th>
+              <th>Channel Type</th>
+              <th>Delivery Status</th>
+              <th pSortableColumn="application_id" style="min-width: 8rem">
+                Application ID <p-sortIcon field="application_id" />
+              </th>
+              <th pSortableColumn="created_on" style="min-width: 10rem">
+                Created <p-sortIcon field="created_on" />
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-n>
+            <tr [pSelectableRow]="n" class="cursor-pointer">
+              <td>{{ n.notification_id }}</td>
+              <td>{{ n.channel_type | channelType }}</td>
+              <td>
+                <app-status-badge [status]="n.delivery_status" />
+              </td>
+              <td>{{ n.application_id }}</td>
+              <td>{{ n.created_on | date: 'short' }}</td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="5" class="text-center py-8 text-muted-color">No notifications found</td>
+            </tr>
+          </ng-template>
+        </p-table>
 
-          @if (pageInfo(); as pi) {
-            <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
-          }
-        </p-card>
+        @if (pageInfo(); as pi) {
+          <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
+        }
       }
     </div>
 
@@ -153,6 +193,8 @@ export class NotificationsListComponent implements OnInit {
   private readonly service = inject(NotificationsService);
   private readonly messageService = inject(MessageService);
 
+  readonly dt = viewChild<Table>('dt');
+
   readonly notifications = signal<Notification[]>([]);
   readonly loading = signal(true);
   readonly pageInfo = signal<PageInfo | null>(null);
@@ -187,6 +229,10 @@ export class NotificationsListComponent implements OnInit {
   onPageChange(page: number): void {
     this.currentPage = page;
     this.loadNotifications();
+  }
+
+  onGlobalFilter(event: Event): void {
+    this.dt()?.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
   onRowSelect(event: { data?: Notification | Notification[] }): void {

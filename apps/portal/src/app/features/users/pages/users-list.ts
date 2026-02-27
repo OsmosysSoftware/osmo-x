@@ -1,7 +1,14 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
-import { CardModule } from 'primeng/card';
+import { DatePipe } from '@angular/common';
+import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -11,7 +18,9 @@ import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { PasswordModule } from 'primeng/password';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DatePipe } from '@angular/common';
+import { ToolbarModule } from 'primeng/toolbar';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UsersService } from '../services/users.service';
 import { User } from '../../../core/models/auth.model';
@@ -26,8 +35,8 @@ interface RoleOption {
   selector: 'app-users-list',
   imports: [
     FormsModule,
+    DatePipe,
     TableModule,
-    CardModule,
     TagModule,
     ButtonModule,
     SkeletonModule,
@@ -37,85 +46,129 @@ interface RoleOption {
     TooltipModule,
     PasswordModule,
     ConfirmDialogModule,
-    DatePipe,
+    ToolbarModule,
+    IconFieldModule,
+    InputIconModule,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1
-            class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
-          >
+      <p-toolbar class="mb-6">
+        <ng-template #start>
+          <h2 class="m-0 flex items-center gap-2">
             <i class="pi pi-users text-primary"></i>
             Users
-          </h1>
-          <p class="text-muted-color mt-2">Manage organization users</p>
-        </div>
-        <p-button label="New User" icon="pi pi-plus" (onClick)="openCreate()" />
-      </div>
+          </h2>
+        </ng-template>
+        <ng-template #end>
+          <p-button
+            label="New User"
+            icon="pi pi-plus"
+            severity="success"
+            (onClick)="openCreate()"
+          />
+        </ng-template>
+      </p-toolbar>
 
       @if (loading()) {
-        <p-card>
-          <p-skeleton height="300px" />
-        </p-card>
+        <p-skeleton height="300px" />
       } @else {
-        <p-card>
-          <p-table [value]="users()" [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template #header>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-u>
-              <tr>
-                <td>{{ getDisplayName(u) }}</td>
-                <td>{{ u.email }}</td>
-                <td>
-                  <p-tag [value]="getRoleLabel(u.user_role ?? u.role)" severity="info" />
-                </td>
-                <td>
-                  <p-tag
-                    [value]="u.status === 1 ? 'Active' : 'Inactive'"
-                    [severity]="u.status === 1 ? 'success' : 'danger'"
+        <p-table
+          #dt
+          [value]="users()"
+          [rows]="10"
+          [paginator]="true"
+          [globalFilterFields]="['email', 'first_name', 'last_name']"
+          [rowHover]="true"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template #caption>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-color">Manage organization users</span>
+              <div class="flex items-center gap-2">
+                <p-iconfield>
+                  <p-inputicon class="pi pi-search" />
+                  <input
+                    pInputText
+                    type="text"
+                    (input)="onGlobalFilter($event)"
+                    placeholder="Search..."
                   />
-                </td>
-                <td>{{ u.created_on | date: 'short' }}</td>
-                <td class="text-center">
-                  <p-button
-                    icon="pi pi-pencil"
-                    [rounded]="true"
-                    [text]="true"
-                    severity="info"
-                    pTooltip="Edit"
-                    tooltipPosition="top"
-                    (onClick)="openEdit(u)"
-                  />
-                  <p-button
-                    icon="pi pi-trash"
-                    [rounded]="true"
-                    [text]="true"
-                    severity="danger"
-                    pTooltip="Deactivate"
-                    tooltipPosition="top"
-                    (onClick)="confirmDelete(u)"
-                  />
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-              <tr>
-                <td colspan="6" class="text-center py-8 text-muted-color">No users found</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </p-card>
+                </p-iconfield>
+                <p-button
+                  icon="pi pi-refresh"
+                  [rounded]="true"
+                  [outlined]="true"
+                  severity="secondary"
+                  pTooltip="Refresh"
+                  tooltipPosition="top"
+                  (onClick)="loadUsers()"
+                />
+              </div>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="first_name" style="min-width: 10rem">
+                Name <p-sortIcon field="first_name" />
+              </th>
+              <th pSortableColumn="email" style="min-width: 14rem">
+                Email <p-sortIcon field="email" />
+              </th>
+              <th>Role</th>
+              <th>Status</th>
+              <th pSortableColumn="created_on" style="min-width: 10rem">
+                Created <p-sortIcon field="created_on" />
+              </th>
+              <th class="text-center" style="min-width: 8rem">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-u>
+            <tr>
+              <td>{{ getDisplayName(u) }}</td>
+              <td>{{ u.email }}</td>
+              <td>
+                <p-tag [value]="getRoleLabel(u.user_role ?? u.role)" severity="info" />
+              </td>
+              <td>
+                <p-tag
+                  [value]="u.status === 1 ? 'Active' : 'Inactive'"
+                  [severity]="u.status === 1 ? 'success' : 'danger'"
+                />
+              </td>
+              <td>{{ u.created_on | date: 'short' }}</td>
+              <td class="text-center">
+                <p-button
+                  icon="pi pi-pencil"
+                  class="mr-2"
+                  [rounded]="true"
+                  [outlined]="true"
+                  pTooltip="Edit"
+                  tooltipPosition="top"
+                  (onClick)="openEdit(u)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [rounded]="true"
+                  [outlined]="true"
+                  pTooltip="Deactivate"
+                  tooltipPosition="top"
+                  (onClick)="confirmDelete(u)"
+                />
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="6" class="text-center py-8 text-muted-color">No users found</td>
+            </tr>
+          </ng-template>
+        </p-table>
       }
 
       <!-- Create/Edit Dialog -->
@@ -169,8 +222,8 @@ interface RoleOption {
               [placeholder]="editingUser() ? 'Enter new password' : 'Enter password'"
               [toggleMask]="true"
               [feedback]="false"
-              styleClass="w-full"
-              inputStyleClass="w-full"
+              class="w-full"
+              inputClass="w-full"
             />
           </div>
           <div class="flex flex-col gap-2">
@@ -213,6 +266,8 @@ export class UsersListComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
 
+  readonly dt = viewChild<Table>('dt');
+
   readonly users = signal<User[]>([]);
   readonly loading = signal(true);
   readonly saving = signal(false);
@@ -252,6 +307,10 @@ export class UsersListComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  onGlobalFilter(event: Event): void {
+    this.dt()?.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
   openCreate(): void {
