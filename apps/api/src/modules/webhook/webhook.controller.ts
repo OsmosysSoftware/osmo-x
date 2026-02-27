@@ -51,7 +51,7 @@ export class WebhookController {
   @ApiResponse({ status: 200, description: 'List of webhooks', type: [WebhookResponseDto] })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
-    @Query('providerId') providerId: number,
+    @Query('provider_id') providerId: number,
     @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<WebhookResponseDto[]> {
