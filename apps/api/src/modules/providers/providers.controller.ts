@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProvidersService } from './providers.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -14,12 +25,14 @@ import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 import { CreateProviderInput } from './dto/create-provider.input';
 import { UpdateProviderInput } from './dto/update-provider.input';
 import { ProviderResponseDto } from './dto/provider-response.dto';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Providers')
 @ApiBearerAuth()
 @ApiExtraModels(ProviderResponseDto)
 @Controller('api/v1/providers')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)
 export class ProvidersController {
   constructor(private readonly providersService: ProvidersService) {}

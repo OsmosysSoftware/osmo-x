@@ -1,15 +1,17 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MasterProvidersService } from './master-providers.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { MasterProviderResponseDto } from './dto/master-provider-response.dto';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Master Providers')
 @ApiBearerAuth()
 @ApiExtraModels(MasterProviderResponseDto)
 @Controller('api/v1/master-providers')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(SnakeCaseInterceptor)
 export class MasterProvidersController {
   constructor(private readonly masterProvidersService: MasterProvidersService) {}
 

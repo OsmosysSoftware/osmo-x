@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrganizationsService } from './organizations.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -6,12 +6,14 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { OrganizationResponseDto } from './dto/organization-response.dto';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Organizations')
 @ApiBearerAuth()
 @ApiExtraModels(OrganizationResponseDto)
 @Controller('api/v1/organizations')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.SUPER_ADMIN)
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}

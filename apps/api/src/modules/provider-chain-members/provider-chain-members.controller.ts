@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProviderChainMembersService } from './provider-chain-members.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -15,12 +26,14 @@ import { DeleteProviderChainMemberInput } from './dto/delete-chain-member-by-pro
 import { ProviderChainMemberResponseDto } from './dto/provider-chain-member-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Provider Chain Members')
 @ApiBearerAuth()
 @ApiExtraModels(ProviderChainMemberResponseDto)
 @Controller('api/v1/provider-chain-members')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)
 export class ProviderChainMembersController {
   constructor(private readonly providerChainMembersService: ProviderChainMembersService) {}

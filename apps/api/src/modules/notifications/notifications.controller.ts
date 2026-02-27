@@ -11,6 +11,7 @@ import {
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -36,11 +37,13 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Notifications')
 @ApiBearerAuth()
 @ApiExtraModels(NotificationResponseDto)
 @Controller('api/v1/notifications')
+@UseInterceptors(SnakeCaseInterceptor)
 export class NotificationsController {
   private logger: Logger = new Logger(NotificationsController.name);
 

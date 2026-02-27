@@ -1,16 +1,18 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { DashboardStatsResponseDto } from './dto/dashboard-stats-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Dashboard')
 @ApiBearerAuth()
 @ApiExtraModels(DashboardStatsResponseDto)
 @Controller('api/v1/dashboard')
 @UseGuards(JwtAuthGuard)
+@UseInterceptors(SnakeCaseInterceptor)
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 

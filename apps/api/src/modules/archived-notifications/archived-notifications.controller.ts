@@ -9,6 +9,7 @@ import {
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ArchivedNotificationsService } from './archived-notifications.service';
@@ -23,11 +24,13 @@ import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 import { ArchivedNotificationResponseDto } from './dto/archived-notification-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Archived Notifications')
 @ApiBearerAuth()
 @ApiExtraModels(ArchivedNotificationResponseDto)
 @Controller('api/v1/archived-notifications')
+@UseInterceptors(SnakeCaseInterceptor)
 export class ArchivedNotificationsController {
   private logger: Logger = new Logger(ArchivedNotificationsController.name);
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { WebhookService } from './webhook.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -9,12 +9,14 @@ import { CreateWebhookInput } from './dto/create-webhook.input';
 import { WebhookResponseDto } from './dto/webhook-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Webhooks')
 @ApiBearerAuth()
 @ApiExtraModels(WebhookResponseDto)
 @Controller('api/v1/webhooks')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)
 export class WebhookController {
   constructor(private readonly webhookService: WebhookService) {}

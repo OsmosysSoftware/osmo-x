@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ServerApiKeysService } from './server-api-keys.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -8,12 +8,14 @@ import { UserRoles } from 'src/common/constants/database';
 import { ServerApiKeyResponseDto } from './dto/server-api-key-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('API Keys')
 @ApiBearerAuth()
 @ApiExtraModels(ServerApiKeyResponseDto)
 @Controller('api/v1/api-keys')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)
 export class ServerApiKeysController {
   constructor(private readonly serverApiKeysService: ServerApiKeysService) {}

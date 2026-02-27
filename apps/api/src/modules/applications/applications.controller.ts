@@ -9,6 +9,7 @@ import {
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationsService } from './applications.service';
@@ -25,12 +26,14 @@ import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 import { CreateApplicationInput } from './dto/create-application.input';
 import { UpdateApplicationInput } from './dto/update-application.input';
 import { ApplicationResponseDto } from './dto/application-response.dto';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Applications')
 @ApiBearerAuth()
 @ApiExtraModels(ApplicationResponseDto)
 @Controller('api/v1/applications')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)
 export class ApplicationsController {
   constructor(private readonly applicationsService: ApplicationsService) {}
