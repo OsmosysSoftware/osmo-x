@@ -69,18 +69,20 @@ Skills are invoked manually with `/skill-name` or automatically when Claude dete
 
 | Skill | Trigger | What It Does |
 |-------|---------|--------------|
+| `/commit` | "commit changes" | Creates git commits following conventional commits format |
 | `/code-quality [api\|portal\|all]` | "run lint", "check build", "fix formatting" | Runs lint + build verification for specified app(s) |
+| `/crud-page [name]` | "create a new page", "add feature page" | Interactive generator for CRUD or read-only list pages — asks about page type, role guard, menu placement, API integration, fields, and pagination |
 | `/generate-api-types` | "regenerate types", "update API types" | Runs `openapi-typescript` to regenerate portal types from backend Swagger |
-| `/new-feature-page [name]` | "create a new page", "add feature" | Scaffolds an Angular feature page following all OsmoX conventions |
 | `/db-migration [action] [name]` | "create migration", "run migrations" | Creates, runs, or reverts TypeORM database migrations |
 
 ### Skill Files Location
 
 ```
 .claude/skills/
+├── commit/SKILL.md
 ├── code-quality/SKILL.md
+├── crud-page/SKILL.md
 ├── generate-api-types/SKILL.md
-├── new-feature-page/SKILL.md
 └── db-migration/SKILL.md
 ```
 
@@ -282,7 +284,7 @@ Edit `.claude/settings.local.json` to add new allowed commands. Format:
 | Check coding standards | Read `CLAUDE.md` in the relevant app |
 | Run code quality checks | `/code-quality api` or `/code-quality portal` |
 | Regenerate API types | `/generate-api-types` |
-| Create a new feature page | `/new-feature-page my-feature` |
+| Create a new feature page | `/crud-page my-feature` |
 | Manage database migrations | `/db-migration create AddNewTable` |
 | Disable a hookify rule | Set `enabled: false` in the rule's `.local.md` file |
 | Add a new hookify rule | Create `.claude/hookify.rule-name.local.md` |
