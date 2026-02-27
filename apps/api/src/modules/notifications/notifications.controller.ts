@@ -38,6 +38,7 @@ import { UserRoles } from 'src/common/constants/database';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
 @ApiTags('Notifications')
 @ApiBearerAuth()
@@ -56,6 +57,12 @@ export class NotificationsController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'List notifications' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of notifications',
@@ -64,12 +71,14 @@ export class NotificationsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @Query() query: PaginationQueryDto,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<NotificationResponseDto>> {
+    const targetOrgId = resolveOrgId(user, queryOrgId);
     const { items, meta } = await this.notificationsService.getAllNotificationsAsDto(
       query,
-      user.organizationId,
+      targetOrgId,
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
@@ -81,14 +90,23 @@ export class NotificationsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ORG_ADMIN)
   @ApiOperation({ summary: 'Get notification by ID' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({ status: 200, description: 'Notification details', type: NotificationResponseDto })
   @ApiResponse({ status: 400, description: 'Notification not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findOne(
     @Param('id') id: number,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<NotificationResponseDto> {
-    return this.notificationsService.findByIdAsDto(id, user.organizationId);
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+
+    return this.notificationsService.findByIdAsDto(id, targetOrgId);
   }
 
   @Post('queue')

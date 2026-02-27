@@ -9,6 +9,7 @@ import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AppLogo } from '../../shared/components/logo/logo';
+import { OrgSelectorComponent } from '../../shared/components/org-selector/org-selector';
 
 @Component({
   selector: 'app-topbar',
@@ -21,6 +22,7 @@ import { AppLogo } from '../../shared/components/logo/logo';
     MenuModule,
     AvatarModule,
     AppLogo,
+    OrgSelectorComponent,
   ],
   template: ` <div class="layout-topbar">
     <div class="layout-topbar-logo-container">
@@ -36,6 +38,7 @@ import { AppLogo } from '../../shared/components/logo/logo';
     </div>
 
     <div class="layout-topbar-actions">
+      <app-org-selector />
       <div class="layout-config-menu">
         <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
           <i

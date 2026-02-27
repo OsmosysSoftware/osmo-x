@@ -10,7 +10,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProviderChainsService } from './provider-chains.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -26,6 +33,7 @@ import { ProviderChainResponseDto } from './dto/provider-chain-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
 @ApiTags('Provider Chains')
 @ApiBearerAuth()
@@ -39,6 +47,12 @@ export class ProviderChainsController {
 
   @Get()
   @ApiOperation({ summary: 'List provider chains' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of provider chains',
@@ -47,12 +61,14 @@ export class ProviderChainsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @Query() query: PaginationQueryDto,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<ProviderChainResponseDto>> {
+    const targetOrgId = resolveOrgId(user, queryOrgId);
     const { items, meta } = await this.providerChainsService.getAllProviderChainsAsDto(
       query,
-      user.organizationId,
+      targetOrgId,
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
@@ -71,11 +87,14 @@ export class ProviderChainsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(
     @Body() createProviderChainInput: CreateProviderChainInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderChainResponseDto> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
     return this.providerChainsService.createProviderChainAsDto(
       createProviderChainInput,
-      user.organizationId,
+      targetOrgId,
     );
   }
 
@@ -90,11 +109,14 @@ export class ProviderChainsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async update(
     @Body() updateProviderChainInput: UpdateProviderChainInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderChainResponseDto> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
     return this.providerChainsService.updateProviderChainAsDto(
       updateProviderChainInput,
-      user.organizationId,
+      targetOrgId,
     );
   }
 
@@ -105,8 +127,11 @@ export class ProviderChainsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async remove(
     @Body('chainId') chainId: number,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<boolean> {
-    return this.providerChainsService.softDeleteProviderChainByOrg(chainId, user.organizationId);
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.providerChainsService.softDeleteProviderChainByOrg(chainId, targetOrgId);
   }
 }

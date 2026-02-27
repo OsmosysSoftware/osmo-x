@@ -11,7 +11,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ArchivedNotificationsService } from './archived-notifications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -25,6 +32,7 @@ import { ArchivedNotificationResponseDto } from './dto/archived-notification-res
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
 @ApiTags('Archived Notifications')
 @ApiBearerAuth()
@@ -39,6 +47,12 @@ export class ArchivedNotificationsController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'List archived notifications' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of archived notifications',
@@ -47,14 +61,13 @@ export class ArchivedNotificationsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @Query() query: PaginationQueryDto,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<ArchivedNotificationResponseDto>> {
+    const targetOrgId = resolveOrgId(user, queryOrgId);
     const { items, meta } =
-      await this.archivedNotificationsService.getAllArchivedNotificationsAsDto(
-        query,
-        user.organizationId,
-      );
+      await this.archivedNotificationsService.getAllArchivedNotificationsAsDto(query, targetOrgId);
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
 
@@ -65,6 +78,12 @@ export class ArchivedNotificationsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ORG_ADMIN)
   @ApiOperation({ summary: 'Get archived notification by ID' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Archived notification details',
@@ -74,9 +93,12 @@ export class ArchivedNotificationsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findOne(
     @Param('id') id: number,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ArchivedNotificationResponseDto> {
-    return this.archivedNotificationsService.findByIdAsDto(id, user.organizationId);
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+
+    return this.archivedNotificationsService.findByIdAsDto(id, targetOrgId);
   }
 
   @Post('archive')

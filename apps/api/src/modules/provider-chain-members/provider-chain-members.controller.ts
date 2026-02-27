@@ -10,7 +10,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProviderChainMembersService } from './provider-chain-members.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -27,6 +34,7 @@ import { ProviderChainMemberResponseDto } from './dto/provider-chain-member-resp
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
 @ApiTags('Provider Chain Members')
 @ApiBearerAuth()
@@ -40,6 +48,12 @@ export class ProviderChainMembersController {
 
   @Get()
   @ApiOperation({ summary: 'List provider chain members' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of provider chain members',
@@ -48,12 +62,14 @@ export class ProviderChainMembersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @Query() query: PaginationQueryDto,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<ProviderChainMemberResponseDto>> {
+    const targetOrgId = resolveOrgId(user, queryOrgId);
     const { items, meta } = await this.providerChainMembersService.getAllProviderChainMembersAsDto(
       query,
-      user.organizationId,
+      targetOrgId,
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
@@ -72,11 +88,14 @@ export class ProviderChainMembersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(
     @Body() createInput: CreateProviderChainMemberInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderChainMemberResponseDto> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
     return this.providerChainMembersService.createProviderChainMemberAsDto(
       createInput,
-      user.organizationId,
+      targetOrgId,
     );
   }
 
@@ -91,11 +110,14 @@ export class ProviderChainMembersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async updatePriorityOrder(
     @Body() updateInput: UpdateProviderPriorityOrderInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderChainMemberResponseDto[]> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
     return this.providerChainMembersService.updateProviderPriorityOrderAsDto(
       updateInput,
-      user.organizationId,
+      targetOrgId,
     );
   }
 
@@ -110,11 +132,14 @@ export class ProviderChainMembersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async remove(
     @Body() deleteInput: DeleteProviderChainMemberInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderChainMemberResponseDto> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
     return this.providerChainMembersService.softDeleteChainMemberUsingProviderIDAsDto(
       deleteInput,
-      user.organizationId,
+      targetOrgId,
     );
   }
 
@@ -129,11 +154,14 @@ export class ProviderChainMembersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async restore(
     @Body() restoreInput: DeleteProviderChainMemberInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderChainMemberResponseDto> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
     return this.providerChainMembersService.restoreDeletedChainMemberAsDto(
       restoreInput,
-      user.organizationId,
+      targetOrgId,
     );
   }
 }

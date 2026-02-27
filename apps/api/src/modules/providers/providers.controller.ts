@@ -11,7 +11,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProvidersService } from './providers.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -27,6 +34,7 @@ import { CreateProviderInput } from './dto/create-provider.input';
 import { UpdateProviderInput } from './dto/update-provider.input';
 import { ProviderResponseDto } from './dto/provider-response.dto';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
 @ApiTags('Providers')
 @ApiBearerAuth()
@@ -40,6 +48,12 @@ export class ProvidersController {
 
   @Get()
   @ApiOperation({ summary: 'List providers' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of providers',
@@ -48,13 +62,12 @@ export class ProvidersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @Query() query: PaginationQueryDto,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<ProviderResponseDto>> {
-    const { items, meta } = await this.providersService.getAllProvidersAsDto(
-      query,
-      user.organizationId,
-    );
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+    const { items, meta } = await this.providersService.getAllProvidersAsDto(query, targetOrgId);
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
 
@@ -63,14 +76,23 @@ export class ProvidersController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get provider by ID' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({ status: 200, description: 'Provider details', type: ProviderResponseDto })
   @ApiResponse({ status: 400, description: 'Provider not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findOne(
     @Param('id') id: number,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderResponseDto> {
-    return this.providersService.findByIdAsDto(id, user.organizationId);
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+
+    return this.providersService.findByIdAsDto(id, targetOrgId);
   }
 
   @Put()
@@ -80,13 +102,12 @@ export class ProvidersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async update(
     @Body() updateProviderInput: UpdateProviderInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderResponseDto> {
-    return this.providersService.updateProviderAsDto(
-      updateProviderInput,
-      user.organizationId,
-      user.userId,
-    );
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.providersService.updateProviderAsDto(updateProviderInput, targetOrgId, user.userId);
   }
 
   @Post()
@@ -100,13 +121,12 @@ export class ProvidersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(
     @Body() createProviderInput: CreateProviderInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderResponseDto> {
-    return this.providersService.createProviderAsDto(
-      createProviderInput,
-      user.organizationId,
-      user.userId,
-    );
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.providersService.createProviderAsDto(createProviderInput, targetOrgId, user.userId);
   }
 
   @Delete()
@@ -116,8 +136,11 @@ export class ProvidersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async remove(
     @Body('providerId') providerId: number,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<boolean> {
-    return this.providersService.softDeleteProviderAsDto(providerId, user.organizationId);
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.providersService.softDeleteProviderAsDto(providerId, targetOrgId);
   }
 }

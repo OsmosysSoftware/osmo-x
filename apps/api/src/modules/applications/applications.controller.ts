@@ -11,7 +11,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApplicationsService } from './applications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -27,6 +34,7 @@ import { CreateApplicationInput } from './dto/create-application.input';
 import { UpdateApplicationInput } from './dto/update-application.input';
 import { ApplicationResponseDto } from './dto/application-response.dto';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
 @ApiTags('Applications')
 @ApiBearerAuth()
@@ -40,6 +48,12 @@ export class ApplicationsController {
 
   @Get()
   @ApiOperation({ summary: 'List applications' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of applications',
@@ -48,12 +62,14 @@ export class ApplicationsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @Query() query: PaginationQueryDto,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<ApplicationResponseDto>> {
+    const targetOrgId = resolveOrgId(user, queryOrgId);
     const { items, meta } = await this.applicationsService.getAllApplicationsAsDto(
       query,
-      user.organizationId,
+      targetOrgId,
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
@@ -63,14 +79,23 @@ export class ApplicationsController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get application by ID' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({ status: 200, description: 'Application details', type: ApplicationResponseDto })
   @ApiResponse({ status: 400, description: 'Application not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findOne(
     @Param('id') id: number,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ApplicationResponseDto> {
-    return this.applicationsService.findByIdAsDto(id, user.organizationId);
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+
+    return this.applicationsService.findByIdAsDto(id, targetOrgId);
   }
 
   @Post()
@@ -84,12 +109,15 @@ export class ApplicationsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(
     @Body() createApplicationInput: CreateApplicationInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ApplicationResponseDto> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
     return this.applicationsService.createApplicationAsDto(
       createApplicationInput,
       user.userId,
-      user.organizationId,
+      targetOrgId,
     );
   }
 
@@ -100,9 +128,12 @@ export class ApplicationsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async remove(
     @Body('applicationId') applicationId: number,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<boolean> {
-    return this.applicationsService.softDeleteApplicationAsDto(applicationId, user.organizationId);
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.applicationsService.softDeleteApplicationAsDto(applicationId, targetOrgId);
   }
 
   @Put()
@@ -116,11 +147,14 @@ export class ApplicationsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async update(
     @Body() updateApplicationInput: UpdateApplicationInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ApplicationResponseDto> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
     return this.applicationsService.updateApplicationAsDto(
       updateApplicationInput,
-      user.organizationId,
+      targetOrgId,
       user.userId,
     );
   }

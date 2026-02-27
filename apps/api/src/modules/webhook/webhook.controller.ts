@@ -9,7 +9,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { WebhookService } from './webhook.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -21,6 +28,7 @@ import { WebhookResponseDto } from './dto/webhook-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
 @ApiTags('Webhooks')
 @ApiBearerAuth()
@@ -34,13 +42,22 @@ export class WebhookController {
 
   @Get()
   @ApiOperation({ summary: 'List webhooks for a provider' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({ status: 200, description: 'List of webhooks', type: [WebhookResponseDto] })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @Query('providerId') providerId: number,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<WebhookResponseDto[]> {
-    return this.webhookService.findByProviderIdAsDto(providerId, user.organizationId);
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+
+    return this.webhookService.findByProviderIdAsDto(providerId, targetOrgId);
   }
 
   @Post()
@@ -54,9 +71,12 @@ export class WebhookController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(
     @Body() createWebhookInput: CreateWebhookInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<WebhookResponseDto> {
-    return this.webhookService.registerWebhookAsDto(createWebhookInput, user.organizationId);
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.webhookService.registerWebhookAsDto(createWebhookInput, targetOrgId);
   }
 
   @Put()
@@ -66,9 +86,12 @@ export class WebhookController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async update(
     @Body() updateWebhookInput: UpdateWebhookInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<WebhookResponseDto> {
-    return this.webhookService.updateWebhookAsDto(updateWebhookInput, user.organizationId);
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.webhookService.updateWebhookAsDto(updateWebhookInput, targetOrgId);
   }
 
   @Delete()
@@ -76,7 +99,13 @@ export class WebhookController {
   @ApiResponse({ status: 200, description: 'Webhook deleted' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async remove(@Body('id') id: number, @CurrentUser() user: JwtPayload): Promise<boolean> {
-    return this.webhookService.softDeleteWebhookAsDto(id, user.organizationId);
+  async remove(
+    @Body('id') id: number,
+    @Body('organizationId') orgId: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<boolean> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.webhookService.softDeleteWebhookAsDto(id, targetOrgId);
   }
 }

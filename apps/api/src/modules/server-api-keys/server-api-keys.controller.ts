@@ -8,7 +8,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ServerApiKeysService } from './server-api-keys.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -18,6 +25,7 @@ import { ServerApiKeyResponseDto } from './dto/server-api-key-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
 @ApiTags('API Keys')
 @ApiBearerAuth()
@@ -31,6 +39,12 @@ export class ServerApiKeysController {
 
   @Get()
   @ApiOperation({ summary: 'List API keys for an application' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'List of API keys for the specified application',
@@ -39,12 +53,12 @@ export class ServerApiKeysController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @Query('applicationId') applicationId: number,
+    @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<ServerApiKeyResponseDto[]> {
-    return this.serverApiKeysService.findByRelatedApplicationIdAsDto(
-      applicationId,
-      user.organizationId,
-    );
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+
+    return this.serverApiKeysService.findByRelatedApplicationIdAsDto(applicationId, targetOrgId);
   }
 
   @Post()
@@ -54,9 +68,12 @@ export class ServerApiKeysController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async generate(
     @Body('applicationId') applicationId: number,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<string> {
-    return this.serverApiKeysService.generateApiKeyByOrg(applicationId, user.organizationId);
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.serverApiKeysService.generateApiKeyByOrg(applicationId, targetOrgId);
   }
 
   @Delete()
@@ -66,8 +83,11 @@ export class ServerApiKeysController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async revoke(
     @Body('apiKeyId') apiKeyId: number,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<boolean> {
-    return this.serverApiKeysService.revokeApiKeyByOrg(apiKeyId, user.organizationId);
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.serverApiKeysService.revokeApiKeyByOrg(apiKeyId, targetOrgId);
   }
 }

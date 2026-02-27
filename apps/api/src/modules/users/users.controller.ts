@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,7 +9,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -22,6 +28,7 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -34,7 +41,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List users (SUPER_ADMIN can query any org via ?organizationId=)' })
+  @ApiOperation({ summary: 'List users' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'List of users in the organization',
@@ -43,15 +56,15 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @CurrentUser() user: JwtPayload,
-    @Query('organizationId') queryOrgId?: number,
+    @Query('organization_id') queryOrgId?: number,
   ): Promise<UserResponseDto[]> {
-    const targetOrgId = this.resolveOrgId(user, queryOrgId);
+    const targetOrgId = resolveOrgId(user, queryOrgId);
 
     return this.usersService.findByOrganizationIdAsDto(targetOrgId);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new user (SUPER_ADMIN can target any org)' })
+  @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
     status: 201,
     description: 'User created successfully',
@@ -63,21 +76,9 @@ export class UsersController {
     @Body() createUserInput: CreateUserInput,
     @CurrentUser() user: JwtPayload,
   ): Promise<UserResponseDto> {
-    const targetOrgId = this.resolveOrgId(user, createUserInput.organizationId);
+    const targetOrgId = resolveOrgId(user, createUserInput.organizationId);
 
     return this.usersService.createUserAsDto(createUserInput, targetOrgId, user.userId);
-  }
-
-  private resolveOrgId(user: JwtPayload, requestedOrgId?: number): number {
-    if (requestedOrgId && requestedOrgId !== user.organizationId) {
-      if (user.role !== UserRoles.SUPER_ADMIN) {
-        throw new BadRequestException('Only SUPER_ADMIN can target other organizations');
-      }
-
-      return requestedOrgId;
-    }
-
-    return user.organizationId;
   }
 
   @Put()
@@ -87,9 +88,12 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async update(
     @Body() updateUserInput: UpdateUserInput,
+    @Body('organizationId') orgId: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<UserResponseDto> {
-    return this.usersService.updateUserAsDto(updateUserInput, user.organizationId, user.userId);
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.usersService.updateUserAsDto(updateUserInput, targetOrgId, user.userId);
   }
 
   @Delete()
@@ -97,7 +101,13 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'User deactivated' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async remove(@Body('userId') userId: number, @CurrentUser() user: JwtPayload): Promise<boolean> {
-    return this.usersService.softDeleteUserAsDto(userId, user.organizationId);
+  async remove(
+    @Body('userId') userId: number,
+    @Body('organizationId') orgId: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<boolean> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.usersService.softDeleteUserAsDto(userId, targetOrgId);
   }
 }
