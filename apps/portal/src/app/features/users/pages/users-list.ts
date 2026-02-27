@@ -21,8 +21,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { CardModule } from 'primeng/card';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { OrgContextService } from '../../../core/services/org-context.service';
 import { UsersService } from '../services/users.service';
 import { User } from '../../../core/models/auth.model';
 import { UserRoles, UserRoleLabels } from '../../../core/constants/roles';
@@ -50,7 +50,6 @@ interface RoleOption {
     ToolbarModule,
     IconFieldModule,
     InputIconModule,
-    CardModule,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,6 +60,7 @@ export class UsersListComponent implements OnInit {
   private readonly service = inject(UsersService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  readonly orgContext = inject(OrgContextService);
 
   readonly dt = viewChild<Table>('dt');
 

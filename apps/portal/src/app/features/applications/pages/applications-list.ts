@@ -20,9 +20,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { CardModule } from 'primeng/card';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
+import { OrgContextService } from '../../../core/services/org-context.service';
 import { ApplicationsService } from '../services/applications.service';
 import { Application, PageInfo } from '../../../core/models/api.model';
 
@@ -43,7 +43,6 @@ import { Application, PageInfo } from '../../../core/models/api.model';
     ToolbarModule,
     IconFieldModule,
     InputIconModule,
-    CardModule,
     PaginationComponent,
   ],
   providers: [ConfirmationService],
@@ -55,6 +54,7 @@ export class ApplicationsListComponent implements OnInit {
   private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  readonly orgContext = inject(OrgContextService);
 
   readonly dt = viewChild<Table>('dt');
 

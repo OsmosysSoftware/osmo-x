@@ -22,9 +22,9 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { CardModule } from 'primeng/card';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
+import { OrgContextService } from '../../../core/services/org-context.service';
 import { ProvidersService } from '../services/providers.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
 import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
@@ -55,7 +55,6 @@ interface ChannelOption {
     ToolbarModule,
     IconFieldModule,
     InputIconModule,
-    CardModule,
     PaginationComponent,
     ChannelTypePipe,
   ],
@@ -69,6 +68,7 @@ export class ProvidersListComponent implements OnInit {
   private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  readonly orgContext = inject(OrgContextService);
 
   readonly dt = viewChild<Table>('dt');
 

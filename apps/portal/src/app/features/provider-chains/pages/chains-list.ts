@@ -11,7 +11,6 @@ import { DatePipe } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -23,6 +22,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
+import { OrgContextService } from '../../../core/services/org-context.service';
 import { ProviderChainsService } from '../services/provider-chains.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
 import { ProviderChain, Application, PageInfo } from '../../../core/models/api.model';
@@ -40,7 +40,6 @@ interface ProviderTypeOption {
     TableModule,
     TagModule,
     ButtonModule,
-    CardModule,
     SkeletonModule,
     DialogModule,
     ConfirmDialogModule,
@@ -62,6 +61,7 @@ export class ChainsListComponent implements OnInit {
   private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  readonly orgContext = inject(OrgContextService);
 
   readonly dt = viewChild<Table>('dt');
 
