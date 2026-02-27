@@ -10,6 +10,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { LoginDto } from '../../../core/models/auth.model';
 import { MessageService } from 'primeng/api';
 import { AppLogo } from '../../../shared/components/logo/logo';
+import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ import { AppLogo } from '../../../shared/components/logo/logo';
     RouterModule,
     MessageModule,
     AppLogo,
+    AppFloatingConfigurator,
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
