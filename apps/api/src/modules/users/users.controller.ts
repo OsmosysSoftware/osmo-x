@@ -1,10 +1,12 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   Post,
   Put,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -32,19 +34,24 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List all users in the organization' })
+  @ApiOperation({ summary: 'List users (SUPER_ADMIN can query any org via ?organizationId=)' })
   @ApiResponse({
     status: 200,
     description: 'List of users in the organization',
     type: [UserResponseDto],
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async findAll(@CurrentUser() user: JwtPayload): Promise<UserResponseDto[]> {
-    return this.usersService.findByOrganizationIdAsDto(user.organizationId);
+  async findAll(
+    @CurrentUser() user: JwtPayload,
+    @Query('organizationId') queryOrgId?: number,
+  ): Promise<UserResponseDto[]> {
+    const targetOrgId = this.resolveOrgId(user, queryOrgId);
+
+    return this.usersService.findByOrganizationIdAsDto(targetOrgId);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new user in the organization' })
+  @ApiOperation({ summary: 'Create a new user (SUPER_ADMIN can target any org)' })
   @ApiResponse({
     status: 201,
     description: 'User created successfully',
@@ -56,7 +63,21 @@ export class UsersController {
     @Body() createUserInput: CreateUserInput,
     @CurrentUser() user: JwtPayload,
   ): Promise<UserResponseDto> {
-    return this.usersService.createUserAsDto(createUserInput, user.organizationId, user.userId);
+    const targetOrgId = this.resolveOrgId(user, createUserInput.organizationId);
+
+    return this.usersService.createUserAsDto(createUserInput, targetOrgId, user.userId);
+  }
+
+  private resolveOrgId(user: JwtPayload, requestedOrgId?: number): number {
+    if (requestedOrgId && requestedOrgId !== user.organizationId) {
+      if (user.role !== UserRoles.SUPER_ADMIN) {
+        throw new BadRequestException('Only SUPER_ADMIN can target other organizations');
+      }
+
+      return requestedOrgId;
+    }
+
+    return user.organizationId;
   }
 
   @Put()

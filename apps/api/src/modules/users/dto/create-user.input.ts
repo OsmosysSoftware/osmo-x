@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 import { UserRoles } from 'src/common/constants/database';
 
 export class CreateUserInput {
@@ -26,4 +26,12 @@ export class CreateUserInput {
   })
   @IsEnum([UserRoles.ORG_USER, UserRoles.ORG_ADMIN])
   userRole: number;
+
+  @ApiPropertyOptional({
+    description: 'Target organization ID (SUPER_ADMIN only, defaults to own org)',
+    example: 1,
+  })
+  @IsOptional()
+  @IsInt()
+  organizationId?: number;
 }

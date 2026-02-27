@@ -163,16 +163,6 @@ npm run generate:api          # Regenerate TypeScript types from backend OpenAPI
 - Blank lines required before/after block-like statements
 - Zero warnings policy (`--max-warnings=0`)
 
-## Commit Message Convention
-
-```text
-<type>: <subject>
-```
-
-**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `sample`
-
-Rules: imperative present tense, no capitalization, no period, max 100 chars. No `Co-Authored-By`, `Signed-off-by`, or AI attribution lines. Example: `feat: add WhatsApp provider support`
-
 ## Key Concepts
 
 **Provider Chains:** Fallback sequences for notification delivery — if the primary provider fails, the next in the chain is tried. Configured per application and per notification type.
