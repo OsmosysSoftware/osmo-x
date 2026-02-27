@@ -64,14 +64,16 @@ export interface MasterProvider {
 
 export interface ProviderChain {
   chain_id: number;
-  notification_type: number;
+  chain_name: string;
   application_id: number;
+  provider_type: number;
+  description?: string;
+  is_default: number;
   status: number;
   created_by: number | null;
   updated_by: number | null;
   created_on: string;
   updated_on: string;
-  application_details?: Application;
 }
 
 export interface ProviderChainMember {

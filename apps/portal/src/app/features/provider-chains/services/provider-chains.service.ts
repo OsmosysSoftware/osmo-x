@@ -20,11 +20,21 @@ export class ProviderChainsService {
       .pipe(tap((res) => this._providerChains.set(res.items)));
   }
 
-  create(data: { notification_type: number; application_id: number }): Observable<ProviderChain> {
+  create(data: {
+    chain_name: string;
+    application_id: number;
+    provider_type: number;
+    description?: string;
+  }): Observable<ProviderChain> {
     return this.http.post<ProviderChain>(this.apiUrl, data);
   }
 
-  update(data: { chain_id: number; notification_type?: number }): Observable<ProviderChain> {
+  update(data: {
+    chain_id: number;
+    chain_name?: string;
+    provider_type?: number;
+    description?: string;
+  }): Observable<ProviderChain> {
     return this.http.put<ProviderChain>(this.apiUrl, data);
   }
 

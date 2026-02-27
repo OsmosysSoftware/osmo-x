@@ -21,7 +21,7 @@ export class ApiKeysService {
   }
 
   generate(applicationId: number): Observable<string> {
-    return this.http.post<string>(this.apiUrl, { application_id: applicationId });
+    return this.http.post(this.apiUrl, { application_id: applicationId }, { responseType: 'text' });
   }
 
   revoke(apiKeyId: number): Observable<boolean> {

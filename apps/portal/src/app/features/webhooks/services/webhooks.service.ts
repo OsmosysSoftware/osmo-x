@@ -20,7 +20,7 @@ export class WebhooksService {
       .pipe(tap((webhooks) => this._webhooks.set(webhooks)));
   }
 
-  create(data: { url: string; provider_id: number }): Observable<Webhook> {
+  create(data: { webhook_url: string; provider_id: number }): Observable<Webhook> {
     return this.http.post<Webhook>(this.apiUrl, data);
   }
 
