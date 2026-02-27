@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ArchivedNotification } from './entities/archived-notification.entity';
 import { DataSource, In, LessThan, QueryRunner, Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
+import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
 import { ConfigService } from '@nestjs/config';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { Status } from 'src/common/constants/database';
@@ -10,11 +11,6 @@ import { ArchivedNotificationResponse } from './dtos/archived-notification-respo
 import { InjectRepository } from '@nestjs/typeorm';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import ms = require('ms');
-import * as path from 'path';
-import * as fs from 'fs/promises';
-import { createWriteStream, existsSync, mkdirSync } from 'fs';
-import { format } from '@fast-csv/format';
-import { RetryNotification } from '../notifications/entities/retry-notification.entity';
 
 @Injectable()
 export class ArchivedNotificationsService extends CoreService<ArchivedNotification> {
@@ -163,7 +159,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
       if (enableArchivedNotificationDeletion.toLowerCase() === 'true') {
         this.logger.log('Running archived notification deletion cron task');
-        await this.deleteArchivedEntriesAndGenerateCsvBackup();
+        await this.deleteOldArchivedNotifications();
         this.logger.log(`Archive notification deletion cron task completed`);
       } else {
         this.logger.log('Archived Notification Deletion Cron is disabled');
@@ -174,7 +170,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     }
   }
 
-  async deleteArchivedEntriesAndGenerateCsvBackup(): Promise<void> {
+  async deleteOldArchivedNotifications(): Promise<void> {
     try {
       const deleteArchivedNotificationsOlderThan = this.configService.get<string>(
         'DELETE_ARCHIVED_NOTIFICATIONS_OLDER_THAN',
@@ -196,38 +192,23 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       }
 
       const cutoffTimestamp = new Date(Date.now() - retentionDurationMs);
-      const batchSize = 500;
-      let flagBackupFileCreated = false;
-      let archivedEntriesBatch: ArchivedNotification[] = [];
+      const batchSize = 1000;
+      let totalDeletedArchived = 0;
+      let totalDeletedRetries = 0;
 
-      // Update with json like nested fields as per archived-notification.entity file
-      const nestedFields = ['data', 'result'];
-
-      // Create directory, filename and path for backups
-      const backupsDir = 'backups';
-      const backupFileName = `archived_notifications_backup_${this.getFormattedTimestamp()}.csv`;
-      const backupFilePath = path.join(backupsDir, backupFileName);
-
-      // Ensure the backups directory exists
-      try {
-        if (!existsSync(backupsDir)) {
-          mkdirSync(backupsDir, { recursive: true });
-        }
-      } catch (error) {
-        throw new Error(`Failed to create backup directory at "${backupsDir}": ${error.message}`);
-      }
-
-      // Fast-CSV stream
-      const csvStream = format({ headers: true });
-      csvStream.pipe(createWriteStream(backupFilePath));
+      this.logger.log(
+        `Starting deletion of archived notifications and retries older than ${cutoffTimestamp.toISOString()}`,
+      );
 
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
       try {
+        let archivedEntriesBatch: ArchivedNotification[] = [];
+
         do {
-          // Fetch entries to delete
+          // Fetch archived entries to delete
           archivedEntriesBatch = await queryRunner.manager.find(ArchivedNotification, {
             where: {
               createdOn: LessThan(cutoffTimestamp),
@@ -239,94 +220,47 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
             take: batchSize,
           });
 
+          this.logger.debug(
+            `Query found ${archivedEntriesBatch.length} records. First record: ${archivedEntriesBatch.length > 0 ? JSON.stringify({ id: archivedEntriesBatch[0].id, notificationId: archivedEntriesBatch[0].notificationId, createdOn: archivedEntriesBatch[0].createdOn }) : 'None'}`,
+          );
+
           if (archivedEntriesBatch.length === 0) {
-            this.logger.log(
+            this.logger.debug(
               `No more archived entries older than ${cutoffTimestamp} left to delete`,
             );
             break;
           }
 
-          // Perform deletion
-          const idsToDelete = archivedEntriesBatch.map((entry) => entry.id);
-          await queryRunner.manager.delete(ArchivedNotification, idsToDelete);
+          // Get notification IDs for deleting related retry records
+          const notificationIds = archivedEntriesBatch.map((entry) => entry.notificationId);
 
-          // Export to CSV
-          for (const row of archivedEntriesBatch) {
-            // Ensure data of nested fields is stringified before being added to csv
-            const safeRow = Object.fromEntries(
-              Object.entries(row).map(([key, value]) => [
-                key,
-                nestedFields.includes(key) && value !== null && typeof value === 'object'
-                  ? JSON.stringify(value)
-                  : value,
-              ]),
-            );
-
-            csvStream.write(safeRow);
-          }
-
-          flagBackupFileCreated = true;
-
-          // Delete the retry entries as well
-          const notificationIdsThatHaveBeenDeleted = archivedEntriesBatch.map(
-            (entry) => entry.notificationId,
-          );
-
-          const retryEntriesBatch = await queryRunner.manager.find(RetryNotification, {
-            where: {
-              notification_id: In(notificationIdsThatHaveBeenDeleted),
-            },
-            order: {
-              createdOn: 'ASC',
-            },
+          // Delete retry entries first (foreign key constraint)
+          const retryDeleteResult = await queryRunner.manager.delete(RetryNotification, {
+            notification_id: In(notificationIds),
           });
 
-          if (retryEntriesBatch.length > 0) {
-            const retryIdsToDelete = retryEntriesBatch.map((entry) => entry.id);
-            await queryRunner.manager.delete(RetryNotification, retryIdsToDelete);
-          }
+          const retryAffected =
+            typeof retryDeleteResult.affected === 'number' ? retryDeleteResult.affected : 0;
+          totalDeletedRetries += retryAffected;
+
+          // Delete archived notifications
+          const archivedIds = archivedEntriesBatch.map((entry) => entry.id);
+          await queryRunner.manager.delete(ArchivedNotification, archivedIds);
+          totalDeletedArchived += archivedEntriesBatch.length;
+
+          this.logger.debug(
+            `Batch processed: ${archivedEntriesBatch.length} archived notifications, ${retryAffected} retry records deleted`,
+          );
         } while (archivedEntriesBatch.length === batchSize);
 
-        // End the Fast-CSV stream
-        csvStream.end();
-
         await queryRunner.commitTransaction();
-        this.logger.log('Transaction Successful.');
 
-        if (flagBackupFileCreated) {
-          this.logger.log(
-            `Deleted archived entries older than ${cutoffTimestamp}. Backup file created at ${backupFilePath}`,
-          );
-        } else {
-          this.logger.log(`No entries found older than ${cutoffTimestamp}.`);
-
-          if (backupFilePath) {
-            try {
-              await fs.unlink(backupFilePath);
-              this.logger.log('Unnecessary CSV file has been deleted');
-            } catch (unlinkError) {
-              this.logger.error(
-                `Failed to delete unnecessary CSV file ${backupFileName}: ${unlinkError.message}`,
-              );
-            }
-          }
-        }
+        this.logger.log(
+          `Successfully deleted ${totalDeletedArchived} archived notifications and ${totalDeletedRetries} retry records older than ${cutoffTimestamp.toISOString()}`,
+        );
       } catch (error) {
         await queryRunner.rollbackTransaction();
-        this.logger.error('Error during deletion. Rolled back.', error.stack);
-
-        // Delete CSV file if it was created
-        if (backupFilePath) {
-          try {
-            await fs.unlink(backupFilePath);
-            this.logger.log('CSV backup deleted due to rollback.');
-          } catch (unlinkError) {
-            this.logger.error(
-              `Failed to delete backup file after rollback: ${unlinkError.message}`,
-            );
-          }
-        }
-
+        this.logger.error('Error during deletion. Transaction rolled back.', error.stack);
         throw error;
       } finally {
         await queryRunner.release();
@@ -335,16 +269,5 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       this.logger.error(`Failed to delete archived notifications: ${error.message}`, error.stack);
       throw error;
     }
-  }
-
-  private getFormattedTimestamp(): string {
-    const now = new Date();
-    const yyyy = now.getFullYear().toString();
-    const MM = (now.getMonth() + 1).toString().padStart(2, '0');
-    const dd = now.getDate().toString().padStart(2, '0');
-    const hh = now.getHours().toString().padStart(2, '0');
-    const mm = now.getMinutes().toString().padStart(2, '0');
-    const ss = now.getSeconds().toString().padStart(2, '0');
-    return `${yyyy}${MM}${dd}_${hh}${mm}${ss}`;
   }
 }

@@ -8,7 +8,7 @@ BASE_URL="http://localhost:${SERVER_PORT}/notifications"
 ARCHIVE_URL="http://localhost:${SERVER_PORT}/archived-notifications"
 
 ARCHIVE_INTERVAL_IN_SECONDS="${ARCHIVE_INTERVAL_IN_SECONDS:-3600}"
-DELETE_INTERVAL_IN_SECONDS="${DELETE_INTERVAL_IN_SECONDS:-2592000}"
+DELETE_INTERVAL_IN_SECONDS="${DELETE_INTERVAL_IN_SECONDS:-86400}"
 
 add_notifications_to_queue() {
   curl -X POST "${BASE_URL}/queue" -H "Content-Type: application/json" -d '{}'
