@@ -9,7 +9,6 @@ import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginDto } from '../../../core/models/auth.model';
 import { MessageService } from 'primeng/api';
-import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 import { AppLogo } from '../../../shared/components/logo/logo';
 
 @Component({
@@ -22,7 +21,6 @@ import { AppLogo } from '../../../shared/components/logo/logo';
     FormsModule,
     RouterModule,
     MessageModule,
-    AppFloatingConfigurator,
     AppLogo,
   ],
   templateUrl: './login.html',
