@@ -9,11 +9,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       // Skip showing errors for auth endpoints - let the components handle those
-      const skipErrorToast =
-        req.url.includes('/auth/login') ||
-        req.url.includes('/auth/refresh');
+      const skipErrorToast = req.url.includes('/auth/login') || req.url.includes('/auth/refresh');
 
       if (!skipErrorToast) {
+        // Extract error message from response body (supports both RFC 7807 and JSend formats)
+        const apiMessage =
+          error.error?.message || (typeof error.error?.data === 'string' ? error.error.data : null);
         let errorMessage = 'An error occurred';
 
         switch (error.status) {
@@ -21,13 +22,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             errorMessage = 'Unable to connect to server';
             break;
           case 400:
-            errorMessage = error.error?.message || 'Invalid request';
+            errorMessage = apiMessage || 'Invalid request';
             break;
           case 403:
-            errorMessage = 'Access denied';
+            errorMessage = apiMessage || 'Access denied';
             break;
           case 404:
-            errorMessage = 'Resource not found';
+            errorMessage = apiMessage || 'Resource not found';
             break;
           case 500:
             errorMessage = 'Server error. Please try again later';
@@ -36,7 +37,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             errorMessage = 'Service unavailable';
             break;
           default:
-            errorMessage = error.error?.message || 'An unexpected error occurred';
+            errorMessage = apiMessage || 'An unexpected error occurred';
         }
 
         messageService.add({
