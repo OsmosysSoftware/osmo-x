@@ -225,6 +225,9 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
           );
 
           if (archivedEntriesBatch.length === 0) {
+            this.logger.debug(
+              `No more archived entries older than ${cutoffTimestamp} left to delete`,
+            );
             break;
           }
 
