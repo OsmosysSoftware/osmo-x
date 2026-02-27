@@ -25,7 +25,10 @@ export class ApplicationsService {
   }
 
   create(data: { name: string; test_mode_enabled?: boolean }): Observable<Application> {
-    return this.http.post<Application>(this.apiUrl, data);
+    return this.http.post<Application>(this.apiUrl, {
+      name: data.name,
+      test_mode_enabled: data.test_mode_enabled ? 1 : 0,
+    });
   }
 
   update(data: {
@@ -33,7 +36,10 @@ export class ApplicationsService {
     name?: string;
     test_mode_enabled?: boolean;
   }): Observable<Application> {
-    return this.http.put<Application>(this.apiUrl, data);
+    return this.http.put<Application>(this.apiUrl, {
+      ...data,
+      test_mode_enabled: data.test_mode_enabled ? 1 : 0,
+    });
   }
 
   delete(applicationId: number): Observable<boolean> {
