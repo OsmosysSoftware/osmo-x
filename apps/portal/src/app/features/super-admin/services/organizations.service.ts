@@ -21,4 +21,18 @@ export class OrganizationsService {
   create(data: { name: string; slug: string }): Observable<Organization> {
     return this.http.post<Organization>(this.apiUrl, data);
   }
+
+  update(data: {
+    organization_id: number;
+    name?: string;
+    slug?: string;
+  }): Observable<Organization> {
+    return this.http.put<Organization>(this.apiUrl, data);
+  }
+
+  delete(organizationId: number): Observable<boolean> {
+    return this.http.delete<boolean>(this.apiUrl, {
+      body: { organization_id: organizationId },
+    });
+  }
 }

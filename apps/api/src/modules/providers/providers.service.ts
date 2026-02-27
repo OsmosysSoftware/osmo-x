@@ -195,6 +195,25 @@ export class ProvidersService extends CoreService<Provider> {
     return this.mapToDto(saved);
   }
 
+  async softDeleteProviderAsDto(providerId: number, organizationId: number): Promise<boolean> {
+    const provider = await this.getById(providerId);
+
+    if (!provider) {
+      throw new BadRequestException('Provider not found');
+    }
+
+    const app = await this.applicationsService.findById(provider.applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('Provider not found');
+    }
+
+    provider.status = Status.INACTIVE;
+    await this.providerRepository.save(provider);
+
+    return true;
+  }
+
   async getAllProviders(options: QueryOptionsDto): Promise<ProviderListResponse> {
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
     const searchableFields = ['name'];

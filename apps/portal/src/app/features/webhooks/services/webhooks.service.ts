@@ -23,4 +23,12 @@ export class WebhooksService {
   create(data: { url: string; provider_id: number }): Observable<Webhook> {
     return this.http.post<Webhook>(this.apiUrl, data);
   }
+
+  update(data: { id: number; webhook_url: string }): Observable<Webhook> {
+    return this.http.put<Webhook>(this.apiUrl, data);
+  }
+
+  delete(id: number): Observable<boolean> {
+    return this.http.delete<boolean>(this.apiUrl, { body: { id } });
+  }
 }

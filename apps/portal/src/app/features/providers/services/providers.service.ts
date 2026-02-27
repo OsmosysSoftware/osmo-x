@@ -42,4 +42,8 @@ export class ProvidersService {
   }): Observable<Provider> {
     return this.http.put<Provider>(this.apiUrl, data);
   }
+
+  delete(providerId: number): Observable<boolean> {
+    return this.http.delete<boolean>(this.apiUrl, { body: { provider_id: providerId } });
+  }
 }

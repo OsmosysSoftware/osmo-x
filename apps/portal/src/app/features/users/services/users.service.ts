@@ -34,4 +34,8 @@ export class UsersService {
   }): Observable<User> {
     return this.http.put<User>(this.apiUrl, data);
   }
+
+  delete(userId: number): Observable<boolean> {
+    return this.http.delete<boolean>(this.apiUrl, { body: { user_id: userId } });
+  }
 }

@@ -12,7 +12,8 @@ import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
-import { MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { ProvidersService } from '../services/providers.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
@@ -41,9 +42,11 @@ interface ChannelOption {
     ToggleSwitchModule,
     TextareaModule,
     TooltipModule,
+    ConfirmDialogModule,
     PaginationComponent,
     ChannelTypePipe,
   ],
+  providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
@@ -100,6 +103,15 @@ interface ChannelOption {
                     pTooltip="Edit"
                     tooltipPosition="top"
                     (onClick)="openEdit(p)"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="danger"
+                    pTooltip="Delete"
+                    tooltipPosition="top"
+                    (onClick)="confirmDelete(p)"
                   />
                 </td>
               </tr>
@@ -199,6 +211,8 @@ interface ChannelOption {
           />
         </ng-template>
       </p-dialog>
+
+      <p-confirmDialog />
     </div>
   `,
 })
@@ -206,6 +220,7 @@ export class ProvidersListComponent implements OnInit {
   private readonly providersService = inject(ProvidersService);
   private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly providers = signal<Provider[]>([]);
   readonly applications = signal<Application[]>([]);
@@ -366,5 +381,26 @@ export class ProvidersListComponent implements OnInit {
           error: () => this.saving.set(false),
         });
     }
+  }
+
+  confirmDelete(provider: Provider): void {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete "${provider.name}"?`,
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.providersService.delete(provider.provider_id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Deleted',
+              detail: `Provider "${provider.name}" deleted successfully`,
+            });
+            this.loadProviders();
+          },
+        });
+      },
+    });
   }
 }

@@ -5,6 +5,7 @@ import { Organization } from './entities/organization.entity';
 import { Status } from 'src/common/constants/database';
 import { OrganizationResponseDto } from './dto/organization-response.dto';
 import { CreateOrganizationInput } from './dto/create-organization.input';
+import { UpdateOrganizationInput } from './dto/update-organization.input';
 
 @Injectable()
 export class OrganizationsService {
@@ -72,5 +73,54 @@ export class OrganizationsService {
     const saved = await this.organizationRepository.save(org);
 
     return this.mapToDto(saved);
+  }
+
+  async updateAsDto(
+    input: UpdateOrganizationInput,
+    updatedByUserId: number,
+  ): Promise<OrganizationResponseDto> {
+    const org = await this.organizationRepository.findOne({
+      where: { organizationId: input.organizationId, status: Status.ACTIVE },
+    });
+
+    if (!org) {
+      throw new BadRequestException('Organization not found');
+    }
+
+    if (input.slug !== undefined && input.slug !== org.slug) {
+      const existing = await this.organizationRepository.findOne({
+        where: { slug: input.slug },
+      });
+
+      if (existing && existing.organizationId !== input.organizationId) {
+        throw new BadRequestException('Organization slug already exists');
+      }
+
+      org.slug = input.slug;
+    }
+
+    if (input.name !== undefined) {
+      org.name = input.name;
+    }
+
+    org.updatedBy = updatedByUserId;
+    const saved = await this.organizationRepository.save(org);
+
+    return this.mapToDto(saved);
+  }
+
+  async softDeleteAsDto(organizationId: number): Promise<boolean> {
+    const org = await this.organizationRepository.findOne({
+      where: { organizationId, status: Status.ACTIVE },
+    });
+
+    if (!org) {
+      throw new BadRequestException('Organization not found');
+    }
+
+    org.status = Status.INACTIVE;
+    await this.organizationRepository.save(org);
+
+    return true;
   }
 }

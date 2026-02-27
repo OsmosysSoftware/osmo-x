@@ -171,7 +171,7 @@ npm run generate:api          # Regenerate TypeScript types from backend OpenAPI
 
 **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `sample`
 
-Rules: imperative present tense, no capitalization, no period, max 100 chars. Example: `feat: add WhatsApp provider support`
+Rules: imperative present tense, no capitalization, no period, max 100 chars. No `Co-Authored-By`, `Signed-off-by`, or AI attribution lines. Example: `feat: add WhatsApp provider support`
 
 ## Key Concepts
 

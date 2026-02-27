@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -60,5 +69,14 @@ export class UsersController {
     @CurrentUser() user: JwtPayload,
   ): Promise<UserResponseDto> {
     return this.usersService.updateUserAsDto(updateUserInput, user.organizationId, user.userId);
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Deactivate a user' })
+  @ApiResponse({ status: 200, description: 'User deactivated' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async remove(@Body('userId') userId: number, @CurrentUser() user: JwtPayload): Promise<boolean> {
+    return this.usersService.softDeleteUserAsDto(userId, user.organizationId);
   }
 }

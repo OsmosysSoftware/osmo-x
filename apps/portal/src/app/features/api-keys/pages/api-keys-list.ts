@@ -7,8 +7,10 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TooltipModule } from 'primeng/tooltip';
 import { DatePipe } from '@angular/common';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ApiKeysService } from '../services/api-keys.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
 import { ServerApiKey, Application } from '../../../core/models/api.model';
@@ -24,8 +26,11 @@ import { ServerApiKey, Application } from '../../../core/models/api.model';
     SkeletonModule,
     DialogModule,
     SelectModule,
+    ConfirmDialogModule,
+    TooltipModule,
     DatePipe,
   ],
+  providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
@@ -84,6 +89,7 @@ import { ServerApiKey, Application } from '../../../core/models/api.model';
                 <th>Masked Key</th>
                 <th>Status</th>
                 <th>Created</th>
+                <th class="text-center">Actions</th>
               </tr>
             </ng-template>
             <ng-template #body let-k>
@@ -97,11 +103,24 @@ import { ServerApiKey, Application } from '../../../core/models/api.model';
                   />
                 </td>
                 <td>{{ k.created_on | date: 'short' }}</td>
+                <td class="text-center">
+                  @if (k.status === 1) {
+                    <p-button
+                      icon="pi pi-ban"
+                      [rounded]="true"
+                      [text]="true"
+                      severity="danger"
+                      pTooltip="Revoke"
+                      tooltipPosition="top"
+                      (onClick)="confirmRevoke(k)"
+                    />
+                  }
+                </td>
               </tr>
             </ng-template>
             <ng-template #emptymessage>
               <tr>
-                <td colspan="4" class="text-center py-8 text-muted-color">
+                <td colspan="5" class="text-center py-8 text-muted-color">
                   No API keys found for this application
                 </td>
               </tr>
@@ -135,12 +154,15 @@ import { ServerApiKey, Application } from '../../../core/models/api.model';
         <p-button label="Close" (onClick)="keyDialogVisible.set(false)" />
       </ng-template>
     </p-dialog>
+
+    <p-confirmDialog />
   `,
 })
 export class ApiKeysListComponent implements OnInit {
   private readonly apiKeysService = inject(ApiKeysService);
   private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly applications = signal<Application[]>([]);
   readonly apiKeys = signal<ServerApiKey[]>([]);
@@ -216,6 +238,32 @@ export class ApiKeysListComponent implements OnInit {
       },
       error: () => {
         this.generating.set(false);
+      },
+    });
+  }
+
+  confirmRevoke(key: ServerApiKey): void {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to revoke API key "${key.masked_api_key}"?`,
+      header: 'Confirm Revoke',
+      icon: 'pi pi-exclamation-triangle',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        const appId = this.selectedApplicationId();
+
+        this.apiKeysService.revoke(key.api_key_id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Revoked',
+              detail: 'API key revoked successfully',
+            });
+
+            if (appId) {
+              this.loadApiKeys(appId);
+            }
+          },
+        });
       },
     });
   }

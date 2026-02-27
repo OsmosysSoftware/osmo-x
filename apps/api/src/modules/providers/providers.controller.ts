@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -106,5 +107,17 @@ export class ProvidersController {
       user.organizationId,
       user.userId,
     );
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Delete a provider' })
+  @ApiResponse({ status: 200, description: 'Provider deleted' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async remove(
+    @Body('providerId') providerId: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<boolean> {
+    return this.providersService.softDeleteProviderAsDto(providerId, user.organizationId);
   }
 }

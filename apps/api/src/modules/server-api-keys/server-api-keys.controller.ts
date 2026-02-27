@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ServerApiKeysService } from './server-api-keys.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -48,5 +57,17 @@ export class ServerApiKeysController {
     @CurrentUser() user: JwtPayload,
   ): Promise<string> {
     return this.serverApiKeysService.generateApiKeyByOrg(applicationId, user.organizationId);
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Revoke an API key' })
+  @ApiResponse({ status: 200, description: 'API key revoked' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async revoke(
+    @Body('apiKeyId') apiKeyId: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<boolean> {
+    return this.serverApiKeysService.revokeApiKeyByOrg(apiKeyId, user.organizationId);
   }
 }

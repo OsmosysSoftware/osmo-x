@@ -10,8 +10,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { PasswordModule } from 'primeng/password';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePipe } from '@angular/common';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { UsersService } from '../services/users.service';
 import { User } from '../../../core/models/auth.model';
 import { UserRoles, UserRoleLabels } from '../../../core/constants/roles';
@@ -35,8 +36,10 @@ interface RoleOption {
     SelectModule,
     TooltipModule,
     PasswordModule,
+    ConfirmDialogModule,
     DatePipe,
   ],
+  providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
@@ -95,6 +98,15 @@ interface RoleOption {
                     pTooltip="Edit"
                     tooltipPosition="top"
                     (onClick)="openEdit(u)"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="danger"
+                    pTooltip="Deactivate"
+                    tooltipPosition="top"
+                    (onClick)="confirmDelete(u)"
                   />
                 </td>
               </tr>
@@ -182,12 +194,15 @@ interface RoleOption {
           />
         </ng-template>
       </p-dialog>
+
+      <p-confirmDialog />
     </div>
   `,
 })
 export class UsersListComponent implements OnInit {
   private readonly service = inject(UsersService);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly users = signal<User[]>([]);
   readonly loading = signal(true);
@@ -337,5 +352,26 @@ export class UsersListComponent implements OnInit {
 
   getRoleLabel(role: number): string {
     return UserRoleLabels[role as keyof typeof UserRoleLabels] || 'Unknown';
+  }
+
+  confirmDelete(user: User): void {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to deactivate "${user.username}"?`,
+      header: 'Confirm Deactivate',
+      icon: 'pi pi-exclamation-triangle',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.service.delete(user.user_id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Deactivated',
+              detail: `User "${user.username}" deactivated successfully`,
+            });
+            this.loadUsers();
+          },
+        });
+      },
+    });
   }
 }

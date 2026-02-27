@@ -128,9 +128,10 @@ export interface ServerApiKey {
 }
 
 export interface Webhook {
-  webhook_id: number;
-  url: string;
+  id: number;
   provider_id: number;
+  webhook_url: string;
+  is_verified: number;
   status: number;
   created_by: number | null;
   updated_by: number | null;

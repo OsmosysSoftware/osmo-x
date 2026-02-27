@@ -123,4 +123,19 @@ export class UsersService {
 
     return this.mapToDto(saved);
   }
+
+  async softDeleteUserAsDto(userId: number, organizationId: number): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { userId, organizationId, status: Status.ACTIVE },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    user.status = Status.INACTIVE;
+    await this.userRepository.save(user);
+
+    return true;
+  }
 }

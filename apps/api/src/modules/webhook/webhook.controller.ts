@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { WebhookService } from './webhook.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -6,6 +16,7 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { CreateWebhookInput } from './dto/create-webhook.input';
+import { UpdateWebhookInput } from './dto/update-webhook.input';
 import { WebhookResponseDto } from './dto/webhook-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
@@ -46,5 +57,26 @@ export class WebhookController {
     @CurrentUser() user: JwtPayload,
   ): Promise<WebhookResponseDto> {
     return this.webhookService.registerWebhookAsDto(createWebhookInput, user.organizationId);
+  }
+
+  @Put()
+  @ApiOperation({ summary: 'Update a webhook URL' })
+  @ApiResponse({ status: 200, description: 'Webhook updated', type: WebhookResponseDto })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async update(
+    @Body() updateWebhookInput: UpdateWebhookInput,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<WebhookResponseDto> {
+    return this.webhookService.updateWebhookAsDto(updateWebhookInput, user.organizationId);
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Delete a webhook' })
+  @ApiResponse({ status: 200, description: 'Webhook deleted' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async remove(@Body('id') id: number, @CurrentUser() user: JwtPayload): Promise<boolean> {
+    return this.webhookService.softDeleteWebhookAsDto(id, user.organizationId);
   }
 }

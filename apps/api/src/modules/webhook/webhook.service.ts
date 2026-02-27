@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Webhook } from './entities/webhook.entity';
 import axios from 'axios';
 import { CreateWebhookInput } from './dto/create-webhook.input';
+import { UpdateWebhookInput } from './dto/update-webhook.input';
 import { Status } from 'src/common/constants/database';
 import { NotificationsService } from '../notifications/notifications.service';
 import { WebhookResponseDto } from './dto/webhook-response.dto';
@@ -127,6 +128,52 @@ export class WebhookService {
     const webhooks = await this.findByProviderId(providerId);
 
     return webhooks.map((webhook) => this.mapToDto(webhook));
+  }
+
+  private async verifyWebhookOrgAccess(
+    webhookId: number,
+    organizationId: number,
+  ): Promise<Webhook> {
+    const webhook = await this.webhookRepository.findOne({
+      where: { id: webhookId, status: Status.ACTIVE },
+    });
+
+    if (!webhook) {
+      throw new BadRequestException('Webhook not found');
+    }
+
+    const provider = await this.providersService.getById(webhook.providerId);
+
+    if (!provider) {
+      throw new BadRequestException('Webhook not found');
+    }
+
+    const app = await this.applicationsService.findById(provider.applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('Webhook not found');
+    }
+
+    return webhook;
+  }
+
+  async updateWebhookAsDto(
+    input: UpdateWebhookInput,
+    organizationId: number,
+  ): Promise<WebhookResponseDto> {
+    const webhook = await this.verifyWebhookOrgAccess(input.id, organizationId);
+    webhook.webhookUrl = input.webhookUrl;
+    const saved = await this.webhookRepository.save(webhook);
+
+    return this.mapToDto(saved);
+  }
+
+  async softDeleteWebhookAsDto(webhookId: number, organizationId: number): Promise<boolean> {
+    const webhook = await this.verifyWebhookOrgAccess(webhookId, organizationId);
+    webhook.status = Status.INACTIVE;
+    await this.webhookRepository.save(webhook);
+
+    return true;
   }
 
   async registerWebhookAsDto(

@@ -73,6 +73,27 @@ export class ServerApiKeysService {
     return keys.map((key) => this.mapToDto(key));
   }
 
+  async revokeApiKeyByOrg(apiKeyId: number, organizationId: number): Promise<boolean> {
+    const key = await this.serverApiKeyRepository.findOne({
+      where: { apiKeyId, status: Status.ACTIVE },
+    });
+
+    if (!key) {
+      throw new BadRequestException('API key not found');
+    }
+
+    const app = await this.applicationsService.findById(key.applicationId);
+
+    if (!app || app.organizationId !== organizationId) {
+      throw new BadRequestException('API key not found');
+    }
+
+    key.status = Status.INACTIVE;
+    await this.serverApiKeyRepository.save(key);
+
+    return true;
+  }
+
   async generateApiKeyByOrg(applicationId: number, organizationId: number): Promise<string> {
     const app = await this.applicationsService.findById(applicationId);
 

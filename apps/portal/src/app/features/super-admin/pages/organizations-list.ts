@@ -7,8 +7,10 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TooltipModule } from 'primeng/tooltip';
 import { DatePipe } from '@angular/common';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { OrganizationsService } from '../services/organizations.service';
 import { Organization } from '../../../core/models/api.model';
 
@@ -23,8 +25,11 @@ import { Organization } from '../../../core/models/api.model';
     SkeletonModule,
     DialogModule,
     InputTextModule,
+    ConfirmDialogModule,
+    TooltipModule,
     DatePipe,
   ],
+  providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
@@ -55,6 +60,7 @@ import { Organization } from '../../../core/models/api.model';
                 <th>Slug</th>
                 <th>Status</th>
                 <th>Created</th>
+                <th class="text-center">Actions</th>
               </tr>
             </ng-template>
             <ng-template #body let-org>
@@ -69,11 +75,31 @@ import { Organization } from '../../../core/models/api.model';
                   />
                 </td>
                 <td>{{ org.created_on | date: 'short' }}</td>
+                <td class="text-center">
+                  <p-button
+                    icon="pi pi-pencil"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="info"
+                    pTooltip="Edit"
+                    tooltipPosition="top"
+                    (onClick)="openEdit(org)"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="danger"
+                    pTooltip="Delete"
+                    tooltipPosition="top"
+                    (onClick)="confirmDelete(org)"
+                  />
+                </td>
               </tr>
             </ng-template>
             <ng-template #emptymessage>
               <tr>
-                <td colspan="5" class="text-center py-8 text-muted-color">
+                <td colspan="6" class="text-center py-8 text-muted-color">
                   No organizations found
                 </td>
               </tr>
@@ -82,11 +108,11 @@ import { Organization } from '../../../core/models/api.model';
         </p-card>
       }
 
-      <!-- Create Organization Dialog -->
+      <!-- Create/Edit Organization Dialog -->
       <p-dialog
         [visible]="dialogVisible()"
         (visibleChange)="dialogVisible.set($event)"
-        header="New Organization"
+        [header]="editingOrg() ? 'Edit Organization' : 'New Organization'"
         [modal]="true"
         [style]="{ width: '28rem' }"
       >
@@ -124,20 +150,23 @@ import { Organization } from '../../../core/models/api.model';
             (onClick)="dialogVisible.set(false)"
           />
           <p-button
-            label="Create"
+            label="Save"
             icon="pi pi-check"
             [disabled]="!isFormValid()"
             [loading]="saving()"
-            (onClick)="createOrganization()"
+            (onClick)="save()"
           />
         </ng-template>
       </p-dialog>
+
+      <p-confirmDialog />
     </div>
   `,
 })
 export class OrganizationsListComponent implements OnInit {
   private readonly service = inject(OrganizationsService);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly organizations = signal<Organization[]>([]);
   readonly loading = signal(true);
@@ -145,6 +174,7 @@ export class OrganizationsListComponent implements OnInit {
 
   // Dialog state
   readonly dialogVisible = signal(false);
+  readonly editingOrg = signal<Organization | null>(null);
   readonly formName = signal('');
   readonly formSlug = signal('');
 
@@ -172,21 +202,31 @@ export class OrganizationsListComponent implements OnInit {
   }
 
   openCreate(): void {
+    this.editingOrg.set(null);
     this.formName.set('');
     this.formSlug.set('');
+    this.dialogVisible.set(true);
+  }
+
+  openEdit(org: Organization): void {
+    this.editingOrg.set(org);
+    this.formName.set(org.name);
+    this.formSlug.set(org.slug);
     this.dialogVisible.set(true);
   }
 
   onNameChange(name: string): void {
     this.formName.set(name);
 
-    // Auto-generate slug from name
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
+    // Auto-generate slug only when creating
+    if (!this.editingOrg()) {
+      const slug = name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
 
-    this.formSlug.set(slug);
+      this.formSlug.set(slug);
+    }
   }
 
   isFormValid(): boolean {
@@ -200,30 +240,74 @@ export class OrganizationsListComponent implements OnInit {
     return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
   }
 
-  createOrganization(): void {
+  save(): void {
     if (!this.isFormValid()) {
       return;
     }
 
     this.saving.set(true);
+    const editing = this.editingOrg();
 
-    this.service
-      .create({
-        name: this.formName().trim(),
-        slug: this.formSlug().trim(),
-      })
-      .subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Created',
-            detail: `Organization "${this.formName().trim()}" created successfully`,
-          });
-          this.dialogVisible.set(false);
-          this.saving.set(false);
-          this.loadOrganizations();
-        },
-        error: () => this.saving.set(false),
-      });
+    if (editing) {
+      this.service
+        .update({
+          organization_id: editing.organization_id,
+          name: this.formName().trim(),
+          slug: this.formSlug().trim(),
+        })
+        .subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Updated',
+              detail: `Organization "${this.formName().trim()}" updated successfully`,
+            });
+            this.dialogVisible.set(false);
+            this.saving.set(false);
+            this.loadOrganizations();
+          },
+          error: () => this.saving.set(false),
+        });
+    } else {
+      this.service
+        .create({
+          name: this.formName().trim(),
+          slug: this.formSlug().trim(),
+        })
+        .subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Created',
+              detail: `Organization "${this.formName().trim()}" created successfully`,
+            });
+            this.dialogVisible.set(false);
+            this.saving.set(false);
+            this.loadOrganizations();
+          },
+          error: () => this.saving.set(false),
+        });
+    }
+  }
+
+  confirmDelete(org: Organization): void {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete "${org.name}"?`,
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.service.delete(org.organization_id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Deleted',
+              detail: `Organization "${org.name}" deleted successfully`,
+            });
+            this.loadOrganizations();
+          },
+        });
+      },
+    });
   }
 }
