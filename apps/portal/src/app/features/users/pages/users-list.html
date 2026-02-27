@@ -14,7 +14,14 @@
   <p-toolbar class="mb-4">
     <ng-template #start>
       <div class="flex flex-wrap gap-2">
-        <p-button label="New User" icon="pi pi-plus" (onClick)="openCreate()" />
+        <p-button
+          label="New User"
+          icon="pi pi-plus"
+          (onClick)="openCreate()"
+          [disabled]="orgContext.isAllOrgsMode()"
+          [pTooltip]="orgContext.isAllOrgsMode() ? 'Select a specific organization first' : ''"
+          tooltipPosition="top"
+        />
       </div>
     </ng-template>
     <ng-template #end>
@@ -39,80 +46,70 @@
   @if (loading()) {
     <p-skeleton height="300px" />
   } @else {
-    <p-card>
-      <p-table
-        #dt
-        [value]="users()"
-        [rows]="10"
-        [paginator]="true"
-        [globalFilterFields]="['email', 'first_name', 'last_name']"
-        [rowHover]="true"
-        [showCurrentPageReport]="true"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
-        [rowsPerPageOptions]="[10, 20, 50]"
-        [tableStyle]="{ 'min-width': '50rem' }"
-      >
-        <ng-template #header>
-          <tr>
-            <th pSortableColumn="first_name" style="min-width: 10rem">
-              Name <p-sortIcon field="first_name" />
-            </th>
-            <th pSortableColumn="email" style="min-width: 14rem">
-              Email <p-sortIcon field="email" />
-            </th>
-            <th>Role</th>
-            <th>Status</th>
-            <th pSortableColumn="created_on" style="min-width: 10rem">
-              Created <p-sortIcon field="created_on" />
-            </th>
-            <th style="min-width: 8rem">Actions</th>
-          </tr>
-        </ng-template>
-        <ng-template #body let-u>
-          <tr>
-            <td>{{ getDisplayName(u) }}</td>
-            <td>{{ u.email }}</td>
-            <td>
-              <p-tag
-                [value]="getRoleLabel(u.user_role ?? u.role)"
-                severity="info"
-                [rounded]="true"
+    <p-table
+      #dt
+      [value]="users()"
+      [rows]="10"
+      [paginator]="true"
+      [globalFilterFields]="['email', 'first_name', 'last_name']"
+      [rowHover]="true"
+      [stripedRows]="true"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
+      [rowsPerPageOptions]="[10, 20, 50]"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="first_name" style="min-width: 10rem">
+            Name <p-sortIcon field="first_name" />
+          </th>
+          <th pSortableColumn="email" style="min-width: 14rem">
+            Email <p-sortIcon field="email" />
+          </th>
+          <th>Role</th>
+          <th>Status</th>
+          <th pSortableColumn="created_on" style="min-width: 10rem">
+            Created <p-sortIcon field="created_on" />
+          </th>
+          <th style="min-width: 8rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-u>
+        <tr>
+          <td>{{ getDisplayName(u) }}</td>
+          <td>{{ u.email }}</td>
+          <td>
+            <p-tag [value]="getRoleLabel(u.user_role ?? u.role)" severity="info" [rounded]="true" />
+          </td>
+          <td>
+            <p-tag
+              [value]="u.status === 1 ? 'Active' : 'Inactive'"
+              [severity]="u.status === 1 ? 'success' : 'danger'"
+              [rounded]="true"
+            />
+          </td>
+          <td>{{ u.created_on | date: 'short' }}</td>
+          <td>
+            <div class="flex items-center gap-2">
+              <p-button icon="pi pi-pencil" size="small" (onClick)="openEdit(u)" pTooltip="Edit" />
+              <p-button
+                icon="pi pi-trash"
+                size="small"
+                severity="danger"
+                (onClick)="confirmDelete(u)"
+                pTooltip="Deactivate"
               />
-            </td>
-            <td>
-              <p-tag
-                [value]="u.status === 1 ? 'Active' : 'Inactive'"
-                [severity]="u.status === 1 ? 'success' : 'danger'"
-                [rounded]="true"
-              />
-            </td>
-            <td>{{ u.created_on | date: 'short' }}</td>
-            <td>
-              <div class="flex items-center gap-2">
-                <p-button
-                  icon="pi pi-pencil"
-                  size="small"
-                  (onClick)="openEdit(u)"
-                  pTooltip="Edit"
-                />
-                <p-button
-                  icon="pi pi-trash"
-                  size="small"
-                  severity="danger"
-                  (onClick)="confirmDelete(u)"
-                  pTooltip="Deactivate"
-                />
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template #emptymessage>
-          <tr>
-            <td colspan="6" class="text-center py-8 text-muted-color">No users found</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-card>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="6" class="text-center py-8 text-muted-color">No users found</td>
+        </tr>
+      </ng-template>
+    </p-table>
   }
 
   <!-- Create/Edit Dialog -->

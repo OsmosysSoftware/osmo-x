@@ -17,7 +17,6 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { CardModule } from 'primeng/card';
 import { MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
@@ -40,7 +39,6 @@ import { ArchivedNotification, PageInfo } from '../../../core/models/api.model';
     IconFieldModule,
     InputIconModule,
     InputTextModule,
-    CardModule,
     PaginationComponent,
     StatusBadgeComponent,
     ChannelTypePipe,

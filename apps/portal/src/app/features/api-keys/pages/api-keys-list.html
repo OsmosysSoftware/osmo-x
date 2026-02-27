@@ -64,61 +64,60 @@
   } @else if (loading()) {
     <p-skeleton height="200px" />
   } @else {
-    <p-card>
-      <p-table
-        #dt
-        [value]="apiKeys()"
-        [globalFilterFields]="['masked_api_key']"
-        [rowHover]="true"
-        [tableStyle]="{ 'min-width': '50rem' }"
-      >
-        <ng-template #header>
-          <tr>
-            <th pSortableColumn="api_key_id" style="min-width: 6rem">
-              ID <p-sortIcon field="api_key_id" />
-            </th>
-            <th style="min-width: 16rem">Masked Key</th>
-            <th>Status</th>
-            <th pSortableColumn="created_on" style="min-width: 10rem">
-              Created <p-sortIcon field="created_on" />
-            </th>
-            <th style="min-width: 8rem">Actions</th>
-          </tr>
-        </ng-template>
-        <ng-template #body let-k>
-          <tr>
-            <td>{{ k.api_key_id }}</td>
-            <td class="font-mono">{{ k.masked_api_key }}</td>
-            <td>
-              <p-tag
-                [value]="k.status === 1 ? 'Active' : 'Revoked'"
-                [severity]="k.status === 1 ? 'success' : 'danger'"
-                [rounded]="true"
+    <p-table
+      #dt
+      [value]="apiKeys()"
+      [globalFilterFields]="['masked_api_key']"
+      [rowHover]="true"
+      [stripedRows]="true"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="api_key_id" style="min-width: 6rem">
+            ID <p-sortIcon field="api_key_id" />
+          </th>
+          <th style="min-width: 16rem">Masked Key</th>
+          <th>Status</th>
+          <th pSortableColumn="created_on" style="min-width: 10rem">
+            Created <p-sortIcon field="created_on" />
+          </th>
+          <th style="min-width: 8rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-k>
+        <tr>
+          <td>{{ k.api_key_id }}</td>
+          <td class="font-mono">{{ k.masked_api_key }}</td>
+          <td>
+            <p-tag
+              [value]="k.status === 1 ? 'Active' : 'Revoked'"
+              [severity]="k.status === 1 ? 'success' : 'danger'"
+              [rounded]="true"
+            />
+          </td>
+          <td>{{ k.created_on | date: 'short' }}</td>
+          <td>
+            @if (k.status === 1) {
+              <p-button
+                icon="pi pi-ban"
+                severity="danger"
+                size="small"
+                pTooltip="Revoke"
+                (onClick)="confirmRevoke(k)"
               />
-            </td>
-            <td>{{ k.created_on | date: 'short' }}</td>
-            <td>
-              @if (k.status === 1) {
-                <p-button
-                  icon="pi pi-ban"
-                  severity="danger"
-                  size="small"
-                  pTooltip="Revoke"
-                  (onClick)="confirmRevoke(k)"
-                />
-              }
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template #emptymessage>
-          <tr>
-            <td colspan="5" class="text-center py-8 text-muted-color">
-              No API keys found for this application
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-card>
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="5" class="text-center py-8 text-muted-color">
+            No API keys found for this application
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   }
 </div>
 

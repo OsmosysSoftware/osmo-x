@@ -10,7 +10,6 @@ import { DatePipe, JsonPipe } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
@@ -33,7 +32,6 @@ import { Notification, PageInfo } from '../../../core/models/api.model';
     TableModule,
     TagModule,
     ButtonModule,
-    CardModule,
     SkeletonModule,
     DialogModule,
     TooltipModule,

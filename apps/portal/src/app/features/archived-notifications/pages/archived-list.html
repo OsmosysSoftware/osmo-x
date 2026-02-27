@@ -33,55 +33,54 @@
   @if (loading()) {
     <p-skeleton height="300px" />
   } @else {
-    <p-card>
-      <p-table
-        #dt
-        [value]="notifications()"
-        [globalFilterFields]="['id', 'application_id']"
-        [rowHover]="true"
-        [tableStyle]="{ 'min-width': '60rem' }"
-        selectionMode="single"
-        (onRowSelect)="onRowSelect($event)"
-      >
-        <ng-template #header>
-          <tr>
-            <th pSortableColumn="id" style="min-width: 6rem">ID <p-sortIcon field="id" /></th>
-            <th>Channel Type</th>
-            <th>Delivery Status</th>
-            <th pSortableColumn="application_id" style="min-width: 8rem">
-              Application ID <p-sortIcon field="application_id" />
-            </th>
-            <th pSortableColumn="created_on" style="min-width: 10rem">
-              Archived On <p-sortIcon field="created_on" />
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template #body let-n>
-          <tr [pSelectableRow]="n" class="cursor-pointer">
-            <td>{{ n.id }}</td>
-            <td>{{ n.channel_type | channelType }}</td>
-            <td>
-              <app-status-badge [status]="n.delivery_status" />
-            </td>
-            <td>{{ n.application_id }}</td>
-            <td>{{ n.created_on | date: 'short' }}</td>
-          </tr>
-        </ng-template>
-        <ng-template #emptymessage>
-          <tr>
-            <td colspan="5" class="text-center py-8 text-muted-color">
-              No archived notifications found
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+    <p-table
+      #dt
+      [value]="notifications()"
+      [globalFilterFields]="['id', 'application_id']"
+      [rowHover]="true"
+      [stripedRows]="true"
+      [tableStyle]="{ 'min-width': '60rem' }"
+      selectionMode="single"
+      (onRowSelect)="onRowSelect($event)"
+    >
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="id" style="min-width: 6rem">ID <p-sortIcon field="id" /></th>
+          <th>Channel Type</th>
+          <th>Delivery Status</th>
+          <th pSortableColumn="application_id" style="min-width: 8rem">
+            Application ID <p-sortIcon field="application_id" />
+          </th>
+          <th pSortableColumn="created_on" style="min-width: 10rem">
+            Archived On <p-sortIcon field="created_on" />
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-n>
+        <tr [pSelectableRow]="n" class="cursor-pointer">
+          <td>{{ n.id }}</td>
+          <td>{{ n.channel_type | channelType }}</td>
+          <td>
+            <app-status-badge [status]="n.delivery_status" />
+          </td>
+          <td>{{ n.application_id }}</td>
+          <td>{{ n.created_on | date: 'short' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="5" class="text-center py-8 text-muted-color">
+            No archived notifications found
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
 
-      @if (pageInfo(); as pi) {
-        <div class="mt-4">
-          <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
-        </div>
-      }
-    </p-card>
+    @if (pageInfo(); as pi) {
+      <div class="mt-4">
+        <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
+      </div>
+    }
   }
 </div>
 

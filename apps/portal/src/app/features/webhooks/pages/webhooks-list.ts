@@ -11,7 +11,6 @@ import { DatePipe } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
@@ -34,7 +33,6 @@ import { Webhook, Provider } from '../../../core/models/api.model';
     TableModule,
     TagModule,
     ButtonModule,
-    CardModule,
     SkeletonModule,
     DialogModule,
     SelectModule,

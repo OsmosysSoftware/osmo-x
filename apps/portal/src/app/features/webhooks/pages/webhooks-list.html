@@ -59,65 +59,59 @@
   } @else if (loading()) {
     <p-skeleton height="200px" />
   } @else {
-    <p-card>
-      <p-table
-        #dt
-        [value]="webhooks()"
-        [globalFilterFields]="['webhook_url']"
-        [rowHover]="true"
-        [tableStyle]="{ 'min-width': '50rem' }"
-      >
-        <ng-template #header>
-          <tr>
-            <th pSortableColumn="id" style="min-width: 6rem">ID <p-sortIcon field="id" /></th>
-            <th style="min-width: 20rem">URL</th>
-            <th>Status</th>
-            <th pSortableColumn="created_on" style="min-width: 10rem">
-              Created <p-sortIcon field="created_on" />
-            </th>
-            <th style="min-width: 8rem">Actions</th>
-          </tr>
-        </ng-template>
-        <ng-template #body let-w>
-          <tr>
-            <td>{{ w.id }}</td>
-            <td class="max-w-xs truncate">{{ w.webhook_url }}</td>
-            <td>
-              <p-tag
-                [value]="w.status === 1 ? 'Active' : 'Inactive'"
-                [severity]="w.status === 1 ? 'success' : 'danger'"
-                [rounded]="true"
+    <p-table
+      #dt
+      [value]="webhooks()"
+      [globalFilterFields]="['webhook_url']"
+      [rowHover]="true"
+      [stripedRows]="true"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="id" style="min-width: 6rem">ID <p-sortIcon field="id" /></th>
+          <th style="min-width: 20rem">URL</th>
+          <th>Status</th>
+          <th pSortableColumn="created_on" style="min-width: 10rem">
+            Created <p-sortIcon field="created_on" />
+          </th>
+          <th style="min-width: 8rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-w>
+        <tr>
+          <td>{{ w.id }}</td>
+          <td class="max-w-xs truncate">{{ w.webhook_url }}</td>
+          <td>
+            <p-tag
+              [value]="w.status === 1 ? 'Active' : 'Inactive'"
+              [severity]="w.status === 1 ? 'success' : 'danger'"
+              [rounded]="true"
+            />
+          </td>
+          <td>{{ w.created_on | date: 'short' }}</td>
+          <td>
+            <div class="flex items-center gap-2">
+              <p-button icon="pi pi-pencil" size="small" pTooltip="Edit" (onClick)="openEdit(w)" />
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                size="small"
+                pTooltip="Delete"
+                (onClick)="confirmDelete(w)"
               />
-            </td>
-            <td>{{ w.created_on | date: 'short' }}</td>
-            <td>
-              <div class="flex items-center gap-2">
-                <p-button
-                  icon="pi pi-pencil"
-                  size="small"
-                  pTooltip="Edit"
-                  (onClick)="openEdit(w)"
-                />
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  size="small"
-                  pTooltip="Delete"
-                  (onClick)="confirmDelete(w)"
-                />
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template #emptymessage>
-          <tr>
-            <td colspan="5" class="text-center py-8 text-muted-color">
-              No webhooks found for this provider
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-card>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="5" class="text-center py-8 text-muted-color">
+            No webhooks found for this provider
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   }
 </div>
 

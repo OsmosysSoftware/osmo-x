@@ -20,7 +20,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { CardModule } from 'primeng/card';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ApiKeysService } from '../services/api-keys.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
@@ -43,7 +42,6 @@ import { ServerApiKey, Application } from '../../../core/models/api.model';
     ToolbarModule,
     IconFieldModule,
     InputIconModule,
-    CardModule,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
