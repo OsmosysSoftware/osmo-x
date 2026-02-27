@@ -158,6 +158,7 @@ interface ChannelOption {
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Select a channel type"
+                appendTo="body"
               />
             </div>
             <div class="flex flex-col gap-2">
@@ -172,6 +173,7 @@ interface ChannelOption {
                 placeholder="Select an application"
                 [filter]="true"
                 filterPlaceholder="Search applications"
+                appendTo="body"
               />
             </div>
           }

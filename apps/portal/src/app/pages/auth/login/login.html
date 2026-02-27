@@ -26,19 +26,19 @@
         <form (ngSubmit)="onSubmit()">
           <div class="mb-8">
             <label
-              for="username"
+              for="email"
               class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2"
-              >Username</label
+              >Email</label
             >
             <input
               pInputText
-              id="username"
-              type="text"
-              placeholder="Username"
+              id="email"
+              type="email"
+              placeholder="Email"
               class="w-full md:w-120"
-              [ngModel]="username()"
-              (ngModelChange)="username.set($event)"
-              name="username"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              name="email"
               required
               [disabled]="loading()"
             />

@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { UserRoles } from 'src/common/constants/database';
 
 export class UpdateUserInput {
@@ -8,10 +16,20 @@ export class UpdateUserInput {
   @IsNotEmpty()
   userId: number;
 
-  @ApiPropertyOptional({ description: 'New username', example: 'john.doe' })
+  @ApiPropertyOptional({ description: 'New email address', example: 'john.doe@example.com' })
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @ApiPropertyOptional({ description: 'First name', example: 'John' })
   @IsOptional()
   @IsString()
-  username?: string;
+  firstName?: string;
+
+  @ApiPropertyOptional({ description: 'Last name', example: 'Doe' })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
 
   @ApiPropertyOptional({
     description: 'New password (min 6 characters)',
@@ -21,11 +39,6 @@ export class UpdateUserInput {
   @IsString()
   @MinLength(6)
   password?: string;
-
-  @ApiPropertyOptional({ description: 'User email address', example: 'john.doe@example.com' })
-  @IsOptional()
-  @IsString()
-  email?: string;
 
   @ApiPropertyOptional({
     description: 'User role: 0=OrgUser, 1=OrgAdmin',

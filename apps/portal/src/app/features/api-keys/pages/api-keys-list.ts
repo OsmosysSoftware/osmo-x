@@ -60,6 +60,7 @@ import { ServerApiKey, Application } from '../../../core/models/api.model';
               (ngModelChange)="onApplicationSelect($event)"
               [filter]="true"
               filterPlaceholder="Search applications"
+              appendTo="body"
             />
           </div>
 

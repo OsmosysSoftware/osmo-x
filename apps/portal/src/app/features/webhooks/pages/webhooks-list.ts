@@ -62,6 +62,7 @@ import { Webhook, Provider } from '../../../core/models/api.model';
               (ngModelChange)="onProviderSelect($event)"
               [filter]="true"
               filterPlaceholder="Search providers"
+              appendTo="body"
             />
           </div>
 

@@ -31,7 +31,7 @@ const STORAGE_KEY = 'osmox-layout-config';
 export class LayoutService {
   private readonly _defaults: layoutConfig = {
     preset: 'Aura',
-    primary: 'emerald',
+    primary: 'sky',
     surface: null,
     darkTheme: false,
     menuMode: 'static',

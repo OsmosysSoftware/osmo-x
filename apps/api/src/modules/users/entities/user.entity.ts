@@ -16,13 +16,14 @@ import { Organization } from 'src/modules/organizations/entities/organization.en
 @Entity({ name: 'notify_users' })
 @ObjectType()
 @Index('IDX_notify_users_username', ['username'], { unique: true })
+@Index('IDX_notify_users_email', ['email'], { unique: true })
 @Index('IDX_notify_users_organization_id', ['organizationId'])
 export class User {
   @PrimaryGeneratedColumn({ name: 'user_id' })
   @Field()
   userId: number;
 
-  @Column({ name: 'username', comment: 'Unique login username' })
+  @Column({ name: 'username', comment: 'Kept for GraphQL backward compat, set to email' })
   @Field()
   username: string;
 
@@ -32,12 +33,20 @@ export class User {
 
   @Column({
     name: 'email',
-    nullable: true,
-    comment: 'User email address',
+    comment: 'Unique login identifier (normalized lowercase)',
   })
+  @Field()
+  email: string;
+
+  @Column({ name: 'first_name', nullable: true, comment: 'User first name' })
   @IsOptional()
   @Field({ nullable: true })
-  email: string;
+  firstName: string;
+
+  @Column({ name: 'last_name', nullable: true, comment: 'User last name' })
+  @IsOptional()
+  @Field({ nullable: true })
+  lastName: string;
 
   @Column({
     name: 'role',

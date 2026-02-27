@@ -1,12 +1,23 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { UserRoles } from 'src/common/constants/database';
 
 export class CreateUserInput {
-  @ApiProperty({ description: 'Unique login username', example: 'john.doe' })
-  @IsString()
+  @ApiProperty({
+    description: 'User email address (used as login)',
+    example: 'john.doe@example.com',
+  })
+  @IsEmail()
   @IsNotEmpty()
-  username: string;
+  email: string;
 
   @ApiProperty({ description: 'User password (min 6 characters)', example: 'password123' })
   @IsString()
@@ -14,10 +25,15 @@ export class CreateUserInput {
   @MinLength(6)
   password: string;
 
-  @ApiPropertyOptional({ description: 'User email address', example: 'john.doe@example.com' })
+  @ApiPropertyOptional({ description: 'First name', example: 'John' })
   @IsOptional()
   @IsString()
-  email?: string;
+  firstName?: string;
+
+  @ApiPropertyOptional({ description: 'Last name', example: 'Doe' })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
 
   @ApiProperty({
     description: 'User role: 0=OrgUser, 1=OrgAdmin',

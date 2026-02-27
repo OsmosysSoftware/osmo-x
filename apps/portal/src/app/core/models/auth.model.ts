@@ -6,8 +6,9 @@ import { UserRole } from '../constants/roles';
 
 export interface User {
   user_id: number;
-  username: string;
   email: string;
+  first_name?: string;
+  last_name?: string;
   role: UserRole; // Auth response uses 'role'
   user_role?: UserRole; // Users list API uses 'user_role' (from userRole via SnakeCaseInterceptor)
   organization_id?: number;
@@ -18,7 +19,7 @@ export interface User {
 
 export interface JwtPayload {
   sub: number;
-  username: string;
+  email: string;
   role: UserRole;
   organization_id?: number;
   iat: number;
@@ -33,7 +34,7 @@ export interface AuthResponse {
 }
 
 export interface LoginDto {
-  username: string;
+  email: string;
   password: string;
 }
 

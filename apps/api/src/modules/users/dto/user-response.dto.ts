@@ -4,11 +4,14 @@ export class UserResponseDto {
   @ApiProperty({ description: 'User ID', example: 1 })
   userId: number;
 
-  @ApiProperty({ description: 'Unique login username', example: 'john.doe' })
-  username: string;
+  @ApiProperty({ description: 'User email address', example: 'john.doe@example.com' })
+  email: string;
 
-  @ApiPropertyOptional({ description: 'User email address', example: 'john.doe@example.com' })
-  email?: string;
+  @ApiPropertyOptional({ description: 'First name', example: 'John' })
+  firstName?: string;
+
+  @ApiPropertyOptional({ description: 'Last name', example: 'Doe' })
+  lastName?: string;
 
   @ApiProperty({
     description: 'User role: 0=OrgUser, 1=OrgAdmin, 2=SuperAdmin',

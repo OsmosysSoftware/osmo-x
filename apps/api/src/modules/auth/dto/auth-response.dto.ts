@@ -4,17 +4,20 @@ class AuthUserData {
   @ApiProperty({ example: 1 })
   userId: number;
 
-  @ApiProperty({ example: 'admin' })
-  username: string;
+  @ApiProperty({ example: 'admin@osmox.dev' })
+  email: string;
+
+  @ApiProperty({ example: 'Admin', required: false })
+  firstName?: string;
+
+  @ApiProperty({ example: 'User', required: false })
+  lastName?: string;
 
   @ApiProperty({ example: 1, description: '0=OrgUser, 1=OrgAdmin, 2=SuperAdmin' })
   role: number;
 
   @ApiProperty({ example: 1 })
   organizationId: number;
-
-  @ApiProperty({ example: 'admin@example.com', required: false })
-  email?: string;
 }
 
 export class AuthResponseDto {

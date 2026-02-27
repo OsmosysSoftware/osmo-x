@@ -17,9 +17,10 @@ export class UsersService {
   }
 
   create(data: {
-    username: string;
+    email: string;
     password: string;
-    email?: string;
+    first_name?: string;
+    last_name?: string;
     user_role: number;
   }): Observable<User> {
     return this.http.post<User>(this.apiUrl, data);
@@ -27,9 +28,10 @@ export class UsersService {
 
   update(data: {
     user_id: number;
-    username?: string;
-    password?: string;
     email?: string;
+    first_name?: string;
+    last_name?: string;
+    password?: string;
     user_role?: number;
   }): Observable<User> {
     return this.http.put<User>(this.apiUrl, data);

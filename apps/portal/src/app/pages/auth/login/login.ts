@@ -35,18 +35,18 @@ export class LoginComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly messageService = inject(MessageService);
 
-  readonly username = signal('');
+  readonly email = signal('');
   readonly password = signal('');
   readonly rememberMe = signal(false);
   readonly loading = signal(false);
   readonly errorMessage = signal('');
 
   onSubmit(): void {
-    const usernameValue = this.username();
+    const emailValue = this.email();
     const passwordValue = this.password();
 
-    if (!usernameValue || !passwordValue) {
-      this.errorMessage.set('Please enter both username and password');
+    if (!emailValue || !passwordValue) {
+      this.errorMessage.set('Please enter both email and password');
 
       return;
     }
@@ -55,7 +55,7 @@ export class LoginComponent {
     this.errorMessage.set('');
 
     const loginDto: LoginDto = {
-      username: usernameValue,
+      email: emailValue,
       password: passwordValue,
     };
 

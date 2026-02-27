@@ -19,6 +19,12 @@ export class UsersService {
     return this.userRepository.findOne({ where: { username, status: Status.ACTIVE } });
   }
 
+  async findByEmail(email: string): Promise<User | undefined> {
+    return this.userRepository.findOne({
+      where: { email: email.toLowerCase(), status: Status.ACTIVE },
+    });
+  }
+
   async findByUserId(userId: number): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { userId, status: Status.ACTIVE } });
   }
@@ -32,8 +38,9 @@ export class UsersService {
   private mapToDto(user: User): UserResponseDto {
     return {
       userId: user.userId,
-      username: user.username,
       email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
       userRole: user.userRole,
       organizationId: user.organizationId,
       status: user.status,
@@ -55,20 +62,24 @@ export class UsersService {
     organizationId: number,
     createdByUserId: number,
   ): Promise<UserResponseDto> {
+    const normalizedEmail = input.email.toLowerCase();
+
     const existing = await this.userRepository.findOne({
-      where: { username: input.username },
+      where: { email: normalizedEmail },
     });
 
     if (existing) {
-      throw new BadRequestException('Username already exists');
+      throw new BadRequestException('Email already exists');
     }
 
     const hashedPassword = encodePassword(input.password);
 
     const user = this.userRepository.create({
-      username: input.username,
+      username: normalizedEmail,
       password: hashedPassword,
-      email: input.email,
+      email: normalizedEmail,
+      firstName: input.firstName,
+      lastName: input.lastName,
       userRole: input.userRole,
       organizationId,
       createdBy: createdByUserId,
@@ -93,24 +104,31 @@ export class UsersService {
       throw new BadRequestException('User not found');
     }
 
-    if (input.username !== undefined) {
+    if (input.email !== undefined) {
+      const normalizedEmail = input.email.toLowerCase();
+
       const existing = await this.userRepository.findOne({
-        where: { username: input.username },
+        where: { email: normalizedEmail },
       });
 
       if (existing && existing.userId !== input.userId) {
-        throw new BadRequestException('Username already exists');
+        throw new BadRequestException('Email already exists');
       }
 
-      user.username = input.username;
+      user.email = normalizedEmail;
+      user.username = normalizedEmail;
+    }
+
+    if (input.firstName !== undefined) {
+      user.firstName = input.firstName;
+    }
+
+    if (input.lastName !== undefined) {
+      user.lastName = input.lastName;
     }
 
     if (input.password !== undefined) {
       user.password = encodePassword(input.password);
-    }
-
-    if (input.email !== undefined) {
-      user.email = input.email;
     }
 
     if (input.userRole !== undefined) {

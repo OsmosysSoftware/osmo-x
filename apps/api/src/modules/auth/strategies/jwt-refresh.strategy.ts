@@ -6,7 +6,7 @@ import { UsersService } from 'src/modules/users/users.service';
 
 interface JwtRefreshPayload {
   sub: number;
-  username: string;
+  email: string;
   type: 'refresh';
 }
 
@@ -36,7 +36,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 
     return {
       userId: user.userId,
-      username: user.username,
+      email: user.email,
       role: user.userRole,
       organizationId: user.organizationId,
     };

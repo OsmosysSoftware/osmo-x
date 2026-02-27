@@ -65,8 +65,7 @@ interface RoleOption {
           <p-table [value]="users()" [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template #header>
               <tr>
-                <th>ID</th>
-                <th>Username</th>
+                <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
                 <th>Status</th>
@@ -76,9 +75,8 @@ interface RoleOption {
             </ng-template>
             <ng-template #body let-u>
               <tr>
-                <td>{{ u.user_id }}</td>
-                <td>{{ u.username }}</td>
-                <td>{{ u.email || '---' }}</td>
+                <td>{{ getDisplayName(u) }}</td>
+                <td>{{ u.email }}</td>
                 <td>
                   <p-tag [value]="getRoleLabel(u.user_role ?? u.role)" severity="info" />
                 </td>
@@ -113,7 +111,7 @@ interface RoleOption {
             </ng-template>
             <ng-template #emptymessage>
               <tr>
-                <td colspan="7" class="text-center py-8 text-muted-color">No users found</td>
+                <td colspan="6" class="text-center py-8 text-muted-color">No users found</td>
               </tr>
             </ng-template>
           </p-table>
@@ -130,14 +128,34 @@ interface RoleOption {
       >
         <div class="flex flex-col gap-4 mt-2">
           <div class="flex flex-col gap-2">
-            <label for="username" class="font-medium">Username</label>
+            <label for="email" class="font-medium">Email</label>
             <input
               pInputText
-              id="username"
-              [ngModel]="formUsername()"
-              (ngModelChange)="formUsername.set($event)"
-              placeholder="Enter username"
-              [disabled]="!!editingUser()"
+              id="email"
+              type="email"
+              [ngModel]="formEmail()"
+              (ngModelChange)="formEmail.set($event)"
+              placeholder="user&#64;example.com"
+            />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="firstName" class="font-medium">First Name</label>
+            <input
+              pInputText
+              id="firstName"
+              [ngModel]="formFirstName()"
+              (ngModelChange)="formFirstName.set($event)"
+              placeholder="Enter first name"
+            />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="lastName" class="font-medium">Last Name</label>
+            <input
+              pInputText
+              id="lastName"
+              [ngModel]="formLastName()"
+              (ngModelChange)="formLastName.set($event)"
+              placeholder="Enter last name"
             />
           </div>
           <div class="flex flex-col gap-2">
@@ -156,16 +174,6 @@ interface RoleOption {
             />
           </div>
           <div class="flex flex-col gap-2">
-            <label for="email" class="font-medium">Email</label>
-            <input
-              pInputText
-              id="email"
-              [ngModel]="formEmail()"
-              (ngModelChange)="formEmail.set($event)"
-              placeholder="user&#64;example.com"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
             <label for="role" class="font-medium">Role</label>
             <p-select
               id="role"
@@ -175,6 +183,7 @@ interface RoleOption {
               optionLabel="label"
               optionValue="value"
               placeholder="Select a role"
+              appendTo="body"
             />
           </div>
         </div>
@@ -211,9 +220,10 @@ export class UsersListComponent implements OnInit {
   // Dialog state
   readonly dialogVisible = signal(false);
   readonly editingUser = signal<User | null>(null);
-  readonly formUsername = signal('');
-  readonly formPassword = signal('');
   readonly formEmail = signal('');
+  readonly formFirstName = signal('');
+  readonly formLastName = signal('');
+  readonly formPassword = signal('');
   readonly formRole = signal<number>(UserRoles.ORG_USER);
 
   readonly roleOptions: RoleOption[] = [
@@ -246,26 +256,28 @@ export class UsersListComponent implements OnInit {
 
   openCreate(): void {
     this.editingUser.set(null);
-    this.formUsername.set('');
-    this.formPassword.set('');
     this.formEmail.set('');
+    this.formFirstName.set('');
+    this.formLastName.set('');
+    this.formPassword.set('');
     this.formRole.set(UserRoles.ORG_USER);
     this.dialogVisible.set(true);
   }
 
   openEdit(user: User): void {
     this.editingUser.set(user);
-    this.formUsername.set(user.username);
+    this.formEmail.set(user.email);
+    this.formFirstName.set(user.first_name || '');
+    this.formLastName.set(user.last_name || '');
     this.formPassword.set('');
-    this.formEmail.set(user.email || '');
     this.formRole.set(user.user_role ?? user.role);
     this.dialogVisible.set(true);
   }
 
   isFormValid(): boolean {
-    const username = this.formUsername().trim();
+    const email = this.formEmail().trim();
 
-    if (!username) {
+    if (!email) {
       return false;
     }
 
@@ -291,16 +303,29 @@ export class UsersListComponent implements OnInit {
     if (editing) {
       const updateData: {
         user_id: number;
-        username?: string;
-        password?: string;
         email?: string;
+        first_name?: string;
+        last_name?: string;
+        password?: string;
         user_role?: number;
       } = { user_id: editing.user_id };
 
       const email = this.formEmail().trim();
 
-      if (email !== (editing.email || '')) {
+      if (email !== editing.email) {
         updateData.email = email;
+      }
+
+      const firstName = this.formFirstName().trim();
+
+      if (firstName !== (editing.first_name || '')) {
+        updateData.first_name = firstName;
+      }
+
+      const lastName = this.formLastName().trim();
+
+      if (lastName !== (editing.last_name || '')) {
+        updateData.last_name = lastName;
       }
 
       if (this.formRole() !== (editing.user_role ?? editing.role)) {
@@ -318,7 +343,7 @@ export class UsersListComponent implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Updated',
-            detail: `User "${editing.username}" updated successfully`,
+            detail: `User "${editing.email}" updated successfully`,
           });
           this.dialogVisible.set(false);
           this.saving.set(false);
@@ -329,9 +354,10 @@ export class UsersListComponent implements OnInit {
     } else {
       this.service
         .create({
-          username: this.formUsername().trim(),
+          email: this.formEmail().trim(),
           password: this.formPassword().trim(),
-          email: this.formEmail().trim() || undefined,
+          first_name: this.formFirstName().trim() || undefined,
+          last_name: this.formLastName().trim() || undefined,
           user_role: this.formRole(),
         })
         .subscribe({
@@ -339,7 +365,7 @@ export class UsersListComponent implements OnInit {
             this.messageService.add({
               severity: 'success',
               summary: 'Created',
-              detail: `User "${this.formUsername().trim()}" created successfully`,
+              detail: `User "${this.formEmail().trim()}" created successfully`,
             });
             this.dialogVisible.set(false);
             this.saving.set(false);
@@ -350,13 +376,21 @@ export class UsersListComponent implements OnInit {
     }
   }
 
+  getDisplayName(user: User): string {
+    const parts = [user.first_name, user.last_name].filter(Boolean);
+
+    return parts.length > 0 ? parts.join(' ') : '---';
+  }
+
   getRoleLabel(role: number): string {
     return UserRoleLabels[role as keyof typeof UserRoleLabels] || 'Unknown';
   }
 
   confirmDelete(user: User): void {
+    const displayName = this.getDisplayName(user);
+
     this.confirmationService.confirm({
-      message: `Are you sure you want to deactivate "${user.username}"?`,
+      message: `Are you sure you want to deactivate "${displayName !== '---' ? displayName : user.email}"?`,
       header: 'Confirm Deactivate',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
@@ -366,7 +400,7 @@ export class UsersListComponent implements OnInit {
             this.messageService.add({
               severity: 'success',
               summary: 'Deactivated',
-              detail: `User "${user.username}" deactivated successfully`,
+              detail: `User "${displayName !== '---' ? displayName : user.email}" deactivated successfully`,
             });
             this.loadUsers();
           },

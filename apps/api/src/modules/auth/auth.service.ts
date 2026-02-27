@@ -17,10 +17,10 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<User> {
-    const user = await this.usersService.findByUsername(username);
+  async validateUser(email: string, password: string): Promise<User> {
+    const user = await this.usersService.findByEmail(email);
 
-    if (!user || !user.username) {
+    if (!user) {
       throw new NotFoundException('User does not exist');
     }
 
@@ -38,16 +38,16 @@ export class AuthService {
   /** GraphQL login - returns simple token (backward compatible) */
   async loginGraphql(loginUserInput: LoginUserInput): Promise<LoginResponse> {
     try {
-      const user = await this.validateUser(loginUserInput.username, loginUserInput.password);
+      const user = await this.validateUser(loginUserInput.email, loginUserInput.password);
 
       if (!user) {
         throw new UnauthorizedException(
-          'Invalid credentials. Please provide valid username and password.',
+          'Invalid credentials. Please provide valid email and password.',
         );
       }
 
       const payload: JwtPayload = {
-        username: user.username,
+        email: user.email,
         userId: user.userId,
         role: user.userRole,
         organizationId: user.organizationId,
@@ -63,11 +63,11 @@ export class AuthService {
 
   /** REST login - returns access + refresh tokens */
   async login(loginUserInput: LoginUserInput): Promise<AuthResponseDto> {
-    const user = await this.validateUser(loginUserInput.username, loginUserInput.password);
+    const user = await this.validateUser(loginUserInput.email, loginUserInput.password);
 
     if (!user) {
       throw new UnauthorizedException(
-        'Invalid credentials. Please provide valid username and password.',
+        'Invalid credentials. Please provide valid email and password.',
       );
     }
 
@@ -110,10 +110,11 @@ export class AuthService {
       refreshToken,
       user: {
         userId: user.userId,
-        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
         role: user.userRole,
         organizationId: user.organizationId,
-        email: user.email,
       },
       expiresIn,
     };
@@ -122,7 +123,7 @@ export class AuthService {
   private generateAccessToken(user: User): string {
     const payload = {
       sub: user.userId,
-      username: user.username,
+      email: user.email,
       userId: user.userId,
       role: user.userRole,
       organizationId: user.organizationId,
@@ -140,7 +141,7 @@ export class AuthService {
   private generateRefreshToken(user: User): string {
     const payload = {
       sub: user.userId,
-      username: user.username,
+      email: user.email,
       type: 'refresh',
     };
 
