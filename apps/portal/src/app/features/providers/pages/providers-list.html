@@ -83,13 +83,20 @@
           <td>{{ p.created_on | date: 'short' }}</td>
           <td>
             <div class="flex items-center gap-2">
-              <p-button icon="pi pi-pencil" size="small" pTooltip="Edit" (onClick)="openEdit(p)" />
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                pTooltip="Edit"
+                (onClick)="openEdit(p)"
+                [disabled]="orgContext.isAllOrgsMode()"
+              />
               <p-button
                 icon="pi pi-trash"
                 severity="danger"
                 size="small"
                 pTooltip="Delete"
                 (onClick)="confirmDelete(p)"
+                [disabled]="orgContext.isAllOrgsMode()"
               />
             </div>
           </td>
@@ -158,13 +165,18 @@
           />
         </div>
       }
-      <div class="flex items-center gap-3">
-        <p-toggleSwitch
-          [ngModel]="formIsEnabled()"
-          (ngModelChange)="formIsEnabled.set($event)"
-          inputId="isEnabled"
-        />
+      <div class="flex flex-col gap-2">
         <label for="isEnabled" class="font-medium">Enabled</label>
+        <div class="flex items-center gap-3">
+          <p-toggleSwitch
+            [ngModel]="formIsEnabled()"
+            (ngModelChange)="formIsEnabled.set($event)"
+            inputId="isEnabled"
+          />
+          <span class="text-muted-color text-sm">{{
+            formIsEnabled() ? 'Enabled' : 'Disabled'
+          }}</span>
+        </div>
       </div>
       <div class="flex flex-col gap-2">
         <label for="config" class="font-medium">Configuration (JSON)</label>

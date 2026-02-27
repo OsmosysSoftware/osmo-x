@@ -92,6 +92,7 @@
                 size="small"
                 pTooltip="Edit"
                 (onClick)="openEditDialog(c)"
+                [disabled]="orgContext.isAllOrgsMode()"
               />
               <p-button
                 icon="pi pi-trash"
@@ -99,6 +100,7 @@
                 size="small"
                 pTooltip="Delete"
                 (onClick)="confirmDelete(c)"
+                [disabled]="orgContext.isAllOrgsMode()"
               />
             </div>
           </td>

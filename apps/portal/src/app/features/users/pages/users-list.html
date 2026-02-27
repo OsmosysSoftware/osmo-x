@@ -92,13 +92,20 @@
           <td>{{ u.created_on | date: 'short' }}</td>
           <td>
             <div class="flex items-center gap-2">
-              <p-button icon="pi pi-pencil" size="small" (onClick)="openEdit(u)" pTooltip="Edit" />
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                (onClick)="openEdit(u)"
+                pTooltip="Edit"
+                [disabled]="orgContext.isAllOrgsMode()"
+              />
               <p-button
                 icon="pi pi-trash"
                 size="small"
                 severity="danger"
                 (onClick)="confirmDelete(u)"
                 pTooltip="Deactivate"
+                [disabled]="orgContext.isAllOrgsMode()"
               />
             </div>
           </td>
@@ -163,8 +170,7 @@
           [placeholder]="editingUser() ? 'Enter new password' : 'Enter password'"
           [toggleMask]="true"
           [feedback]="false"
-          class="w-full"
-          inputClass="w-full"
+          [fluid]="true"
         />
       </div>
       <div class="flex flex-col gap-2">

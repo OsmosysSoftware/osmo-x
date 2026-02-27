@@ -91,6 +91,7 @@
                 size="small"
                 pTooltip="Edit"
                 (onClick)="openEdit(app)"
+                [disabled]="orgContext.isAllOrgsMode()"
               />
               <p-button
                 icon="pi pi-trash"
@@ -98,6 +99,7 @@
                 size="small"
                 pTooltip="Delete"
                 (onClick)="confirmDelete(app)"
+                [disabled]="orgContext.isAllOrgsMode()"
               />
             </div>
           </td>
@@ -136,13 +138,18 @@
           placeholder="Application name"
         />
       </div>
-      <div class="flex items-center gap-3">
-        <p-toggleSwitch
-          [ngModel]="formTestMode()"
-          (ngModelChange)="formTestMode.set($event)"
-          inputId="testMode"
-        />
+      <div class="flex flex-col gap-2">
         <label for="testMode" class="font-medium">Test Mode</label>
+        <div class="flex items-center gap-3">
+          <p-toggleSwitch
+            [ngModel]="formTestMode()"
+            (ngModelChange)="formTestMode.set($event)"
+            inputId="testMode"
+          />
+          <span class="text-muted-color text-sm">{{
+            formTestMode() ? 'Enabled' : 'Disabled'
+          }}</span>
+        </div>
       </div>
     </div>
     <ng-template #footer>
