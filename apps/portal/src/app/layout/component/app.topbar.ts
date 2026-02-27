@@ -100,6 +100,16 @@ export class AppTopbar {
 
   readonly profileMenuItems: MenuItem[] = [
     {
+      label: 'Profile',
+      icon: 'pi pi-user',
+      command: () => {
+        this.router.navigate(['/profile']);
+      },
+    },
+    {
+      separator: true,
+    },
+    {
       label: 'Logout',
       icon: 'pi pi-sign-out',
       command: () => {

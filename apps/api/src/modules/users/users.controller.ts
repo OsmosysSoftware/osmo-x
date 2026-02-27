@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Post,
   Put,
   Query,
@@ -27,6 +29,8 @@ import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { UserResponseDto } from './dto/user-response.dto';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { UpdateProfileInput } from './dto/update-profile.input';
+import { ChangePasswordInput } from './dto/change-password.input';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
@@ -39,6 +43,35 @@ import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 @Roles(UserRoles.ORG_ADMIN)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Put('profile')
+  @Roles(UserRoles.ORG_USER)
+  @ApiOperation({ summary: 'Update own profile' })
+  @ApiResponse({ status: 200, description: 'Profile updated', type: UserResponseDto })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async updateProfile(
+    @Body() input: UpdateProfileInput,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateProfile(user.userId, input);
+  }
+
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  @Roles(UserRoles.ORG_USER)
+  @ApiOperation({ summary: 'Change own password' })
+  @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Current password is incorrect' })
+  async changePassword(
+    @Body() input: ChangePasswordInput,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<{ message: string }> {
+    await this.usersService.changePassword(user.userId, input);
+
+    return { message: 'Password changed successfully' };
+  }
 
   @Get()
   @ApiOperation({ summary: 'List users' })

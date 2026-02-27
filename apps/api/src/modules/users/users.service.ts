@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -6,7 +6,9 @@ import { Status } from 'src/common/constants/database';
 import { UserResponseDto } from './dto/user-response.dto';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { encodePassword } from 'src/common/utils/bcrypt';
+import { UpdateProfileInput } from './dto/update-profile.input';
+import { ChangePasswordInput } from './dto/change-password.input';
+import { encodePassword, comparePasswords } from 'src/common/utils/bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -140,6 +142,64 @@ export class UsersService {
     const saved = await this.userRepository.save(user);
 
     return this.mapToDto(saved);
+  }
+
+  async updateProfile(userId: number, input: UpdateProfileInput): Promise<UserResponseDto> {
+    const user = await this.userRepository.findOne({
+      where: { userId, status: Status.ACTIVE },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (input.email !== undefined) {
+      const normalizedEmail = input.email.toLowerCase();
+
+      if (normalizedEmail !== user.email) {
+        const existing = await this.findByEmail(normalizedEmail);
+
+        if (existing) {
+          throw new BadRequestException('Email is already in use');
+        }
+
+        user.email = normalizedEmail;
+      }
+    }
+
+    if (input.firstName !== undefined) {
+      user.firstName = input.firstName;
+    }
+
+    if (input.lastName !== undefined) {
+      user.lastName = input.lastName;
+    }
+
+    user.updatedBy = userId;
+
+    const saved = await this.userRepository.save(user);
+
+    return this.mapToDto(saved);
+  }
+
+  async changePassword(userId: number, input: ChangePasswordInput): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { userId, status: Status.ACTIVE },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const isCurrentValid = comparePasswords(input.currentPassword, user.password);
+
+    if (!isCurrentValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    user.password = encodePassword(input.newPassword);
+    user.updatedBy = userId;
+    await this.userRepository.save(user);
   }
 
   async softDeleteUserAsDto(userId: number, organizationId: number): Promise<boolean> {

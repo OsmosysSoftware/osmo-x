@@ -75,6 +75,13 @@ export const routes: Routes = [
           import('./features/users/pages/users-list').then((m) => m.UsersListComponent),
       },
 
+      // Profile (any authenticated user)
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/pages/profile').then((m) => m.ProfileComponent),
+      },
+
       // Super Admin Routes (SUPER_ADMIN only)
       {
         path: 'organizations',
