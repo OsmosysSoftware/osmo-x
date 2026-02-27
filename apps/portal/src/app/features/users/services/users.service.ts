@@ -15,4 +15,23 @@ export class UsersService {
   list(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl).pipe(tap((users) => this._users.set(users)));
   }
+
+  create(data: {
+    username: string;
+    password: string;
+    email?: string;
+    user_role: number;
+  }): Observable<User> {
+    return this.http.post<User>(this.apiUrl, data);
+  }
+
+  update(data: {
+    user_id: number;
+    username?: string;
+    password?: string;
+    email?: string;
+    user_role?: number;
+  }): Observable<User> {
+    return this.http.put<User>(this.apiUrl, data);
+  }
 }

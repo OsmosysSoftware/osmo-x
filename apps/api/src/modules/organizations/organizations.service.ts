@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from './entities/organization.entity';
 import { Status } from 'src/common/constants/database';
 import { OrganizationResponseDto } from './dto/organization-response.dto';
+import { CreateOrganizationInput } from './dto/create-organization.input';
 
 @Injectable()
 export class OrganizationsService {
@@ -47,5 +48,29 @@ export class OrganizationsService {
     const orgs = await this.findAll();
 
     return orgs.map((org) => this.mapToDto(org));
+  }
+
+  async createAsDto(
+    input: CreateOrganizationInput,
+    createdByUserId: number,
+  ): Promise<OrganizationResponseDto> {
+    const existing = await this.organizationRepository.findOne({
+      where: { slug: input.slug },
+    });
+
+    if (existing) {
+      throw new BadRequestException('Organization slug already exists');
+    }
+
+    const org = this.organizationRepository.create({
+      name: input.name,
+      slug: input.slug,
+      createdBy: createdByUserId,
+      updatedBy: createdByUserId,
+    });
+
+    const saved = await this.organizationRepository.save(org);
+
+    return this.mapToDto(saved);
   }
 }

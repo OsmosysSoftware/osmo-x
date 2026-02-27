@@ -17,4 +17,8 @@ export class OrganizationsService {
       .get<Organization[]>(this.apiUrl)
       .pipe(tap((organizations) => this._organizations.set(organizations)));
   }
+
+  create(data: { name: string; slug: string }): Observable<Organization> {
+    return this.http.post<Organization>(this.apiUrl, data);
+  }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -8,6 +8,8 @@ import { UserRoles } from 'src/common/constants/database';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { UserResponseDto } from './dto/user-response.dto';
+import { CreateUserInput } from './dto/create-user.input';
+import { UpdateUserInput } from './dto/update-user.input';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Users')
@@ -30,5 +32,33 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(@CurrentUser() user: JwtPayload): Promise<UserResponseDto[]> {
     return this.usersService.findByOrganizationIdAsDto(user.organizationId);
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create a new user in the organization' })
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully',
+    type: UserResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async create(
+    @Body() createUserInput: CreateUserInput,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<UserResponseDto> {
+    return this.usersService.createUserAsDto(createUserInput, user.organizationId, user.userId);
+  }
+
+  @Put()
+  @ApiOperation({ summary: 'Update an existing user' })
+  @ApiResponse({ status: 200, description: 'User updated', type: UserResponseDto })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async update(
+    @Body() updateUserInput: UpdateUserInput,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateUserAsDto(updateUserInput, user.organizationId, user.userId);
   }
 }

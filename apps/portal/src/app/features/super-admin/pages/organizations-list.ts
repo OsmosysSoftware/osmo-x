@@ -1,8 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 import { DatePipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { OrganizationsService } from '../services/organizations.service';
@@ -10,7 +14,17 @@ import { Organization } from '../../../core/models/api.model';
 
 @Component({
   selector: 'app-organizations-list',
-  imports: [TableModule, CardModule, TagModule, SkeletonModule, DatePipe],
+  imports: [
+    FormsModule,
+    TableModule,
+    CardModule,
+    TagModule,
+    ButtonModule,
+    SkeletonModule,
+    DialogModule,
+    InputTextModule,
+    DatePipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
@@ -24,6 +38,7 @@ import { Organization } from '../../../core/models/api.model';
           </h1>
           <p class="text-muted-color mt-2">Manage platform organizations</p>
         </div>
+        <p-button label="New Organization" icon="pi pi-plus" (onClick)="openCreate()" />
       </div>
 
       @if (loading()) {
@@ -66,6 +81,57 @@ import { Organization } from '../../../core/models/api.model';
           </p-table>
         </p-card>
       }
+
+      <!-- Create Organization Dialog -->
+      <p-dialog
+        [visible]="dialogVisible()"
+        (visibleChange)="dialogVisible.set($event)"
+        header="New Organization"
+        [modal]="true"
+        [style]="{ width: '28rem' }"
+      >
+        <div class="flex flex-col gap-4 mt-2">
+          <div class="flex flex-col gap-2">
+            <label for="orgName" class="font-medium">Name</label>
+            <input
+              pInputText
+              id="orgName"
+              [ngModel]="formName()"
+              (ngModelChange)="onNameChange($event)"
+              placeholder="Organization name"
+            />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="orgSlug" class="font-medium">Slug</label>
+            <input
+              pInputText
+              id="orgSlug"
+              [ngModel]="formSlug()"
+              (ngModelChange)="formSlug.set($event)"
+              placeholder="organization-slug"
+              class="font-mono"
+            />
+            <small class="text-muted-color"
+              >URL-friendly identifier (lowercase, alphanumeric, hyphens)</small
+            >
+          </div>
+        </div>
+        <ng-template #footer>
+          <p-button
+            label="Cancel"
+            severity="secondary"
+            [text]="true"
+            (onClick)="dialogVisible.set(false)"
+          />
+          <p-button
+            label="Create"
+            icon="pi pi-check"
+            [disabled]="!isFormValid()"
+            [loading]="saving()"
+            (onClick)="createOrganization()"
+          />
+        </ng-template>
+      </p-dialog>
     </div>
   `,
 })
@@ -75,6 +141,12 @@ export class OrganizationsListComponent implements OnInit {
 
   readonly organizations = signal<Organization[]>([]);
   readonly loading = signal(true);
+  readonly saving = signal(false);
+
+  // Dialog state
+  readonly dialogVisible = signal(false);
+  readonly formName = signal('');
+  readonly formSlug = signal('');
 
   ngOnInit(): void {
     this.loadOrganizations();
@@ -97,5 +169,61 @@ export class OrganizationsListComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  openCreate(): void {
+    this.formName.set('');
+    this.formSlug.set('');
+    this.dialogVisible.set(true);
+  }
+
+  onNameChange(name: string): void {
+    this.formName.set(name);
+
+    // Auto-generate slug from name
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    this.formSlug.set(slug);
+  }
+
+  isFormValid(): boolean {
+    const name = this.formName().trim();
+    const slug = this.formSlug().trim();
+
+    if (!name || !slug) {
+      return false;
+    }
+
+    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+  }
+
+  createOrganization(): void {
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    this.saving.set(true);
+
+    this.service
+      .create({
+        name: this.formName().trim(),
+        slug: this.formSlug().trim(),
+      })
+      .subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Created',
+            detail: `Organization "${this.formName().trim()}" created successfully`,
+          });
+          this.dialogVisible.set(false);
+          this.saving.set(false);
+          this.loadOrganizations();
+        },
+        error: () => this.saving.set(false),
+      });
   }
 }

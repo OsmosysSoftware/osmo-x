@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 const configService = new ConfigService();
 
 // Define your salt rounds
-const SALT_ROUNDS = configService.get<number>('SALT_ROUNDS');
+const SALT_ROUNDS = parseInt(configService.get<string>('SALT_ROUNDS') || '10', 10);
 const SECRET = configService.get<string>('API_KEY_SECRET');
 
 export function encodePassword(rawPassword: string): string {

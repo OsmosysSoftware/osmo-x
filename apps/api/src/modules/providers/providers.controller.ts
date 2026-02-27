@@ -101,6 +101,10 @@ export class ProvidersController {
     @Body() createProviderInput: CreateProviderInput,
     @CurrentUser() user: JwtPayload,
   ): Promise<ProviderResponseDto> {
-    return this.providersService.createProviderAsDto(createProviderInput, user.organizationId);
+    return this.providersService.createProviderAsDto(
+      createProviderInput,
+      user.organizationId,
+      user.userId,
+    );
   }
 }

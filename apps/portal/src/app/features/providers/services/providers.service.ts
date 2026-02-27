@@ -30,7 +30,6 @@ export class ProvidersService {
     configuration: Record<string, unknown>;
     is_enabled: number;
     name: string;
-    user_id: number;
   }): Observable<Provider> {
     return this.http.post<Provider>(this.apiUrl, data);
   }

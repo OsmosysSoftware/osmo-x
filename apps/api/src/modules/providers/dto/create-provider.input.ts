@@ -1,6 +1,6 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsObject, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
 
 @InputType()
@@ -45,9 +45,13 @@ export class CreateProviderInput {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ description: 'ID of the user creating this provider', example: 1 })
-  @Field()
+  @ApiProperty({
+    description: 'ID of the user creating this provider (derived from JWT in REST endpoints)',
+    example: 1,
+    required: false,
+  })
+  @Field({ nullable: true })
+  @IsOptional()
   @IsInt()
-  @IsNotEmpty()
-  userId: number;
+  userId?: number;
 }

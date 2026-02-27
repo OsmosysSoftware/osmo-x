@@ -8,7 +8,6 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TextareaModule } from 'primeng/textarea';
@@ -16,9 +15,10 @@ import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { ProvidersService } from '../services/providers.service';
+import { ApplicationsService } from '../../applications/services/applications.service';
 import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
 import { ChannelType } from '../../../core/constants/notification';
-import { Provider, PageInfo } from '../../../core/models/api.model';
+import { Provider, Application, PageInfo } from '../../../core/models/api.model';
 
 interface ChannelOption {
   label: string;
@@ -37,7 +37,6 @@ interface ChannelOption {
     SkeletonModule,
     DialogModule,
     InputTextModule,
-    InputNumberModule,
     SelectModule,
     ToggleSwitchModule,
     TextareaModule,
@@ -74,7 +73,7 @@ interface ChannelOption {
                 <th>Name</th>
                 <th>Channel Type</th>
                 <th>Enabled</th>
-                <th>Application ID</th>
+                <th>Application</th>
                 <th>Created</th>
                 <th class="text-center">Actions</th>
               </tr>
@@ -90,7 +89,7 @@ interface ChannelOption {
                     [severity]="p.is_enabled === 1 ? 'success' : 'danger'"
                   />
                 </td>
-                <td>{{ p.application_id }}</td>
+                <td>{{ getApplicationName(p.application_id) }}</td>
                 <td>{{ p.created_on | date: 'short' }}</td>
                 <td class="text-center">
                   <p-button
@@ -150,13 +149,17 @@ interface ChannelOption {
               />
             </div>
             <div class="flex flex-col gap-2">
-              <label for="appId" class="font-medium">Application ID</label>
-              <p-inputNumber
+              <label for="appId" class="font-medium">Application</label>
+              <p-select
                 id="appId"
+                [options]="applications()"
                 [ngModel]="formApplicationId()"
                 (ngModelChange)="formApplicationId.set($event)"
-                [useGrouping]="false"
-                placeholder="Application ID"
+                optionLabel="name"
+                optionValue="application_id"
+                placeholder="Select an application"
+                [filter]="true"
+                filterPlaceholder="Search applications"
               />
             </div>
           }
@@ -201,9 +204,11 @@ interface ChannelOption {
 })
 export class ProvidersListComponent implements OnInit {
   private readonly providersService = inject(ProvidersService);
+  private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
 
   readonly providers = signal<Provider[]>([]);
+  readonly applications = signal<Application[]>([]);
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly pageInfo = signal<PageInfo | null>(null);
@@ -226,6 +231,13 @@ export class ProvidersListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProviders();
+    this.loadApplications();
+  }
+
+  loadApplications(): void {
+    this.applicationsService.list(1, 100).subscribe({
+      next: (res) => this.applications.set(res.items ?? []),
+    });
   }
 
   loadProviders(): void {
@@ -243,6 +255,12 @@ export class ProvidersListComponent implements OnInit {
   onPageChange(page: number): void {
     this.currentPage = page;
     this.loadProviders();
+  }
+
+  getApplicationName(applicationId: number): string {
+    const app = this.applications().find((a) => a.application_id === applicationId);
+
+    return app ? app.name : `#${applicationId}`;
   }
 
   openCreate(): void {
@@ -333,7 +351,6 @@ export class ProvidersListComponent implements OnInit {
           application_id: this.formApplicationId()!,
           is_enabled: this.formIsEnabled() ? 1 : 0,
           configuration,
-          user_id: 1, // TODO: get from auth service when available
         })
         .subscribe({
           next: () => {

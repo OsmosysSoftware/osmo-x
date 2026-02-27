@@ -8,7 +8,8 @@ export interface User {
   user_id: number;
   username: string;
   email: string;
-  role: UserRole;
+  role: UserRole; // Auth response uses 'role'
+  user_role?: UserRole; // Users list API uses 'user_role' (from userRole via SnakeCaseInterceptor)
   organization_id?: number;
   status: number;
   created_on?: string;

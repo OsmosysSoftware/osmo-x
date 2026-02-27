@@ -140,6 +140,7 @@ export class ProvidersService extends CoreService<Provider> {
   async createProviderAsDto(
     providerInput: CreateProviderInput,
     organizationId: number,
+    userId?: number,
   ): Promise<ProviderResponseDto> {
     const app = await this.applicationsService.findById(providerInput.applicationId);
 
@@ -147,8 +148,10 @@ export class ProvidersService extends CoreService<Provider> {
       throw new BadRequestException('Application not found');
     }
 
+    const effectiveUserId = userId ?? providerInput.userId;
+    providerInput.userId = effectiveUserId;
     const provider = await this.createProvider(providerInput);
-    provider.createdBy = providerInput.userId;
+    provider.createdBy = effectiveUserId;
     const saved = await this.providerRepository.save(provider);
 
     return this.mapToDto(saved);

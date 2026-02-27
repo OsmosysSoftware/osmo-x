@@ -3,6 +3,6 @@
 export const environment = {
   production: true,
   // Backend API URL - update this for your production deployment
-  apiUrl: 'https://your-osmox-api.example.com/api',
-  apiDocsUrl: 'https://your-osmox-api.example.com/api/docs',
+  apiUrl: 'http://localhost:3000/api',
+  apiDocsUrl: 'http://localhost:3000/api/docs',
 };
