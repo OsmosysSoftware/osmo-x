@@ -1,0 +1,161 @@
+<div class="card">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1
+        class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
+      >
+        <i class="pi pi-bolt text-primary"></i> Webhooks
+      </h1>
+      <p class="text-muted-color mt-2">Manage webhook endpoints for providers</p>
+    </div>
+  </div>
+
+  <p-toolbar class="mb-4">
+    <ng-template #start>
+      <div class="flex flex-wrap gap-2">
+        @if (selectedProviderId()) {
+          <p-button label="New Webhook" icon="pi pi-plus" (onClick)="openCreate()" />
+        }
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search..." />
+        </p-iconfield>
+        <p-button
+          icon="pi pi-refresh"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Refresh"
+          (onClick)="refreshWebhooks()"
+        />
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  <div class="flex items-center gap-4 mb-4">
+    <div class="flex flex-col gap-2 flex-1" style="max-width: 350px">
+      <label for="provider-select" class="font-semibold">Select Provider</label>
+      <p-select
+        id="provider-select"
+        [options]="providers()"
+        optionLabel="name"
+        optionValue="provider_id"
+        placeholder="Choose a provider"
+        [ngModel]="selectedProviderId()"
+        (ngModelChange)="onProviderSelect($event)"
+        [filter]="true"
+        filterPlaceholder="Search providers"
+        appendTo="body"
+      />
+    </div>
+  </div>
+
+  @if (!selectedProviderId()) {
+    <div class="text-center py-8 text-muted-color">Select a provider to view its webhooks</div>
+  } @else if (loading()) {
+    <p-skeleton height="200px" />
+  } @else {
+    <p-card>
+      <p-table
+        #dt
+        [value]="webhooks()"
+        [globalFilterFields]="['webhook_url']"
+        [rowHover]="true"
+        [tableStyle]="{ 'min-width': '50rem' }"
+      >
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="id" style="min-width: 6rem">ID <p-sortIcon field="id" /></th>
+            <th style="min-width: 20rem">URL</th>
+            <th>Status</th>
+            <th pSortableColumn="created_on" style="min-width: 10rem">
+              Created <p-sortIcon field="created_on" />
+            </th>
+            <th style="min-width: 8rem">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-w>
+          <tr>
+            <td>{{ w.id }}</td>
+            <td class="max-w-xs truncate">{{ w.webhook_url }}</td>
+            <td>
+              <p-tag
+                [value]="w.status === 1 ? 'Active' : 'Inactive'"
+                [severity]="w.status === 1 ? 'success' : 'danger'"
+                [rounded]="true"
+              />
+            </td>
+            <td>{{ w.created_on | date: 'short' }}</td>
+            <td>
+              <div class="flex items-center gap-2">
+                <p-button
+                  icon="pi pi-pencil"
+                  size="small"
+                  pTooltip="Edit"
+                  (onClick)="openEdit(w)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  size="small"
+                  pTooltip="Delete"
+                  (onClick)="confirmDelete(w)"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr>
+            <td colspan="5" class="text-center py-8 text-muted-color">
+              No webhooks found for this provider
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  }
+</div>
+
+<!-- Create/Edit Webhook Dialog -->
+<p-dialog
+  [header]="editingWebhook() ? 'Edit Webhook' : 'New Webhook'"
+  [visible]="dialogVisible()"
+  (visibleChange)="dialogVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="flex flex-col gap-2">
+      <label for="webhook-url" class="font-semibold">Webhook URL</label>
+      <input
+        pInputText
+        id="webhook-url"
+        [ngModel]="formUrl()"
+        (ngModelChange)="formUrl.set($event)"
+        placeholder="https://example.com/webhook"
+      />
+    </div>
+  </div>
+  <ng-template #footer>
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      [text]="true"
+      (onClick)="dialogVisible.set(false)"
+    />
+    <p-button
+      label="Save"
+      icon="pi pi-check"
+      (onClick)="save()"
+      [disabled]="!formUrl().trim() || saving()"
+      [loading]="saving()"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog />

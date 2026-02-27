@@ -1,0 +1,200 @@
+<div class="card">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1
+        class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
+      >
+        <i class="pi pi-box text-primary"></i> Providers
+      </h1>
+      <p class="text-muted-color mt-2">Manage notification providers and configurations</p>
+    </div>
+  </div>
+
+  <p-toolbar class="mb-4">
+    <ng-template #start>
+      <div class="flex flex-wrap gap-2">
+        <p-button label="New Provider" icon="pi pi-plus" (onClick)="openCreate()" />
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search..." />
+        </p-iconfield>
+        <p-button
+          icon="pi pi-refresh"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Refresh"
+          (onClick)="loadProviders()"
+        />
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  @if (loading()) {
+    <p-skeleton height="300px" />
+  } @else {
+    <p-card>
+      <p-table
+        #dt
+        [value]="providers()"
+        [globalFilterFields]="['name']"
+        [rowHover]="true"
+        [tableStyle]="{ 'min-width': '60rem' }"
+      >
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="provider_id" style="min-width: 6rem">
+              ID <p-sortIcon field="provider_id" />
+            </th>
+            <th pSortableColumn="name" style="min-width: 12rem">
+              Name <p-sortIcon field="name" />
+            </th>
+            <th>Channel Type</th>
+            <th>Enabled</th>
+            <th>Application</th>
+            <th pSortableColumn="created_on" style="min-width: 10rem">
+              Created <p-sortIcon field="created_on" />
+            </th>
+            <th style="min-width: 8rem">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-p>
+          <tr>
+            <td>{{ p.provider_id }}</td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.channel_type | channelType }}</td>
+            <td>
+              <p-tag
+                [value]="p.is_enabled === 1 ? 'Yes' : 'No'"
+                [severity]="p.is_enabled === 1 ? 'success' : 'danger'"
+                [rounded]="true"
+              />
+            </td>
+            <td>{{ getApplicationName(p.application_id) }}</td>
+            <td>{{ p.created_on | date: 'short' }}</td>
+            <td>
+              <div class="flex items-center gap-2">
+                <p-button
+                  icon="pi pi-pencil"
+                  size="small"
+                  pTooltip="Edit"
+                  (onClick)="openEdit(p)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  size="small"
+                  pTooltip="Delete"
+                  (onClick)="confirmDelete(p)"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr>
+            <td colspan="7" class="text-center py-8 text-muted-color">No providers found</td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      @if (pageInfo(); as pi) {
+        <div class="mt-4">
+          <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
+        </div>
+      }
+    </p-card>
+  }
+
+  <!-- Create/Edit Dialog -->
+  <p-dialog
+    [visible]="dialogVisible()"
+    (visibleChange)="dialogVisible.set($event)"
+    [header]="editingProvider() ? 'Edit Provider' : 'New Provider'"
+    [modal]="true"
+    [style]="{ width: '32rem' }"
+  >
+    <div class="flex flex-col gap-4 mt-2">
+      <div class="flex flex-col gap-2">
+        <label for="provName" class="font-medium">Name</label>
+        <input
+          pInputText
+          id="provName"
+          [ngModel]="formName()"
+          (ngModelChange)="formName.set($event)"
+          placeholder="Provider name"
+        />
+      </div>
+      @if (!editingProvider()) {
+        <div class="flex flex-col gap-2">
+          <label for="channelType" class="font-medium">Channel Type</label>
+          <p-select
+            id="channelType"
+            [options]="channelOptions"
+            [ngModel]="formChannelType()"
+            (ngModelChange)="formChannelType.set($event)"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select a channel type"
+            appendTo="body"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="appId" class="font-medium">Application</label>
+          <p-select
+            id="appId"
+            [options]="applications()"
+            [ngModel]="formApplicationId()"
+            (ngModelChange)="formApplicationId.set($event)"
+            optionLabel="name"
+            optionValue="application_id"
+            placeholder="Select an application"
+            [filter]="true"
+            filterPlaceholder="Search applications"
+            appendTo="body"
+          />
+        </div>
+      }
+      <div class="flex items-center gap-3">
+        <p-toggleSwitch
+          [ngModel]="formIsEnabled()"
+          (ngModelChange)="formIsEnabled.set($event)"
+          inputId="isEnabled"
+        />
+        <label for="isEnabled" class="font-medium">Enabled</label>
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="config" class="font-medium">Configuration (JSON)</label>
+        <textarea
+          pTextarea
+          id="config"
+          [ngModel]="formConfiguration()"
+          (ngModelChange)="formConfiguration.set($event)"
+          [rows]="6"
+          placeholder="{{ '{' }} &quot;key&quot;: &quot;value&quot; {{ '}' }}"
+        ></textarea>
+      </div>
+    </div>
+    <ng-template #footer>
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        [text]="true"
+        (onClick)="dialogVisible.set(false)"
+      />
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        [disabled]="!isFormValid()"
+        [loading]="saving()"
+        (onClick)="save()"
+      />
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog />
+</div>

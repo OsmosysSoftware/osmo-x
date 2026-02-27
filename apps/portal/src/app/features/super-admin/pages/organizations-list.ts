@@ -19,6 +19,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { CardModule } from 'primeng/card';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { OrganizationsService } from '../services/organizations.service';
 import { Organization } from '../../../core/models/api.model';
@@ -39,182 +40,12 @@ import { Organization } from '../../../core/models/api.model';
     ToolbarModule,
     IconFieldModule,
     InputIconModule,
+    CardModule,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="card">
-      <p-toolbar class="mb-6">
-        <ng-template #start>
-          <h2 class="m-0 flex items-center gap-2">
-            <i class="pi pi-building text-primary"></i>
-            Organizations
-          </h2>
-        </ng-template>
-        <ng-template #end>
-          <p-button
-            label="New Organization"
-            icon="pi pi-plus"
-            severity="success"
-            (onClick)="openCreate()"
-          />
-        </ng-template>
-      </p-toolbar>
-
-      @if (loading()) {
-        <p-skeleton height="300px" />
-      } @else {
-        <p-table
-          #dt
-          [value]="organizations()"
-          [rows]="10"
-          [paginator]="true"
-          [globalFilterFields]="['name', 'slug']"
-          [rowHover]="true"
-          [showCurrentPageReport]="true"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} organizations"
-          [rowsPerPageOptions]="[10, 20, 50]"
-          [tableStyle]="{ 'min-width': '50rem' }"
-        >
-          <ng-template #caption>
-            <div class="flex items-center justify-between">
-              <span class="text-muted-color">Manage platform organizations</span>
-              <div class="flex items-center gap-2">
-                <p-iconfield>
-                  <p-inputicon class="pi pi-search" />
-                  <input
-                    pInputText
-                    type="text"
-                    (input)="onGlobalFilter($event)"
-                    placeholder="Search..."
-                  />
-                </p-iconfield>
-                <p-button
-                  icon="pi pi-refresh"
-                  [rounded]="true"
-                  [outlined]="true"
-                  severity="secondary"
-                  pTooltip="Refresh"
-                  tooltipPosition="top"
-                  (onClick)="loadOrganizations()"
-                />
-              </div>
-            </div>
-          </ng-template>
-          <ng-template #header>
-            <tr>
-              <th pSortableColumn="organization_id" style="min-width: 6rem">
-                ID <p-sortIcon field="organization_id" />
-              </th>
-              <th pSortableColumn="name" style="min-width: 12rem">
-                Name <p-sortIcon field="name" />
-              </th>
-              <th pSortableColumn="slug" style="min-width: 10rem">
-                Slug <p-sortIcon field="slug" />
-              </th>
-              <th>Status</th>
-              <th pSortableColumn="created_on" style="min-width: 10rem">
-                Created <p-sortIcon field="created_on" />
-              </th>
-              <th class="text-center" style="min-width: 8rem">Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template #body let-org>
-            <tr>
-              <td>{{ org.organization_id }}</td>
-              <td>{{ org.name }}</td>
-              <td class="font-mono">{{ org.slug }}</td>
-              <td>
-                <p-tag
-                  [value]="org.status === 1 ? 'Active' : 'Inactive'"
-                  [severity]="org.status === 1 ? 'success' : 'danger'"
-                />
-              </td>
-              <td>{{ org.created_on | date: 'short' }}</td>
-              <td class="text-center">
-                <p-button
-                  icon="pi pi-pencil"
-                  class="mr-2"
-                  [rounded]="true"
-                  [outlined]="true"
-                  pTooltip="Edit"
-                  tooltipPosition="top"
-                  (onClick)="openEdit(org)"
-                />
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  [rounded]="true"
-                  [outlined]="true"
-                  pTooltip="Delete"
-                  tooltipPosition="top"
-                  (onClick)="confirmDelete(org)"
-                />
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template #emptymessage>
-            <tr>
-              <td colspan="6" class="text-center py-8 text-muted-color">No organizations found</td>
-            </tr>
-          </ng-template>
-        </p-table>
-      }
-
-      <!-- Create/Edit Organization Dialog -->
-      <p-dialog
-        [visible]="dialogVisible()"
-        (visibleChange)="dialogVisible.set($event)"
-        [header]="editingOrg() ? 'Edit Organization' : 'New Organization'"
-        [modal]="true"
-        [style]="{ width: '28rem' }"
-      >
-        <div class="flex flex-col gap-4 mt-2">
-          <div class="flex flex-col gap-2">
-            <label for="orgName" class="font-medium">Name</label>
-            <input
-              pInputText
-              id="orgName"
-              [ngModel]="formName()"
-              (ngModelChange)="onNameChange($event)"
-              placeholder="Organization name"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="orgSlug" class="font-medium">Slug</label>
-            <input
-              pInputText
-              id="orgSlug"
-              [ngModel]="formSlug()"
-              (ngModelChange)="formSlug.set($event)"
-              placeholder="organization-slug"
-              class="font-mono"
-            />
-            <small class="text-muted-color"
-              >URL-friendly identifier (lowercase, alphanumeric, hyphens)</small
-            >
-          </div>
-        </div>
-        <ng-template #footer>
-          <p-button
-            label="Cancel"
-            severity="secondary"
-            [text]="true"
-            (onClick)="dialogVisible.set(false)"
-          />
-          <p-button
-            label="Save"
-            icon="pi pi-check"
-            [disabled]="!isFormValid()"
-            [loading]="saving()"
-            (onClick)="save()"
-          />
-        </ng-template>
-      </p-dialog>
-
-      <p-confirmDialog />
-    </div>
-  `,
+  templateUrl: './organizations-list.html',
+  styleUrl: './organizations-list.scss',
 })
 export class OrganizationsListComponent implements OnInit {
   private readonly service = inject(OrganizationsService);

@@ -22,6 +22,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { CardModule } from 'primeng/card';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { ProvidersService } from '../services/providers.service';
@@ -54,218 +55,14 @@ interface ChannelOption {
     ToolbarModule,
     IconFieldModule,
     InputIconModule,
+    CardModule,
     PaginationComponent,
     ChannelTypePipe,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="card">
-      <p-toolbar class="mb-6">
-        <ng-template #start>
-          <h2 class="m-0 flex items-center gap-2">
-            <i class="pi pi-server text-primary"></i>
-            Providers
-          </h2>
-        </ng-template>
-        <ng-template #end>
-          <p-button
-            label="New Provider"
-            icon="pi pi-plus"
-            severity="success"
-            (onClick)="openCreate()"
-          />
-        </ng-template>
-      </p-toolbar>
-
-      @if (loading()) {
-        <p-skeleton height="300px" />
-      } @else {
-        <p-table
-          #dt
-          [value]="providers()"
-          [globalFilterFields]="['name']"
-          [rowHover]="true"
-          [tableStyle]="{ 'min-width': '60rem' }"
-        >
-          <ng-template #caption>
-            <div class="flex items-center justify-between">
-              <span class="text-muted-color">Manage notification service providers</span>
-              <div class="flex items-center gap-2">
-                <p-iconfield>
-                  <p-inputicon class="pi pi-search" />
-                  <input
-                    pInputText
-                    type="text"
-                    (input)="onGlobalFilter($event)"
-                    placeholder="Search..."
-                  />
-                </p-iconfield>
-                <p-button
-                  icon="pi pi-refresh"
-                  [rounded]="true"
-                  [outlined]="true"
-                  severity="secondary"
-                  pTooltip="Refresh"
-                  tooltipPosition="top"
-                  (onClick)="loadProviders()"
-                />
-              </div>
-            </div>
-          </ng-template>
-          <ng-template #header>
-            <tr>
-              <th pSortableColumn="provider_id" style="min-width: 6rem">
-                ID <p-sortIcon field="provider_id" />
-              </th>
-              <th pSortableColumn="name" style="min-width: 12rem">
-                Name <p-sortIcon field="name" />
-              </th>
-              <th>Channel Type</th>
-              <th>Enabled</th>
-              <th>Application</th>
-              <th pSortableColumn="created_on" style="min-width: 10rem">
-                Created <p-sortIcon field="created_on" />
-              </th>
-              <th class="text-center" style="min-width: 8rem">Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template #body let-p>
-            <tr>
-              <td>{{ p.provider_id }}</td>
-              <td>{{ p.name }}</td>
-              <td>{{ p.channel_type | channelType }}</td>
-              <td>
-                <p-tag
-                  [value]="p.is_enabled === 1 ? 'Yes' : 'No'"
-                  [severity]="p.is_enabled === 1 ? 'success' : 'danger'"
-                />
-              </td>
-              <td>{{ getApplicationName(p.application_id) }}</td>
-              <td>{{ p.created_on | date: 'short' }}</td>
-              <td class="text-center">
-                <p-button
-                  icon="pi pi-pencil"
-                  class="mr-2"
-                  [rounded]="true"
-                  [outlined]="true"
-                  pTooltip="Edit"
-                  tooltipPosition="top"
-                  (onClick)="openEdit(p)"
-                />
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  [rounded]="true"
-                  [outlined]="true"
-                  pTooltip="Delete"
-                  tooltipPosition="top"
-                  (onClick)="confirmDelete(p)"
-                />
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template #emptymessage>
-            <tr>
-              <td colspan="7" class="text-center py-8 text-muted-color">No providers found</td>
-            </tr>
-          </ng-template>
-        </p-table>
-
-        @if (pageInfo(); as pi) {
-          <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
-        }
-      }
-
-      <!-- Create/Edit Dialog -->
-      <p-dialog
-        [visible]="dialogVisible()"
-        (visibleChange)="dialogVisible.set($event)"
-        [header]="editingProvider() ? 'Edit Provider' : 'New Provider'"
-        [modal]="true"
-        [style]="{ width: '32rem' }"
-      >
-        <div class="flex flex-col gap-4 mt-2">
-          <div class="flex flex-col gap-2">
-            <label for="provName" class="font-medium">Name</label>
-            <input
-              pInputText
-              id="provName"
-              [ngModel]="formName()"
-              (ngModelChange)="formName.set($event)"
-              placeholder="Provider name"
-            />
-          </div>
-          @if (!editingProvider()) {
-            <div class="flex flex-col gap-2">
-              <label for="channelType" class="font-medium">Channel Type</label>
-              <p-select
-                id="channelType"
-                [options]="channelOptions"
-                [ngModel]="formChannelType()"
-                (ngModelChange)="formChannelType.set($event)"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Select a channel type"
-                appendTo="body"
-              />
-            </div>
-            <div class="flex flex-col gap-2">
-              <label for="appId" class="font-medium">Application</label>
-              <p-select
-                id="appId"
-                [options]="applications()"
-                [ngModel]="formApplicationId()"
-                (ngModelChange)="formApplicationId.set($event)"
-                optionLabel="name"
-                optionValue="application_id"
-                placeholder="Select an application"
-                [filter]="true"
-                filterPlaceholder="Search applications"
-                appendTo="body"
-              />
-            </div>
-          }
-          <div class="flex items-center gap-3">
-            <p-toggleSwitch
-              [ngModel]="formIsEnabled()"
-              (ngModelChange)="formIsEnabled.set($event)"
-              inputId="isEnabled"
-            />
-            <label for="isEnabled" class="font-medium">Enabled</label>
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="config" class="font-medium">Configuration (JSON)</label>
-            <textarea
-              pTextarea
-              id="config"
-              [ngModel]="formConfiguration()"
-              (ngModelChange)="formConfiguration.set($event)"
-              [rows]="6"
-              placeholder="{{ '{' }} &quot;key&quot;: &quot;value&quot; {{ '}' }}"
-            ></textarea>
-          </div>
-        </div>
-        <ng-template #footer>
-          <p-button
-            label="Cancel"
-            severity="secondary"
-            [text]="true"
-            (onClick)="dialogVisible.set(false)"
-          />
-          <p-button
-            label="Save"
-            icon="pi pi-check"
-            [disabled]="!isFormValid()"
-            [loading]="saving()"
-            (onClick)="save()"
-          />
-        </ng-template>
-      </p-dialog>
-
-      <p-confirmDialog />
-    </div>
-  `,
+  templateUrl: './providers-list.html',
+  styleUrl: './providers-list.scss',
 })
 export class ProvidersListComponent implements OnInit {
   private readonly providersService = inject(ProvidersService);

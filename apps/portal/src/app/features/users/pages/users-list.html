@@ -1,0 +1,205 @@
+<div class="card">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1
+        class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
+      >
+        <i class="pi pi-users text-primary"></i>
+        Users
+      </h1>
+      <p class="text-muted-color mt-2">Manage organization users</p>
+    </div>
+  </div>
+
+  <p-toolbar class="mb-4">
+    <ng-template #start>
+      <div class="flex flex-wrap gap-2">
+        <p-button label="New User" icon="pi pi-plus" (onClick)="openCreate()" />
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search..." />
+        </p-iconfield>
+        <p-button
+          icon="pi pi-refresh"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Refresh"
+          tooltipPosition="top"
+          (onClick)="loadUsers()"
+        />
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  @if (loading()) {
+    <p-skeleton height="300px" />
+  } @else {
+    <p-card>
+      <p-table
+        #dt
+        [value]="users()"
+        [rows]="10"
+        [paginator]="true"
+        [globalFilterFields]="['email', 'first_name', 'last_name']"
+        [rowHover]="true"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
+        [rowsPerPageOptions]="[10, 20, 50]"
+        [tableStyle]="{ 'min-width': '50rem' }"
+      >
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="first_name" style="min-width: 10rem">
+              Name <p-sortIcon field="first_name" />
+            </th>
+            <th pSortableColumn="email" style="min-width: 14rem">
+              Email <p-sortIcon field="email" />
+            </th>
+            <th>Role</th>
+            <th>Status</th>
+            <th pSortableColumn="created_on" style="min-width: 10rem">
+              Created <p-sortIcon field="created_on" />
+            </th>
+            <th style="min-width: 8rem">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-u>
+          <tr>
+            <td>{{ getDisplayName(u) }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+              <p-tag
+                [value]="getRoleLabel(u.user_role ?? u.role)"
+                severity="info"
+                [rounded]="true"
+              />
+            </td>
+            <td>
+              <p-tag
+                [value]="u.status === 1 ? 'Active' : 'Inactive'"
+                [severity]="u.status === 1 ? 'success' : 'danger'"
+                [rounded]="true"
+              />
+            </td>
+            <td>{{ u.created_on | date: 'short' }}</td>
+            <td>
+              <div class="flex items-center gap-2">
+                <p-button
+                  icon="pi pi-pencil"
+                  size="small"
+                  (onClick)="openEdit(u)"
+                  pTooltip="Edit"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  size="small"
+                  severity="danger"
+                  (onClick)="confirmDelete(u)"
+                  pTooltip="Deactivate"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr>
+            <td colspan="6" class="text-center py-8 text-muted-color">No users found</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  }
+
+  <!-- Create/Edit Dialog -->
+  <p-dialog
+    [visible]="dialogVisible()"
+    (visibleChange)="dialogVisible.set($event)"
+    [header]="editingUser() ? 'Edit User' : 'New User'"
+    [modal]="true"
+    [style]="{ width: '28rem' }"
+  >
+    <div class="flex flex-col gap-4 mt-2">
+      <div class="flex flex-col gap-2">
+        <label for="email" class="font-medium">Email</label>
+        <input
+          pInputText
+          id="email"
+          type="email"
+          [ngModel]="formEmail()"
+          (ngModelChange)="formEmail.set($event)"
+          placeholder="user&#64;example.com"
+        />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="firstName" class="font-medium">First Name</label>
+        <input
+          pInputText
+          id="firstName"
+          [ngModel]="formFirstName()"
+          (ngModelChange)="formFirstName.set($event)"
+          placeholder="Enter first name"
+        />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="lastName" class="font-medium">Last Name</label>
+        <input
+          pInputText
+          id="lastName"
+          [ngModel]="formLastName()"
+          (ngModelChange)="formLastName.set($event)"
+          placeholder="Enter last name"
+        />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="password" class="font-medium">{{
+          editingUser() ? 'Password (leave blank to keep current)' : 'Password'
+        }}</label>
+        <p-password
+          id="password"
+          [ngModel]="formPassword()"
+          (ngModelChange)="formPassword.set($event)"
+          [placeholder]="editingUser() ? 'Enter new password' : 'Enter password'"
+          [toggleMask]="true"
+          [feedback]="false"
+          class="w-full"
+          inputClass="w-full"
+        />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="role" class="font-medium">Role</label>
+        <p-select
+          id="role"
+          [options]="roleOptions"
+          [ngModel]="formRole()"
+          (ngModelChange)="formRole.set($event)"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select a role"
+          appendTo="body"
+        />
+      </div>
+    </div>
+    <ng-template #footer>
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        [text]="true"
+        (onClick)="dialogVisible.set(false)"
+      />
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        [disabled]="!isFormValid()"
+        [loading]="saving()"
+        (onClick)="save()"
+      />
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog />
+</div>

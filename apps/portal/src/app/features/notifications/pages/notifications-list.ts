@@ -10,6 +10,7 @@ import { DatePipe, JsonPipe } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
@@ -32,6 +33,7 @@ import { Notification, PageInfo } from '../../../core/models/api.model';
     TableModule,
     TagModule,
     ButtonModule,
+    CardModule,
     SkeletonModule,
     DialogModule,
     TooltipModule,
@@ -44,150 +46,8 @@ import { Notification, PageInfo } from '../../../core/models/api.model';
     ChannelTypePipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="card">
-      <p-toolbar class="mb-6">
-        <ng-template #start>
-          <h2 class="m-0 flex items-center gap-2">
-            <i class="pi pi-bell text-primary"></i>
-            Notifications
-          </h2>
-        </ng-template>
-      </p-toolbar>
-
-      @if (loading()) {
-        <p-skeleton height="300px" />
-      } @else {
-        <p-table
-          #dt
-          [value]="notifications()"
-          [globalFilterFields]="['notification_id', 'application_id']"
-          [rowHover]="true"
-          [tableStyle]="{ 'min-width': '60rem' }"
-          selectionMode="single"
-          (onRowSelect)="onRowSelect($event)"
-        >
-          <ng-template #caption>
-            <div class="flex items-center justify-between">
-              <span class="text-muted-color">View and track notification statuses</span>
-              <div class="flex items-center gap-2">
-                <p-iconfield>
-                  <p-inputicon class="pi pi-search" />
-                  <input
-                    pInputText
-                    type="text"
-                    (input)="onGlobalFilter($event)"
-                    placeholder="Search..."
-                  />
-                </p-iconfield>
-                <p-button
-                  icon="pi pi-refresh"
-                  [rounded]="true"
-                  [outlined]="true"
-                  severity="secondary"
-                  pTooltip="Refresh"
-                  tooltipPosition="top"
-                  (onClick)="loadNotifications()"
-                />
-              </div>
-            </div>
-          </ng-template>
-          <ng-template #header>
-            <tr>
-              <th pSortableColumn="notification_id" style="min-width: 6rem">
-                ID <p-sortIcon field="notification_id" />
-              </th>
-              <th>Channel Type</th>
-              <th>Delivery Status</th>
-              <th pSortableColumn="application_id" style="min-width: 8rem">
-                Application ID <p-sortIcon field="application_id" />
-              </th>
-              <th pSortableColumn="created_on" style="min-width: 10rem">
-                Created <p-sortIcon field="created_on" />
-              </th>
-            </tr>
-          </ng-template>
-          <ng-template #body let-n>
-            <tr [pSelectableRow]="n" class="cursor-pointer">
-              <td>{{ n.notification_id }}</td>
-              <td>{{ n.channel_type | channelType }}</td>
-              <td>
-                <app-status-badge [status]="n.delivery_status" />
-              </td>
-              <td>{{ n.application_id }}</td>
-              <td>{{ n.created_on | date: 'short' }}</td>
-            </tr>
-          </ng-template>
-          <ng-template #emptymessage>
-            <tr>
-              <td colspan="5" class="text-center py-8 text-muted-color">No notifications found</td>
-            </tr>
-          </ng-template>
-        </p-table>
-
-        @if (pageInfo(); as pi) {
-          <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
-        }
-      }
-    </div>
-
-    <p-dialog
-      header="Notification Details"
-      [visible]="detailDialogVisible()"
-      (visibleChange)="detailDialogVisible.set($event)"
-      [modal]="true"
-      [style]="{ width: '700px' }"
-    >
-      @if (selectedNotification(); as n) {
-        <div class="flex flex-col gap-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <span class="font-semibold text-muted-color block mb-1">ID</span>
-              <span>{{ n.notification_id }}</span>
-            </div>
-            <div>
-              <span class="font-semibold text-muted-color block mb-1">Channel Type</span>
-              <span>{{ n.channel_type | channelType }}</span>
-            </div>
-            <div>
-              <span class="font-semibold text-muted-color block mb-1">Delivery Status</span>
-              <app-status-badge [status]="n.delivery_status" />
-            </div>
-            <div>
-              <span class="font-semibold text-muted-color block mb-1">Application ID</span>
-              <span>{{ n.application_id }}</span>
-            </div>
-            <div>
-              <span class="font-semibold text-muted-color block mb-1">Provider ID</span>
-              <span>{{ n.provider_id ?? '—' }}</span>
-            </div>
-            <div>
-              <span class="font-semibold text-muted-color block mb-1">Created</span>
-              <span>{{ n.created_on | date: 'medium' }}</span>
-            </div>
-          </div>
-
-          <div>
-            <span class="font-semibold text-muted-color block mb-1">Data</span>
-            <pre
-              class="bg-surface-100 dark:bg-surface-800 p-4 rounded-lg text-sm overflow-auto max-h-64"
-              >{{ n.data | json }}</pre
-            >
-          </div>
-
-          @if (n.result) {
-            <div>
-              <span class="font-semibold text-muted-color block mb-1">Result</span>
-              <pre
-                class="bg-surface-100 dark:bg-surface-800 p-4 rounded-lg text-sm overflow-auto max-h-64"
-                >{{ n.result | json }}</pre
-              >
-            </div>
-          }
-        </div>
-      }
-    </p-dialog>
-  `,
+  templateUrl: './notifications-list.html',
+  styleUrl: './notifications-list.scss',
 })
 export class NotificationsListComponent implements OnInit {
   private readonly service = inject(NotificationsService);

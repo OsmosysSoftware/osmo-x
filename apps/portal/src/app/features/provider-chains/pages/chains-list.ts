@@ -11,6 +11,7 @@ import { DatePipe } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -39,6 +40,7 @@ interface ProviderTypeOption {
     TableModule,
     TagModule,
     ButtonModule,
+    CardModule,
     SkeletonModule,
     DialogModule,
     ConfirmDialogModule,
@@ -52,229 +54,8 @@ interface ProviderTypeOption {
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="card">
-      <p-toolbar class="mb-6">
-        <ng-template #start>
-          <h2 class="m-0 flex items-center gap-2">
-            <i class="pi pi-link text-primary"></i>
-            Provider Chains
-          </h2>
-        </ng-template>
-        <ng-template #end>
-          <p-button
-            label="New Chain"
-            icon="pi pi-plus"
-            severity="success"
-            (onClick)="openCreateDialog()"
-          />
-        </ng-template>
-      </p-toolbar>
-
-      @if (loading()) {
-        <p-skeleton height="300px" />
-      } @else {
-        <p-table
-          #dt
-          [value]="chains()"
-          [globalFilterFields]="['chain_name', 'application_id']"
-          [rowHover]="true"
-          [tableStyle]="{ 'min-width': '60rem' }"
-        >
-          <ng-template #caption>
-            <div class="flex items-center justify-between">
-              <span class="text-muted-color">Manage provider fallback chains</span>
-              <div class="flex items-center gap-2">
-                <p-iconfield>
-                  <p-inputicon class="pi pi-search" />
-                  <input
-                    pInputText
-                    type="text"
-                    (input)="onGlobalFilter($event)"
-                    placeholder="Search..."
-                  />
-                </p-iconfield>
-                <p-button
-                  icon="pi pi-refresh"
-                  [rounded]="true"
-                  [outlined]="true"
-                  severity="secondary"
-                  pTooltip="Refresh"
-                  tooltipPosition="top"
-                  (onClick)="loadChains()"
-                />
-              </div>
-            </div>
-          </ng-template>
-          <ng-template #header>
-            <tr>
-              <th pSortableColumn="chain_id" style="min-width: 6rem">
-                ID <p-sortIcon field="chain_id" />
-              </th>
-              <th pSortableColumn="chain_name" style="min-width: 12rem">
-                Name <p-sortIcon field="chain_name" />
-              </th>
-              <th>Provider Type</th>
-              <th pSortableColumn="application_id" style="min-width: 8rem">
-                App ID <p-sortIcon field="application_id" />
-              </th>
-              <th>Status</th>
-              <th pSortableColumn="created_on" style="min-width: 10rem">
-                Created <p-sortIcon field="created_on" />
-              </th>
-              <th class="text-center" style="min-width: 8rem">Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template #body let-c>
-            <tr>
-              <td>{{ c.chain_id }}</td>
-              <td>{{ c.chain_name }}</td>
-              <td>{{ getProviderTypeLabel(c.provider_type) }}</td>
-              <td>{{ c.application_id }}</td>
-              <td>
-                <p-tag
-                  [value]="c.status === 1 ? 'Active' : 'Inactive'"
-                  [severity]="c.status === 1 ? 'success' : 'danger'"
-                />
-              </td>
-              <td>{{ c.created_on | date: 'short' }}</td>
-              <td class="text-center">
-                <p-button
-                  icon="pi pi-pencil"
-                  class="mr-2"
-                  [rounded]="true"
-                  [outlined]="true"
-                  pTooltip="Edit"
-                  tooltipPosition="top"
-                  (onClick)="openEditDialog(c)"
-                />
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  [rounded]="true"
-                  [outlined]="true"
-                  pTooltip="Delete"
-                  tooltipPosition="top"
-                  (onClick)="confirmDelete(c)"
-                />
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template #emptymessage>
-            <tr>
-              <td colspan="7" class="text-center py-8 text-muted-color">
-                No provider chains found
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-
-        @if (pageInfo(); as pi) {
-          <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
-        }
-      }
-    </div>
-
-    <!-- Create Dialog -->
-    <p-dialog
-      header="Create Provider Chain"
-      [visible]="createDialogVisible()"
-      (visibleChange)="createDialogVisible.set($event)"
-      [modal]="true"
-      [style]="{ width: '450px' }"
-    >
-      <div class="flex flex-col gap-4 pt-2">
-        <div class="flex flex-col gap-2">
-          <label for="create-chain-name" class="font-semibold">Chain Name</label>
-          <input
-            pInputText
-            id="create-chain-name"
-            [ngModel]="createForm().chain_name"
-            (ngModelChange)="updateCreateForm('chain_name', $event)"
-            placeholder="e.g. Email Fallback Chain"
-          />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="create-provider-type" class="font-semibold">Provider Type</label>
-          <p-select
-            id="create-provider-type"
-            [options]="providerTypeOptions"
-            [ngModel]="createForm().provider_type"
-            (ngModelChange)="updateCreateForm('provider_type', $event)"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Select provider type"
-            appendTo="body"
-          />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="create-application" class="font-semibold">Application</label>
-          <p-select
-            id="create-application"
-            [options]="applications()"
-            [ngModel]="createForm().application_id"
-            (ngModelChange)="updateCreateForm('application_id', $event)"
-            optionLabel="name"
-            optionValue="application_id"
-            placeholder="Select application"
-            [filter]="true"
-            filterPlaceholder="Search applications"
-            appendTo="body"
-          />
-        </div>
-      </div>
-      <ng-template #footer>
-        <p-button label="Cancel" severity="secondary" (onClick)="createDialogVisible.set(false)" />
-        <p-button
-          label="Create"
-          icon="pi pi-check"
-          (onClick)="createChain()"
-          [disabled]="saving() || !isCreateFormValid()"
-        />
-      </ng-template>
-    </p-dialog>
-
-    <!-- Edit Dialog -->
-    <p-dialog
-      header="Edit Provider Chain"
-      [visible]="editDialogVisible()"
-      (visibleChange)="editDialogVisible.set($event)"
-      [modal]="true"
-      [style]="{ width: '450px' }"
-    >
-      <div class="flex flex-col gap-4 pt-2">
-        <div class="flex flex-col gap-2">
-          <label for="edit-chain-name" class="font-semibold">Chain Name</label>
-          <input
-            pInputText
-            id="edit-chain-name"
-            [ngModel]="editForm().chain_name"
-            (ngModelChange)="updateEditForm('chain_name', $event)"
-            placeholder="e.g. Email Fallback Chain"
-          />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="edit-provider-type" class="font-semibold">Provider Type</label>
-          <p-select
-            id="edit-provider-type"
-            [options]="providerTypeOptions"
-            [ngModel]="editForm().provider_type"
-            (ngModelChange)="updateEditForm('provider_type', $event)"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Select provider type"
-            appendTo="body"
-          />
-        </div>
-      </div>
-      <ng-template #footer>
-        <p-button label="Cancel" severity="secondary" (onClick)="editDialogVisible.set(false)" />
-        <p-button label="Save" icon="pi pi-check" (onClick)="updateChain()" [disabled]="saving()" />
-      </ng-template>
-    </p-dialog>
-
-    <p-confirmDialog />
-  `,
+  templateUrl: './chains-list.html',
+  styleUrl: './chains-list.scss',
 })
 export class ChainsListComponent implements OnInit {
   private readonly service = inject(ProviderChainsService);

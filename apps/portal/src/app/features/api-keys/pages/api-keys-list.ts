@@ -20,6 +20,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { CardModule } from 'primeng/card';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ApiKeysService } from '../services/api-keys.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
@@ -42,165 +43,12 @@ import { ServerApiKey, Application } from '../../../core/models/api.model';
     ToolbarModule,
     IconFieldModule,
     InputIconModule,
+    CardModule,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="card">
-      <p-toolbar class="mb-6">
-        <ng-template #start>
-          <h2 class="m-0 flex items-center gap-2">
-            <i class="pi pi-key text-primary"></i>
-            API Keys
-          </h2>
-        </ng-template>
-        <ng-template #end>
-          @if (selectedApplicationId()) {
-            <p-button
-              label="Generate API Key"
-              icon="pi pi-plus"
-              severity="success"
-              (onClick)="generateApiKey()"
-              [disabled]="generating()"
-            />
-          }
-        </ng-template>
-      </p-toolbar>
-
-      <div class="flex items-center gap-4 mb-4">
-        <div class="flex flex-col gap-2 flex-1" style="max-width: 350px">
-          <label for="app-select" class="font-semibold">Select Application</label>
-          <p-select
-            id="app-select"
-            [options]="applications()"
-            optionLabel="name"
-            optionValue="application_id"
-            placeholder="Choose an application"
-            [ngModel]="selectedApplicationId()"
-            (ngModelChange)="onApplicationSelect($event)"
-            [filter]="true"
-            filterPlaceholder="Search applications"
-            appendTo="body"
-          />
-        </div>
-      </div>
-
-      @if (!selectedApplicationId()) {
-        <div class="text-center py-8 text-muted-color">
-          Select an application to view its API keys
-        </div>
-      } @else if (loading()) {
-        <p-skeleton height="200px" />
-      } @else {
-        <p-table
-          #dt
-          [value]="apiKeys()"
-          [globalFilterFields]="['masked_api_key']"
-          [rowHover]="true"
-          [tableStyle]="{ 'min-width': '50rem' }"
-        >
-          <ng-template #caption>
-            <div class="flex items-center justify-between">
-              <span class="text-muted-color">Manage server API keys for applications</span>
-              <div class="flex items-center gap-2">
-                <p-iconfield>
-                  <p-inputicon class="pi pi-search" />
-                  <input
-                    pInputText
-                    type="text"
-                    (input)="onGlobalFilter($event)"
-                    placeholder="Search..."
-                  />
-                </p-iconfield>
-                <p-button
-                  icon="pi pi-refresh"
-                  [rounded]="true"
-                  [outlined]="true"
-                  severity="secondary"
-                  pTooltip="Refresh"
-                  tooltipPosition="top"
-                  (onClick)="refreshApiKeys()"
-                />
-              </div>
-            </div>
-          </ng-template>
-          <ng-template #header>
-            <tr>
-              <th pSortableColumn="api_key_id" style="min-width: 6rem">
-                ID <p-sortIcon field="api_key_id" />
-              </th>
-              <th style="min-width: 16rem">Masked Key</th>
-              <th>Status</th>
-              <th pSortableColumn="created_on" style="min-width: 10rem">
-                Created <p-sortIcon field="created_on" />
-              </th>
-              <th class="text-center" style="min-width: 8rem">Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template #body let-k>
-            <tr>
-              <td>{{ k.api_key_id }}</td>
-              <td class="font-mono">{{ k.masked_api_key }}</td>
-              <td>
-                <p-tag
-                  [value]="k.status === 1 ? 'Active' : 'Revoked'"
-                  [severity]="k.status === 1 ? 'success' : 'danger'"
-                />
-              </td>
-              <td>{{ k.created_on | date: 'short' }}</td>
-              <td class="text-center">
-                @if (k.status === 1) {
-                  <p-button
-                    icon="pi pi-ban"
-                    severity="danger"
-                    [rounded]="true"
-                    [outlined]="true"
-                    pTooltip="Revoke"
-                    tooltipPosition="top"
-                    (onClick)="confirmRevoke(k)"
-                  />
-                }
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template #emptymessage>
-            <tr>
-              <td colspan="5" class="text-center py-8 text-muted-color">
-                No API keys found for this application
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      }
-    </div>
-
-    <!-- Generated Key Dialog (ONE-TIME DISPLAY) -->
-    <p-dialog
-      header="API Key Generated"
-      [visible]="keyDialogVisible()"
-      (visibleChange)="keyDialogVisible.set($event)"
-      [modal]="true"
-      [closable]="true"
-      [style]="{ width: '550px' }"
-    >
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2 text-orange-500">
-          <i class="pi pi-exclamation-triangle text-xl"></i>
-          <span class="font-semibold">Copy this key now. It will not be shown again.</span>
-        </div>
-        <div
-          class="bg-surface-100 dark:bg-surface-800 p-4 rounded-lg font-mono text-sm break-all select-all"
-        >
-          {{ generatedKey() }}
-        </div>
-      </div>
-      <ng-template #footer>
-        <p-button label="Close" (onClick)="keyDialogVisible.set(false)" />
-      </ng-template>
-    </p-dialog>
-
-    <p-confirmDialog />
-  `,
+  templateUrl: './api-keys-list.html',
+  styleUrl: './api-keys-list.scss',
 })
 export class ApiKeysListComponent implements OnInit {
   private readonly apiKeysService = inject(ApiKeysService);
