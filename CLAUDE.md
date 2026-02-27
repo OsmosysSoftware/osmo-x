@@ -145,6 +145,7 @@ npm run generate:api          # Regenerate TypeScript types from backend OpenAPI
 
 ### API (TypeScript/NestJS)
 
+- **Always use `nest generate`** to scaffold new modules, controllers, services, etc. — never create files manually
 - Airbnb style, 100-char line limit, Prettier formatting
 - `@typescript-eslint/explicit-function-return-type: error` (with `allowExpressions: true`)
 - `@typescript-eslint/no-explicit-any: error`
@@ -154,6 +155,8 @@ npm run generate:api          # Regenerate TypeScript types from backend OpenAPI
 
 ### Portal (TypeScript/Angular 20)
 
+- **Always use `ng generate`** to scaffold new components, services, pipes, guards, etc. — never create files manually
+- **Separate files**: Always use `templateUrl` and `styleUrl` — NO inline `template` or `styles` in components. Each component must have separate `.ts`, `.html`, and `.scss` files (test files are optional)
 - Standalone components only (NO NgModules)
 - `ChangeDetectionStrategy.OnPush` on ALL components
 - Signals for state (`signal()`, `computed()`), `input()`/`output()` functions (NOT decorators)
