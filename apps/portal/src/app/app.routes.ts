@@ -66,6 +66,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/api-keys/pages/api-keys-list').then((m) => m.ApiKeysListComponent),
       },
+      {
+        path: 'provider-chain-members',
+        canActivate: [orgAdminGuard],
+        loadComponent: () =>
+          import('./features/provider-chain-members/pages/chain-members-list').then(
+            (m) => m.ChainMembersListComponent,
+          ),
+      },
 
       // Administration Routes (ORG_ADMIN or higher)
       {

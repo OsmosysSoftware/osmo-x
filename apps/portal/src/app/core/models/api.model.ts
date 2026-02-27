@@ -77,17 +77,16 @@ export interface ProviderChain {
 }
 
 export interface ProviderChainMember {
-  chain_member_id: number;
+  id: number;
   chain_id: number;
   provider_id: number;
   priority_order: number;
+  is_active: number;
   status: number;
   created_by: number | null;
   updated_by: number | null;
   created_on: string;
   updated_on: string;
-  provider_details?: Provider;
-  provider_chain_details?: ProviderChain;
 }
 
 export interface Notification {
