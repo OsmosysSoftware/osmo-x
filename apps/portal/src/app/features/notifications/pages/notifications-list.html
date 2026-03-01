@@ -11,6 +11,7 @@
   </div>
 
   <p-toolbar class="mb-4">
+    <ng-template #start></ng-template>
     <ng-template #end>
       <div class="flex items-center gap-2">
         <p-iconfield iconPosition="left">
@@ -36,7 +37,7 @@
     <p-table
       #dt
       [value]="notifications()"
-      [globalFilterFields]="['notification_id', 'application_id']"
+      [globalFilterFields]="['notification_id']"
       [rowHover]="true"
       [stripedRows]="true"
       [tableStyle]="{ 'min-width': '60rem' }"
@@ -45,14 +46,9 @@
     >
       <ng-template #header>
         <tr>
-          <th pSortableColumn="notification_id" style="min-width: 6rem">
-            ID <p-sortIcon field="notification_id" />
-          </th>
           <th>Channel Type</th>
           <th>Delivery Status</th>
-          <th pSortableColumn="application_id" style="min-width: 8rem">
-            Application ID <p-sortIcon field="application_id" />
-          </th>
+          <th style="min-width: 8rem">Application</th>
           <th pSortableColumn="created_on" style="min-width: 10rem">
             Created <p-sortIcon field="created_on" />
           </th>
@@ -60,18 +56,17 @@
       </ng-template>
       <ng-template #body let-n>
         <tr [pSelectableRow]="n" class="cursor-pointer">
-          <td>{{ n.notification_id }}</td>
           <td>{{ n.channel_type | channelType }}</td>
           <td>
             <app-status-badge [status]="n.delivery_status" />
           </td>
-          <td>{{ n.application_id }}</td>
+          <td>{{ getApplicationName(n.application_id) }}</td>
           <td>{{ n.created_on | date: 'short' }}</td>
         </tr>
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="5" class="!text-center py-8 text-muted-color">No notifications found</td>
+          <td colspan="4" class="!text-center py-8 text-muted-color">No notifications found</td>
         </tr>
       </ng-template>
     </p-table>
@@ -95,10 +90,6 @@
     <div class="flex flex-col gap-4">
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <span class="font-semibold text-muted-color block mb-1">ID</span>
-          <span>{{ n.notification_id }}</span>
-        </div>
-        <div>
           <span class="font-semibold text-muted-color block mb-1">Channel Type</span>
           <span>{{ n.channel_type | channelType }}</span>
         </div>
@@ -107,12 +98,12 @@
           <app-status-badge [status]="n.delivery_status" />
         </div>
         <div>
-          <span class="font-semibold text-muted-color block mb-1">Application ID</span>
-          <span>{{ n.application_id }}</span>
+          <span class="font-semibold text-muted-color block mb-1">Application</span>
+          <span>{{ getApplicationName(n.application_id) }}</span>
         </div>
         <div>
-          <span class="font-semibold text-muted-color block mb-1">Provider ID</span>
-          <span>{{ n.provider_id ?? '—' }}</span>
+          <span class="font-semibold text-muted-color block mb-1">Provider</span>
+          <span>{{ getProviderName(n.provider_id) }}</span>
         </div>
         <div>
           <span class="font-semibold text-muted-color block mb-1">Created</span>

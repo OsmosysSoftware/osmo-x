@@ -22,7 +22,9 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
 import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
 import { NotificationsService } from '../services/notifications.service';
-import { Notification, PageInfo } from '../../../core/models/api.model';
+import { ApplicationsService } from '../../applications/services/applications.service';
+import { ProvidersService } from '../../providers/services/providers.service';
+import { Notification, Application, Provider, PageInfo } from '../../../core/models/api.model';
 
 @Component({
   selector: 'app-notifications-list',
@@ -49,11 +51,15 @@ import { Notification, PageInfo } from '../../../core/models/api.model';
 })
 export class NotificationsListComponent implements OnInit {
   private readonly service = inject(NotificationsService);
+  private readonly applicationsService = inject(ApplicationsService);
+  private readonly providersService = inject(ProvidersService);
   private readonly messageService = inject(MessageService);
 
   readonly dt = viewChild<Table>('dt');
 
   readonly notifications = signal<Notification[]>([]);
+  readonly applications = signal<Application[]>([]);
+  readonly providers = signal<Provider[]>([]);
   readonly loading = signal(true);
   readonly pageInfo = signal<PageInfo | null>(null);
   readonly selectedNotification = signal<Notification | null>(null);
@@ -62,6 +68,12 @@ export class NotificationsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadNotifications();
+    this.applicationsService.list(1, 100).subscribe({
+      next: (res) => this.applications.set(res.items ?? []),
+    });
+    this.providersService.list(1, 100).subscribe({
+      next: (res) => this.providers.set(res.items ?? []),
+    });
   }
 
   loadNotifications(): void {
@@ -87,6 +99,22 @@ export class NotificationsListComponent implements OnInit {
   onPageChange(page: number): void {
     this.currentPage = page;
     this.loadNotifications();
+  }
+
+  getApplicationName(applicationId: number): string {
+    const app = this.applications().find((a) => a.application_id === applicationId);
+
+    return app?.name ?? `App #${applicationId}`;
+  }
+
+  getProviderName(providerId: number | null): string {
+    if (!providerId) {
+      return '—';
+    }
+
+    const provider = this.providers().find((p) => p.provider_id === providerId);
+
+    return provider?.name ?? `Provider #${providerId}`;
   }
 
   onGlobalFilter(event: Event): void {

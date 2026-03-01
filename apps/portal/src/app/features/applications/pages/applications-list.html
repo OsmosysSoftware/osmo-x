@@ -53,9 +53,6 @@
     >
       <ng-template #header>
         <tr>
-          <th pSortableColumn="application_id" style="min-width: 6rem">
-            ID <p-sortIcon field="application_id" />
-          </th>
           <th pSortableColumn="name" style="min-width: 12rem">Name <p-sortIcon field="name" /></th>
           <th>Status</th>
           <th>Test Mode</th>
@@ -67,7 +64,6 @@
       </ng-template>
       <ng-template #body let-app>
         <tr>
-          <td>{{ app.application_id }}</td>
           <td>{{ app.name }}</td>
           <td>
             <p-tag
@@ -107,7 +103,7 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="6" class="!text-center py-8 text-muted-color">No applications found</td>
+          <td colspan="5" class="!text-center py-8 text-muted-color">No applications found</td>
         </tr>
       </ng-template>
     </p-table>

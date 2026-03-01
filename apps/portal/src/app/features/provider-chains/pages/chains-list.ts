@@ -188,6 +188,12 @@ export class ChainsListComponent implements OnInit {
     return this.providerTypeLabelMap[type] ?? 'Unknown';
   }
 
+  getApplicationName(applicationId: number): string {
+    const app = this.applications().find((a) => a.application_id === applicationId);
+
+    return app?.name ?? `App #${applicationId}`;
+  }
+
   getProviderName(providerId: number): string {
     const provider = this.providers().find((p) => p.provider_id === providerId);
 

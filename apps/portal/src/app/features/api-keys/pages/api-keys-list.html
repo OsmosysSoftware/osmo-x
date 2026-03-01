@@ -52,9 +52,6 @@
     >
       <ng-template #header>
         <tr>
-          <th pSortableColumn="api_key_id" style="min-width: 6rem">
-            ID <p-sortIcon field="api_key_id" />
-          </th>
           <th style="min-width: 12rem">Application</th>
           <th style="min-width: 16rem">Masked Key</th>
           <th>Status</th>
@@ -66,7 +63,6 @@
       </ng-template>
       <ng-template #body let-k>
         <tr>
-          <td>{{ k.api_key_id }}</td>
           <td>{{ getApplicationName(k.application_id) }}</td>
           <td class="font-mono">{{ k.masked_api_key }}</td>
           <td>
@@ -93,7 +89,7 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="6" class="!text-center py-8 text-muted-color">No API keys found</td>
+          <td colspan="5" class="!text-center py-8 text-muted-color">No API keys found</td>
         </tr>
       </ng-template>
     </p-table>

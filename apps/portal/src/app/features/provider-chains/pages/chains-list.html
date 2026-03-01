@@ -47,7 +47,7 @@
     <p-table
       #dt
       [value]="chains()"
-      [globalFilterFields]="['chain_name', 'application_id']"
+      [globalFilterFields]="['chain_name']"
       [rowHover]="true"
       [stripedRows]="true"
       [tableStyle]="{ 'min-width': '60rem' }"
@@ -56,16 +56,11 @@
       <ng-template #header>
         <tr>
           <th style="width: 3rem"></th>
-          <th pSortableColumn="chain_id" style="min-width: 6rem">
-            ID <p-sortIcon field="chain_id" />
-          </th>
           <th pSortableColumn="chain_name" style="min-width: 12rem">
             Name <p-sortIcon field="chain_name" />
           </th>
           <th>Provider Type</th>
-          <th pSortableColumn="application_id" style="min-width: 8rem">
-            App ID <p-sortIcon field="application_id" />
-          </th>
+          <th style="min-width: 8rem">Application</th>
           <th>Status</th>
           <th pSortableColumn="created_on" style="min-width: 10rem">
             Created <p-sortIcon field="created_on" />
@@ -86,10 +81,9 @@
               (onClick)="toggleExpand(c)"
             />
           </td>
-          <td>{{ c.chain_id }}</td>
           <td>{{ c.chain_name }}</td>
           <td>{{ getProviderTypeLabel(c.provider_type) }}</td>
-          <td>{{ c.application_id }}</td>
+          <td>{{ getApplicationName(c.application_id) }}</td>
           <td>
             <p-tag
               [value]="c.status === 1 ? 'Active' : 'Inactive'"
@@ -200,7 +194,7 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="8" class="text-center py-8 text-muted-color">No provider chains found</td>
+          <td colspan="7" class="text-center py-8 text-muted-color">No provider chains found</td>
         </tr>
       </ng-template>
     </p-table>

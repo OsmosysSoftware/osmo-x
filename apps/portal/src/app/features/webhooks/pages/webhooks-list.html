@@ -52,7 +52,6 @@
     >
       <ng-template #header>
         <tr>
-          <th pSortableColumn="id" style="min-width: 6rem">ID <p-sortIcon field="id" /></th>
           <th style="min-width: 12rem">Provider</th>
           <th style="min-width: 20rem">URL</th>
           <th>Status</th>
@@ -64,7 +63,6 @@
       </ng-template>
       <ng-template #body let-w>
         <tr>
-          <td>{{ w.id }}</td>
           <td>{{ getProviderName(w.provider_id) }}</td>
           <td class="max-w-xs truncate">{{ w.webhook_url }}</td>
           <td>
@@ -98,7 +96,7 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="6" class="!text-center py-8 text-muted-color">No webhooks found</td>
+          <td colspan="5" class="!text-center py-8 text-muted-color">No webhooks found</td>
         </tr>
       </ng-template>
     </p-table>

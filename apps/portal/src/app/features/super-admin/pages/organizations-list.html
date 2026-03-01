@@ -52,9 +52,6 @@
     >
       <ng-template #header>
         <tr>
-          <th pSortableColumn="organization_id" style="min-width: 6rem">
-            ID <p-sortIcon field="organization_id" />
-          </th>
           <th pSortableColumn="name" style="min-width: 12rem">Name <p-sortIcon field="name" /></th>
           <th pSortableColumn="slug" style="min-width: 10rem">Slug <p-sortIcon field="slug" /></th>
           <th>Status</th>
@@ -66,7 +63,6 @@
       </ng-template>
       <ng-template #body let-org>
         <tr>
-          <td>{{ org.organization_id }}</td>
           <td>{{ org.name }}</td>
           <td class="font-mono">{{ org.slug }}</td>
           <td>
@@ -98,7 +94,7 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="6" class="!text-center py-8 text-muted-color">No organizations found</td>
+          <td colspan="5" class="!text-center py-8 text-muted-color">No organizations found</td>
         </tr>
       </ng-template>
     </p-table>
