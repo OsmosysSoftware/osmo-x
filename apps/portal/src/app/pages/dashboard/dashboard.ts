@@ -1,11 +1,10 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
-import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DashboardService } from '../../features/dashboard/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CardModule, SkeletonModule],
+  imports: [SkeletonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss'],

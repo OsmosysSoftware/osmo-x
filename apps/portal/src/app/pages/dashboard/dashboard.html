@@ -14,21 +14,21 @@
   @if (loading()) {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       @for (i of [1, 2, 3, 4]; track i) {
-        <p-card>
+        <div class="border border-surface rounded-lg p-4">
           <p-skeleton height="80px" />
-        </p-card>
+        </div>
       }
     </div>
   } @else if (error()) {
-    <p-card>
+    <div class="border border-surface rounded-lg p-8">
       <div class="text-center py-12">
         <i class="pi pi-exclamation-triangle text-6xl text-red-400 mb-4"></i>
         <p class="text-muted-color">{{ error() }}</p>
       </div>
-    </p-card>
+    </div>
   } @else if (stats(); as s) {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <p-card>
+      <div class="border border-surface rounded-lg p-4">
         <div class="flex items-center gap-4">
           <div
             class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900"
@@ -40,9 +40,9 @@
             <p class="text-2xl font-bold m-0">{{ s.total_notifications }}</p>
           </div>
         </div>
-      </p-card>
+      </div>
 
-      <p-card>
+      <div class="border border-surface rounded-lg p-4">
         <div class="flex items-center gap-4">
           <div
             class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900"
@@ -54,9 +54,9 @@
             <p class="text-2xl font-bold m-0">{{ s.successful_notifications }}</p>
           </div>
         </div>
-      </p-card>
+      </div>
 
-      <p-card>
+      <div class="border border-surface rounded-lg p-4">
         <div class="flex items-center gap-4">
           <div
             class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900"
@@ -68,9 +68,9 @@
             <p class="text-2xl font-bold m-0">{{ s.failed_notifications }}</p>
           </div>
         </div>
-      </p-card>
+      </div>
 
-      <p-card>
+      <div class="border border-surface rounded-lg p-4">
         <div class="flex items-center gap-4">
           <div
             class="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900"
@@ -82,11 +82,11 @@
             <p class="text-2xl font-bold m-0">{{ s.pending_notifications }}</p>
           </div>
         </div>
-      </p-card>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <p-card>
+      <div class="border border-surface rounded-lg p-4">
         <div class="flex items-center gap-4">
           <div
             class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900"
@@ -98,9 +98,9 @@
             <p class="text-2xl font-bold m-0">{{ s.total_applications }}</p>
           </div>
         </div>
-      </p-card>
+      </div>
 
-      <p-card>
+      <div class="border border-surface rounded-lg p-4">
         <div class="flex items-center gap-4">
           <div
             class="flex items-center justify-center w-12 h-12 rounded-full bg-cyan-100 dark:bg-cyan-900"
@@ -112,9 +112,9 @@
             <p class="text-2xl font-bold m-0">{{ s.total_providers }}</p>
           </div>
         </div>
-      </p-card>
+      </div>
 
-      <p-card>
+      <div class="border border-surface rounded-lg p-4">
         <div class="flex items-center gap-4">
           <div
             class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900"
@@ -126,7 +126,7 @@
             <p class="text-2xl font-bold m-0">{{ s.success_rate }}%</p>
           </div>
         </div>
-      </p-card>
+      </div>
     </div>
   }
 </div>
