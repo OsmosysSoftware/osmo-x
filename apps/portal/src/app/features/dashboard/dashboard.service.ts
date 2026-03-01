@@ -16,7 +16,7 @@ export interface DashboardStats {
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/dashboard`;
+  private readonly apiUrl = `${environment.apiUrl}/dashboard`;
 
   private readonly _stats = signal<DashboardStats | null>(null);
   readonly stats = this._stats.asReadonly();

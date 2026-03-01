@@ -37,7 +37,7 @@ import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 @ApiTags('Users')
 @ApiBearerAuth()
 @ApiExtraModels(UserResponseDto)
-@Controller('api/v1/users')
+@Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)

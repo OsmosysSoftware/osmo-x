@@ -42,6 +42,9 @@ export const ErrorCodes = {
   CHAIN_EXHAUSTED: 'CHAIN_EXHAUSTED',
   CHAIN_MEMBER_NOT_FOUND: 'CHAIN_MEMBER_NOT_FOUND',
   CHAIN_MEMBER_DUPLICATE: 'CHAIN_MEMBER_DUPLICATE',
+  CHAIN_PROVIDER_TYPE_MISMATCH: 'CHAIN_PROVIDER_TYPE_MISMATCH',
+  CHAIN_HAS_MEMBERS: 'CHAIN_HAS_MEMBERS',
+  CHAIN_PRIORITY_INVALID: 'CHAIN_PRIORITY_INVALID',
 
   // Notification Errors (NOTIFICATION_*)
   NOTIFICATION_NOT_FOUND: 'NOTIFICATION_NOT_FOUND',
@@ -114,6 +117,9 @@ export const ErrorMessages: Record<ErrorCode, string> = {
   [ErrorCodes.CHAIN_EXHAUSTED]: 'All providers in chain have been exhausted',
   [ErrorCodes.CHAIN_MEMBER_NOT_FOUND]: 'Provider chain member not found',
   [ErrorCodes.CHAIN_MEMBER_DUPLICATE]: 'Provider is already a member of this chain',
+  [ErrorCodes.CHAIN_PROVIDER_TYPE_MISMATCH]: 'Provider type does not match the chain provider type',
+  [ErrorCodes.CHAIN_HAS_MEMBERS]: 'Delete all chain members before updating provider type',
+  [ErrorCodes.CHAIN_PRIORITY_INVALID]: 'Provider priority order is invalid',
 
   // Notification
   [ErrorCodes.NOTIFICATION_NOT_FOUND]: 'Notification not found',

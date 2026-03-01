@@ -37,7 +37,7 @@ import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 @ApiTags('Archived Notifications')
 @ApiBearerAuth()
 @ApiExtraModels(ArchivedNotificationResponseDto)
-@Controller('api/v1/archived-notifications')
+@Controller('archived-notifications')
 @UseInterceptors(SnakeCaseInterceptor)
 export class ArchivedNotificationsController {
   private logger: Logger = new Logger(ArchivedNotificationsController.name);

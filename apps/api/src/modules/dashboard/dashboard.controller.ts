@@ -18,7 +18,7 @@ import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 @ApiTags('Dashboard')
 @ApiBearerAuth()
 @ApiExtraModels(DashboardStatsResponseDto)
-@Controller('api/v1/dashboard')
+@Controller('dashboard')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(SnakeCaseInterceptor)
 export class DashboardController {

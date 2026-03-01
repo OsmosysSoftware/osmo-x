@@ -20,7 +20,7 @@ import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 
 @ApiTags('Auth')
-@Controller('api/v1/auth')
+@Controller('auth')
 @UseInterceptors(SnakeCaseInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

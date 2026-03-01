@@ -7,7 +7,7 @@ import { ArchivedNotification, PaginatedResponse } from '../../../core/models/ap
 @Injectable({ providedIn: 'root' })
 export class ArchivedNotificationsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/archived-notifications`;
+  private readonly apiUrl = `${environment.apiUrl}/archived-notifications`;
 
   private readonly _archivedNotifications = signal<ArchivedNotification[]>([]);
   readonly archivedNotifications = this._archivedNotifications.asReadonly();

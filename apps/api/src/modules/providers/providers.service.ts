@@ -1,4 +1,6 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { NotFoundException, ValidationException } from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Provider } from './entities/provider.entity';
@@ -53,15 +55,15 @@ export class ProvidersService extends CoreService<Provider> {
     const channelExists = Object.values(ChannelType).includes(providerInput.channelType);
 
     if (!userExists) {
-      throw new Error('Invalid userId');
+      throw new ValidationException(ErrorCodes.VALIDATION_FAILED, 'Invalid userId');
     }
 
     if (!applicationExists) {
-      throw new Error('Invalid applicationId.');
+      throw new ValidationException(ErrorCodes.VALIDATION_FAILED, 'Invalid applicationId');
     }
 
     if (!channelExists) {
-      throw new Error('Invalid channelType');
+      throw new ValidationException(ErrorCodes.VALIDATION_FAILED, 'Invalid channelType');
     }
 
     const provider = this.providerRepository.create(providerInput);
@@ -103,13 +105,13 @@ export class ProvidersService extends CoreService<Provider> {
     const provider = await this.getById(providerId);
 
     if (!provider) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     const app = await this.applicationsService.findById(provider.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     return this.mapToDto(provider);
@@ -156,7 +158,7 @@ export class ProvidersService extends CoreService<Provider> {
     const app = await this.applicationsService.findById(providerInput.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Application not found');
+      throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
     }
 
     const effectiveUserId = userId ?? providerInput.userId;
@@ -176,13 +178,13 @@ export class ProvidersService extends CoreService<Provider> {
     const provider = await this.getById(input.providerId);
 
     if (!provider) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     const app = await this.applicationsService.findById(provider.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     if (input.name !== undefined) {
@@ -210,13 +212,13 @@ export class ProvidersService extends CoreService<Provider> {
     const provider = await this.getById(providerId);
 
     if (!provider) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     const app = await this.applicationsService.findById(provider.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     provider.status = Status.INACTIVE;

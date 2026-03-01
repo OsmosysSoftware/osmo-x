@@ -2,7 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { OrgContextService } from '../services/org-context.service';
 
-const SKIP_PATTERNS = ['/auth/', '/v1/organizations'];
+const SKIP_PATTERNS = ['/auth/', '/organizations'];
 
 export const orgContextInterceptor: HttpInterceptorFn = (req, next) => {
   const orgContext = inject(OrgContextService);

@@ -7,7 +7,7 @@ import { ServerApiKey, PaginatedResponse } from '../../../core/models/api.model'
 @Injectable({ providedIn: 'root' })
 export class ApiKeysService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/api-keys`;
+  private readonly apiUrl = `${environment.apiUrl}/api-keys`;
 
   private readonly _apiKeys = signal<ServerApiKey[]>([]);
   readonly apiKeys = this._apiKeys.asReadonly();

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -13,6 +12,8 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { ValidationException } from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import {
   ApiBearerAuth,
   ApiExtraModels,
@@ -30,7 +31,6 @@ import { PaginatedResponse } from 'src/common/dto/paginated-response.dto';
 import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 import { NotificationResponseDto } from './dto/notification-response.dto';
 import { QueueService } from './queues/queue.service';
-import { JsendFormatter } from 'src/common/jsend-formatter';
 import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -43,7 +43,7 @@ import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 @ApiTags('Notifications')
 @ApiBearerAuth()
 @ApiExtraModels(NotificationResponseDto)
-@Controller('api/v1/notifications')
+@Controller('notifications')
 @UseInterceptors(SnakeCaseInterceptor)
 export class NotificationsController {
   private logger: Logger = new Logger(NotificationsController.name);
@@ -51,7 +51,6 @@ export class NotificationsController {
   constructor(
     private readonly notificationsService: NotificationsService,
     private readonly queueService: QueueService,
-    private readonly jsend: JsendFormatter,
   ) {}
 
   @Get()
@@ -134,12 +133,10 @@ export class NotificationsController {
       const gracePeriodMs = gracePeriod ? parseInt(gracePeriod, 10) : 0;
 
       if (isNaN(gracePeriodMs) || gracePeriodMs < 0) {
-        throw new BadRequestException('Invalid grace period value');
+        throw new ValidationException(ErrorCodes.VALIDATION_FAILED, 'Invalid grace period value');
       }
 
-      const result = await this.queueService.cleanupCompletedAndFailedJobs(gracePeriodMs);
-
-      return this.jsend.success(result);
+      return this.queueService.cleanupCompletedAndFailedJobs(gracePeriodMs);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -158,9 +155,7 @@ export class NotificationsController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   async createNotification(@Body() notificationData: CreateNotificationDto): Promise<object> {
     try {
-      const notification = await this.notificationsService.createNotification(notificationData);
-
-      return this.jsend.success(notification);
+      return this.notificationsService.createNotification(notificationData);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

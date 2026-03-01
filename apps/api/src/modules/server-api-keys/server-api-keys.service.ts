@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { NotFoundException } from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 import { In } from 'typeorm';
@@ -94,7 +96,7 @@ export class ServerApiKeysService {
     const app = await this.applicationsService.findById(applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Application not found');
+      throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
     }
 
     const keys = await this.findByRelatedApplicationId(applicationId);
@@ -108,13 +110,13 @@ export class ServerApiKeysService {
     });
 
     if (!key) {
-      throw new BadRequestException('API key not found');
+      throw new NotFoundException(ErrorCodes.API_KEY_NOT_FOUND, 'API key not found');
     }
 
     const app = await this.applicationsService.findById(key.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('API key not found');
+      throw new NotFoundException(ErrorCodes.API_KEY_NOT_FOUND, 'API key not found');
     }
 
     key.status = Status.INACTIVE;
@@ -127,7 +129,7 @@ export class ServerApiKeysService {
     const app = await this.applicationsService.findById(applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Application not found');
+      throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
     }
 
     return this.generateApiKey(applicationId);

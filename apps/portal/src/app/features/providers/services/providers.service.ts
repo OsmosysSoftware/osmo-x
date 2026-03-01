@@ -7,7 +7,7 @@ import { Provider, PaginatedResponse } from '../../../core/models/api.model';
 @Injectable({ providedIn: 'root' })
 export class ProvidersService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/providers`;
+  private readonly apiUrl = `${environment.apiUrl}/providers`;
 
   private readonly _providers = signal<Provider[]>([]);
   readonly providers = this._providers.asReadonly();

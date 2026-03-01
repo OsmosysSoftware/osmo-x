@@ -7,7 +7,7 @@ import { User } from '../../../core/models/auth.model';
 @Injectable({ providedIn: 'root' })
 export class UsersService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/users`;
+  private readonly apiUrl = `${environment.apiUrl}/users`;
 
   private readonly _users = signal<User[]>([]);
   readonly users = this._users.asReadonly();

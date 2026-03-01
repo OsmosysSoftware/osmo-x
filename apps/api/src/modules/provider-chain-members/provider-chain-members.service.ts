@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProviderChainMember } from './entities/provider-chain-member.entity';
 import { DataSource, MoreThan, Repository } from 'typeorm';
@@ -16,6 +16,12 @@ import { UpdateProviderPriorityOrderInput } from './dto/update-provider-priority
 import { DeleteProviderChainMemberInput } from './dto/delete-chain-member-by-provider.input';
 import { ProviderChainMemberResponseDto } from './dto/provider-chain-member-response.dto';
 import { ApplicationsService } from '../applications/applications.service';
+import { ErrorCodes } from 'src/common/constants/error-codes';
+import {
+  NotFoundException,
+  ValidationException,
+  ConflictException,
+} from 'src/common/exceptions/app.exception';
 
 @Injectable()
 export class ProviderChainMembersService extends CoreService<ProviderChainMember> {
@@ -99,7 +105,10 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     const providerChainMemberEntry = await this.getById(providerChainMemberId);
 
     if (!providerChainMemberEntry) {
-      throw new BadRequestException('Provider chain member does not exist');
+      throw new NotFoundException(
+        ErrorCodes.CHAIN_MEMBER_NOT_FOUND,
+        'Provider chain member does not exist',
+      );
     }
 
     await this.providerChainMemberRepository.update(providerChainMemberId, {
@@ -118,7 +127,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       );
 
       if (!providerChainExists) {
-        throw new BadRequestException('Provider Chain does not exist.');
+        throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain does not exist');
       }
 
       const providerExists = await this.providersService.getById(
@@ -126,11 +135,15 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       );
 
       if (!providerExists || providerExists.isEnabled === IsEnabledStatus.FALSE) {
-        throw new BadRequestException('Provider does not exist or is not enabled.');
+        throw new NotFoundException(
+          ErrorCodes.PROVIDER_NOT_FOUND,
+          'Provider does not exist or is not enabled',
+        );
       }
 
       if (providerChainExists.applicationId !== providerExists.applicationId) {
-        throw new BadRequestException(
+        throw new ValidationException(
+          ErrorCodes.VALIDATION_FAILED,
           'Provider and provider chain do not belong to the same application',
         );
       }
@@ -142,8 +155,9 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
         );
 
       if (ifProviderHasAlreadyBeenAddedToProviderChain) {
-        throw new BadRequestException(
-          'Provider has already been added to the chain. It may or may not have been deleted.',
+        throw new ConflictException(
+          ErrorCodes.CHAIN_MEMBER_DUPLICATE,
+          'Provider has already been added to the chain',
         );
       }
 
@@ -152,12 +166,16 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       );
 
       if (!masterProviderExists) {
-        throw new BadRequestException('Master provider does not exist.');
+        throw new NotFoundException(
+          ErrorCodes.PROVIDER_NOT_FOUND,
+          'Master provider does not exist',
+        );
       }
 
       if (providerChainExists.providerType !== masterProviderExists.providerType) {
-        throw new BadRequestException(
-          'The provider type of the input provider id does not match the provider type configured in the provider chain.',
+        throw new ValidationException(
+          ErrorCodes.CHAIN_PROVIDER_TYPE_MISMATCH,
+          'The provider type does not match the provider type configured in the provider chain',
         );
       }
 
@@ -200,18 +218,22 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       const providerChainExists = await this.providerChainsService.getById(updateData.chainId);
 
       if (!providerChainExists) {
-        throw new BadRequestException('Provider Chain does not exist.');
+        throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain does not exist');
       }
 
       const providerPriorityOrderArray = updateData.newProviderPriorityOrder;
 
       if (!Array.isArray(providerPriorityOrderArray) || providerPriorityOrderArray.length === 0) {
-        throw new BadRequestException('Provider priority order is empty or invalid');
+        throw new ValidationException(
+          ErrorCodes.CHAIN_PRIORITY_INVALID,
+          'Provider priority order is empty or invalid',
+        );
       }
 
       if (providerPriorityOrderArray.some((p) => typeof p !== 'number' || isNaN(p))) {
-        throw new BadRequestException(
-          'All elements in newProviderPriorityOrder must be valid providerIds of type number.',
+        throw new ValidationException(
+          ErrorCodes.CHAIN_PRIORITY_INVALID,
+          'All elements in newProviderPriorityOrder must be valid providerIds of type number',
         );
       }
 
@@ -224,7 +246,10 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       });
 
       if (chainMembersFromDB.length <= 0) {
-        throw new BadRequestException(`No members added for provider chain ${updateData.chainId}`);
+        throw new NotFoundException(
+          ErrorCodes.CHAIN_MEMBER_NOT_FOUND,
+          `No members added for provider chain ${updateData.chainId}`,
+        );
       }
 
       // Step 2: Validate all input providers exist in DB (no missing or extra)
@@ -234,7 +259,8 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       const extra = providerPriorityOrderArray.filter((id) => !providerIdsFromDB.includes(id));
 
       if (missing.length > 0 || extra.length > 0) {
-        throw new BadRequestException(
+        throw new ValidationException(
+          ErrorCodes.CHAIN_PRIORITY_INVALID,
           `Mismatch between input and DB provider ids. Missing: ${missing}, Extra: ${extra}`,
         );
       }
@@ -292,7 +318,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       const providerChainExists = await this.providerChainsService.getById(deletionData.chainId);
 
       if (!providerChainExists) {
-        throw new BadRequestException('Provider Chain does not exist.');
+        throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain does not exist');
       }
 
       const ifProviderHasAlreadyBeenAddedToProviderChain =
@@ -302,7 +328,10 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
         );
 
       if (!ifProviderHasAlreadyBeenAddedToProviderChain) {
-        throw new BadRequestException('Provider does not exist in the chain.');
+        throw new NotFoundException(
+          ErrorCodes.CHAIN_MEMBER_NOT_FOUND,
+          'Provider does not exist in the chain',
+        );
       }
 
       const queryRunner = this.dataSource.createQueryRunner();
@@ -320,7 +349,10 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
         });
 
         if (!chainMemberToDelete) {
-          throw new BadRequestException('Chain member has already been deleted');
+          throw new NotFoundException(
+            ErrorCodes.CHAIN_MEMBER_NOT_FOUND,
+            'Chain member has already been deleted',
+          );
         }
 
         const deletedPriority = chainMemberToDelete.priorityOrder;
@@ -375,7 +407,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       );
 
       if (!providerChainExists) {
-        throw new BadRequestException('Provider Chain does not exist.');
+        throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain does not exist');
       }
 
       const deletedChainMemberEntry = await this.providerChainMemberRepository.findOne({
@@ -387,7 +419,10 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       });
 
       if (!deletedChainMemberEntry) {
-        throw new BadRequestException('Provider Id not found or is already active');
+        throw new NotFoundException(
+          ErrorCodes.CHAIN_MEMBER_NOT_FOUND,
+          'Provider not found or is already active',
+        );
       }
 
       const lastPriorityMember = await this.getLastPriorityProviderChainMemberByChainId(
@@ -409,13 +444,13 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
     const chain = await this.providerChainsService.getById(chainId);
 
     if (!chain) {
-      throw new BadRequestException('Provider chain not found');
+      throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain not found');
     }
 
     const app = await this.applicationsService.findById(chain.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Provider chain not found');
+      throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain not found');
     }
   }
 
@@ -437,6 +472,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
   async getAllProviderChainMembersAsDto(
     query: PaginationQueryDto,
     organizationId: number,
+    chainId?: number,
   ): Promise<{ items: ProviderChainMemberResponseDto[]; meta: PaginationMeta }> {
     const { page, limit, offset, sort } = PaginationHelper.normalizePaginationParams(query);
 
@@ -455,6 +491,10 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       .leftJoinAndSelect('pcm.providerChainDetails', 'providerChain')
       .where('pcm.status = :status', { status: Status.ACTIVE })
       .andWhere('providerChain.applicationId IN (:...appIds)', { appIds });
+
+    if (chainId) {
+      qb.andWhere('pcm.chainId = :chainId', { chainId });
+    }
 
     qb.skip(offset);
     qb.take(limit);

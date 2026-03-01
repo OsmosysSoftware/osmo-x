@@ -19,7 +19,7 @@ export interface ChangePasswordDto {
 })
 export class ProfileService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/users`;
+  private readonly apiUrl = `${environment.apiUrl}/users`;
 
   updateProfile(data: UpdateProfileDto): Observable<unknown> {
     return this.http.put(`${this.apiUrl}/profile`, data);

@@ -28,9 +28,9 @@ export class OrgContextService {
    * True when SUPER_ADMIN has "All Organizations" selected (no specific org).
    * CRUD pages should disable create/edit/delete when this is true.
    */
-  readonly isAllOrgsMode = computed<boolean>(() => {
-    return this.authService.isSuperAdmin() && this._selectedOrgId() === null;
-  });
+  readonly isAllOrgsMode = computed<boolean>(
+    () => this.authService.isSuperAdmin() && this._selectedOrgId() === null,
+  );
 
   readonly selectedOrgName = computed<string | null>(() => {
     const orgId = this._selectedOrgId();

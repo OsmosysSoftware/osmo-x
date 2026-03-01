@@ -1,4 +1,6 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { ConflictException, NotFoundException } from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Webhook } from './entities/webhook.entity';
@@ -43,7 +45,10 @@ export class WebhookService {
     });
 
     if (existingWebhook) {
-      throw new Error('This provider webhook exist');
+      throw new ConflictException(
+        ErrorCodes.GENERAL_CONFLICT,
+        'A webhook already exists for this provider',
+      );
     }
 
     const webhook = this.webhookRepository.create(webhookInput);
@@ -158,13 +163,13 @@ export class WebhookService {
     const provider = await this.providersService.getById(providerId);
 
     if (!provider) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     const app = await this.applicationsService.findById(provider.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     const webhooks = await this.findByProviderId(providerId);
@@ -181,19 +186,19 @@ export class WebhookService {
     });
 
     if (!webhook) {
-      throw new BadRequestException('Webhook not found');
+      throw new NotFoundException(ErrorCodes.WEBHOOK_NOT_FOUND, 'Webhook not found');
     }
 
     const provider = await this.providersService.getById(webhook.providerId);
 
     if (!provider) {
-      throw new BadRequestException('Webhook not found');
+      throw new NotFoundException(ErrorCodes.WEBHOOK_NOT_FOUND, 'Webhook not found');
     }
 
     const app = await this.applicationsService.findById(provider.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Webhook not found');
+      throw new NotFoundException(ErrorCodes.WEBHOOK_NOT_FOUND, 'Webhook not found');
     }
 
     return webhook;
@@ -225,13 +230,13 @@ export class WebhookService {
     const provider = await this.providersService.getById(webhookInput.providerId);
 
     if (!provider) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     const app = await this.applicationsService.findById(provider.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Provider not found');
+      throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, 'Provider not found');
     }
 
     const webhook = await this.registerWebhook(webhookInput);

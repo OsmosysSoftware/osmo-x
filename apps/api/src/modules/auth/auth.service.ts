@@ -1,4 +1,6 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { AuthException, NotFoundException } from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResponse } from './dto/login-response';
@@ -21,7 +23,7 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      throw new NotFoundException('User does not exist');
+      throw new NotFoundException(ErrorCodes.USER_NOT_FOUND, 'User does not exist');
     }
 
     const adminPassword = user.password;
@@ -41,9 +43,7 @@ export class AuthService {
       const user = await this.validateUser(loginUserInput.email, loginUserInput.password);
 
       if (!user) {
-        throw new UnauthorizedException(
-          'Invalid credentials. Please provide valid email and password.',
-        );
+        throw new AuthException(ErrorCodes.AUTH_INVALID_CREDENTIALS, 'Invalid credentials');
       }
 
       const payload: JwtPayload = {
@@ -57,7 +57,7 @@ export class AuthService {
         token: this.jwtService.sign(payload),
       };
     } catch (error) {
-      throw new Error(`Error while logging in: ${error.message}`);
+      throw new AuthException(ErrorCodes.AUTH_INVALID_CREDENTIALS, 'Login failed');
     }
   }
 
@@ -66,9 +66,7 @@ export class AuthService {
     const user = await this.validateUser(loginUserInput.email, loginUserInput.password);
 
     if (!user) {
-      throw new UnauthorizedException(
-        'Invalid credentials. Please provide valid email and password.',
-      );
+      throw new AuthException(ErrorCodes.AUTH_INVALID_CREDENTIALS, 'Invalid credentials');
     }
 
     return this.generateAuthResponse(user);
@@ -79,7 +77,7 @@ export class AuthService {
     const user = await this.usersService.findByUserId(userPayload.userId);
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new AuthException(ErrorCodes.AUTH_UNAUTHORIZED, 'User not found');
     }
 
     delete user.password;
@@ -91,7 +89,7 @@ export class AuthService {
     const user = await this.usersService.findByUserId(userId);
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(ErrorCodes.USER_NOT_FOUND, 'User not found');
     }
 
     delete user.password;

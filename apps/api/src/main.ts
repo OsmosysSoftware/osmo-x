@@ -4,8 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import { loggerConfig } from './config/logger.config';
-import { JsendFormatter } from './common/jsend-formatter';
-import { HttpExceptionFilter } from './common/http-exception.filter';
+import { ProblemJsonFilter } from './common/filters/problem-json.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as packageJson from '../package.json';
 import { useContainer } from 'class-validator';
@@ -49,8 +48,9 @@ async function bootstrap(): Promise<void> {
   let document = SwaggerModule.createDocument(app, config);
   document = transformSwaggerToSnakeCase(document);
   SwaggerModule.setup('api/docs', app, document);
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new HttpExceptionFilter(new JsendFormatter()));
+  app.useGlobalFilters(new ProblemJsonFilter());
   app.use(json({ limit: configService.get('REQUEST_MAX_SIZE', '50mb') }));
   app.use(urlencoded({ extended: true, limit: configService.get('REQUEST_MAX_SIZE', '50mb') }));
   // TODO: Update origin as needed

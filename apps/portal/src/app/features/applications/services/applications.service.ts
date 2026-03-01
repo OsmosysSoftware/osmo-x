@@ -7,7 +7,7 @@ import { Application, PaginatedResponse } from '../../../core/models/api.model';
 @Injectable({ providedIn: 'root' })
 export class ApplicationsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/applications`;
+  private readonly apiUrl = `${environment.apiUrl}/applications`;
 
   private readonly _applications = signal<Application[]>([]);
   readonly applications = this._applications.asReadonly();

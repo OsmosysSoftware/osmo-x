@@ -48,13 +48,12 @@ export class ProfileComponent implements OnInit {
   private originalFirstName = '';
   private originalLastName = '';
 
-  readonly hasChanges = computed(() => {
-    return (
+  readonly hasChanges = computed(
+    () =>
       this.email().trim() !== this.originalEmail ||
       this.firstName().trim() !== this.originalFirstName ||
-      this.lastName().trim() !== this.originalLastName
-    );
-  });
+      this.lastName().trim() !== this.originalLastName,
+  );
 
   // Change password dialog
   readonly passwordDialogVisible = signal(false);

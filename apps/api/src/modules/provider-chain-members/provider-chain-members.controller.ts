@@ -39,7 +39,7 @@ import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 @ApiTags('Provider Chain Members')
 @ApiBearerAuth()
 @ApiExtraModels(ProviderChainMemberResponseDto)
-@Controller('api/v1/provider-chain-members')
+@Controller('provider-chain-members')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)
@@ -54,6 +54,12 @@ export class ProviderChainMembersController {
     type: Number,
     description: 'Target org (SUPER_ADMIN only)',
   })
+  @ApiQuery({
+    name: 'chain_id',
+    required: false,
+    type: Number,
+    description: 'Filter members by provider chain ID',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of provider chain members',
@@ -63,6 +69,7 @@ export class ProviderChainMembersController {
   async findAll(
     @Query() query: PaginationQueryDto,
     @Query('organization_id') queryOrgId: number,
+    @Query('chain_id') chainId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<ProviderChainMemberResponseDto>> {
@@ -70,6 +77,7 @@ export class ProviderChainMembersController {
     const { items, meta } = await this.providerChainMembersService.getAllProviderChainMembersAsDto(
       query,
       targetOrgId,
+      chainId,
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);

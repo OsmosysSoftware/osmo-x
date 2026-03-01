@@ -1,10 +1,10 @@
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+  AuthException,
+  NotFoundException,
+  ValidationException,
+} from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { Application } from './entities/application.entity';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -84,8 +84,9 @@ export class ApplicationsService extends CoreService<Application> {
       if (verified) {
         newApplicationObject.whitelistRecipients = applicationInput.whitelistRecipients;
       } else {
-        throw new Error(
-          'Whitelist verification failed. Please check the inputted whitelist values and try again',
+        throw new ValidationException(
+          ErrorCodes.VALIDATION_FAILED,
+          'Whitelist verification failed',
         );
       }
     }
@@ -100,7 +101,7 @@ export class ApplicationsService extends CoreService<Application> {
       const userEntry = await this.usersService.findByUserId(requestUserId);
 
       if (!userEntry) {
-        throw new UnauthorizedException('User not found');
+        throw new AuthException(ErrorCodes.AUTH_UNAUTHORIZED, 'User not found');
       }
 
       return userEntry;
@@ -124,7 +125,7 @@ export class ApplicationsService extends CoreService<Application> {
 
   async updateApplication(updateApplicationInput: UpdateApplicationInput): Promise<Application> {
     if (!(await this.findById(updateApplicationInput.applicationId))) {
-      throw new BadRequestException('Application does not exist. Update failed.');
+      throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
     }
 
     this.logger.log('Creating queryRunner and starting transaction');
@@ -149,8 +150,9 @@ export class ApplicationsService extends CoreService<Application> {
         if (verified) {
           application.whitelistRecipients = updateApplicationInput.whitelistRecipients;
         } else {
-          throw new Error(
-            'Whitelist verification failed. Please check the inputted whitelist values and try again',
+          throw new ValidationException(
+            ErrorCodes.VALIDATION_FAILED,
+            'Whitelist verification failed',
           );
         }
       }
@@ -192,7 +194,7 @@ export class ApplicationsService extends CoreService<Application> {
     const app = await this.findById(applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Application not found');
+      throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
     }
 
     return this.mapToDto(app);
@@ -254,7 +256,7 @@ export class ApplicationsService extends CoreService<Application> {
     const existing = await this.findById(updateApplicationInput.applicationId);
 
     if (!existing || existing.organizationId !== organizationId) {
-      throw new BadRequestException('Application not found');
+      throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
     }
 
     if (userId !== undefined) {
@@ -274,7 +276,7 @@ export class ApplicationsService extends CoreService<Application> {
     const app = await this.findById(applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Application not found');
+      throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
     }
 
     app.status = Status.INACTIVE;

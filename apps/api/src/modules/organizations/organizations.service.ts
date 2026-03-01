@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { ConflictException, NotFoundException } from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from './entities/organization.entity';
@@ -60,7 +62,10 @@ export class OrganizationsService {
     });
 
     if (existing) {
-      throw new BadRequestException('Organization slug already exists');
+      throw new ConflictException(
+        ErrorCodes.ORG_ALREADY_EXISTS,
+        'Organization slug already exists',
+      );
     }
 
     const org = this.organizationRepository.create({
@@ -84,7 +89,7 @@ export class OrganizationsService {
     });
 
     if (!org) {
-      throw new BadRequestException('Organization not found');
+      throw new NotFoundException(ErrorCodes.ORG_NOT_FOUND, 'Organization not found');
     }
 
     if (input.slug !== undefined && input.slug !== org.slug) {
@@ -93,7 +98,10 @@ export class OrganizationsService {
       });
 
       if (existing && existing.organizationId !== input.organizationId) {
-        throw new BadRequestException('Organization slug already exists');
+        throw new ConflictException(
+          ErrorCodes.ORG_ALREADY_EXISTS,
+          'Organization slug already exists',
+        );
       }
 
       org.slug = input.slug;
@@ -115,7 +123,7 @@ export class OrganizationsService {
     });
 
     if (!org) {
-      throw new BadRequestException('Organization not found');
+      throw new NotFoundException(ErrorCodes.ORG_NOT_FOUND, 'Organization not found');
     }
 
     org.status = Status.INACTIVE;

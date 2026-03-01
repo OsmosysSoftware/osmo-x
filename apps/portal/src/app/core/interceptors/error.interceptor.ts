@@ -12,9 +12,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       const skipErrorToast = req.url.includes('/auth/login') || req.url.includes('/auth/refresh');
 
       if (!skipErrorToast) {
-        // Extract error message from response body (supports both RFC 7807 and JSend formats)
-        const apiMessage =
-          error.error?.message || (typeof error.error?.data === 'string' ? error.error.data : null);
+        // Extract error message from RFC 7807 Problem JSON response
+        const apiMessage = error.error?.detail || error.error?.message;
         let errorMessage = 'An error occurred';
 
         switch (error.status) {

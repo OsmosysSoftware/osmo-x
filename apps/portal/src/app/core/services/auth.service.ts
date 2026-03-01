@@ -86,7 +86,7 @@ export class AuthService {
   }
 
   login(dto: LoginDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/v1/auth/login`, dto).pipe(
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, dto).pipe(
       tap((response) => {
         this.handleAuthSuccess(response);
       }),
@@ -103,7 +103,7 @@ export class AuthService {
 
     const dto: RefreshTokenDto = { refresh_token: refreshToken };
 
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/v1/auth/refresh`, dto).pipe(
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/refresh`, dto).pipe(
       tap((response) => {
         this.handleAuthSuccess(response);
       }),
@@ -116,7 +116,7 @@ export class AuthService {
   }
 
   getProfile(): Observable<User> {
-    return this.http.get<MeResponse>(`${environment.apiUrl}/v1/auth/me`).pipe(
+    return this.http.get<MeResponse>(`${environment.apiUrl}/auth/me`).pipe(
       tap((response) => {
         this.currentUser.set(response.user);
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(response.user));

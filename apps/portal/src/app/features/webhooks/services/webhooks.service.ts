@@ -7,7 +7,7 @@ import { Webhook, PaginatedResponse } from '../../../core/models/api.model';
 @Injectable({ providedIn: 'root' })
 export class WebhooksService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/webhooks`;
+  private readonly apiUrl = `${environment.apiUrl}/webhooks`;
 
   private readonly _webhooks = signal<Webhook[]>([]);
   readonly webhooks = this._webhooks.asReadonly();

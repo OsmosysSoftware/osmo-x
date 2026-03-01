@@ -166,6 +166,21 @@ export const ProblemTypes: Record<ErrorCode, ProblemType> = {
     title: 'Chain Member Duplicate',
     defaultStatus: HttpStatus.CONFLICT,
   },
+  [ErrorCodes.CHAIN_PROVIDER_TYPE_MISMATCH]: {
+    type: `${PROBLEM_BASE_URL}/chain-provider-type-mismatch`,
+    title: 'Provider Type Mismatch',
+    defaultStatus: HttpStatus.BAD_REQUEST,
+  },
+  [ErrorCodes.CHAIN_HAS_MEMBERS]: {
+    type: `${PROBLEM_BASE_URL}/chain-has-members`,
+    title: 'Chain Has Members',
+    defaultStatus: HttpStatus.CONFLICT,
+  },
+  [ErrorCodes.CHAIN_PRIORITY_INVALID]: {
+    type: `${PROBLEM_BASE_URL}/chain-priority-invalid`,
+    title: 'Invalid Priority Order',
+    defaultStatus: HttpStatus.BAD_REQUEST,
+  },
 
   // Notification Problems
   [ErrorCodes.NOTIFICATION_NOT_FOUND]: {

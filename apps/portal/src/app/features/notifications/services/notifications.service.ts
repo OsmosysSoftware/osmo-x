@@ -7,7 +7,7 @@ import { Notification, PaginatedResponse } from '../../../core/models/api.model'
 @Injectable({ providedIn: 'root' })
 export class NotificationsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/notifications`;
+  private readonly apiUrl = `${environment.apiUrl}/notifications`;
 
   private readonly _notifications = signal<Notification[]>([]);
   readonly notifications = this._notifications.asReadonly();

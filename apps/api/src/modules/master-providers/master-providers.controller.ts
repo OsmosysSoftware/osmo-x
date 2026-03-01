@@ -9,7 +9,7 @@ import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interce
 @ApiTags('Master Providers')
 @ApiBearerAuth()
 @ApiExtraModels(MasterProviderResponseDto)
-@Controller('api/v1/master-providers')
+@Controller('master-providers')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(SnakeCaseInterceptor)
 export class MasterProvidersController {

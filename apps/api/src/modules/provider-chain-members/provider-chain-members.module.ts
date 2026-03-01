@@ -8,7 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import { ProviderChainMembersController } from './provider-chain-members.controller';
 import { ProvidersModule } from '../providers/providers.module';
 import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
-import { JsendFormatter } from 'src/common/jsend-formatter';
 import { MasterProvidersModule } from '../master-providers/master-providers.module';
 import { ApplicationsModule } from '../applications/applications.module';
 
@@ -27,7 +26,6 @@ import { ApplicationsModule } from '../applications/applications.module';
     ProviderChainMembersResolver,
     JwtService,
     ConfigService,
-    JsendFormatter,
   ],
   exports: [TypeOrmModule, ProviderChainMembersService],
   controllers: [ProviderChainMembersController],

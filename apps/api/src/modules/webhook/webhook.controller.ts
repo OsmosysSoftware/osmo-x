@@ -38,7 +38,7 @@ import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 @ApiTags('Webhooks')
 @ApiBearerAuth()
 @ApiExtraModels(WebhookResponseDto)
-@Controller('api/v1/webhooks')
+@Controller('webhooks')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)

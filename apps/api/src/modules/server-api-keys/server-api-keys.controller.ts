@@ -35,7 +35,7 @@ import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 @ApiTags('API Keys')
 @ApiBearerAuth()
 @ApiExtraModels(ServerApiKeyResponseDto)
-@Controller('api/v1/api-keys')
+@Controller('api-keys')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)

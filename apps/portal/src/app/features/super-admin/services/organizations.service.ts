@@ -7,7 +7,7 @@ import { Organization } from '../../../core/models/api.model';
 @Injectable({ providedIn: 'root' })
 export class OrganizationsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/organizations`;
+  private readonly apiUrl = `${environment.apiUrl}/organizations`;
 
   private readonly _organizations = signal<Organization[]>([]);
   readonly organizations = this._organizations.asReadonly();

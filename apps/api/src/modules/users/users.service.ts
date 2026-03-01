@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import {
+  AuthException,
+  ConflictException,
+  NotFoundException,
+} from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -71,7 +77,7 @@ export class UsersService {
     });
 
     if (existing) {
-      throw new BadRequestException('Email already exists');
+      throw new ConflictException(ErrorCodes.USER_ALREADY_EXISTS, 'Email already exists');
     }
 
     const hashedPassword = encodePassword(input.password);
@@ -103,7 +109,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException(ErrorCodes.USER_NOT_FOUND, 'User not found');
     }
 
     if (input.email !== undefined) {
@@ -114,7 +120,7 @@ export class UsersService {
       });
 
       if (existing && existing.userId !== input.userId) {
-        throw new BadRequestException('Email already exists');
+        throw new ConflictException(ErrorCodes.USER_ALREADY_EXISTS, 'Email already exists');
       }
 
       user.email = normalizedEmail;
@@ -150,7 +156,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException(ErrorCodes.USER_NOT_FOUND, 'User not found');
     }
 
     if (input.email !== undefined) {
@@ -160,7 +166,7 @@ export class UsersService {
         const existing = await this.findByEmail(normalizedEmail);
 
         if (existing) {
-          throw new BadRequestException('Email is already in use');
+          throw new ConflictException(ErrorCodes.USER_ALREADY_EXISTS, 'Email is already in use');
         }
 
         user.email = normalizedEmail;
@@ -188,13 +194,13 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException(ErrorCodes.USER_NOT_FOUND, 'User not found');
     }
 
     const isCurrentValid = comparePasswords(input.currentPassword, user.password);
 
     if (!isCurrentValid) {
-      throw new UnauthorizedException('Current password is incorrect');
+      throw new AuthException(ErrorCodes.AUTH_INVALID_CREDENTIALS, 'Current password is incorrect');
     }
 
     user.password = encodePassword(input.newPassword);
@@ -208,7 +214,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException(ErrorCodes.USER_NOT_FOUND, 'User not found');
     }
 
     user.status = Status.INACTIVE;

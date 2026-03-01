@@ -38,7 +38,7 @@ import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 @ApiTags('Provider Chains')
 @ApiBearerAuth()
 @ApiExtraModels(ProviderChainResponseDto)
-@Controller('api/v1/provider-chains')
+@Controller('provider-chains')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.ORG_ADMIN)

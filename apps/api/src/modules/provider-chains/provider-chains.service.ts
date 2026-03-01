@@ -1,4 +1,6 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { ConflictException, NotFoundException } from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { ProviderChain } from './entities/provider-chain.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -52,7 +54,10 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
       const providerChainExists = await this.getByProviderChainName(providerChainData.chainName);
 
       if (providerChainExists) {
-        throw new BadRequestException('Provider Chain with same name already exists.');
+        throw new ConflictException(
+          ErrorCodes.CHAIN_ALREADY_EXISTS,
+          'Provider chain with same name already exists',
+        );
       }
 
       const applicationExists = await this.applicationsService.findById(
@@ -60,7 +65,7 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
       );
 
       if (!applicationExists) {
-        throw new BadRequestException('Invalid applicationId.');
+        throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
       }
 
       const providerChain = this.providerChainRepository.create(providerChainData);
@@ -75,7 +80,7 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
       const providerChainEntry = await this.getById(chainId);
 
       if (!providerChainEntry) {
-        throw new BadRequestException('Provider chain does not exist');
+        throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain not found');
       }
 
       const providerChainMemberEntries =
@@ -106,7 +111,7 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
       const providerChainEntry = await this.getById(updateProviderChainData.chainId);
 
       if (!providerChainEntry) {
-        throw new BadRequestException('Provider chain with inputted id does not exist.');
+        throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain not found');
       }
 
       // 1. Update chain name
@@ -119,7 +124,10 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
           providerChainWithInputNameExists &&
           providerChainWithInputNameExists.chainId !== updateProviderChainData.chainId
         ) {
-          throw new BadRequestException('Provider chain with same name already exists.');
+          throw new ConflictException(
+            ErrorCodes.CHAIN_ALREADY_EXISTS,
+            'Provider chain with same name already exists',
+          );
         }
 
         providerChainEntry.chainName = updateProviderChainData.chainName;
@@ -132,7 +140,7 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
         );
 
         if (!applicationExists) {
-          throw new BadRequestException('Invalid applicationId.');
+          throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
         }
 
         providerChainEntry.applicationId = updateProviderChainData.applicationId;
@@ -146,8 +154,9 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
           );
 
         if (listOfProviderChainMembers && listOfProviderChainMembers.length > 0) {
-          throw new BadRequestException(
-            'Delete all existing provider chain members before updating providerType',
+          throw new ConflictException(
+            ErrorCodes.CHAIN_HAS_MEMBERS,
+            'Delete all chain members before updating provider type',
           );
         }
 
@@ -227,7 +236,7 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
     const app = await this.applicationsService.findById(providerChainData.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Application not found');
+      throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
     }
 
     const chain = await this.createProviderChain(providerChainData);
@@ -242,13 +251,13 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
     const existing = await this.getById(updateProviderChainData.chainId);
 
     if (!existing) {
-      throw new BadRequestException('Provider chain not found');
+      throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain not found');
     }
 
     const app = await this.applicationsService.findById(existing.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Provider chain not found');
+      throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain not found');
     }
 
     const chain = await this.updateProviderChain(updateProviderChainData);
@@ -260,13 +269,13 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
     const existing = await this.getById(chainId);
 
     if (!existing) {
-      throw new BadRequestException('Provider chain not found');
+      throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain not found');
     }
 
     const app = await this.applicationsService.findById(existing.applicationId);
 
     if (!app || app.organizationId !== organizationId) {
-      throw new BadRequestException('Provider chain not found');
+      throw new NotFoundException(ErrorCodes.CHAIN_NOT_FOUND, 'Provider chain not found');
     }
 
     return this.softDeleteProviderChain(chainId);

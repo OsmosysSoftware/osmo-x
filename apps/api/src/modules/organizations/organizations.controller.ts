@@ -24,7 +24,7 @@ import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interce
 @ApiTags('Organizations')
 @ApiBearerAuth()
 @ApiExtraModels(OrganizationResponseDto)
-@Controller('api/v1/organizations')
+@Controller('organizations')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(SnakeCaseInterceptor)
 @Roles(UserRoles.SUPER_ADMIN)
