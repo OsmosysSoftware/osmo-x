@@ -205,6 +205,7 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
       where: {
         chainId: chainId,
         providerId: providerId,
+        status: Status.ACTIVE,
       },
     });
 
@@ -487,8 +488,17 @@ export class ProviderChainMembersService extends CoreService<ProviderChainMember
 
     const qb = this.providerChainMemberRepository
       .createQueryBuilder('pcm')
-      .leftJoinAndSelect('pcm.providerDetails', 'provider')
-      .leftJoinAndSelect('pcm.providerChainDetails', 'providerChain')
+      .leftJoinAndSelect('pcm.providerDetails', 'provider', 'provider.status = :providerStatus', {
+        providerStatus: Status.ACTIVE,
+      })
+      .leftJoinAndSelect(
+        'pcm.providerChainDetails',
+        'providerChain',
+        'providerChain.status = :chainStatus',
+        {
+          chainStatus: Status.ACTIVE,
+        },
+      )
       .where('pcm.status = :status', { status: Status.ACTIVE })
       .andWhere('providerChain.applicationId IN (:...appIds)', { appIds });
 

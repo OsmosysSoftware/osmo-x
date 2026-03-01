@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import { loggerConfig } from './config/logger.config';
@@ -48,7 +48,9 @@ async function bootstrap(): Promise<void> {
   let document = SwaggerModule.createDocument(app, config);
   document = transformSwaggerToSnakeCase(document);
   SwaggerModule.setup('api/docs', app, document);
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: [{ path: '/', method: RequestMethod.GET }],
+  });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ProblemJsonFilter());
   app.use(json({ limit: configService.get('REQUEST_MAX_SIZE', '50mb') }));

@@ -3,6 +3,7 @@ import { Repository, Brackets } from 'typeorm';
 import { QueryOptionsDto, SortOrder } from '../dtos/query-options.dto';
 import { PaginationQueryDto } from '../../dto/pagination-query.dto';
 import { PaginationHelper, PaginationMeta } from '../../utils/pagination.helper';
+import { Status } from '../../constants/database';
 
 @Injectable()
 export abstract class CoreService<TEntity> {
@@ -34,14 +35,34 @@ export abstract class CoreService<TEntity> {
 
     const queryBuilder = this.repository.createQueryBuilder(alias);
 
-    // Perform a Left Join to fetch and display related entityDetails
+    // Perform a Left Join to fetch and display related entityDetails (filter joined entities by active status)
     if (alias === 'notification' || alias === 'archivedNotification') {
-      queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
+      queryBuilder.leftJoinAndSelect(
+        `${alias}.applicationDetails`,
+        'application',
+        'application.status = :joinStatus',
+        { joinStatus: Status.ACTIVE },
+      );
     } else if (alias === 'providerChain') {
-      queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
+      queryBuilder.leftJoinAndSelect(
+        `${alias}.applicationDetails`,
+        'application',
+        'application.status = :joinStatus',
+        { joinStatus: Status.ACTIVE },
+      );
     } else if (alias === 'providerChainMember') {
-      queryBuilder.leftJoinAndSelect(`${alias}.providerDetails`, 'provider');
-      queryBuilder.leftJoinAndSelect(`${alias}.providerChainDetails`, 'provider-chain');
+      queryBuilder.leftJoinAndSelect(
+        `${alias}.providerDetails`,
+        'provider',
+        'provider.status = :providerJoinStatus',
+        { providerJoinStatus: Status.ACTIVE },
+      );
+      queryBuilder.leftJoinAndSelect(
+        `${alias}.providerChainDetails`,
+        'provider-chain',
+        '"provider-chain".status = :chainJoinStatus',
+        { chainJoinStatus: Status.ACTIVE },
+      );
     }
 
     // Apply base conditions

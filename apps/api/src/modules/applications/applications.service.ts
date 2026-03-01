@@ -176,7 +176,7 @@ export class ApplicationsService extends CoreService<Application> {
       await queryRunner.manager.save(application);
       await queryRunner.commitTransaction();
       return await this.applicationsRepository.findOne({
-        where: { applicationId: updateApplicationInput.applicationId },
+        where: { applicationId: updateApplicationInput.applicationId, status: Status.ACTIVE },
       });
     } catch (error) {
       this.logger.error('Error while updating application. Rolling back transaction');

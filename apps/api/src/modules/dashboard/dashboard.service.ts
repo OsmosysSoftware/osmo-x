@@ -53,20 +53,24 @@ export class DashboardService {
       this.notificationRepository
         .createQueryBuilder('n')
         .where('n.applicationId IN (:...appIds)', { appIds })
+        .andWhere('n.status = :status', { status: Status.ACTIVE })
         .getCount(),
       this.notificationRepository
         .createQueryBuilder('n')
         .where('n.applicationId IN (:...appIds)', { appIds })
+        .andWhere('n.status = :status', { status: Status.ACTIVE })
         .andWhere('n.deliveryStatus = :ds', { ds: DeliveryStatus.SUCCESS })
         .getCount(),
       this.notificationRepository
         .createQueryBuilder('n')
         .where('n.applicationId IN (:...appIds)', { appIds })
+        .andWhere('n.status = :status', { status: Status.ACTIVE })
         .andWhere('n.deliveryStatus = :ds', { ds: DeliveryStatus.FAILED })
         .getCount(),
       this.notificationRepository
         .createQueryBuilder('n')
         .where('n.applicationId IN (:...appIds)', { appIds })
+        .andWhere('n.status = :status', { status: Status.ACTIVE })
         .andWhere('n.deliveryStatus = :ds', { ds: DeliveryStatus.PENDING })
         .getCount(),
     ]);
