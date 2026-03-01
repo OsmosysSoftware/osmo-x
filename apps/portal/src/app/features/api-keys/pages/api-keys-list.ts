@@ -138,6 +138,16 @@ export class ApiKeysListComponent implements OnInit {
     });
   }
 
+  copyKey(): void {
+    navigator.clipboard.writeText(this.generatedKey()).then(() => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Copied',
+        detail: 'API key copied to clipboard',
+      });
+    });
+  }
+
   confirmRevoke(key: ServerApiKey): void {
     this.confirmationService.confirm({
       message: `Are you sure you want to revoke API key "${key.masked_api_key}"?`,

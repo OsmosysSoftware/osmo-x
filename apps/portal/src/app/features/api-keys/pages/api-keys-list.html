@@ -171,10 +171,19 @@
       <i class="pi pi-exclamation-triangle text-xl"></i>
       <span class="font-semibold">Copy this key now. It will not be shown again.</span>
     </div>
-    <div
-      class="bg-surface-100 dark:bg-surface-800 p-4 rounded-lg font-mono text-sm break-all select-all"
-    >
-      {{ generatedKey() }}
+    <div class="flex items-center gap-2">
+      <div
+        class="flex-1 bg-surface-100 dark:bg-surface-800 p-4 rounded-lg font-mono text-sm break-all select-all"
+      >
+        {{ generatedKey() }}
+      </div>
+      <p-button
+        icon="pi pi-copy"
+        [rounded]="true"
+        [text]="true"
+        pTooltip="Copy to clipboard"
+        (onClick)="copyKey()"
+      />
     </div>
   </div>
   <ng-template #footer>
