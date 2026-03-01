@@ -1,0 +1,83 @@
+.chain-members-panel {
+  padding: 1rem 1.5rem;
+  background: var(--p-surface-50);
+  border-top: 1px solid var(--p-surface-200);
+}
+
+:host-context(.p-dark) .chain-members-panel {
+  background: var(--p-surface-800);
+  border-color: var(--p-surface-700);
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.75rem;
+  background: var(--p-surface-0);
+  border: 1px solid var(--p-surface-200);
+  border-radius: var(--p-border-radius);
+  transition: box-shadow 0.15s;
+
+  &:hover {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+}
+
+:host-context(.p-dark) .member-row {
+  background: var(--p-surface-900);
+  border-color: var(--p-surface-700);
+}
+
+.drag-handle {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* CDK Drag-drop styles */
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: var(--p-border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--p-surface-0);
+  border: 1px solid var(--p-primary-color);
+  padding: 0.625rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+}
+
+.cdk-drag-animating {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.members-list.cdk-drop-list-dragging .member-row:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}

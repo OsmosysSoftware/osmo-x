@@ -64,11 +64,6 @@ export class AppMenu {
             icon: 'pi pi-fw pi-sitemap',
             routerLink: ['/provider-chains'],
           },
-          {
-            label: 'Chain Members',
-            icon: 'pi pi-fw pi-arrows-h',
-            routerLink: ['/provider-chain-members'],
-          },
           { label: 'Webhooks', icon: 'pi pi-fw pi-bolt', routerLink: ['/webhooks'] },
           { label: 'API Keys', icon: 'pi pi-fw pi-key', routerLink: ['/api-keys'] },
         ],

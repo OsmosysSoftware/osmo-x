@@ -7,7 +7,7 @@ import { ProviderChainMember, PaginatedResponse } from '../../../core/models/api
 @Injectable({ providedIn: 'root' })
 export class ChainMembersService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/provider-chain-members`;
+  private readonly apiUrl = `${environment.apiUrl}/provider-chain-members`;
 
   private readonly _members = signal<ProviderChainMember[]>([]);
   readonly members = this._members.asReadonly();
@@ -18,6 +18,12 @@ export class ChainMembersService {
     return this.http
       .get<PaginatedResponse<ProviderChainMember>>(this.apiUrl, { params })
       .pipe(tap((res) => this._members.set(res.items)));
+  }
+
+  listByChain(chainId: number): Observable<PaginatedResponse<ProviderChainMember>> {
+    const params = new HttpParams().set('chain_id', chainId).set('limit', 100);
+
+    return this.http.get<PaginatedResponse<ProviderChainMember>>(this.apiUrl, { params });
   }
 
   create(data: {
