@@ -40,9 +40,8 @@
           id="email"
           type="email"
           [ngModel]="email()"
-          (ngModelChange)="email.set($event)"
-          placeholder="Enter email address"
           class="w-full"
+          [disabled]="true"
         />
       </div>
 

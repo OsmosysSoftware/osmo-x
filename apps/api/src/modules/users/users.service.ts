@@ -159,20 +159,6 @@ export class UsersService {
       throw new NotFoundException(ErrorCodes.USER_NOT_FOUND, 'User not found');
     }
 
-    if (input.email !== undefined) {
-      const normalizedEmail = input.email.toLowerCase();
-
-      if (normalizedEmail !== user.email) {
-        const existing = await this.findByEmail(normalizedEmail);
-
-        if (existing) {
-          throw new ConflictException(ErrorCodes.USER_ALREADY_EXISTS, 'Email is already in use');
-        }
-
-        user.email = normalizedEmail;
-      }
-    }
-
     if (input.firstName !== undefined) {
       user.firstName = input.firstName;
     }

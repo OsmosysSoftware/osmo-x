@@ -44,13 +44,11 @@ export class ProfileComponent implements OnInit {
   readonly lastName = signal('');
 
   // Original values for change detection
-  private originalEmail = '';
   private originalFirstName = '';
   private originalLastName = '';
 
   readonly hasChanges = computed(
     () =>
-      this.email().trim() !== this.originalEmail ||
       this.firstName().trim() !== this.originalFirstName ||
       this.lastName().trim() !== this.originalLastName,
   );
@@ -89,7 +87,6 @@ export class ProfileComponent implements OnInit {
         this.email.set(user.email);
         this.firstName.set(user.first_name || '');
         this.lastName.set(user.last_name || '');
-        this.originalEmail = user.email;
         this.originalFirstName = user.first_name || '';
         this.originalLastName = user.last_name || '';
         this.loading.set(false);
@@ -109,7 +106,6 @@ export class ProfileComponent implements OnInit {
 
     this.profileService
       .updateProfile({
-        email: this.email().trim(),
         first_name: this.firstName().trim(),
         last_name: this.lastName().trim(),
       })
@@ -120,7 +116,6 @@ export class ProfileComponent implements OnInit {
             summary: 'Updated',
             detail: 'Profile updated successfully',
           });
-          this.originalEmail = this.email().trim();
           this.originalFirstName = this.firstName().trim();
           this.originalLastName = this.lastName().trim();
           this.saving.set(false);
@@ -133,7 +128,6 @@ export class ProfileComponent implements OnInit {
   }
 
   cancelChanges(): void {
-    this.email.set(this.originalEmail);
     this.firstName.set(this.originalFirstName);
     this.lastName.set(this.originalLastName);
   }

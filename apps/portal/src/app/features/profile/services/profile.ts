@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface UpdateProfileDto {
-  email?: string;
   first_name?: string;
   last_name?: string;
 }
