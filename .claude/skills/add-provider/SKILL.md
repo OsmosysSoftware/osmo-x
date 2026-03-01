@@ -59,11 +59,23 @@ If the provider requires an npm package:
 cd apps/api && npm install <package-name>
 ```
 
-## Step 4: Create Provider Files
+## Step 4: Scaffold and Create Provider Files
 
-### 4a. Provider Service
+### 4a. Scaffold with Nest CLI
 
-Create `apps/api/src/modules/providers/<provider-name>/<provider-name>.service.ts`:
+Run from `apps/api/`:
+
+```bash
+cd apps/api
+nest generate module modules/providers/<provider-name>
+nest generate service modules/providers/<provider-name> --no-spec
+```
+
+This creates the module and service files with correct boilerplate. Then replace the generated content with the patterns below.
+
+### 4b. Provider Service
+
+Replace the generated service at `apps/api/src/modules/providers/<provider-name>/<provider-name>.service.ts`:
 
 ```typescript
 import { Injectable, Logger } from '@nestjs/common';
@@ -102,9 +114,9 @@ export class <ProviderName>Service {
 }
 ```
 
-### 4b. Provider Module
+### 4c. Provider Module
 
-Create `apps/api/src/modules/providers/<provider-name>/<provider-name>.module.ts`:
+Replace the generated module at `apps/api/src/modules/providers/<provider-name>/<provider-name>.module.ts`:
 
 ```typescript
 import { Logger, Module } from '@nestjs/common';
@@ -121,9 +133,11 @@ import { ProvidersService } from '../providers.service';
 export class <ProviderName>Module {}
 ```
 
+**Important:** `nest generate module` will auto-add the new module to `app.module.ts` imports. Remove that auto-added import — the provider module should only be imported by `notifications.module.ts`, not the root module.
+
 ## Step 5: Create Consumer
 
-Create `apps/api/src/jobs/consumers/notifications/<provider-name>-notifications.job.consumer.ts`:
+Consumers are not NestJS modules/services — they're plain injectable classes that extend `NotificationConsumer`. Create the file manually at `apps/api/src/jobs/consumers/notifications/<provider-name>-notifications.job.consumer.ts`:
 
 ```typescript
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
