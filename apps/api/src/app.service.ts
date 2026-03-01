@@ -16,6 +16,7 @@ export class AppService {
         providers: '/api/providers',
         master_providers: '/api/master-providers',
         provider_chains: '/api/provider-chains',
+        provider_chain_members: '/api/provider-chain-members',
         notifications: '/api/notifications',
         archived_notifications: '/api/archived-notifications',
         users: '/api/users',
@@ -26,6 +27,10 @@ export class AppService {
       },
       admin: {
         graphql: '/graphql',
+        queue_notifications: '/api/notifications/queue',
+        confirm_notifications: '/api/notifications/confirm',
+        redis_cleanup: '/api/notifications/redis/cleanup',
+        dozzle_logs: 'http://localhost:8080',
       },
     };
   }
