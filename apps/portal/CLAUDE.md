@@ -2,11 +2,11 @@
 
 ## CRITICAL INSTRUCTIONS - MUST FOLLOW
 
-### 1. ALWAYS Use Context7 MCP Server for Latest Documentation
+### 1. ALWAYS Use MCP Servers for Latest Documentation
 
-- **Use Context7** to fetch the latest documentation for Angular, PrimeNG, Tailwind CSS, etc.
+- **Use PrimeNG MCP** (`@primeng/mcp`) for PrimeNG v20 component docs — props, events, templates, methods, theming, and pass through styling
+- **Use Context7** to fetch the latest documentation for Angular, Tailwind CSS, and other libraries
 - **Never rely on outdated knowledge** — always fetch current docs before implementing
-- **PrimeNG Component Index:** See `.llms-full.txt` in this directory for a complete index of PrimeNG v20 components with documentation URLs
 
 ### 2. ALWAYS Update CLAUDE.md
 
@@ -259,7 +259,7 @@ export class ExampleComponent {
 @Injectable({ providedIn: 'root' })
 export class DataService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/v1/resource`;
+  private readonly apiUrl = `${environment.apiUrl}/resource`;
 
   private readonly _items = signal<Item[]>([]);
   readonly items = this._items.asReadonly();
@@ -369,7 +369,10 @@ Registered in `app.config.ts` in this order:
 - Import paths: `primeng/textarea` (NOT `primeng/inputtextarea`)
 - Select component (previously Dropdown): `primeng/select`
 - New theming: `@primeuix/themes`
-- All components support pass-through attributes
+- All components support **pass-through (pt) attributes** for deep DOM customization
+- Use `[pt]` prop to target internal component elements with classes, styles, or event handlers
+- Use `dt()` design token function to access theme CSS variables
+- **Always use PrimeNG MCP** (`@primeng/mcp`) to look up component props, events, and templates before implementing
 
 ### Common Components
 

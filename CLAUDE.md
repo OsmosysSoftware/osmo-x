@@ -20,9 +20,9 @@ The `~/work/osmosys/interview-app/` repository defines our coding standards for 
 
 - **Organization hierarchy**: Super Admin → Organization → Org Admin / Users
 - **Role system**: ORG_USER (0), ORG_ADMIN (1), SUPER_ADMIN (2)
-- **API versioning**: New endpoints under `/api/v1/` prefix; existing endpoints preserved for backward compatibility
-- **Error format**: RFC 7807 Problem JSON for v1 endpoints; JSend format stays on existing endpoints
-- **Response format**: Snake_case responses via SnakeCaseInterceptor on v1 endpoints
+- **API prefix**: Global prefix `/api` set via `setGlobalPrefix('api')` in `main.ts`; no version prefix
+- **Error format**: RFC 7807 Problem JSON via `ProblemJsonFilter` (global)
+- **Response format**: Snake_case responses via SnakeCaseInterceptor
 - **ORM**: TypeORM (NOT MikroORM); all tables prefixed with `notify_`
 - **GraphQL**: Frozen (not removed); new features are REST-first
 

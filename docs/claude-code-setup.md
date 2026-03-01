@@ -226,7 +226,8 @@ MCP (Model Context Protocol) servers connect Claude to external tools and servic
 
 | Server | Purpose |
 |--------|---------|
-| **Context7** | Fetches latest documentation for libraries (Angular, NestJS, PrimeNG, etc.) |
+| **PrimeNG** | PrimeNG v20 component docs — props, events, templates, methods, theming, pass through |
+| **Context7** | Fetches latest documentation for libraries (Angular, NestJS, TypeORM, etc.) |
 | **Serena** | Semantic code navigation — symbol search, find references, overview of files |
 | **Playwright** | Browser automation for testing web UIs |
 | **Chrome DevTools** | Browser debugging and performance analysis |
@@ -235,13 +236,32 @@ MCP (Model Context Protocol) servers connect Claude to external tools and servic
 ### How They Work
 
 MCP tools are loaded on demand when Claude determines they're needed. For example:
+
+- Before using a PrimeNG component, Claude uses the PrimeNG MCP to fetch props, events, and usage examples
 - Before implementing a NestJS pattern, Claude uses Context7 to fetch current docs
 - When exploring code structure, Claude uses Serena's `find_symbol` / `get_symbols_overview`
 - When testing the portal UI, Claude can use Playwright to take screenshots
 
 ### Configuration
 
-MCP servers are configured in Claude Code settings (not in this repo). See Claude Code documentation for setup.
+MCP servers are configured in Claude Code settings (not in this repo).
+
+**Adding a new MCP server:**
+
+```bash
+# Add at user level (available in all projects)
+claude mcp add <name> -s user -- <command>
+
+# Add at project level (current project only)
+claude mcp add <name> -- <command>
+```
+
+**Current setup commands:**
+
+```bash
+# PrimeNG MCP (user level)
+claude mcp add primeng -s user -- npx -y @primeng/mcp
+```
 
 ---
 
