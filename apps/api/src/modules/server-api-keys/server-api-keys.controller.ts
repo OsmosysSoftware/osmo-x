@@ -5,6 +5,7 @@ import {
   Get,
   Post,
   Query,
+  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 import { ServerApiKeysService } from './server-api-keys.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -26,6 +28,9 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginatedResponse } from 'src/common/dto/paginated-response.dto';
+import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 
 @ApiTags('API Keys')
 @ApiBearerAuth()
@@ -38,7 +43,7 @@ export class ServerApiKeysController {
   constructor(private readonly serverApiKeysService: ServerApiKeysService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List API keys for an application' })
+  @ApiOperation({ summary: 'List all API keys for the organization' })
   @ApiQuery({
     name: 'organization_id',
     required: false,
@@ -47,18 +52,22 @@ export class ServerApiKeysController {
   })
   @ApiResponse({
     status: 200,
-    description: 'List of API keys for the specified application',
-    type: [ServerApiKeyResponseDto],
+    description: 'Paginated list of API keys',
+    type: PaginatedResponse,
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
-    @Query('applicationId') applicationId: number,
+    @Query() query: PaginationQueryDto,
     @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
-  ): Promise<ServerApiKeyResponseDto[]> {
+    @Req() req: Request,
+  ): Promise<PaginatedResponse<ServerApiKeyResponseDto>> {
     const targetOrgId = resolveOrgId(user, queryOrgId);
+    const { items, meta } = await this.serverApiKeysService.getAllApiKeysAsDto(query, targetOrgId);
+    const { protocol, host } = LinkBuilder.extractBaseUrl(req);
+    const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
 
-    return this.serverApiKeysService.findByRelatedApplicationIdAsDto(applicationId, targetOrgId);
+    return new PaginatedResponse(items, links, meta);
   }
 
   @Post()

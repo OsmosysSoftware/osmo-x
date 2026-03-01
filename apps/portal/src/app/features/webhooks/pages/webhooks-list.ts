@@ -21,9 +21,11 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination';
+import { OrgContextService } from '../../../core/services/org-context.service';
 import { WebhooksService } from '../services/webhooks.service';
 import { ProvidersService } from '../../providers/services/providers.service';
-import { Webhook, Provider } from '../../../core/models/api.model';
+import { Webhook, Provider, PageInfo } from '../../../core/models/api.model';
 
 @Component({
   selector: 'app-webhooks-list',
@@ -42,6 +44,7 @@ import { Webhook, Provider } from '../../../core/models/api.model';
     ToolbarModule,
     IconFieldModule,
     InputIconModule,
+    PaginationComponent,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,89 +56,73 @@ export class WebhooksListComponent implements OnInit {
   private readonly providersService = inject(ProvidersService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  readonly orgContext = inject(OrgContextService);
 
   readonly dt = viewChild<Table>('dt');
 
   readonly providers = signal<Provider[]>([]);
   readonly webhooks = signal<Webhook[]>([]);
-  readonly selectedProviderId = signal<number | null>(null);
-  readonly loading = signal(false);
+  readonly loading = signal(true);
   readonly saving = signal(false);
+  readonly pageInfo = signal<PageInfo | null>(null);
+  private currentPage = 1;
 
   // Dialog state
   readonly dialogVisible = signal(false);
   readonly editingWebhook = signal<Webhook | null>(null);
   readonly formUrl = signal('');
+  readonly formProviderId = signal<number | null>(null);
 
   ngOnInit(): void {
+    this.loadWebhooks();
     this.loadProviders();
   }
 
   loadProviders(): void {
     this.providersService.list(1, 100).subscribe({
-      next: (res) => {
-        this.providers.set(res.items ?? []);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load providers',
-        });
-      },
+      next: (res) => this.providers.set(res.items ?? []),
     });
   }
 
-  onProviderSelect(providerId: number): void {
-    this.selectedProviderId.set(providerId);
-
-    if (providerId) {
-      this.loadWebhooks(providerId);
-    } else {
-      this.webhooks.set([]);
-    }
-  }
-
-  loadWebhooks(providerId: number): void {
+  loadWebhooks(): void {
     this.loading.set(true);
 
-    this.webhooksService.list(providerId).subscribe({
-      next: (webhooks) => {
-        this.webhooks.set(webhooks);
+    this.webhooksService.list(this.currentPage, 20).subscribe({
+      next: (res) => {
+        this.webhooks.set(res.items ?? []);
+        this.pageInfo.set(res.page_info ?? null);
         this.loading.set(false);
       },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load webhooks',
-        });
-        this.loading.set(false);
-      },
+      error: () => this.loading.set(false),
     });
   }
 
-  refreshWebhooks(): void {
-    const providerId = this.selectedProviderId();
-
-    if (providerId) {
-      this.loadWebhooks(providerId);
-    }
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadWebhooks();
   }
 
   onGlobalFilter(event: Event): void {
     this.dt()?.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
+  getProviderName(providerId: number): string {
+    const provider = this.providers().find((p) => p.provider_id === providerId);
+
+    return provider ? provider.name : `#${providerId}`;
+  }
+
   openCreate(): void {
     this.editingWebhook.set(null);
     this.formUrl.set('');
+    this.formProviderId.set(null);
     this.dialogVisible.set(true);
   }
 
   openEdit(webhook: Webhook): void {
     this.editingWebhook.set(webhook);
     this.formUrl.set(webhook.webhook_url);
+    this.formProviderId.set(webhook.provider_id);
     this.dialogVisible.set(true);
   }
 
@@ -143,12 +130,6 @@ export class WebhooksListComponent implements OnInit {
     const url = this.formUrl().trim();
 
     if (!url) {
-      return;
-    }
-
-    const providerId = this.selectedProviderId();
-
-    if (!providerId) {
       return;
     }
 
@@ -165,11 +146,19 @@ export class WebhooksListComponent implements OnInit {
           });
           this.dialogVisible.set(false);
           this.saving.set(false);
-          this.loadWebhooks(providerId);
+          this.loadWebhooks();
         },
         error: () => this.saving.set(false),
       });
     } else {
+      const providerId = this.formProviderId();
+
+      if (!providerId) {
+        this.saving.set(false);
+
+        return;
+      }
+
       this.webhooksService.create({ webhook_url: url, provider_id: providerId }).subscribe({
         next: () => {
           this.messageService.add({
@@ -179,7 +168,7 @@ export class WebhooksListComponent implements OnInit {
           });
           this.dialogVisible.set(false);
           this.saving.set(false);
-          this.loadWebhooks(providerId);
+          this.loadWebhooks();
         },
         error: () => this.saving.set(false),
       });
@@ -193,8 +182,6 @@ export class WebhooksListComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        const providerId = this.selectedProviderId();
-
         this.webhooksService.delete(webhook.id).subscribe({
           next: () => {
             this.messageService.add({
@@ -202,10 +189,7 @@ export class WebhooksListComponent implements OnInit {
               summary: 'Deleted',
               detail: 'Webhook deleted successfully',
             });
-
-            if (providerId) {
-              this.loadWebhooks(providerId);
-            }
+            this.loadWebhooks();
           },
         });
       },

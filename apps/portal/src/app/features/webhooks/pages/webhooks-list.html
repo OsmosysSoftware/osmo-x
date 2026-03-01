@@ -13,9 +13,12 @@
   <p-toolbar class="mb-4">
     <ng-template #start>
       <div class="flex flex-wrap gap-2">
-        @if (selectedProviderId()) {
-          <p-button label="New Webhook" icon="pi pi-plus" (onClick)="openCreate()" />
-        }
+        <p-button
+          label="New Webhook"
+          icon="pi pi-plus"
+          (onClick)="openCreate()"
+          [disabled]="orgContext.isAllOrgsMode()"
+        />
       </div>
     </ng-template>
     <ng-template #end>
@@ -30,33 +33,13 @@
           [text]="true"
           severity="secondary"
           pTooltip="Refresh"
-          (onClick)="refreshWebhooks()"
+          (onClick)="loadWebhooks()"
         />
       </div>
     </ng-template>
   </p-toolbar>
 
-  <div class="flex items-center gap-4 mb-4">
-    <div class="flex flex-col gap-2 flex-1" style="max-width: 350px">
-      <label for="provider-select" class="font-semibold">Select Provider</label>
-      <p-select
-        id="provider-select"
-        [options]="providers()"
-        optionLabel="name"
-        optionValue="provider_id"
-        placeholder="Choose a provider"
-        [ngModel]="selectedProviderId()"
-        (ngModelChange)="onProviderSelect($event)"
-        [filter]="true"
-        filterPlaceholder="Search providers"
-        appendTo="body"
-      />
-    </div>
-  </div>
-
-  @if (!selectedProviderId()) {
-    <div class="text-center py-8 text-muted-color">Select a provider to view its webhooks</div>
-  } @else if (loading()) {
+  @if (loading()) {
     <p-skeleton height="200px" />
   } @else {
     <p-table
@@ -70,6 +53,7 @@
       <ng-template #header>
         <tr>
           <th pSortableColumn="id" style="min-width: 6rem">ID <p-sortIcon field="id" /></th>
+          <th style="min-width: 12rem">Provider</th>
           <th style="min-width: 20rem">URL</th>
           <th>Status</th>
           <th pSortableColumn="created_on" style="min-width: 10rem">
@@ -81,6 +65,7 @@
       <ng-template #body let-w>
         <tr>
           <td>{{ w.id }}</td>
+          <td>{{ getProviderName(w.provider_id) }}</td>
           <td class="max-w-xs truncate">{{ w.webhook_url }}</td>
           <td>
             <p-tag
@@ -92,13 +77,20 @@
           <td>{{ w.created_on | date: 'short' }}</td>
           <td>
             <div class="flex items-center gap-2">
-              <p-button icon="pi pi-pencil" size="small" pTooltip="Edit" (onClick)="openEdit(w)" />
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                pTooltip="Edit"
+                (onClick)="openEdit(w)"
+                [disabled]="orgContext.isAllOrgsMode()"
+              />
               <p-button
                 icon="pi pi-trash"
                 severity="danger"
                 size="small"
                 pTooltip="Delete"
                 (onClick)="confirmDelete(w)"
+                [disabled]="orgContext.isAllOrgsMode()"
               />
             </div>
           </td>
@@ -106,12 +98,14 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="5" class="text-center py-8 text-muted-color">
-            No webhooks found for this provider
-          </td>
+          <td colspan="6" class="text-center py-8 text-muted-color">No webhooks found</td>
         </tr>
       </ng-template>
     </p-table>
+
+    @if (pageInfo(); as pi) {
+      <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
+    }
   }
 </div>
 
@@ -121,11 +115,36 @@
   [visible]="dialogVisible()"
   (visibleChange)="dialogVisible.set($event)"
   [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
   [style]="{ width: '500px' }"
 >
   <div class="flex flex-col gap-4 pt-2">
+    @if (!editingWebhook()) {
+      <div class="flex flex-col gap-2">
+        <label for="webhook-provider" class="block text-surface-900 dark:text-surface-0 font-medium"
+          >Provider <span class="text-red-500">*</span></label
+        >
+        <p-select
+          id="webhook-provider"
+          [options]="providers()"
+          optionLabel="name"
+          optionValue="provider_id"
+          placeholder="Select a provider"
+          [ngModel]="formProviderId()"
+          (ngModelChange)="formProviderId.set($event)"
+          [filter]="true"
+          filterPlaceholder="Search providers"
+          appendTo="body"
+          [fluid]="true"
+        />
+      </div>
+    }
     <div class="flex flex-col gap-2">
-      <label for="webhook-url" class="font-semibold">Webhook URL</label>
+      <label for="webhook-url" class="block text-surface-900 dark:text-surface-0 font-medium"
+        >Webhook URL <span class="text-red-500">*</span></label
+      >
       <input
         pInputText
         id="webhook-url"
@@ -136,19 +155,22 @@
     </div>
   </div>
   <ng-template #footer>
-    <p-button
-      label="Cancel"
-      severity="secondary"
-      [text]="true"
-      (onClick)="dialogVisible.set(false)"
-    />
-    <p-button
-      label="Save"
-      icon="pi pi-check"
-      (onClick)="save()"
-      [disabled]="!formUrl().trim() || saving()"
-      [loading]="saving()"
-    />
+    <div class="flex justify-end gap-2">
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="dialogVisible.set(false)"
+      />
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        (onClick)="save()"
+        [disabled]="!formUrl().trim() || (!editingWebhook() && !formProviderId()) || saving()"
+        [loading]="saving()"
+      />
+    </div>
   </ng-template>
 </p-dialog>
 

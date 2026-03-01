@@ -1,12 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
+import { In } from 'typeorm';
 import { ServerApiKey } from './entities/server-api-key.entity';
 import { Status } from 'src/common/constants/database';
 import { hashApiKey } from 'src/common/utils/bcrypt';
 import * as crypto from 'crypto';
 import { ServerApiKeyResponseDto } from './dto/server-api-key-response.dto';
 import { ApplicationsService } from '../applications/applications.service';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationHelper, PaginationMeta } from 'src/common/utils/pagination.helper';
 
 @Injectable()
 export class ServerApiKeysService {
@@ -55,6 +58,32 @@ export class ServerApiKeysService {
       updatedBy: key.updatedBy,
       createdOn: key.createdOn,
       updatedOn: key.updatedOn,
+    };
+  }
+
+  async getAllApiKeysAsDto(
+    query: PaginationQueryDto,
+    organizationId: number,
+  ): Promise<{ items: ServerApiKeyResponseDto[]; meta: PaginationMeta }> {
+    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    if (appIds.length === 0) {
+      const { page, limit } = PaginationHelper.normalizePaginationParams(query);
+
+      return { items: [], meta: PaginationHelper.buildPaginationMeta(page, limit, 0) };
+    }
+
+    const { page, limit, offset, sort } = PaginationHelper.normalizePaginationParams(query);
+    const [keys, total] = await this.serverApiKeyRepository.findAndCount({
+      where: { applicationId: In(appIds), status: Status.ACTIVE },
+      order: sort ? { [sort.field]: sort.order } : { apiKeyId: 'DESC' },
+      skip: offset,
+      take: limit,
+    });
+
+    return {
+      items: keys.map((key) => this.mapToDto(key)),
+      meta: PaginationHelper.buildPaginationMeta(page, limit, total),
     };
   }
 

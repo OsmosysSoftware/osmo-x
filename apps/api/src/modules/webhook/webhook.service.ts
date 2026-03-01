@@ -1,6 +1,6 @@
 import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Webhook } from './entities/webhook.entity';
 import axios from 'axios';
 import { CreateWebhookInput } from './dto/create-webhook.input';
@@ -10,6 +10,8 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { WebhookResponseDto } from './dto/webhook-response.dto';
 import { ProvidersService } from '../providers/providers.service';
 import { ApplicationsService } from '../applications/applications.service';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationHelper, PaginationMeta } from 'src/common/utils/pagination.helper';
 
 @Injectable()
 export class WebhookService {
@@ -107,6 +109,46 @@ export class WebhookService {
       createdOn: webhook.createdOn,
       updatedOn: webhook.updatedOn,
     };
+  }
+
+  async getAllWebhooksAsDto(
+    query: PaginationQueryDto,
+    organizationId: number,
+  ): Promise<{ items: WebhookResponseDto[]; meta: PaginationMeta }> {
+    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    if (appIds.length === 0) {
+      const { page, limit } = PaginationHelper.normalizePaginationParams(query);
+
+      return { items: [], meta: PaginationHelper.buildPaginationMeta(page, limit, 0) };
+    }
+
+    const providerIds = await this.getProviderIdsByApplicationIds(appIds);
+
+    if (providerIds.length === 0) {
+      const { page, limit } = PaginationHelper.normalizePaginationParams(query);
+
+      return { items: [], meta: PaginationHelper.buildPaginationMeta(page, limit, 0) };
+    }
+
+    const { page, limit, offset, sort } = PaginationHelper.normalizePaginationParams(query);
+    const [webhooks, total] = await this.webhookRepository.findAndCount({
+      where: { providerId: In(providerIds), status: Status.ACTIVE },
+      order: sort ? { [sort.field]: sort.order } : { id: 'DESC' },
+      skip: offset,
+      take: limit,
+    });
+
+    return {
+      items: webhooks.map((w) => this.mapToDto(w)),
+      meta: PaginationHelper.buildPaginationMeta(page, limit, total),
+    };
+  }
+
+  private async getProviderIdsByApplicationIds(appIds: number[]): Promise<number[]> {
+    const providers = await this.providersService.findByApplicationIds(appIds);
+
+    return providers.map((p) => p.providerId);
   }
 
   async findByProviderIdAsDto(

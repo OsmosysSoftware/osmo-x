@@ -6,6 +6,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 import { WebhookService } from './webhook.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -29,6 +31,9 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginatedResponse } from 'src/common/dto/paginated-response.dto';
+import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 
 @ApiTags('Webhooks')
 @ApiBearerAuth()
@@ -41,23 +46,31 @@ export class WebhookController {
   constructor(private readonly webhookService: WebhookService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List webhooks for a provider' })
+  @ApiOperation({ summary: 'List all webhooks for the organization' })
   @ApiQuery({
     name: 'organization_id',
     required: false,
     type: Number,
     description: 'Target org (SUPER_ADMIN only)',
   })
-  @ApiResponse({ status: 200, description: 'List of webhooks', type: [WebhookResponseDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of webhooks',
+    type: PaginatedResponse,
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
-    @Query('provider_id') providerId: number,
+    @Query() query: PaginationQueryDto,
     @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
-  ): Promise<WebhookResponseDto[]> {
+    @Req() req: Request,
+  ): Promise<PaginatedResponse<WebhookResponseDto>> {
     const targetOrgId = resolveOrgId(user, queryOrgId);
+    const { items, meta } = await this.webhookService.getAllWebhooksAsDto(query, targetOrgId);
+    const { protocol, host } = LinkBuilder.extractBaseUrl(req);
+    const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
 
-    return this.webhookService.findByProviderIdAsDto(providerId, targetOrgId);
+    return new PaginatedResponse(items, links, meta);
   }
 
   @Post()

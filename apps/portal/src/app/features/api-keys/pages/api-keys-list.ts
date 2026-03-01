@@ -21,9 +21,11 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination';
+import { OrgContextService } from '../../../core/services/org-context.service';
 import { ApiKeysService } from '../services/api-keys.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
-import { ServerApiKey, Application } from '../../../core/models/api.model';
+import { ServerApiKey, Application, PageInfo } from '../../../core/models/api.model';
 
 @Component({
   selector: 'app-api-keys-list',
@@ -42,6 +44,7 @@ import { ServerApiKey, Application } from '../../../core/models/api.model';
     ToolbarModule,
     IconFieldModule,
     InputIconModule,
+    PaginationComponent,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,79 +56,69 @@ export class ApiKeysListComponent implements OnInit {
   private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  readonly orgContext = inject(OrgContextService);
 
   readonly dt = viewChild<Table>('dt');
 
   readonly applications = signal<Application[]>([]);
   readonly apiKeys = signal<ServerApiKey[]>([]);
-  readonly selectedApplicationId = signal<number | null>(null);
-  readonly loading = signal(false);
+  readonly loading = signal(true);
   readonly generating = signal(false);
+  readonly pageInfo = signal<PageInfo | null>(null);
+  private currentPage = 1;
+
+  // Generate dialog state
+  readonly generateDialogVisible = signal(false);
+  readonly formApplicationId = signal<number | null>(null);
   readonly keyDialogVisible = signal(false);
   readonly generatedKey = signal('');
 
   ngOnInit(): void {
+    this.loadApiKeys();
     this.loadApplications();
   }
 
   loadApplications(): void {
     this.applicationsService.list(1, 100).subscribe({
-      next: (res) => {
-        this.applications.set(res.items ?? []);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load applications',
-        });
-      },
+      next: (res) => this.applications.set(res.items ?? []),
     });
   }
 
-  onApplicationSelect(applicationId: number): void {
-    this.selectedApplicationId.set(applicationId);
-
-    if (applicationId) {
-      this.loadApiKeys(applicationId);
-    } else {
-      this.apiKeys.set([]);
-    }
-  }
-
-  loadApiKeys(applicationId: number): void {
+  loadApiKeys(): void {
     this.loading.set(true);
 
-    this.apiKeysService.list(applicationId).subscribe({
-      next: (keys) => {
-        this.apiKeys.set(keys);
+    this.apiKeysService.list(this.currentPage, 20).subscribe({
+      next: (res) => {
+        this.apiKeys.set(res.items ?? []);
+        this.pageInfo.set(res.page_info ?? null);
         this.loading.set(false);
       },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load API keys',
-        });
-        this.loading.set(false);
-      },
+      error: () => this.loading.set(false),
     });
   }
 
-  refreshApiKeys(): void {
-    const appId = this.selectedApplicationId();
-
-    if (appId) {
-      this.loadApiKeys(appId);
-    }
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadApiKeys();
   }
 
   onGlobalFilter(event: Event): void {
     this.dt()?.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
+  getApplicationName(applicationId: number): string {
+    const app = this.applications().find((a) => a.application_id === applicationId);
+
+    return app ? app.name : `#${applicationId}`;
+  }
+
+  openGenerate(): void {
+    this.formApplicationId.set(null);
+    this.generateDialogVisible.set(true);
+  }
+
   generateApiKey(): void {
-    const appId = this.selectedApplicationId();
+    const appId = this.formApplicationId();
 
     if (!appId) {
       return;
@@ -136,13 +129,12 @@ export class ApiKeysListComponent implements OnInit {
     this.apiKeysService.generate(appId).subscribe({
       next: (key) => {
         this.generatedKey.set(key);
+        this.generateDialogVisible.set(false);
         this.keyDialogVisible.set(true);
         this.generating.set(false);
-        this.loadApiKeys(appId);
+        this.loadApiKeys();
       },
-      error: () => {
-        this.generating.set(false);
-      },
+      error: () => this.generating.set(false),
     });
   }
 
@@ -153,8 +145,6 @@ export class ApiKeysListComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        const appId = this.selectedApplicationId();
-
         this.apiKeysService.revoke(key.api_key_id).subscribe({
           next: () => {
             this.messageService.add({
@@ -162,10 +152,7 @@ export class ApiKeysListComponent implements OnInit {
               summary: 'Revoked',
               detail: 'API key revoked successfully',
             });
-
-            if (appId) {
-              this.loadApiKeys(appId);
-            }
+            this.loadApiKeys();
           },
         });
       },

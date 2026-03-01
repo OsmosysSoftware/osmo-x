@@ -1,6 +1,6 @@
 import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Provider } from './entities/provider.entity';
 import { Status } from 'src/common/constants/database';
 import { CreateProviderInput } from './dto/create-provider.input';
@@ -34,6 +34,17 @@ export class ProvidersService extends CoreService<Provider> {
     }
 
     return this.providerRepository.findOne({ where: { providerId, status: Status.ACTIVE } });
+  }
+
+  async findByApplicationIds(appIds: number[]): Promise<Provider[]> {
+    if (appIds.length === 0) {
+      return [];
+    }
+
+    return this.providerRepository.find({
+      where: { applicationId: In(appIds), status: Status.ACTIVE },
+      select: ['providerId'],
+    });
   }
 
   async createProvider(providerInput: CreateProviderInput): Promise<Provider> {
