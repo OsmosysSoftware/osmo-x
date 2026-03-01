@@ -1,7 +1,6 @@
 ---
 name: crud-page
 description: Generate a complete CRUD or read-only list page in the Angular portal with service, routing, and menu integration. Use when adding a new feature page to the portal.
-argument-hint: "[feature-name]"
 ---
 
 # Generate Portal CRUD Page
@@ -141,6 +140,8 @@ apps/portal/src/app/features/<feature-name>/
 - `viewChild<Table>('dt')` for table reference
 - `MessageService` injected but NOT in component `providers[]` (it's global)
 - `ConfirmationService` in component `providers[]` (CRUD pages only)
+- **No raw DB ID columns** — never show primary key IDs in tables. Resolve foreign key IDs to human-readable names using lookup methods
+- **Toolbar layout** — always include both `#start` and `#end` templates in `p-toolbar`. For read-only pages with no action buttons, use an empty `<ng-template #start></ng-template>` to keep search/refresh right-aligned
 
 ### Template structure
 
