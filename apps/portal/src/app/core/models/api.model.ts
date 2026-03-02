@@ -90,7 +90,7 @@ export interface ProviderChainMember {
 }
 
 export interface Notification {
-  notification_id: number;
+  id: number;
   channel_type: number;
   data: Record<string, unknown>;
   delivery_status: number;
@@ -105,6 +105,7 @@ export interface Notification {
 
 export interface ArchivedNotification {
   id: number;
+  notification_id: number;
   channel_type: number;
   data: Record<string, unknown>;
   delivery_status: number;

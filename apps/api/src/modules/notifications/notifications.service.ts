@@ -579,8 +579,14 @@ export class NotificationsService extends CoreService<Notification> {
   async getAllNotificationsAsDto(
     query: PaginationQueryDto,
     organizationId: number,
+    filters?: { channelType?: number; deliveryStatus?: number; applicationId?: number },
   ): Promise<{ items: NotificationResponseDto[]; meta: PaginationMeta }> {
-    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+    let appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    // If filtering by applicationId, restrict to that app (within org scope)
+    if (filters?.applicationId) {
+      appIds = appIds.includes(filters.applicationId) ? [filters.applicationId] : [];
+    }
 
     if (appIds.length === 0) {
       const { page, limit } = PaginationHelper.normalizePaginationParams(query);
@@ -591,10 +597,19 @@ export class NotificationsService extends CoreService<Notification> {
       };
     }
 
-    const baseConditions = [
+    const baseConditions: Array<{ field: string; value: unknown; operator?: string }> = [
       { field: 'status', value: Status.ACTIVE },
       { field: 'applicationId', value: appIds, operator: 'in' },
     ];
+
+    if (filters?.channelType) {
+      baseConditions.push({ field: 'channelType', value: filters.channelType });
+    }
+
+    if (filters?.deliveryStatus) {
+      baseConditions.push({ field: 'deliveryStatus', value: filters.deliveryStatus });
+    }
+
     const searchableFields = ['createdBy', 'data', 'result'];
     const { items, meta } = await super.findAllPaginated(
       query,

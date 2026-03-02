@@ -62,6 +62,24 @@ export class NotificationsController {
     type: Number,
     description: 'Target org (SUPER_ADMIN only)',
   })
+  @ApiQuery({
+    name: 'channel_type',
+    required: false,
+    type: Number,
+    description: 'Filter by channel type',
+  })
+  @ApiQuery({
+    name: 'delivery_status',
+    required: false,
+    type: Number,
+    description: 'Filter by delivery status',
+  })
+  @ApiQuery({
+    name: 'application_id',
+    required: false,
+    type: Number,
+    description: 'Filter by application',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of notifications',
@@ -71,13 +89,22 @@ export class NotificationsController {
   async findAll(
     @Query() query: PaginationQueryDto,
     @Query('organization_id') queryOrgId: number,
+    @Query('channel_type') channelType: number,
+    @Query('delivery_status') deliveryStatus: number,
+    @Query('application_id') applicationId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<NotificationResponseDto>> {
     const targetOrgId = resolveOrgId(user, queryOrgId);
+    const filters = {
+      channelType: channelType ? Number(channelType) : undefined,
+      deliveryStatus: deliveryStatus ? Number(deliveryStatus) : undefined,
+      applicationId: applicationId ? Number(applicationId) : undefined,
+    };
     const { items, meta } = await this.notificationsService.getAllNotificationsAsDto(
       query,
       targetOrgId,
+      filters,
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);

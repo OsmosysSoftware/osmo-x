@@ -1,17 +1,13 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  OnInit,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
 import { DatePipe, JsonPipe } from '@angular/common';
-import { Table, TableModule } from 'primeng/table';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { FormsModule } from '@angular/forms';
+import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
+import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -21,21 +17,25 @@ import { MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
 import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
-import { NotificationsService } from '../services/notifications.service';
+import { JsonViewerDialog } from '../../../shared/components/json-viewer-dialog/json-viewer-dialog';
+import { NotificationsService, NotificationFilters } from '../services/notifications.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
 import { ProvidersService } from '../../providers/services/providers.service';
 import { Notification, Application, Provider, PageInfo } from '../../../core/models/api.model';
+import { ChannelType, DeliveryStatus } from '../../../core/constants/notification';
 
 @Component({
   selector: 'app-notifications-list',
   imports: [
     DatePipe,
     JsonPipe,
+    FormsModule,
     TableModule,
     TagModule,
     ButtonModule,
     SkeletonModule,
     DialogModule,
+    SelectModule,
     TooltipModule,
     ToolbarModule,
     IconFieldModule,
@@ -44,6 +44,7 @@ import { Notification, Application, Provider, PageInfo } from '../../../core/mod
     PaginationComponent,
     StatusBadgeComponent,
     ChannelTypePipe,
+    JsonViewerDialog,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './notifications-list.html',
@@ -54,8 +55,7 @@ export class NotificationsListComponent implements OnInit {
   private readonly applicationsService = inject(ApplicationsService);
   private readonly providersService = inject(ProvidersService);
   private readonly messageService = inject(MessageService);
-
-  readonly dt = viewChild<Table>('dt');
+  private readonly clipboard = inject(Clipboard);
 
   readonly notifications = signal<Notification[]>([]);
   readonly applications = signal<Application[]>([]);
@@ -66,11 +66,44 @@ export class NotificationsListComponent implements OnInit {
   readonly detailDialogVisible = signal(false);
   private currentPage = 1;
 
+  // Filter options
+  readonly channelTypeOptions = Object.entries(ChannelType).map(([value, label]) => ({
+    label,
+    value: Number(value),
+  }));
+
+  readonly deliveryStatusOptions = Object.entries(DeliveryStatus).map(([value, label]) => ({
+    label,
+    value: Number(value),
+  }));
+
+  readonly applicationOptions = signal<{ label: string; value: number }[]>([]);
+
+  // Filter state
+  readonly selectedChannelType = signal<number | null>(null);
+  readonly selectedDeliveryStatus = signal<number | null>(null);
+  readonly selectedApplicationId = signal<number | null>(null);
+  readonly searchText = signal('');
+
+  // JSON viewer dialog
+  readonly jsonDialogVisible = signal(false);
+  readonly jsonDialogData = signal<Record<string, unknown> | null>(null);
+  readonly jsonDialogHeader = signal('JSON Data');
+
+  private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
   ngOnInit(): void {
     this.loadNotifications();
+
     this.applicationsService.list(1, 100).subscribe({
-      next: (res) => this.applications.set(res.items ?? []),
+      next: (res) => {
+        this.applications.set(res.items ?? []);
+        this.applicationOptions.set(
+          (res.items ?? []).map((a) => ({ label: a.name, value: a.application_id })),
+        );
+      },
     });
+
     this.providersService.list(1, 100).subscribe({
       next: (res) => this.providers.set(res.items ?? []),
     });
@@ -79,7 +112,25 @@ export class NotificationsListComponent implements OnInit {
   loadNotifications(): void {
     this.loading.set(true);
 
-    this.service.list(this.currentPage, 20).subscribe({
+    const filters: NotificationFilters = {};
+
+    if (this.selectedChannelType()) {
+      filters.channel_type = this.selectedChannelType()!;
+    }
+
+    if (this.selectedDeliveryStatus()) {
+      filters.delivery_status = this.selectedDeliveryStatus()!;
+    }
+
+    if (this.selectedApplicationId()) {
+      filters.application_id = this.selectedApplicationId()!;
+    }
+
+    if (this.searchText().trim()) {
+      filters.search = this.searchText().trim();
+    }
+
+    this.service.list(this.currentPage, 20, filters).subscribe({
       next: (res) => {
         this.notifications.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);
@@ -101,6 +152,35 @@ export class NotificationsListComponent implements OnInit {
     this.loadNotifications();
   }
 
+  onFilterChange(): void {
+    this.currentPage = 1;
+    this.loadNotifications();
+  }
+
+  onSearchInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+
+    this.searchText.set(value);
+
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      this.currentPage = 1;
+      this.loadNotifications();
+    }, 400);
+  }
+
+  clearFilters(): void {
+    this.selectedChannelType.set(null);
+    this.selectedDeliveryStatus.set(null);
+    this.selectedApplicationId.set(null);
+    this.searchText.set('');
+    this.currentPage = 1;
+    this.loadNotifications();
+  }
+
   getApplicationName(applicationId: number): string {
     const app = this.applications().find((a) => a.application_id === applicationId);
 
@@ -117,8 +197,19 @@ export class NotificationsListComponent implements OnInit {
     return provider?.name ?? `Provider #${providerId}`;
   }
 
-  onGlobalFilter(event: Event): void {
-    this.dt()?.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  viewJson(data: Record<string, unknown> | null, header: string): void {
+    this.jsonDialogData.set(data);
+    this.jsonDialogHeader.set(header);
+    this.jsonDialogVisible.set(true);
+  }
+
+  copyJson(data: Record<string, unknown> | null): void {
+    this.clipboard.copy(JSON.stringify(data, null, 2));
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Copied',
+      detail: 'JSON copied to clipboard',
+    });
   }
 
   onRowSelect(event: { data?: Notification | Notification[] }): void {
@@ -128,7 +219,7 @@ export class NotificationsListComponent implements OnInit {
       return;
     }
 
-    this.service.getById(notification.notification_id).subscribe({
+    this.service.getById(notification.id).subscribe({
       next: (notification) => {
         this.selectedNotification.set(notification);
         this.detailDialogVisible.set(true);

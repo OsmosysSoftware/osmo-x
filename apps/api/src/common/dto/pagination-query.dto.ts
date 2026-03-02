@@ -51,4 +51,12 @@ export class PaginationQueryDto {
   @IsOptional()
   @IsString()
   order?: 'asc' | 'desc';
+
+  @ApiPropertyOptional({
+    description: 'Search text (searches across data, result, and createdBy fields)',
+    example: 'user@example.com',
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
 }

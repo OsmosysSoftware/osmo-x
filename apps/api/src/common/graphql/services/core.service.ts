@@ -177,6 +177,7 @@ export abstract class CoreService<TEntity> {
       limit,
       sortBy: sort?.field,
       sortOrder: sort?.order === 'desc' ? SortOrder.DESC : SortOrder.ASC,
+      search: query.search,
     };
 
     const { items, total } = await this.findAll(options, alias, searchableFields, baseConditions);
