@@ -1,0 +1,68 @@
+---
+title: Contributing with Claude Code
+description: AI-assisted development workflow using Claude Code
+icon: robot
+---
+
+# Contributing with Claude Code
+
+OsmoX uses [Claude Code](https://claude.ai/code) for AI-assisted development. The project includes skills, hooks, and reference documentation that make Claude Code an effective contributor.
+
+## Setup
+
+Claude Code automatically reads `CLAUDE.md` from the project root for context. No additional setup is needed — just run `claude` in the repository.
+
+## Skills
+
+Skills are reusable workflows invoked via slash commands. Available skills:
+
+<CardGroup cols={2}>
+  <Card title="/commit" icon="code-commit">
+    Create git commits following Conventional Commits format with proper scope and type
+  </Card>
+  <Card title="/update-docs" icon="book">
+    Sync source markdown docs to the Mintlify documentation site
+  </Card>
+  <Card title="/crud-page" icon="table">
+    Generate a complete CRUD list page in the Angular portal with service, routing, and menu
+  </Card>
+  <Card title="/add-provider" icon="plug">
+    Add a new notification provider with service, consumer, queue wiring, and master provider seed
+  </Card>
+  <Card title="/generate-api-types" icon="code">
+    Regenerate TypeScript types from the backend OpenAPI spec
+  </Card>
+  <Card title="/code-quality" icon="check">
+    Run lint, format, and build checks across the monorepo
+  </Card>
+</CardGroup>
+
+## Hooks
+
+Hookify rules automatically warn or block Claude Code when certain patterns are detected:
+
+- **No Attribution** — blocks `Co-Authored-By` or `Signed-off-by` lines in commits
+- **Sync Docs Site** — warns when source docs in `apps/api/docs/` are modified, prompting to update the Mintlify docs site
+
+## Reference Documentation
+
+The project includes internal reference docs in `apps/api/docs/reference/` that help Claude Code follow established patterns:
+
+| Document | Purpose |
+| --- | --- |
+| `ERROR_CODES.md` | All API error codes with RFC 7807 format — ensures consistent error handling |
+| `QUICK_REFERENCE.md` | Copy-paste templates for implementing new v1 modules |
+| `IMPLEMENTATION_SUMMARY.md` | Architecture overview of the SaaS transformation |
+| `SNAKE_CASE_CONSISTENCY.md` | Convention guide for snake_case across all API layers |
+| `ZALANDO_COMPLIANCE.md` | REST API design compliance tracking |
+
+These documents are loaded as context when relevant, ensuring Claude Code generates code that follows project conventions.
+
+## Coding Conventions
+
+Key conventions Claude Code follows (configured via `CLAUDE.md`):
+
+- **Backend**: `nest generate` for scaffolding, explicit return types, Winston logger
+- **Frontend**: `ng generate` for scaffolding, standalone components, signals, `OnPush` change detection
+- **API types**: Generated from OpenAPI spec — run `/generate-api-types` after changing backend DTOs
+- **Commits**: Conventional Commits format with `feat`/`fix`/`refactor` types and `api`/`portal` scopes

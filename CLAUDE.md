@@ -174,6 +174,20 @@ npm run generate:api          # Regenerate TypeScript types from backend OpenAPI
 
 **Notification Statuses:** `Pending` → `In Progress` → `Awaiting Confirmation` → `Success`/`Failed` → Archived
 
+## Documentation Site
+
+Mintlify-powered docs site in `apps/api/docs-site/`. Source markdown lives in `apps/api/docs/` — the docs-site contains MDX conversions with Mintlify components (Cards, Steps, Notes, etc.).
+
+```bash
+# Local preview (from docs-site directory)
+cd apps/api/docs-site
+npx mintlify dev
+```
+
+- **Navigation config**: `apps/api/docs-site/mint.json`
+- **Sync skill**: Run `/update-docs [file or topic]` to sync source docs to docs-site
+- **Auto-warn**: Hookify rule triggers when files in `apps/api/docs/` are modified
+
 ## Environment
 
 Requires Node.js 20.x, PostgreSQL 16+, Redis 6+. See `apps/api/.env.example` for all configuration options including server, security (JWT, API keys), notification processing, logging, and database settings.

@@ -1,0 +1,150 @@
+---
+title: Error Codes
+description: Complete reference of API error codes and response formats
+icon: triangle-exclamation
+---
+
+# Error Codes
+
+All error codes returned by the OsmoX API, organized by domain. Use the `error_code` field for frontend localization (i18n) support.
+
+## Error Response Formats
+
+<Tabs>
+  <Tab title="v1 Endpoints (RFC 7807)">
+    All `/api/v1/*` error responses follow [RFC 7807 Problem JSON](https://www.rfc-editor.org/rfc/rfc7807):
+
+    ```json
+    {
+      "type": "https://api.osmox.dev/problems/auth-invalid-credentials",
+      "title": "Invalid Credentials",
+      "status": 401,
+      "detail": "Invalid username or password",
+      "instance": "/api/v1/auth/login",
+      "error_code": "AUTH_INVALID_CREDENTIALS",
+      "timestamp": "2025-02-25T12:00:00.000Z"
+    }
+    ```
+  </Tab>
+  <Tab title="Legacy Endpoints (JSend)">
+    Existing endpoints continue to use JSend format:
+
+    ```json
+    {
+      "status": "error",
+      "statusCode": 401,
+      "message": "Invalid username or password"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Frontend Integration
+
+<Note>
+  Use the `error_code` field for i18n translation keys. Display the `detail` field as a fallback if translation is not available. Use the `invalid_params` array for field-level validation error details.
+</Note>
+
+## Error Codes Reference
+
+### Authentication Errors (AUTH_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `AUTH_INVALID_CREDENTIALS` | 401 | Invalid login credentials | User provides wrong username/password |
+| `AUTH_INVALID_TOKEN` | 401 | Invalid JWT token | Token is malformed or invalid |
+| `AUTH_TOKEN_EXPIRED` | 401 | JWT token expired | Token expiration time passed |
+| `AUTH_UNAUTHORIZED` | 401 | Unauthorized access | Missing or invalid authentication |
+| `AUTH_INVALID_REFRESH_TOKEN` | 401 | Invalid refresh token | Refresh token is invalid or expired |
+| `AUTH_FORBIDDEN` | 403 | Access forbidden | User lacks required role/permissions |
+
+### Organization Errors (ORG_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `ORG_NOT_FOUND` | 404 | Organization not found | Requested organization doesn't exist |
+| `ORG_ALREADY_EXISTS` | 409 | Organization slug exists | Creating duplicate organization slug |
+| `ORG_SCOPE_VIOLATION` | 403 | Cross-org access denied | Accessing data from another organization |
+
+### User Errors (USER_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `USER_NOT_FOUND` | 404 | User not found | Requested user doesn't exist |
+| `USER_ALREADY_EXISTS` | 409 | User already exists | Creating user with existing username |
+| `USER_INACTIVE` | 401 | User account inactive | User account is deactivated |
+
+### Application Errors (APP_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `APP_NOT_FOUND` | 404 | Application not found | Requested application doesn't exist |
+| `APP_ALREADY_EXISTS` | 409 | Application already exists | Creating duplicate application |
+
+### Provider Errors (PROVIDER_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `PROVIDER_NOT_FOUND` | 404 | Provider not found | Requested provider doesn't exist |
+| `PROVIDER_CONFIG_INVALID` | 400 | Invalid provider config | Provider configuration is malformed |
+| `PROVIDER_SEND_FAILED` | 500 | Provider delivery failed | Notification delivery failed |
+
+### Notification Errors (NOTIFICATION_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `NOTIFICATION_NOT_FOUND` | 404 | Notification not found | Requested notification doesn't exist |
+| `NOTIFICATION_INVALID_CHANNEL` | 400 | Invalid channel type | Channel type not supported |
+| `NOTIFICATION_NO_PROVIDER` | 400 | No provider configured | No provider chain for the channel |
+
+### API Key Errors (API_KEY_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `API_KEY_NOT_FOUND` | 404 | API key not found | Requested API key doesn't exist |
+| `API_KEY_INVALID` | 401 | Invalid API key | API key is invalid or revoked |
+| `API_KEY_REVOKED` | 401 | API key revoked | API key has been revoked |
+
+### Webhook Errors (WEBHOOK_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `WEBHOOK_NOT_FOUND` | 404 | Webhook not found | Requested webhook doesn't exist |
+| `WEBHOOK_DELIVERY_FAILED` | 500 | Webhook delivery failed | Failed to deliver webhook payload |
+
+### Validation Errors (VALIDATION_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `VALIDATION_FAILED` | 400 | Validation failed | Input validation errors |
+| `VALIDATION_INVALID_UUID` | 400 | Invalid UUID format | ID is not valid UUID/number |
+
+### General Errors (GENERAL_*)
+
+| Error Code | HTTP Status | Description | When It Occurs |
+|------------|-------------|-------------|----------------|
+| `GENERAL_INTERNAL_ERROR` | 500 | Internal server error | Unexpected server error |
+| `GENERAL_NOT_FOUND` | 404 | Resource not found | Generic resource not found |
+| `GENERAL_BAD_REQUEST` | 400 | Bad request | Generic bad request |
+
+## Validation Error Format
+
+When validation fails on v1 endpoints, the response includes detailed field-level errors:
+
+```json
+{
+  "type": "https://api.osmox.dev/problems/validation-failed",
+  "title": "Validation Failed",
+  "status": 400,
+  "detail": "Request validation failed",
+  "instance": "/api/v1/applications",
+  "error_code": "VALIDATION_FAILED",
+  "invalid_params": [
+    {
+      "name": "name",
+      "reason": "name must not be empty"
+    }
+  ],
+  "timestamp": "2025-02-25T12:00:00.000Z"
+}
+```

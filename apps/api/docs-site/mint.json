@@ -52,7 +52,8 @@
       "group": "API Reference",
       "pages": [
         "api-reference/overview",
-        "api-reference/usage"
+        "api-reference/usage",
+        "api-reference/error-codes"
       ]
     },
     {
@@ -97,12 +98,14 @@
         "guides/add-provider",
         "guides/test-mode",
         "guides/webhooks",
-        "guides/delivery-status"
+        "guides/delivery-status",
+        "guides/contributing-with-ai"
       ]
     },
     {
       "group": "Operations",
       "pages": [
+        "operations/docker",
         "operations/redis-cleanup",
         "operations/aws-sns"
       ]
