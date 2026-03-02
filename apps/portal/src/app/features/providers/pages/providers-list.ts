@@ -153,7 +153,7 @@ export class ProvidersListComponent implements OnInit {
     this.formChannelType.set(provider.channel_type);
     this.formApplicationId.set(provider.application_id);
     this.formIsEnabled.set(provider.is_enabled === 1);
-    this.formConfiguration.set(JSON.stringify(provider.configuration, null, 2));
+    this.formConfiguration.set('');
     this.dialogVisible.set(true);
   }
 
@@ -193,17 +193,21 @@ export class ProvidersListComponent implements OnInit {
     this.saving.set(true);
     const name = this.formName().trim();
     const configStr = this.formConfiguration().trim();
-    const configuration = configStr ? (JSON.parse(configStr) as Record<string, unknown>) : {};
     const editing = this.editingProvider();
 
     if (editing) {
+      const updatePayload: Record<string, unknown> = {
+        provider_id: editing.provider_id,
+        name,
+        is_enabled: this.formIsEnabled() ? 1 : 0,
+      };
+
+      if (configStr) {
+        updatePayload['configuration'] = JSON.parse(configStr) as Record<string, unknown>;
+      }
+
       this.providersService
-        .update({
-          provider_id: editing.provider_id,
-          name,
-          is_enabled: this.formIsEnabled() ? 1 : 0,
-          configuration,
-        })
+        .update(updatePayload as Parameters<typeof this.providersService.update>[0])
         .subscribe({
           next: () => {
             this.messageService.add({
@@ -218,6 +222,8 @@ export class ProvidersListComponent implements OnInit {
           error: () => this.saving.set(false),
         });
     } else {
+      const configuration = configStr ? (JSON.parse(configStr) as Record<string, unknown>) : {};
+
       this.providersService
         .create({
           name,

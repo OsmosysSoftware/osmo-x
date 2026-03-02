@@ -703,13 +703,10 @@ export interface components {
        */
       is_enabled: number;
       /**
-       * @description Provider-specific configuration (host, port, credentials, etc.)
-       * @example {
-       *       "host": "smtp.example.com",
-       *       "port": 587
-       *     }
+       * @description Whether this provider has configuration set
+       * @example true
        */
-      configuration: string;
+      has_configuration: boolean;
       /**
        * @description Associated application ID
        * @example 1

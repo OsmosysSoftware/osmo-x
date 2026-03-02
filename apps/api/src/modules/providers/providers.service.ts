@@ -90,7 +90,7 @@ export class ProvidersService extends CoreService<Provider> {
       name: provider.name,
       channelType: provider.channelType,
       isEnabled: provider.isEnabled,
-      configuration: provider.configuration,
+      hasConfiguration: !!provider.configuration,
       applicationId: provider.applicationId,
       userId: provider.userId,
       status: provider.status,

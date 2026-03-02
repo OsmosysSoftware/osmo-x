@@ -175,7 +175,11 @@
         </div>
       </div>
       <div class="flex flex-col gap-2">
-        <label for="config" class="font-medium">Configuration (JSON)</label>
+        <label for="config" class="font-medium">
+          Configuration (JSON){{
+            editingProvider()?.has_configuration ? ' (leave blank to keep current)' : ''
+          }}
+        </label>
         <textarea
           pTextarea
           id="config"

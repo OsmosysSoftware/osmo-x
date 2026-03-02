@@ -17,10 +17,10 @@ export class ProviderResponseDto {
   isEnabled: number;
 
   @ApiProperty({
-    description: 'Provider-specific configuration (host, port, credentials, etc.)',
-    example: { host: 'smtp.example.com', port: 587 },
+    description: 'Whether this provider has configuration set',
+    example: true,
   })
-  configuration: string;
+  hasConfiguration: boolean;
 
   @ApiProperty({ description: 'Associated application ID', example: 1 })
   applicationId: number;
