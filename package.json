@@ -18,5 +18,6 @@
       "bash -c 'cd apps/portal && npm run lint:fix'",
       "bash -c 'cd apps/portal && npm run format'"
     ]
-  }
+  },
+  "version": "1.0.0"
 }
