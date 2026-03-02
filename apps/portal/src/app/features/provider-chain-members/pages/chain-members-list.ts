@@ -220,16 +220,18 @@ export class ChainMembersListComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.service.delete(member.chain_id, member.provider_id).subscribe({
-          next: () => {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Removed',
-              detail: `"${providerName}" removed from chain`,
-            });
-            this.loadMembers();
-          },
-        });
+        this.service
+          .delete({ chain_id: member.chain_id, provider_id: member.provider_id })
+          .subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Removed',
+                detail: `"${providerName}" removed from chain`,
+              });
+              this.loadMembers();
+            },
+          });
       },
     });
   }

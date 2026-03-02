@@ -2,7 +2,12 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { Provider, PaginatedResponse } from '../../../core/models/api.model';
+import {
+  Provider,
+  CreateProviderInput,
+  UpdateProviderInput,
+  PaginatedResponse,
+} from '../../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProvidersService {
@@ -24,22 +29,11 @@ export class ProvidersService {
     return this.http.get<Provider>(`${this.apiUrl}/${id}`);
   }
 
-  create(data: {
-    application_id: number;
-    channel_type: number;
-    configuration: Record<string, unknown>;
-    is_enabled: number;
-    name: string;
-  }): Observable<Provider> {
+  create(data: CreateProviderInput): Observable<Provider> {
     return this.http.post<Provider>(this.apiUrl, data);
   }
 
-  update(data: {
-    provider_id: number;
-    name?: string;
-    configuration?: Record<string, unknown>;
-    is_enabled?: number;
-  }): Observable<Provider> {
+  update(data: UpdateProviderInput): Observable<Provider> {
     return this.http.put<Provider>(this.apiUrl, data);
   }
 

@@ -34,6 +34,8 @@ import {
   Provider,
   Application,
   PageInfo,
+  CreateProviderChainInput,
+  UpdateProviderChainInput,
 } from '../../../core/models/api.model';
 
 interface ProviderTypeOption {
@@ -362,16 +364,18 @@ export class ChainsListComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.membersService.delete(chainId, member.provider_id).subscribe({
-          next: () => {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Success',
-              detail: 'Member removed from chain',
-            });
-            this.loadMembers(chainId);
-          },
-        });
+        this.membersService
+          .delete({ chain_id: chainId, provider_id: member.provider_id })
+          .subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Member removed from chain',
+              });
+              this.loadMembers(chainId);
+            },
+          });
       },
     });
   }
@@ -409,7 +413,7 @@ export class ChainsListComponent implements OnInit {
       .create({
         chain_name: form.chain_name.trim(),
         application_id: form.application_id!,
-        provider_type: form.provider_type!,
+        provider_type: form.provider_type! as CreateProviderChainInput['provider_type'],
       })
       .subscribe({
         next: () => {
@@ -449,7 +453,7 @@ export class ChainsListComponent implements OnInit {
       .update({
         chain_id: form.chain_id,
         chain_name: form.chain_name.trim(),
-        provider_type: form.provider_type,
+        provider_type: form.provider_type as UpdateProviderChainInput['provider_type'],
       })
       .subscribe({
         next: () => {

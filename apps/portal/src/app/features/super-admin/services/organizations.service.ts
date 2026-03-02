@@ -2,7 +2,11 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { Organization } from '../../../core/models/api.model';
+import {
+  Organization,
+  CreateOrganizationInput,
+  UpdateOrganizationInput,
+} from '../../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationsService {
@@ -18,15 +22,11 @@ export class OrganizationsService {
       .pipe(tap((organizations) => this._organizations.set(organizations)));
   }
 
-  create(data: { name: string; slug: string }): Observable<Organization> {
+  create(data: CreateOrganizationInput): Observable<Organization> {
     return this.http.post<Organization>(this.apiUrl, data);
   }
 
-  update(data: {
-    organization_id: number;
-    name?: string;
-    slug?: string;
-  }): Observable<Organization> {
+  update(data: UpdateOrganizationInput): Observable<Organization> {
     return this.http.put<Organization>(this.apiUrl, data);
   }
 

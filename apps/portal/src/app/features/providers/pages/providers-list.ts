@@ -29,7 +29,12 @@ import { ProvidersService } from '../services/providers.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
 import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
 import { ChannelType } from '../../../core/constants/notification';
-import { Provider, Application, PageInfo } from '../../../core/models/api.model';
+import {
+  Provider,
+  Application,
+  PageInfo,
+  CreateProviderInput,
+} from '../../../core/models/api.model';
 
 interface ChannelOption {
   label: string;
@@ -216,7 +221,7 @@ export class ProvidersListComponent implements OnInit {
       this.providersService
         .create({
           name,
-          channel_type: this.formChannelType()!,
+          channel_type: this.formChannelType()! as CreateProviderInput['channel_type'],
           application_id: this.formApplicationId()!,
           is_enabled: this.formIsEnabled() ? 1 : 0,
           configuration,

@@ -2,7 +2,12 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { Webhook, PaginatedResponse } from '../../../core/models/api.model';
+import {
+  Webhook,
+  CreateWebhookInput,
+  UpdateWebhookInput,
+  PaginatedResponse,
+} from '../../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class WebhooksService {
@@ -20,11 +25,11 @@ export class WebhooksService {
       .pipe(tap((res) => this._webhooks.set(res.items)));
   }
 
-  create(data: { webhook_url: string; provider_id: number }): Observable<Webhook> {
+  create(data: CreateWebhookInput): Observable<Webhook> {
     return this.http.post<Webhook>(this.apiUrl, data);
   }
 
-  update(data: { id: number; webhook_url: string }): Observable<Webhook> {
+  update(data: UpdateWebhookInput): Observable<Webhook> {
     return this.http.put<Webhook>(this.apiUrl, data);
   }
 

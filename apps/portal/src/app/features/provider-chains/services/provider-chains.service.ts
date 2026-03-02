@@ -2,7 +2,12 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { ProviderChain, PaginatedResponse } from '../../../core/models/api.model';
+import {
+  ProviderChain,
+  CreateProviderChainInput,
+  UpdateProviderChainInput,
+  PaginatedResponse,
+} from '../../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProviderChainsService {
@@ -20,21 +25,11 @@ export class ProviderChainsService {
       .pipe(tap((res) => this._providerChains.set(res.items)));
   }
 
-  create(data: {
-    chain_name: string;
-    application_id: number;
-    provider_type: number;
-    description?: string;
-  }): Observable<ProviderChain> {
+  create(data: CreateProviderChainInput): Observable<ProviderChain> {
     return this.http.post<ProviderChain>(this.apiUrl, data);
   }
 
-  update(data: {
-    chain_id: number;
-    chain_name?: string;
-    provider_type?: number;
-    description?: string;
-  }): Observable<ProviderChain> {
+  update(data: UpdateProviderChainInput): Observable<ProviderChain> {
     return this.http.put<ProviderChain>(this.apiUrl, data);
   }
 

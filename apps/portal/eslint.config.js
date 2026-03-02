@@ -5,7 +5,7 @@ const angular = require('angular-eslint');
 
 module.exports = tseslint.config(
   {
-    ignores: ['desktop-reference/**/*', '.angular/**/*'],
+    ignores: ['desktop-reference/**/*', '.angular/**/*', 'src/app/core/types/api.types.ts'],
   },
   {
     files: ['**/*.ts'],

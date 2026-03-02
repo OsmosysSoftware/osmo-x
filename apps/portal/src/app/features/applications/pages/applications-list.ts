@@ -105,7 +105,7 @@ export class ApplicationsListComponent implements OnInit {
   openEdit(app: Application): void {
     this.editingApp.set(app);
     this.formName.set(app.name);
-    this.formTestMode.set(app.test_mode_enabled);
+    this.formTestMode.set(!!app.test_mode_enabled);
     this.dialogVisible.set(true);
   }
 
@@ -124,7 +124,7 @@ export class ApplicationsListComponent implements OnInit {
         .update({
           application_id: editing.application_id,
           name,
-          test_mode_enabled: this.formTestMode(),
+          test_mode_enabled: this.formTestMode() ? 1 : 0,
         })
         .subscribe({
           next: () => {
@@ -140,19 +140,21 @@ export class ApplicationsListComponent implements OnInit {
           error: () => this.saving.set(false),
         });
     } else {
-      this.applicationsService.create({ name, test_mode_enabled: this.formTestMode() }).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Created',
-            detail: `Application "${name}" created successfully`,
-          });
-          this.dialogVisible.set(false);
-          this.saving.set(false);
-          this.loadApplications();
-        },
-        error: () => this.saving.set(false),
-      });
+      this.applicationsService
+        .create({ name, test_mode_enabled: this.formTestMode() ? 1 : 0 })
+        .subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Created',
+              detail: `Application "${name}" created successfully`,
+            });
+            this.dialogVisible.set(false);
+            this.saving.set(false);
+            this.loadApplications();
+          },
+          error: () => this.saving.set(false),
+        });
     }
   }
 

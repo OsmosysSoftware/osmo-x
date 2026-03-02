@@ -24,7 +24,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { OrgContextService } from '../../../core/services/org-context.service';
 import { UsersService } from '../services/users.service';
-import { User } from '../../../core/models/auth.model';
+import { UserResponse, CreateUserInput, UpdateUserInput } from '../../../core/models/api.model';
 import { UserRoles, UserRoleLabels } from '../../../core/constants/roles';
 
 interface RoleOption {
@@ -64,13 +64,13 @@ export class UsersListComponent implements OnInit {
 
   readonly dt = viewChild<Table>('dt');
 
-  readonly users = signal<User[]>([]);
+  readonly users = signal<UserResponse[]>([]);
   readonly loading = signal(true);
   readonly saving = signal(false);
 
   // Dialog state
   readonly dialogVisible = signal(false);
-  readonly editingUser = signal<User | null>(null);
+  readonly editingUser = signal<UserResponse | null>(null);
   readonly formEmail = signal('');
   readonly formFirstName = signal('');
   readonly formLastName = signal('');
@@ -119,13 +119,13 @@ export class UsersListComponent implements OnInit {
     this.dialogVisible.set(true);
   }
 
-  openEdit(user: User): void {
+  openEdit(user: UserResponse): void {
     this.editingUser.set(user);
     this.formEmail.set(user.email);
     this.formFirstName.set(user.first_name || '');
     this.formLastName.set(user.last_name || '');
     this.formPassword.set('');
-    this.formRole.set(user.user_role ?? user.role);
+    this.formRole.set(user.user_role);
     this.dialogVisible.set(true);
   }
 
@@ -156,14 +156,7 @@ export class UsersListComponent implements OnInit {
     const editing = this.editingUser();
 
     if (editing) {
-      const updateData: {
-        user_id: number;
-        email?: string;
-        first_name?: string;
-        last_name?: string;
-        password?: string;
-        user_role?: number;
-      } = { user_id: editing.user_id };
+      const updateData: UpdateUserInput = { user_id: editing.user_id };
 
       const email = this.formEmail().trim();
 
@@ -183,8 +176,8 @@ export class UsersListComponent implements OnInit {
         updateData.last_name = lastName;
       }
 
-      if (this.formRole() !== (editing.user_role ?? editing.role)) {
-        updateData.user_role = this.formRole();
+      if (this.formRole() !== editing.user_role) {
+        updateData.user_role = this.formRole() as UpdateUserInput['user_role'];
       }
 
       const password = this.formPassword().trim();
@@ -213,7 +206,7 @@ export class UsersListComponent implements OnInit {
           password: this.formPassword().trim(),
           first_name: this.formFirstName().trim() || undefined,
           last_name: this.formLastName().trim() || undefined,
-          user_role: this.formRole(),
+          user_role: this.formRole() as CreateUserInput['user_role'],
         })
         .subscribe({
           next: () => {
@@ -231,7 +224,7 @@ export class UsersListComponent implements OnInit {
     }
   }
 
-  getDisplayName(user: User): string {
+  getDisplayName(user: UserResponse): string {
     const parts = [user.first_name, user.last_name].filter(Boolean);
 
     return parts.length > 0 ? parts.join(' ') : '---';
@@ -241,7 +234,7 @@ export class UsersListComponent implements OnInit {
     return UserRoleLabels[role as keyof typeof UserRoleLabels] || 'Unknown';
   }
 
-  confirmDelete(user: User): void {
+  confirmDelete(user: UserResponse): void {
     const displayName = this.getDisplayName(user);
 
     this.confirmationService.confirm({
