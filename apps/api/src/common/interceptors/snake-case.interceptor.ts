@@ -12,6 +12,18 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nes
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+/**
+ * Keys whose values are arbitrary JSON blobs (user/provider-defined).
+ * The key itself is still converted, but the nested object is passed through as-is.
+ */
+const PASSTHROUGH_VALUE_KEYS = new Set([
+  'configuration',
+  'data',
+  'result',
+  'whitelistRecipients',
+  'whitelist_recipients',
+]);
+
 @Injectable()
 export class SnakeCaseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
@@ -69,7 +81,9 @@ export class SnakeCaseInterceptor implements NestInterceptor {
 
     for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
       const transformedKey = this.shouldPreserveKey(key) ? key : this.toSnakeCase(key);
-      transformed[transformedKey] = this.transformToSnakeCase(value, seen);
+      transformed[transformedKey] = PASSTHROUGH_VALUE_KEYS.has(key)
+        ? value
+        : this.transformToSnakeCase(value, seen);
     }
 
     return transformed;
@@ -95,7 +109,9 @@ export class SnakeCaseInterceptor implements NestInterceptor {
 
     for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
       const transformedKey = this.shouldPreserveKey(key) ? key : this.toCamelCase(key);
-      transformed[transformedKey] = this.transformToCamelCase(value);
+      transformed[transformedKey] = PASSTHROUGH_VALUE_KEYS.has(key)
+        ? value
+        : this.transformToCamelCase(value);
     }
 
     return transformed;
