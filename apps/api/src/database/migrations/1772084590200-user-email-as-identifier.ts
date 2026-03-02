@@ -1,7 +1,14 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
+import { config } from 'dotenv';
+
+config();
+
+const DEFAULT_ADMIN_EMAIL = 'admin@osmox.dev';
 
 export class UserEmailAsIdentifier1772084590200 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const adminEmail = (process.env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL).toLowerCase();
+
     // Add first_name and last_name columns
     await queryRunner.query(`
       ALTER TABLE notify_users
@@ -24,11 +31,14 @@ export class UserEmailAsIdentifier1772084590200 implements MigrationInterface {
     `);
 
     // Set first_name for Admin user
-    await queryRunner.query(`
+    await queryRunner.query(
+      `
       UPDATE notify_users
       SET first_name = 'Admin'
-      WHERE email = 'admin@osmox.dev'
-    `);
+      WHERE email = $1
+    `,
+      [adminEmail],
+    );
 
     // Make email NOT NULL
     await queryRunner.query(`
