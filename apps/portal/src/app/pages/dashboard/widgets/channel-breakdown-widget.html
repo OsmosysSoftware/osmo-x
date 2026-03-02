@@ -1,0 +1,12 @@
+<div class="border border-surface rounded-lg p-4">
+  <h3 class="text-lg font-semibold m-0 mb-4">Channel Distribution</h3>
+  @if (loading()) {
+    <p-skeleton height="300px" />
+  } @else if (chartData()) {
+    <p-chart type="doughnut" [data]="chartData()" [options]="chartOptions()" class="h-80" />
+  } @else {
+    <div class="flex items-center justify-center h-80 text-muted-color">
+      <p>No channel data available</p>
+    </div>
+  }
+</div>

@@ -1,17 +1,8 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-
-export interface DashboardStats {
-  total_applications: number;
-  total_providers: number;
-  total_notifications: number;
-  successful_notifications: number;
-  failed_notifications: number;
-  pending_notifications: number;
-  success_rate: number;
-}
+import { DashboardStats, DashboardAnalytics } from '../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -22,9 +13,24 @@ export class DashboardService {
   readonly stats = this._stats.asReadonly();
   readonly hasStats = computed(() => this._stats() !== null);
 
+  private readonly _analytics = signal<DashboardAnalytics | null>(null);
+  readonly analytics = this._analytics.asReadonly();
+
   loadStats(): Observable<DashboardStats> {
     return this.http
       .get<DashboardStats>(`${this.apiUrl}/stats`)
       .pipe(tap((stats) => this._stats.set(stats)));
+  }
+
+  loadAnalytics(period: string = '30d', applicationId?: number): Observable<DashboardAnalytics> {
+    let params = new HttpParams().set('period', period);
+
+    if (applicationId) {
+      params = params.set('application_id', applicationId.toString());
+    }
+
+    return this.http
+      .get<DashboardAnalytics>(`${this.apiUrl}/analytics`, { params })
+      .pipe(tap((analytics) => this._analytics.set(analytics)));
   }
 }
