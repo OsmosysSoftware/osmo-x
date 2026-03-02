@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Welcome to the usage guide for OsmoX, a powerful notification management system designed to simplify the process of sending notifications through various channels. This guide will walk you through the steps of integrating OsmoX into your application and making the most of its features.
+Welcome to the usage guide for OsmoX, a multi-tenant notification management system for sending notifications through various channels. This guide walks you through configuring OsmoX and sending your first notification.
 
 ## Table of Contents
 
@@ -10,9 +10,11 @@ Welcome to the usage guide for OsmoX, a powerful notification management system 
   - [Introduction](#introduction)
   - [Table of Contents](#table-of-contents)
   - [1. Overview](#1-overview)
-  - [2. Pushing Data to the Database](#2-pushing-data-to-the-database)
-  - [3. Setup](#3-setup)
-  - [4. Using the OsmoX API](#4-using-the-osmox-api)
+  - [2. Getting Started](#2-getting-started)
+  - [3. Using the Portal](#3-using-the-portal)
+  - [4. Using the API](#4-using-the-api)
+    - [Authentication](#authentication)
+    - [Sending a Notification](#sending-a-notification)
     - [x-api-key Header](#x-api-key-header)
   - [5. Tracking Notification Status](#5-tracking-notification-status)
   - [6. Available Channel Type End Providers](#6-available-channel-type-end-providers)
@@ -27,96 +29,152 @@ OsmoX offers a streamlined solution for sending notifications via different chan
 - For records with `AWAITING_CONFIRMATION` status, the system verifies successful message delivery to the end user as long as the service is supported by the end provider (e.g., Mailgun, Twilio).
 - Additionally, users can set up custom webhooks for verification purposes.
 
-## 2. Pushing Data to the Database
+OsmoX provides two interfaces:
 
-Developers have the flexibility to populate the `notify_notifications` database table directly or opt for the recommended approach of utilizing the OsmoX API. By following this method, the notification processing is seamlessly managed by OsmoX.
+- **Portal** — Angular web application for managing applications, providers, notifications, and users
+- **REST API** — Programmatic access for sending notifications and managing resources
 
-For more information, please refer to the [OsmoX database design](./database-design.md)
+## 2. Getting Started
 
-## 3. Setup
-
-1. Set up the codebase and start the API as per requirement:
-   - [Development Setup](./development-setup.md)
+1. Set up the codebase and start all services:
+   - [Development Setup](./development-setup.md) (recommended starting point)
+   - [Docker Compose Usage](./docker-compose-usage.md) (advanced Docker configuration)
    - [Production Setup](./production-setup.md)
-2. OsmoX has seeded [Master Provider](#6-available-channel-type-end-providers) & [Admin User](../src/database/migrations/1745495895857-InitialSeed.ts) data to facilitate notification service setup.
-3. Get the Bearer Token for the seeded Admin user using the [login API](./api-documentation.md#login)
-4. Create a new `Application` as per requirement using the [create new application API](./api-documentation.md#create-new-application).
-5. Create a new `Provider` that will be used to send notifications using the [create new provider API](./api-documentation.md#create-new-provider).
-6. Generate a new `x-api-key` for the newly created application by using the [generate new server api key API](./api-documentation.md#generate-new-server-api-key).
-7. Header `x-api-key` will be used for OsmoX notification service requests.
 
-Now you can use the OsmoX API to send notifications.
+2. Log in to the portal at <http://localhost:4200> with the admin credentials configured in your `.env` file (defaults: `admin@osmox.dev` / `Admin123`). See [Development Setup — Default Admin Credentials](./development-setup.md#default-admin-credentials) for details.
 
-## 4. Using the OsmoX API
+3. From the portal, complete the initial setup:
+   - **Create an Application** — Navigate to Applications and create a new application for your project.
+   - **Create a Provider** — Navigate to Providers and configure a provider (e.g., SMTP, Mailgun, Twilio) with your credentials.
+   - **Generate an API Key** — Navigate to Server API Keys and generate a key for your application.
 
-To use the OsmoX API, follow these steps: [Create Notification API](./api-documentation.md#create-notification)
+4. Use the API key to send notifications (see [Using the API](#4-using-the-api) below).
 
-- **Method:** POST
-- **Endpoint:** `/notifications`
+> **Tip:** OsmoX seeds [Master Provider](#6-available-channel-type-end-providers) data during the initial migration, so provider types are ready to use. You only need to create provider instances with your credentials.
 
-### x-api-key Header
+## 3. Using the Portal
 
-To add the API key to the x-api-key header, use the following format:
+The portal is available at <http://localhost:4200> (Docker) or your configured host.
 
-```plaintext
-x-api-key: SERVER_API_KEY_VALUE
-```
+Key sections:
 
-Replace `SERVER_API_KEY_VALUE` with the actual API key value you want to include in the header.
+| Section | Description |
+| --- | --- |
+| **Dashboard** | Overview of notification counts by status and channel |
+| **Notifications** | View and filter active notifications |
+| **Archived Notifications** | View completed/archived notifications |
+| **Applications** | Create and manage applications |
+| **Providers** | Configure notification providers with credentials |
+| **Provider Chains** | Set up fallback provider sequences per application |
+| **Server API Keys** | Generate and manage API keys for applications |
+| **Users** | Manage users and roles (Super Admin only) |
+| **Organizations** | Manage organizations (Super Admin only) |
 
-**Sample Request Body:**
+### Roles
 
-```json
-{
-  "providerId": 1,
-  "data": {
-    "from": "sender@example.com",
-    "to": "recipient@example.com",
-    "subject": "Test subject",
-    "text": "This is a test notification",
-    "html": "<b>This is a test notification</b>"
-  }
-}
+| Role | Access |
+| --- | --- |
+| `SUPER_ADMIN` | Full platform access, manage all organizations |
+| `ORG_ADMIN` | Manage resources within their organization |
+| `ORG_USER` | Read-only access within their organization |
+
+## 4. Using the API
+
+All API endpoints are prefixed with `/api`. Interactive API documentation is available via Swagger at <http://localhost:3000/api>.
+
+### Authentication
+
+OsmoX uses JWT authentication. Obtain a token by logging in:
+
+**Endpoint:** `POST /api/auth/login`
+
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@osmox.dev", "password": "Admin123"}'
 ```
 
 **Response:**
 
 ```json
 {
+  "access_token": "eyJhbGciOiJIUzI1NiIs...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+
+Use the `access_token` as a Bearer token in subsequent requests:
+
+```plaintext
+Authorization: Bearer <access_token>
+```
+
+### Sending a Notification
+
+**Endpoint:** `POST /api/notifications`
+
+### x-api-key Header
+
+Application-level requests use the `x-api-key` header for authentication:
+
+```plaintext
+x-api-key: SERVER_API_KEY_VALUE
+```
+
+Replace `SERVER_API_KEY_VALUE` with the actual API key generated for your application.
+
+**Sample Request:**
+
+```bash
+curl -X POST http://localhost:3000/api/notifications \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -d '{
+    "providerId": 1,
+    "data": {
+      "from": "sender@example.com",
+      "to": "recipient@example.com",
+      "subject": "Test subject",
+      "text": "This is a test notification",
+      "html": "<b>This is a test notification</b>"
+    }
+  }'
+```
+
+**Sample Response:**
+
+```json
+{
   "status": "success",
   "data": {
     "notification": {
-      "providerId": 1,
+      "provider_id": 1,
       "data": {
         "from": "sender@example.com",
-        "to": "receiver@example.com",
+        "to": "recipient@example.com",
         "subject": "Test subject",
         "text": "This is a test notification",
         "html": "<b>This is a test notification</b>"
       },
-      "applicationId": 1,
-      "createdBy": "OsmoX",
-      "updatedBy": "OsmoX",
-      "channelType": 1,
-      "result": null,
-      "notificationSentOn": null,
-      "providerChainId": null,
-      "id": 36,
-      "deliveryStatus": 1,
-      "createdOn": "2023-09-08T13:11:52.000Z",
-      "updatedOn": "2023-09-08T13:11:52.000Z",
-      "status": 1,
-      "retryCount": 0
+      "application_id": 1,
+      "channel_type": 1,
+      "delivery_status": 1,
+      "created_on": "2024-01-15T10:30:00.000Z",
+      "id": 1
     }
   }
 }
 ```
 
-For detailed information, please refer to the [OsmoX API documentation](./api-documentation.md)
+For the full API reference, see the [Swagger docs](http://localhost:3000/api) or the [API Documentation](./api-documentation.md).
 
 ## 5. Tracking Notification Status
 
-OsmoX updates the `delivery_status` and `result` columns to provide information on the notification's status. Use these columns to track the progress of your notifications in database.
+OsmoX updates the `delivery_status` and `result` columns to provide information on the notification's status. You can track status through:
+
+- **Portal** — The Notifications and Archived Notifications pages show delivery status with filters
+- **API** — Query `GET /api/notifications` with filter parameters
+- **Database** — Check `delivery_status` and `result` columns in `notify_notifications`
 
 ## 6. Available Channel Type End Providers
 
@@ -154,10 +212,10 @@ For more information, please refer to the [Delivery Status Lifecycle](./delivery
 
 ## 8. Test Mode Feature
 
-OsmoX Admin users can enable/disable **Test Mode** for applications. This feature allows end applications using the OsmoX service to perform functional testing without sending unnecessary notifications to end recipients
+OsmoX Admin users can enable/disable **Test Mode** for applications. This feature allows end applications using the OsmoX service to perform functional testing without sending unnecessary notifications to end recipients.
 
 - Providers associated with test mode enabled application DO NOT send notifications to end recipients.
-- Admin users can add a whitelist which sends notifications to recipients present in the whitelist
-- Whitelist must be a either null or a valid JSON with string of provider id as keys and arrays of strings of recipients as values
+- Admin users can add a whitelist which sends notifications to recipients present in the whitelist.
+- Whitelist must be either null or a valid JSON with string of provider id as keys and arrays of strings of recipients as values.
 
 For detailed information, please refer to the [OsmoX Test Mode guide](./test-mode-guide.md)

@@ -1,8 +1,10 @@
 # Docker Compose Setup Guide
 
-This document explains how to run the osmo-x API using Docker Compose. The single `docker-compose.yml` starts all required services: PostgreSQL, Redis, the API, and Dozzle (log viewer).
+This document explains how to run OsmoX using Docker Compose. The API's `docker-compose.yml` starts all required backend services: PostgreSQL, Redis, the API, and Dozzle (log viewer). The portal has its own `docker-compose.yml`.
 
 ## Services
+
+### API (`apps/api/docker-compose.yml`)
 
 | Service | Purpose |
 | --- | --- |
@@ -12,31 +14,65 @@ This document explains how to run the osmo-x API using Docker Compose. The singl
 | `osmox-dozzle` | Dozzle web UI for viewing container logs |
 | `osmox-dozzle-auth-init` | One-shot init container that generates Dozzle auth |
 
+### Portal (`apps/portal/docker-compose.yml`)
+
+| Service | Purpose |
+| --- | --- |
+| `osmox-portal` | Angular frontend served via Nginx |
+
 ## Quick Start
 
 1. Copy and configure your environment file:
 
    ```shell
+   cd apps/api
    cp .env.example .env
-   # Edit .env with your database credentials, secrets, etc.
+   # Edit .env with your database credentials, secrets, admin email/password, etc.
    ```
 
-2. Start all services:
+2. Start all backend services:
 
    ```shell
    docker compose up -d
    ```
 
-3. Check that all services are healthy:
+3. Run database migrations (first time only, or after updates with new migrations):
+
+   ```shell
+   docker exec osmo-x-api npm run typeorm:run-migration
+   ```
+
+4. Start the portal:
+
+   ```shell
+   cd ../portal
+   docker compose up -d --build
+   ```
+
+5. Check that all services are healthy:
 
    ```shell
    docker compose ps
    ```
 
-4. Access the services:
+6. Access the services:
+   - **Portal**: `http://localhost:4200`
    - **API**: `http://localhost:3000` (or your configured `SERVER_PORT`)
    - **Swagger docs**: `http://localhost:3000/api`
    - **Dozzle logs**: `http://localhost:8080` (or your configured `DOZZLE_HOST_PORT`)
+
+7. Log in to the portal with your admin credentials (defaults: `admin@osmox.dev` / `Admin123`). See [Default Admin Credentials](#default-admin-credentials) below.
+
+## Default Admin Credentials
+
+The initial migration seeds an admin user with configurable credentials:
+
+| Env Variable | Default | Description |
+| --- | --- | --- |
+| `ADMIN_EMAIL` | `admin@osmox.dev` | Admin login email |
+| `ADMIN_PASSWORD` | `Admin123` | Admin login password |
+
+Set these in `.env` **before** running migrations. The admin is created with the `SUPER_ADMIN` role.
 
 ## Environment Variables for Docker
 
