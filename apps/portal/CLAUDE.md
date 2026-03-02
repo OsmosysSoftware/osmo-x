@@ -64,7 +64,7 @@ src/app/
 │   │   ├── org-context.interceptor.ts  # SUPER_ADMIN org context injection
 │   │   └── error.interceptor.ts   # Global error toast
 │   ├── models/
-│   │   ├── api.model.ts           # API entity interfaces (snake_case)
+│   │   ├── api.model.ts           # API type aliases from OpenAPI-generated types (snake_case)
 │   │   └── auth.model.ts          # User, LoginDto, JwtPayload, AuthResponse
 │   ├── services/
 │   │   ├── auth.service.ts        # Signal-based auth, token management, role checks

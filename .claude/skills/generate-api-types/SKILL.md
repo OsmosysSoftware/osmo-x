@@ -33,11 +33,13 @@ This runs `openapi-typescript http://localhost:3000/api/docs-json -o src/app/cor
 ## After Generation
 
 1. **NEVER manually edit** the generated `api.types.ts` file
-2. Create type aliases in model files for cleaner usage:
+2. Add or update type aliases in `src/app/core/models/api.model.ts`:
    ```typescript
-   // src/app/core/models/notification.model.ts
    import { components } from '../types/api.types';
    export type Notification = components['schemas']['NotificationResponseDto'];
+   export type CreateApplicationInput = components['schemas']['CreateApplicationInput'];
    ```
-3. Use snake_case field names directly — NO conversion to camelCase
-4. Run `npm run lint` to verify no type errors
+3. All services and components import from `api.model.ts` — NOT directly from `api.types.ts`
+4. Use snake_case field names directly — NO conversion to camelCase
+5. Run `npx ng build` to verify no type errors
+6. If new fields were added, check if any components need updating (e.g., new columns in tables)

@@ -27,8 +27,8 @@ Ask the user the following questions using `AskUserQuestion`. Batch related ques
 - Also ask for a PrimeIcons icon name (e.g., `pi-sitemap`, `pi-link`, `pi-users`)
 
 **Q4 — API integration:**
-- **Types exist** — entity interface already in `core/models/api.model.ts` (ask which interface name)
-- **Create types** — ask for entity fields (see Q5)
+- **Types exist** — type alias already in `core/models/api.model.ts` derived from generated OpenAPI types (ask which type name)
+- **Generate types** — run `npm run generate:api` first, then add type alias to `api.model.ts` (see Step 3)
 - **No API yet** — stub service with `Record<string, unknown>`, user wires up later
 
 ### Batch 2
@@ -356,9 +356,16 @@ if (isOrgAdmin) {
 }
 ```
 
-### Add entity interface to `api.model.ts` (if creating types)
+### Add type alias to `api.model.ts` (if generating types)
 
-Add the interface with snake_case field names matching the backend response format.
+After running `npm run generate:api`, add a type alias in `core/models/api.model.ts`:
+```typescript
+import { components } from '../types/api.types';
+export type MyEntity = components['schemas']['MyEntityResponseDto'];
+export type CreateMyEntityInput = components['schemas']['CreateMyEntityInput'];
+export type UpdateMyEntityInput = components['schemas']['UpdateMyEntityInput'];
+```
+NEVER create manual interfaces for API entities — always derive from the generated types.
 
 ## Step 6: Verify
 
