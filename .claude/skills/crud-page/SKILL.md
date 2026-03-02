@@ -140,7 +140,7 @@ apps/portal/src/app/features/<feature-name>/
 - `viewChild<Table>('dt')` for table reference
 - `MessageService` injected but NOT in component `providers[]` (it's global)
 - `ConfirmationService` in component `providers[]` (CRUD pages only)
-- **No raw DB ID columns** — never show primary key IDs in tables. Resolve foreign key IDs to human-readable names using lookup methods
+- **No raw DB ID columns** — generally avoid showing primary key IDs in tables. Resolve foreign key IDs to human-readable names using lookup methods. Exception: notification/archived-notification tables show the notification ID for debugging purposes
 - **Toolbar layout** — always include both `#start` and `#end` templates in `p-toolbar`. For read-only pages with no action buttons, use an empty `<ng-template #start></ng-template>` to keep search/refresh right-aligned
 
 ### Template structure
@@ -283,7 +283,46 @@ delete(id: number): Observable<boolean> {
 }
 ```
 
-**Search is client-side** via `[globalFilterFields]` on `p-table`. This filters within the currently-loaded page data.
+**Search options:**
+- **Client-side** — via `[globalFilterFields]` on `p-table`. Filters within currently-loaded page data. Good for small datasets.
+- **Server-side** — via `search` query param on `PaginationQueryDto`. Searches across `data`, `result`, and `createdBy` fields on the backend. Use for large datasets or when searching JSONB fields. Debounce input with ~400ms timeout.
+
+```typescript
+// Server-side search in service
+list(page = 1, limit = 20, filters?: { search?: string }): Observable<PaginatedResponse<T>> {
+  let params = new HttpParams().set('page', page).set('limit', limit);
+  if (filters?.search) { params = params.set('search', filters.search); }
+  return this.http.get<PaginatedResponse<T>>(this.apiUrl, { params });
+}
+```
+
+**Server-side filter dropdowns** (for filterable columns like channel_type, delivery_status, application_id):
+
+Add `p-select` dropdowns in toolbar `#start`:
+```html
+<ng-template #start>
+  <div class="flex items-center gap-2 flex-wrap">
+    <p-select [options]="channelTypeOptions" [(ngModel)]="selectedChannelType"
+      placeholder="Channel type" [showClear]="true" (onChange)="onFilterChange()"
+      [style]="{ minWidth: '10rem' }" />
+  </div>
+</ng-template>
+```
+
+Requires `FormsModule` and `SelectModule` in component imports. Each filter change resets to page 1 and reloads data with filter params.
+
+**JSON viewer dialog** for large JSON columns (data, result, configuration):
+
+Use the shared `JsonViewerDialog` component from `shared/components/json-viewer-dialog/json-viewer-dialog`. Add a "View" button in the table cell:
+```html
+<td>
+  <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info"
+    pTooltip="View data" tooltipPosition="top"
+    (onClick)="viewJson(n.data, 'Data'); $event.stopPropagation()" />
+</td>
+```
+
+Component needs `jsonDialogVisible`, `jsonDialogData`, `jsonDialogHeader` signals and a `viewJson()` method. Include `<app-json-viewer-dialog>` at the bottom of the template.
 
 ## Step 5: Wire Up Routing and Menu
 
