@@ -18,7 +18,11 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
           style="
             border-radius: 56px;
             padding: 0.3rem;
-            background: linear-gradient(180deg, rgba(247, 149, 48, 0.4) 10%, rgba(247, 149, 48, 0) 30%);
+            background: linear-gradient(
+              180deg,
+              color-mix(in srgb, var(--primary-color), transparent 60%) 10%,
+              rgba(33, 150, 243, 0) 30%
+            );
           "
         >
           <div
@@ -26,10 +30,10 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
             style="border-radius: 53px"
           >
             <div
-              class="flex justify-center items-center border-2 border-orange-500 rounded-full mb-6"
+              class="flex justify-center items-center border-2 border-primary rounded-full mb-6"
               style="width: 4rem; height: 4rem"
             >
-              <i class="pi pi-lock text-orange-500" style="font-size: 1.5rem"></i>
+              <i class="pi pi-lock text-primary" style="font-size: 1.5rem"></i>
             </div>
             <h1 class="text-surface-900 dark:text-surface-0 font-bold text-3xl lg:text-5xl mb-2">
               Access Denied
@@ -37,7 +41,7 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
             <p class="text-muted-color text-center mb-8 max-w-sm">
               You do not have the necessary permissions. Please contact your administrator.
             </p>
-            <p-button label="Go to Dashboard" icon="pi pi-home" routerLink="/" severity="warn" />
+            <p-button label="Go to Dashboard" icon="pi pi-home" routerLink="/" />
           </div>
         </div>
       </div>

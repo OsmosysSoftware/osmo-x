@@ -33,7 +33,7 @@ export class AuthService {
   readonly userRole = computed<UserRole | null>(() => {
     const user = this.currentUser();
 
-    return user ? user.role : null;
+    return user ? (user.role ?? user.user_role ?? null) : null;
   });
 
   readonly organizationId = computed<number | null>(() => {
