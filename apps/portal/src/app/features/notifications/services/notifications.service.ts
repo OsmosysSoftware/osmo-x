@@ -50,4 +50,8 @@ export class NotificationsService {
   getById(id: number): Observable<Notification> {
     return this.http.get<Notification>(`${this.apiUrl}/${id}`);
   }
+
+  redisCleanup(): Observable<Record<string, unknown>> {
+    return this.http.post<Record<string, unknown>>(`${this.apiUrl}/redis/cleanup`, {});
+  }
 }

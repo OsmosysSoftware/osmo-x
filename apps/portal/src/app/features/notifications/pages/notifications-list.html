@@ -60,6 +60,18 @@
           tooltipPosition="top"
           (onClick)="clearFilters()"
         />
+        @if (isOrgAdmin()) {
+          <p-button
+            icon="pi pi-trash"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            pTooltip="Redis cleanup"
+            tooltipPosition="top"
+            [loading]="cleanupLoading()"
+            (onClick)="triggerRedisCleanup()"
+          />
+        }
         <p-button
           icon="pi pi-refresh"
           [rounded]="true"

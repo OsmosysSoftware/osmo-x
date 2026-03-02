@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  signal,
+  computed,
+} from '@angular/core';
 import { DatePipe, JsonPipe } from '@angular/common';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { FormsModule } from '@angular/forms';
@@ -21,6 +28,7 @@ import { JsonViewerDialog } from '../../../shared/components/json-viewer-dialog/
 import { NotificationsService, NotificationFilters } from '../services/notifications.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
 import { ProvidersService } from '../../providers/services/providers.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Notification, Application, Provider, PageInfo } from '../../../core/models/api.model';
 import { ChannelType, DeliveryStatus } from '../../../core/constants/notification';
 
@@ -54,6 +62,7 @@ export class NotificationsListComponent implements OnInit {
   private readonly service = inject(NotificationsService);
   private readonly applicationsService = inject(ApplicationsService);
   private readonly providersService = inject(ProvidersService);
+  private readonly authService = inject(AuthService);
   private readonly messageService = inject(MessageService);
   private readonly clipboard = inject(Clipboard);
 
@@ -89,6 +98,10 @@ export class NotificationsListComponent implements OnInit {
   readonly jsonDialogVisible = signal(false);
   readonly jsonDialogData = signal<Record<string, unknown> | null>(null);
   readonly jsonDialogHeader = signal('JSON Data');
+
+  // Redis cleanup
+  readonly isOrgAdmin = computed(() => this.authService.isOrgAdmin());
+  readonly cleanupLoading = signal(false);
 
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -209,6 +222,29 @@ export class NotificationsListComponent implements OnInit {
       severity: 'info',
       summary: 'Copied',
       detail: 'JSON copied to clipboard',
+    });
+  }
+
+  triggerRedisCleanup(): void {
+    this.cleanupLoading.set(true);
+
+    this.service.redisCleanup().subscribe({
+      next: () => {
+        this.cleanupLoading.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Redis cleanup completed',
+        });
+      },
+      error: () => {
+        this.cleanupLoading.set(false);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Redis cleanup failed',
+        });
+      },
     });
   }
 
