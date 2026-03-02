@@ -10,7 +10,9 @@ export class OrgContextService {
   private readonly authService = inject(AuthService);
   private readonly orgsService = inject(OrganizationsService);
 
-  private readonly _selectedOrgId = signal<number | null>(this.loadFromStorage());
+  private readonly _selectedOrgId = signal<number | null>(
+    this.loadFromStorage() ?? this.authService.organizationId(),
+  );
 
   readonly showOrgSelector = computed(() => this.authService.isSuperAdmin());
 
