@@ -107,7 +107,7 @@
 
     @if (pageInfo(); as pi) {
       <div class="mt-4">
-        <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
+        <app-pagination [pageInfo]="pi" (paginationChange)="onPageChange($event)" />
       </div>
     }
   }

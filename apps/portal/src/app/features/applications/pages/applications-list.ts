@@ -75,6 +75,7 @@ export class ApplicationsListComponent implements OnInit {
   readonly saving = signal(false);
   readonly pageInfo = signal<PageInfo | null>(null);
   private currentPage = 1;
+  private currentLimit = 20;
 
   // Dialog state
   readonly dialogVisible = signal(false);
@@ -90,7 +91,7 @@ export class ApplicationsListComponent implements OnInit {
 
   loadApplications(): void {
     this.loading.set(true);
-    this.applicationsService.list(this.currentPage, 20).subscribe({
+    this.applicationsService.list(this.currentPage, this.currentLimit).subscribe({
       next: (res) => {
         this.applications.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);
@@ -100,8 +101,9 @@ export class ApplicationsListComponent implements OnInit {
     });
   }
 
-  onPageChange(page: number): void {
-    this.currentPage = page;
+  onPageChange(event: { page: number; limit: number }): void {
+    this.currentPage = event.page;
+    this.currentLimit = event.limit;
     this.loadApplications();
   }
 

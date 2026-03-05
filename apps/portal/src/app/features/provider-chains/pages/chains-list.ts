@@ -118,6 +118,7 @@ export class ChainsListComponent implements OnInit {
     provider_type: 0,
   });
   private currentPage = 1;
+  private currentLimit = 20;
 
   readonly providerTypeOptions: ProviderTypeOption[] = [
     { label: 'Email', value: 1 },
@@ -148,7 +149,7 @@ export class ChainsListComponent implements OnInit {
   loadChains(): void {
     this.loading.set(true);
 
-    this.service.list(this.currentPage, 20).subscribe({
+    this.service.list(this.currentPage, this.currentLimit).subscribe({
       next: (res) => {
         this.chains.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);
@@ -177,8 +178,9 @@ export class ChainsListComponent implements OnInit {
     });
   }
 
-  onPageChange(page: number): void {
-    this.currentPage = page;
+  onPageChange(event: { page: number; limit: number }): void {
+    this.currentPage = event.page;
+    this.currentLimit = event.limit;
     this.loadChains();
   }
 

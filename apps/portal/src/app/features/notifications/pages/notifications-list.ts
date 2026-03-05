@@ -74,6 +74,7 @@ export class NotificationsListComponent implements OnInit {
   readonly selectedNotification = signal<Notification | null>(null);
   readonly detailDialogVisible = signal(false);
   private currentPage = 1;
+  private currentLimit = 20;
 
   // Filter options
   readonly channelTypeOptions = Object.entries(ChannelType).map(([value, label]) => ({
@@ -143,7 +144,7 @@ export class NotificationsListComponent implements OnInit {
       filters.search = this.searchText().trim();
     }
 
-    this.service.list(this.currentPage, 20, filters).subscribe({
+    this.service.list(this.currentPage, this.currentLimit, filters).subscribe({
       next: (res) => {
         this.notifications.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);
@@ -160,8 +161,9 @@ export class NotificationsListComponent implements OnInit {
     });
   }
 
-  onPageChange(page: number): void {
-    this.currentPage = page;
+  onPageChange(event: { page: number; limit: number }): void {
+    this.currentPage = event.page;
+    this.currentLimit = event.limit;
     this.loadNotifications();
   }
 

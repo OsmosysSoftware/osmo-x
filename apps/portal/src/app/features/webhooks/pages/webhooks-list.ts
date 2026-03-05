@@ -66,6 +66,7 @@ export class WebhooksListComponent implements OnInit {
   readonly saving = signal(false);
   readonly pageInfo = signal<PageInfo | null>(null);
   private currentPage = 1;
+  private currentLimit = 20;
 
   // Dialog state
   readonly dialogVisible = signal(false);
@@ -87,7 +88,7 @@ export class WebhooksListComponent implements OnInit {
   loadWebhooks(): void {
     this.loading.set(true);
 
-    this.webhooksService.list(this.currentPage, 20).subscribe({
+    this.webhooksService.list(this.currentPage, this.currentLimit).subscribe({
       next: (res) => {
         this.webhooks.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);
@@ -97,8 +98,9 @@ export class WebhooksListComponent implements OnInit {
     });
   }
 
-  onPageChange(page: number): void {
-    this.currentPage = page;
+  onPageChange(event: { page: number; limit: number }): void {
+    this.currentPage = event.page;
+    this.currentLimit = event.limit;
     this.loadWebhooks();
   }
 

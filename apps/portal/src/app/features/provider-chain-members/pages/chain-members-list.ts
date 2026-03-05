@@ -87,6 +87,7 @@ export class ChainMembersListComponent implements OnInit {
     is_active: true,
   });
   private currentPage = 1;
+  private currentLimit = 20;
 
   private readonly chainMap = computed(() => {
     const map = new Map<number, ProviderChain>();
@@ -117,7 +118,7 @@ export class ChainMembersListComponent implements OnInit {
   loadMembers(): void {
     this.loading.set(true);
 
-    this.service.list(this.currentPage, 20).subscribe({
+    this.service.list(this.currentPage, this.currentLimit).subscribe({
       next: (res) => {
         this.members.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);
@@ -146,8 +147,9 @@ export class ChainMembersListComponent implements OnInit {
     });
   }
 
-  onPageChange(page: number): void {
-    this.currentPage = page;
+  onPageChange(event: { page: number; limit: number }): void {
+    this.currentPage = event.page;
+    this.currentLimit = event.limit;
     this.loadMembers();
   }
 

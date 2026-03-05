@@ -95,7 +95,7 @@
     </p-table>
 
     @if (pageInfo(); as pi) {
-      <app-pagination [pageInfo]="pi" (pageChange)="onPageChange($event)" />
+      <app-pagination [pageInfo]="pi" (paginationChange)="onPageChange($event)" />
     }
   }
 </div>

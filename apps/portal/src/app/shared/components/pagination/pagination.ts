@@ -8,6 +8,11 @@ export interface PageInfo {
   total_pages: number;
 }
 
+export interface PageEvent {
+  page: number;
+  limit: number;
+}
+
 @Component({
   selector: 'app-pagination',
   imports: [CommonModule, PaginatorModule],
@@ -22,6 +27,7 @@ export class PaginationComponent {
 
   // Outputs
   readonly pageChange = output<number>();
+  readonly paginationChange = output<PageEvent>();
 
   // Computed values
   readonly first = computed(() => {
@@ -36,7 +42,9 @@ export class PaginationComponent {
   onPageChange(event: { page?: number; first?: number; rows?: number }): void {
     // PrimeNG paginator is 0-indexed, but our API is 1-indexed
     const newPage = (event.page ?? 0) + 1;
+    const newLimit = event.rows ?? this.pageInfo().limit;
 
     this.pageChange.emit(newPage);
+    this.paginationChange.emit({ page: newPage, limit: newLimit });
   }
 }
