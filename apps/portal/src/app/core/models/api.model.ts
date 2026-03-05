@@ -14,7 +14,20 @@ export type Application = components['schemas']['ApplicationResponseDto'];
 export type Provider = components['schemas']['ProviderResponseDto'];
 export type ProviderChain = components['schemas']['ProviderChainResponseDto'];
 export type ProviderChainMember = components['schemas']['ProviderChainMemberResponseDto'];
-export type MasterProvider = components['schemas']['MasterProviderResponseDto'];
+// MasterProvider: backend DTO types `configuration` as `string` but it's a JSONB column
+// containing field descriptors with label, id, pattern, type for each config key.
+export interface ConfigFieldDescriptor {
+  label: string;
+  id: string;
+  pattern: string;
+  type: string;
+}
+export type MasterProvider = Omit<
+  components['schemas']['MasterProviderResponseDto'],
+  'configuration'
+> & {
+  configuration: Record<string, ConfigFieldDescriptor>;
+};
 export type ServerApiKey = components['schemas']['ServerApiKeyResponseDto'];
 export type Webhook = components['schemas']['WebhookResponseDto'];
 export type Organization = components['schemas']['OrganizationResponseDto'];

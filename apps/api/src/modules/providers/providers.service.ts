@@ -9,6 +9,7 @@ import { CreateProviderInput } from './dto/create-provider.input';
 import { UpdateProviderInput } from './dto/update-provider.input';
 import { UsersService } from '../users/users.service';
 import { ApplicationsService } from '../applications/applications.service';
+import { MasterProvidersService } from '../master-providers/master-providers.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ProviderListResponse } from './dto/provider-list.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
@@ -26,6 +27,7 @@ export class ProvidersService extends CoreService<Provider> {
     @Inject(forwardRef(() => ApplicationsService))
     private readonly applicationsService: ApplicationsService,
     private readonly usersService: UsersService,
+    private readonly masterProvidersService: MasterProvidersService,
   ) {
     super(providerRepository);
   }
@@ -49,6 +51,38 @@ export class ProvidersService extends CoreService<Provider> {
     });
   }
 
+  private async validateConfiguration(
+    channelType: number,
+    configuration: Record<string, unknown>,
+  ): Promise<void> {
+    const masterProvider = await this.masterProvidersService.getById(channelType);
+
+    if (!masterProvider) {
+      throw new ValidationException(
+        ErrorCodes.PROVIDER_CONFIGURATION_INVALID,
+        `No master provider found for channel type ${channelType}`,
+      );
+    }
+
+    const schema = masterProvider.configuration as unknown as Record<
+      string,
+      { label: string; id: string; pattern: string; type: string }
+    >;
+    const requiredKeys = Object.keys(schema);
+    const providedKeys = Object.keys(configuration);
+
+    const missingKeys = requiredKeys.filter((key) => !providedKeys.includes(key));
+
+    if (missingKeys.length > 0) {
+      const missingLabels = missingKeys.map((key) => schema[key].label);
+
+      throw new ValidationException(
+        ErrorCodes.PROVIDER_CONFIGURATION_INVALID,
+        `Missing required configuration fields: ${missingLabels.join(', ')}`,
+      );
+    }
+  }
+
   async createProvider(providerInput: CreateProviderInput): Promise<Provider> {
     const userExists = await this.usersService.findByUserId(providerInput.userId);
     const applicationExists = await this.applicationsService.findById(providerInput.applicationId);
@@ -65,6 +99,11 @@ export class ProvidersService extends CoreService<Provider> {
     if (!channelExists) {
       throw new ValidationException(ErrorCodes.VALIDATION_FAILED, 'Invalid channelType');
     }
+
+    await this.validateConfiguration(
+      providerInput.channelType,
+      providerInput.configuration as unknown as Record<string, unknown>,
+    );
 
     const provider = this.providerRepository.create(providerInput);
     return this.providerRepository.save(provider);
@@ -192,6 +231,10 @@ export class ProvidersService extends CoreService<Provider> {
     }
 
     if (input.configuration !== undefined) {
+      await this.validateConfiguration(
+        provider.channelType,
+        input.configuration as unknown as Record<string, unknown>,
+      );
       provider.configuration = input.configuration;
     }
 

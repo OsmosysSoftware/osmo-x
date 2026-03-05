@@ -138,7 +138,7 @@
             id="channelType"
             [options]="channelOptions"
             [ngModel]="formChannelType()"
-            (ngModelChange)="formChannelType.set($event)"
+            (ngModelChange)="onChannelTypeChange($event)"
             optionLabel="label"
             optionValue="value"
             placeholder="Select a channel type"
@@ -174,21 +174,35 @@
           }}</span>
         </div>
       </div>
-      <div class="flex flex-col gap-2">
-        <label for="config" class="font-medium">
-          Configuration (JSON){{
-            editingProvider()?.has_configuration ? ' (leave blank to keep current)' : ''
-          }}
-        </label>
-        <textarea
-          pTextarea
-          id="config"
-          [ngModel]="formConfiguration()"
-          (ngModelChange)="formConfiguration.set($event)"
-          [rows]="6"
-          placeholder="{{ '{' }} &quot;key&quot;: &quot;value&quot; {{ '}' }}"
-        ></textarea>
-      </div>
+      @if (configFields().length > 0) {
+        <div class="flex flex-col gap-3">
+          <span class="font-medium">
+            Configuration{{
+              editingProvider()?.has_configuration ? ' (leave blank to keep current)' : ''
+            }}
+          </span>
+          @for (field of configFields(); track field.key) {
+            <div class="flex flex-col gap-1">
+              <label [for]="field.key" class="text-sm text-muted-color">{{ field.label }}</label>
+              <input
+                pInputText
+                [id]="field.key"
+                [type]="
+                  field.key.toLowerCase().includes('password') ||
+                  field.key.toLowerCase().includes('secret') ||
+                  field.key.toLowerCase().includes('token') ||
+                  field.key.toLowerCase().includes('api_key')
+                    ? 'password'
+                    : 'text'
+                "
+                [value]="configValues()[field.key] || ''"
+                (input)="updateConfigValue(field.key, $any($event.target).value)"
+                [placeholder]="field.label"
+              />
+            </div>
+          }
+        </div>
+      }
     </div>
     <ng-template #footer>
       <p-button

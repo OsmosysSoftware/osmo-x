@@ -16,7 +16,6 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -26,12 +25,14 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { OrgContextService } from '../../../core/services/org-context.service';
 import { ProvidersService } from '../services/providers.service';
+import { MasterProvidersService } from '../services/master-providers';
 import { ApplicationsService } from '../../applications/services/applications.service';
 import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
 import { ChannelType } from '../../../core/constants/notification';
 import {
   Provider,
   Application,
+  MasterProvider,
   PageInfo,
   CreateProviderInput,
 } from '../../../core/models/api.model';
@@ -54,7 +55,6 @@ interface ChannelOption {
     InputTextModule,
     SelectModule,
     ToggleSwitchModule,
-    TextareaModule,
     TooltipModule,
     ConfirmDialogModule,
     ToolbarModule,
@@ -70,6 +70,7 @@ interface ChannelOption {
 })
 export class ProvidersListComponent implements OnInit {
   private readonly providersService = inject(ProvidersService);
+  private readonly masterProvidersService = inject(MasterProvidersService);
   private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
@@ -79,6 +80,7 @@ export class ProvidersListComponent implements OnInit {
 
   readonly providers = signal<Provider[]>([]);
   readonly applications = signal<Application[]>([]);
+  readonly masterProviders = signal<MasterProvider[]>([]);
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly pageInfo = signal<PageInfo | null>(null);
@@ -97,17 +99,58 @@ export class ProvidersListComponent implements OnInit {
   readonly formChannelType = signal<number | null>(null);
   readonly formApplicationId = signal<number | null>(null);
   readonly formIsEnabled = signal(false);
-  readonly formConfiguration = signal('');
+  readonly configFields = signal<{ key: string; label: string; type: string }[]>([]);
+  readonly configValues = signal<Record<string, string>>({});
 
   ngOnInit(): void {
     this.loadProviders();
     this.loadApplications();
+    this.loadMasterProviders();
   }
 
   loadApplications(): void {
     this.applicationsService.list(1, 100).subscribe({
       next: (res) => this.applications.set(res.items ?? []),
     });
+  }
+
+  loadMasterProviders(): void {
+    this.masterProvidersService.list().subscribe({
+      next: (list) => this.masterProviders.set(list),
+    });
+  }
+
+  onChannelTypeChange(channelType: number | null): void {
+    this.formChannelType.set(channelType);
+
+    if (!channelType) {
+      this.configFields.set([]);
+      this.configValues.set({});
+
+      return;
+    }
+
+    const master = this.masterProviders().find((mp) => mp.master_id === channelType);
+
+    if (!master) {
+      this.configFields.set([]);
+      this.configValues.set({});
+
+      return;
+    }
+
+    const fields = Object.entries(master.configuration).map(([key, descriptor]) => ({
+      key,
+      label: descriptor.label,
+      type: descriptor.type,
+    }));
+
+    this.configFields.set(fields);
+    this.configValues.set({});
+  }
+
+  updateConfigValue(key: string, value: string): void {
+    this.configValues.update((prev) => ({ ...prev, [key]: value }));
   }
 
   loadProviders(): void {
@@ -143,7 +186,8 @@ export class ProvidersListComponent implements OnInit {
     this.formChannelType.set(null);
     this.formApplicationId.set(null);
     this.formIsEnabled.set(true);
-    this.formConfiguration.set('');
+    this.configFields.set([]);
+    this.configValues.set({});
     this.dialogVisible.set(true);
   }
 
@@ -153,8 +197,33 @@ export class ProvidersListComponent implements OnInit {
     this.formChannelType.set(provider.channel_type);
     this.formApplicationId.set(provider.application_id);
     this.formIsEnabled.set(provider.is_enabled === 1);
-    this.formConfiguration.set('');
+    this.onChannelTypeChange(provider.channel_type);
     this.dialogVisible.set(true);
+  }
+
+  private buildConfigurationPayload(): Record<string, unknown> | null {
+    const fields = this.configFields();
+    const values = this.configValues();
+
+    if (fields.length === 0) {
+      return null;
+    }
+
+    const hasAnyValue = fields.some((f) => values[f.key]?.trim());
+
+    if (!hasAnyValue) {
+      return null;
+    }
+
+    const config: Record<string, unknown> = {};
+
+    for (const field of fields) {
+      const val = values[field.key]?.trim() ?? '';
+
+      config[field.key] = field.type === 'number' ? Number(val) : val;
+    }
+
+    return config;
   }
 
   isFormValid(): boolean {
@@ -169,15 +238,12 @@ export class ProvidersListComponent implements OnInit {
       if (this.formChannelType() === null || this.formApplicationId() === null) {
         return false;
       }
-    }
 
-    // Validate JSON configuration if provided
-    const configStr = this.formConfiguration().trim();
+      // All config fields are required when creating
+      const fields = this.configFields();
+      const values = this.configValues();
 
-    if (configStr) {
-      try {
-        JSON.parse(configStr);
-      } catch {
+      if (fields.length > 0 && fields.some((f) => !values[f.key]?.trim())) {
         return false;
       }
     }
@@ -192,7 +258,6 @@ export class ProvidersListComponent implements OnInit {
 
     this.saving.set(true);
     const name = this.formName().trim();
-    const configStr = this.formConfiguration().trim();
     const editing = this.editingProvider();
 
     if (editing) {
@@ -202,8 +267,10 @@ export class ProvidersListComponent implements OnInit {
         is_enabled: this.formIsEnabled() ? 1 : 0,
       };
 
-      if (configStr) {
-        updatePayload['configuration'] = JSON.parse(configStr) as Record<string, unknown>;
+      const config = this.buildConfigurationPayload();
+
+      if (config) {
+        updatePayload['configuration'] = config;
       }
 
       this.providersService
@@ -222,7 +289,7 @@ export class ProvidersListComponent implements OnInit {
           error: () => this.saving.set(false),
         });
     } else {
-      const configuration = configStr ? (JSON.parse(configStr) as Record<string, unknown>) : {};
+      const config = this.buildConfigurationPayload() ?? {};
 
       this.providersService
         .create({
@@ -230,7 +297,7 @@ export class ProvidersListComponent implements OnInit {
           channel_type: this.formChannelType()! as CreateProviderInput['channel_type'],
           application_id: this.formApplicationId()!,
           is_enabled: this.formIsEnabled() ? 1 : 0,
-          configuration,
+          configuration: config,
         })
         .subscribe({
           next: () => {
