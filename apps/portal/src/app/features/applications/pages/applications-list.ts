@@ -15,6 +15,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { SelectModule } from 'primeng/select';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -24,7 +26,14 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { OrgContextService } from '../../../core/services/org-context.service';
 import { ApplicationsService } from '../services/applications.service';
-import { Application, PageInfo } from '../../../core/models/api.model';
+import { ProvidersService } from '../../providers/services/providers.service';
+import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
+import { Application, Provider, PageInfo } from '../../../core/models/api.model';
+
+interface WhitelistRow {
+  providerId: number | null;
+  recipients: string[];
+}
 
 @Component({
   selector: 'app-applications-list',
@@ -38,6 +47,8 @@ import { Application, PageInfo } from '../../../core/models/api.model';
     DialogModule,
     InputTextModule,
     ToggleSwitchModule,
+    SelectModule,
+    AutoCompleteModule,
     ConfirmDialogModule,
     TooltipModule,
     ToolbarModule,
@@ -52,6 +63,7 @@ import { Application, PageInfo } from '../../../core/models/api.model';
 })
 export class ApplicationsListComponent implements OnInit {
   private readonly applicationsService = inject(ApplicationsService);
+  private readonly providersService = inject(ProvidersService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
   readonly orgContext = inject(OrgContextService);
@@ -69,6 +81,8 @@ export class ApplicationsListComponent implements OnInit {
   readonly editingApp = signal<Application | null>(null);
   readonly formName = signal('');
   readonly formTestMode = signal(false);
+  readonly whitelistRows = signal<WhitelistRow[]>([]);
+  readonly appProviders = signal<Provider[]>([]);
 
   ngOnInit(): void {
     this.loadApplications();
@@ -99,6 +113,8 @@ export class ApplicationsListComponent implements OnInit {
     this.editingApp.set(null);
     this.formName.set('');
     this.formTestMode.set(false);
+    this.whitelistRows.set([]);
+    this.appProviders.set([]);
     this.dialogVisible.set(true);
   }
 
@@ -106,7 +122,72 @@ export class ApplicationsListComponent implements OnInit {
     this.editingApp.set(app);
     this.formName.set(app.name);
     this.formTestMode.set(!!app.test_mode_enabled);
+    this.loadAppProviders(app.application_id, app.whitelist_recipients);
     this.dialogVisible.set(true);
+  }
+
+  private loadAppProviders(
+    applicationId: number,
+    whitelist: Record<string, string[]> | string | null | undefined,
+  ): void {
+    this.providersService.list(1, 100).subscribe({
+      next: (res) => {
+        const filtered = (res.items ?? []).filter((p) => p.application_id === applicationId);
+
+        this.appProviders.set(filtered);
+
+        if (whitelist && typeof whitelist === 'object') {
+          const rows: WhitelistRow[] = Object.entries(whitelist).map(([key, values]) => ({
+            providerId: Number(key),
+            recipients: Array.isArray(values) ? values : [],
+          }));
+
+          this.whitelistRows.set(rows);
+        } else {
+          this.whitelistRows.set([]);
+        }
+      },
+    });
+  }
+
+  getProviderLabel(provider: Provider): string {
+    return `${provider.name} (${new ChannelTypePipe().transform(provider.channel_type)})`;
+  }
+
+  getAvailableProviders(currentRow: WhitelistRow): Provider[] {
+    const usedIds = new Set(
+      this.whitelistRows()
+        .filter((r) => r !== currentRow && r.providerId !== null)
+        .map((r) => r.providerId),
+    );
+
+    return this.appProviders().filter((p) => !usedIds.has(p.provider_id));
+  }
+
+  addWhitelistRow(): void {
+    this.whitelistRows.update((rows) => [...rows, { providerId: null, recipients: [] }]);
+  }
+
+  removeWhitelistRow(index: number): void {
+    this.whitelistRows.update((rows) => rows.filter((_, i) => i !== index));
+  }
+
+  private buildWhitelistPayload(): Record<string, string[]> | null {
+    const rows = this.whitelistRows().filter(
+      (r) => r.providerId !== null && r.recipients.length > 0,
+    );
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    const result: Record<string, string[]> = {};
+
+    for (const row of rows) {
+      result[row.providerId!.toString()] = row.recipients;
+    }
+
+    return result;
   }
 
   save(): void {
@@ -118,6 +199,7 @@ export class ApplicationsListComponent implements OnInit {
 
     this.saving.set(true);
     const editing = this.editingApp();
+    const whitelist = this.formTestMode() ? this.buildWhitelistPayload() : null;
 
     if (editing) {
       this.applicationsService
@@ -125,6 +207,7 @@ export class ApplicationsListComponent implements OnInit {
           application_id: editing.application_id,
           name,
           test_mode_enabled: this.formTestMode() ? 1 : 0,
+          whitelist_recipients: whitelist,
         })
         .subscribe({
           next: () => {
@@ -141,7 +224,11 @@ export class ApplicationsListComponent implements OnInit {
         });
     } else {
       this.applicationsService
-        .create({ name, test_mode_enabled: this.formTestMode() ? 1 : 0 })
+        .create({
+          name,
+          test_mode_enabled: this.formTestMode() ? 1 : 0,
+          whitelist_recipients: whitelist,
+        })
         .subscribe({
           next: () => {
             this.messageService.add({

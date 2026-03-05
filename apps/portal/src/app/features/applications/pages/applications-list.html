@@ -121,11 +121,11 @@
     (visibleChange)="dialogVisible.set($event)"
     [header]="editingApp() ? 'Edit Application' : 'New Application'"
     [modal]="true"
-    [style]="{ width: '28rem' }"
+    [style]="{ width: '36rem' }"
   >
     <div class="flex flex-col gap-4 mt-2">
       <div class="flex flex-col gap-2">
-        <label for="appName" class="font-medium">Name</label>
+        <label for="appName" class="font-medium">Name *</label>
         <input
           pInputText
           id="appName"
@@ -135,7 +135,7 @@
         />
       </div>
       <div class="flex flex-col gap-2">
-        <label for="testMode" class="font-medium">Test Mode</label>
+        <label for="testMode" class="font-medium">Test mode</label>
         <div class="flex items-center gap-3">
           <p-toggleSwitch
             [ngModel]="formTestMode()"
@@ -147,6 +147,80 @@
           }}</span>
         </div>
       </div>
+
+      @if (formTestMode()) {
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="font-medium">Whitelist recipients</span>
+            @if (editingApp() && appProviders().length > 0) {
+              <p-button
+                icon="pi pi-plus"
+                label="Add"
+                size="small"
+                [text]="true"
+                (onClick)="addWhitelistRow()"
+              />
+            }
+          </div>
+          @if (!editingApp()) {
+            <small class="text-muted-color">
+              Save the application first, then add providers before configuring the whitelist.
+            </small>
+          } @else if (appProviders().length === 0) {
+            <small class="text-muted-color">
+              No providers configured for this application. Add providers first.
+            </small>
+          } @else {
+            @for (row of whitelistRows(); track $index) {
+              <div class="flex items-start gap-2">
+                <div class="flex flex-col gap-1 flex-1">
+                  <p-select
+                    [options]="getAvailableProviders(row)"
+                    [ngModel]="row.providerId"
+                    (ngModelChange)="row.providerId = $event"
+                    optionLabel="name"
+                    optionValue="provider_id"
+                    placeholder="Select provider"
+                    appendTo="body"
+                    class="w-full"
+                  >
+                    <ng-template #selectedItem let-selected>
+                      {{ getProviderLabel(selected) }}
+                    </ng-template>
+                    <ng-template #item let-provider>
+                      {{ getProviderLabel(provider) }}
+                    </ng-template>
+                  </p-select>
+                  <p-autocomplete
+                    [(ngModel)]="row.recipients"
+                    [multiple]="true"
+                    [typeahead]="false"
+                    [addOnBlur]="true"
+                    [addOnTab]="true"
+                    separator=","
+                    placeholder="Type recipient and press Enter or comma"
+                    [fluid]="true"
+                  />
+                </div>
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  (onClick)="removeWhitelistRow($index)"
+                  class="mt-1"
+                />
+              </div>
+            }
+            @if (whitelistRows().length === 0) {
+              <small class="text-muted-color">
+                No whitelist rules. Click "Add" to whitelist recipients for a provider.
+              </small>
+            }
+          }
+        </div>
+      }
     </div>
     <ng-template #footer>
       <p-button

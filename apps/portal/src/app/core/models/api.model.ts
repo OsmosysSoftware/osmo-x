@@ -33,8 +33,20 @@ export type PageInfo = components['schemas']['PageInfoDto'];
 // Input DTOs (from OpenAPI schemas)
 // ===========================
 
-export type CreateApplicationInput = components['schemas']['CreateApplicationInput'];
-export type UpdateApplicationInput = components['schemas']['UpdateApplicationInput'];
+// Application input DTOs: backend DTO types `whitelistRecipients` as `string` but validates with
+// @IsObject() and actually accepts JSON objects. Override to match runtime behavior.
+export type CreateApplicationInput = Omit<
+  components['schemas']['CreateApplicationInput'],
+  'whitelist_recipients'
+> & {
+  whitelist_recipients?: Record<string, string[]> | null;
+};
+export type UpdateApplicationInput = Omit<
+  components['schemas']['UpdateApplicationInput'],
+  'whitelist_recipients'
+> & {
+  whitelist_recipients?: Record<string, string[]> | null;
+};
 // Provider input DTOs: backend DTO types `configuration` as `string` but validates with
 // @IsObject() and actually accepts/returns JSON objects. Override to match runtime behavior.
 export type CreateProviderInput = Omit<
