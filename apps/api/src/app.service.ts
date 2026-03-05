@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as packageJson from '../package.json';
+import { ConfigService } from '@nestjs/config';
+
+const configService = new ConfigService();
 
 @Injectable()
 export class AppService {
@@ -9,27 +12,27 @@ export class AppService {
       message: 'OsmoX API Server is running',
       version: packageJson.version,
       timestamp: new Date().toISOString(),
-      documentation: '/api/docs',
+      documentation: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/docs`,
       endpoints: {
-        auth: '/api/auth',
-        applications: '/api/applications',
-        providers: '/api/providers',
-        master_providers: '/api/master-providers',
-        provider_chains: '/api/provider-chains',
-        provider_chain_members: '/api/provider-chain-members',
-        notifications: '/api/notifications',
-        archived_notifications: '/api/archived-notifications',
-        users: '/api/users',
-        api_keys: '/api/api-keys',
-        webhooks: '/api/webhooks',
-        organizations: '/api/organizations',
-        dashboard: '/api/dashboard',
+        auth: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/auth`,
+        applications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/applications`,
+        providers: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/providers`,
+        master_providers: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/master-providers`,
+        provider_chains: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/provider-chains`,
+        provider_chain_members: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/provider-chain-members`,
+        notifications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/notifications`,
+        archived_notifications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/archived-notifications`,
+        users: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/users`,
+        api_keys: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/api-keys`,
+        webhooks: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/webhooks`,
+        organizations: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/organizations`,
+        dashboard: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/dashboard`,
       },
       admin: {
         graphql: '/graphql',
-        queue_notifications: '/api/notifications/queue',
-        confirm_notifications: '/api/notifications/confirm',
-        redis_cleanup: '/api/notifications/redis/cleanup',
+        queue_notifications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/notifications/queue`,
+        confirm_notifications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/notifications/confirm`,
+        redis_cleanup: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/notifications/redis/cleanup`,
         dozzle_logs: 'http://localhost:8080',
       },
     };

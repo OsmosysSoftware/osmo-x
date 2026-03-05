@@ -3,6 +3,6 @@
 export const environment = {
   production: false,
   // Backend API URL - localhost for local development
-  apiUrl: 'http://localhost:3000/api',
-  apiDocsUrl: 'http://localhost:3000/api/docs',
+  apiUrl: 'http://localhost:3000',
+  apiDocsUrl: 'http://localhost:3000/docs',
 };

@@ -47,8 +47,8 @@ async function bootstrap(): Promise<void> {
     .build();
   let document = SwaggerModule.createDocument(app, config);
   document = transformSwaggerToSnakeCase(document);
-  SwaggerModule.setup('api/docs', app, document);
-  app.setGlobalPrefix('api', {
+  SwaggerModule.setup(`${configService.getOrThrow('GLOBAL_API_PREFIX')}/docs`, app, document);
+  app.setGlobalPrefix(configService.getOrThrow('GLOBAL_API_PREFIX'), {
     exclude: [{ path: '/', method: RequestMethod.GET }],
   });
   app.useGlobalPipes(new ValidationPipe());

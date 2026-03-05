@@ -4,8 +4,8 @@ source ".env"
 
 SCHEDULE_TIME_IN_SECONDS="${SCHEDULE_TIME_IN_SECONDS:-5}"
 
-BASE_URL="http://localhost:${SERVER_PORT}/api/v1/notifications"
-ARCHIVE_URL="http://localhost:${SERVER_PORT}/api/v1/archived-notifications"
+BASE_URL="http://localhost:${SERVER_PORT}${GLOBAL_API_PREFIX}/notifications"
+ARCHIVE_URL="http://localhost:${SERVER_PORT}${GLOBAL_API_PREFIX}/archived-notifications"
 
 ARCHIVE_INTERVAL_IN_SECONDS="${ARCHIVE_INTERVAL_IN_SECONDS:-3600}"
 DELETE_INTERVAL_IN_SECONDS="${DELETE_INTERVAL_IN_SECONDS:-86400}"
