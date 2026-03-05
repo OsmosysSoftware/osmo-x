@@ -18,6 +18,7 @@ if (!fs.existsSync(logDir)) {
 }
 
 const configService = new ConfigService();
+const globalPrefix = configService.get('GLOBAL_API_PREFIX', '');
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
@@ -47,8 +48,8 @@ async function bootstrap(): Promise<void> {
     .build();
   let document = SwaggerModule.createDocument(app, config);
   document = transformSwaggerToSnakeCase(document);
-  SwaggerModule.setup(`${configService.getOrThrow('GLOBAL_API_PREFIX')}/docs`, app, document);
-  app.setGlobalPrefix(configService.getOrThrow('GLOBAL_API_PREFIX'), {
+  SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
+  app.setGlobalPrefix(globalPrefix, {
     exclude: [{ path: '/', method: RequestMethod.GET }],
   });
   app.useGlobalPipes(new ValidationPipe());

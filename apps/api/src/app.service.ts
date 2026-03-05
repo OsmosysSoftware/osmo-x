@@ -2,37 +2,39 @@ import { Injectable } from '@nestjs/common';
 import * as packageJson from '../package.json';
 import { ConfigService } from '@nestjs/config';
 
-const configService = new ConfigService();
-
 @Injectable()
 export class AppService {
+  constructor(private readonly configService: ConfigService) {}
+
   getHealthCheck(): Record<string, unknown> {
+    const prefix = this.configService.get('GLOBAL_API_PREFIX', '');
+
     return {
       status: 'ok',
       message: 'OsmoX API Server is running',
       version: packageJson.version,
       timestamp: new Date().toISOString(),
-      documentation: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/docs`,
+      documentation: `${prefix}/docs`,
       endpoints: {
-        auth: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/auth`,
-        applications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/applications`,
-        providers: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/providers`,
-        master_providers: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/master-providers`,
-        provider_chains: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/provider-chains`,
-        provider_chain_members: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/provider-chain-members`,
-        notifications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/notifications`,
-        archived_notifications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/archived-notifications`,
-        users: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/users`,
-        api_keys: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/api-keys`,
-        webhooks: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/webhooks`,
-        organizations: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/organizations`,
-        dashboard: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/dashboard`,
+        auth: `${prefix}/auth`,
+        applications: `${prefix}/applications`,
+        providers: `${prefix}/providers`,
+        master_providers: `${prefix}/master-providers`,
+        provider_chains: `${prefix}/provider-chains`,
+        provider_chain_members: `${prefix}/provider-chain-members`,
+        notifications: `${prefix}/notifications`,
+        archived_notifications: `${prefix}/archived-notifications`,
+        users: `${prefix}/users`,
+        api_keys: `${prefix}/api-keys`,
+        webhooks: `${prefix}/webhooks`,
+        organizations: `${prefix}/organizations`,
+        dashboard: `${prefix}/dashboard`,
       },
       admin: {
         graphql: '/graphql',
-        queue_notifications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/notifications/queue`,
-        confirm_notifications: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/notifications/confirm`,
-        redis_cleanup: `${configService.getOrThrow('GLOBAL_API_PREFIX')}/notifications/redis/cleanup`,
+        queue_notifications: `${prefix}/notifications/queue`,
+        confirm_notifications: `${prefix}/notifications/confirm`,
+        redis_cleanup: `${prefix}/notifications/redis/cleanup`,
         dozzle_logs: 'http://localhost:8080',
       },
     };
