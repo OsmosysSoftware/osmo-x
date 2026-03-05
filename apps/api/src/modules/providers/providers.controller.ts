@@ -47,6 +47,7 @@ export class ProvidersController {
   constructor(private readonly providersService: ProvidersService) {}
 
   @Get()
+  @Roles(UserRoles.ORG_USER)
   @ApiOperation({ summary: 'List providers' })
   @ApiQuery({
     name: 'organization_id',
@@ -75,6 +76,7 @@ export class ProvidersController {
   }
 
   @Get(':id')
+  @Roles(UserRoles.ORG_USER)
   @ApiOperation({ summary: 'Get provider by ID' })
   @ApiQuery({
     name: 'organization_id',

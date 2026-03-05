@@ -114,7 +114,7 @@ export class NotificationsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoles.ORG_ADMIN)
+  @Roles(UserRoles.ORG_USER)
   @ApiOperation({ summary: 'Get notification by ID' })
   @ApiQuery({
     name: 'organization_id',

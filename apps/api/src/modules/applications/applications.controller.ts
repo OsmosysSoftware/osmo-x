@@ -47,6 +47,7 @@ export class ApplicationsController {
   constructor(private readonly applicationsService: ApplicationsService) {}
 
   @Get()
+  @Roles(UserRoles.ORG_USER)
   @ApiOperation({ summary: 'List applications' })
   @ApiQuery({
     name: 'organization_id',
@@ -78,6 +79,7 @@ export class ApplicationsController {
   }
 
   @Get(':id')
+  @Roles(UserRoles.ORG_USER)
   @ApiOperation({ summary: 'Get application by ID' })
   @ApiQuery({
     name: 'organization_id',
