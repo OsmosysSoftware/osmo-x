@@ -9,7 +9,6 @@ import { UsersService } from '../users/users.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ProvidersModule } from '../providers/providers.module';
-import { ProvidersService } from '../providers/providers.service';
 
 @Module({
   // Import ServerApiKeysModule to resolve ApiKeyGuard dependency
@@ -26,7 +25,6 @@ import { ProvidersService } from '../providers/providers.service';
     JwtService,
     UsersService,
     Logger,
-    ProvidersService,
   ],
   controllers: [ApplicationsController],
   exports: [TypeOrmModule, ApplicationsService],

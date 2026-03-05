@@ -25,7 +25,6 @@ import { ApplicationsService } from '../applications/applications.service';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { ProvidersModule } from '../providers/providers.module';
-import { ProvidersService } from '../providers/providers.service';
 import { SmsPlivoModule } from '../providers/sms-plivo/sms-plivo.module';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
 import { WaTwilioBusinessModule } from '../providers/wa-twilio-business/wa-twilio-business.module';
@@ -101,7 +100,6 @@ const consumers = [
     JwtService,
     ApplicationsService,
     UsersService,
-    ProvidersService,
     QueueService,
     ArchivedNotificationsService,
     RequestLoggerMiddleware,
@@ -113,7 +111,6 @@ const consumers = [
     JwtService,
     ApplicationsService,
     UsersService,
-    ProvidersService,
     QueueService,
     ...consumers,
   ],
