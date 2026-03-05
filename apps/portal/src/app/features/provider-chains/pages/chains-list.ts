@@ -154,6 +154,10 @@ export class ChainsListComponent implements OnInit {
         this.chains.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);
         this.loading.set(false);
+
+        for (const chainId of this.expandedChainIds()) {
+          this.loadMembers(chainId);
+        }
       },
       error: () => {
         this.messageService.add({
