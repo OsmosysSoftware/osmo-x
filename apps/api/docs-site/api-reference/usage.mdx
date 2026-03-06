@@ -1,0 +1,176 @@
+---
+title: Usage Guide
+description: Learn how to integrate and use OsmoX for sending notifications
+icon: book
+---
+
+# Usage Guide
+
+Welcome to the usage guide for OsmoX, a powerful notification management system designed to simplify the process of sending notifications through various channels.
+
+## Overview
+
+OsmoX offers a streamlined solution for sending notifications via different channel providers:
+
+- The system monitors the `notify_notifications` database table and automatically dispatches notifications for records with a `PENDING` status
+- For records with `AWAITING_CONFIRMATION` status, the system verifies successful message delivery (when supported by the provider)
+- Users can set up custom webhooks for verification purposes
+
+## Quick Start
+
+<Steps>
+  <Step title="Set up the codebase">
+    Follow either the [Development Setup](/getting-started/development) or [Production Setup](/getting-started/production) guide
+  </Step>
+
+  <Step title="Get Bearer Token">
+    OsmoX has seeded an Admin user. Use the [login API](/api-reference/overview#login) to get your authentication token
+  </Step>
+
+  <Step title="Create an Application">
+    Create a new Application using the [create application API](/api-reference/overview#create-application)
+  </Step>
+
+  <Step title="Create a Provider">
+    Create a Provider that will be used to send notifications using the [create provider API](/api-reference/overview#create-provider)
+  </Step>
+
+  <Step title="Generate API Key">
+    Generate a new `x-api-key` for your application using the [generate API key endpoint](/api-reference/overview#generate-new-server-api-key)
+  </Step>
+
+  <Step title="Send Notifications">
+    Use the `x-api-key` header to send notifications via the OsmoX API
+  </Step>
+</Steps>
+
+## Using the API
+
+### Authentication Header
+
+To authenticate API requests, add the API key to the `x-api-key` header:
+
+```
+x-api-key: YOUR_SERVER_API_KEY
+```
+
+### Create Notification
+
+**Endpoint:** `POST /notifications`
+
+**Sample Request:**
+
+```json
+{
+  "providerId": 1,
+  "data": {
+    "from": "sender@example.com",
+    "to": "recipient@example.com",
+    "subject": "Test subject",
+    "text": "This is a test notification",
+    "html": "<b>This is a test notification</b>"
+  }
+}
+```
+
+**Sample Response:**
+
+```json
+{
+  "status": "success",
+  "data": {
+    "notification": {
+      "providerId": 1,
+      "data": {
+        "from": "sender@example.com",
+        "to": "receiver@example.com",
+        "subject": "Test subject",
+        "text": "This is a test notification",
+        "html": "<b>This is a test notification</b>"
+      },
+      "applicationId": 1,
+      "createdBy": "OsmoX",
+      "updatedBy": "OsmoX",
+      "channelType": 1,
+      "result": null,
+      "notificationSentOn": null,
+      "id": 36,
+      "deliveryStatus": 1,
+      "createdOn": "2023-09-08T13:11:52.000Z",
+      "updatedOn": "2023-09-08T13:11:52.000Z",
+      "status": 1,
+      "retryCount": 0
+    }
+  }
+}
+```
+
+## Tracking Notification Status
+
+OsmoX updates the `delivery_status` and `result` columns to provide information on the notification's status. Use these columns to track the progress of your notifications.
+
+## Available Channel Types
+
+OsmoX supports multiple channel types for notifications:
+
+| Channel Type | Value | Documentation |
+|-------------|-------|---------------|
+| SMTP | 1 | [SMTP Guide](/channels/email/smtp) |
+| Mailgun | 2 | [Mailgun Guide](/channels/email/mailgun) |
+| WhatsApp - 360Dialog | 3 | [360Dialog Guide](/channels/whatsapp/360dialog) |
+| WhatsApp - Twilio | 4 | [Twilio WhatsApp Guide](/channels/whatsapp/twilio) |
+| SMS - Twilio | 5 | [Twilio SMS Guide](/channels/sms/twilio) |
+| SMS - Plivo | 6 | [Plivo Guide](/channels/sms/plivo) |
+| WhatsApp - Twilio Business | 7 | [Twilio Business Guide](/channels/whatsapp/twilio-business) |
+| Push Notification - SNS | 9 | [AWS SNS Push Guide](/channels/push/aws-sns) |
+| Voice Call - Twilio | 10 | [Twilio Voice Guide](/channels/voice/twilio) |
+| Email - AWS SES | 11 | [AWS SES Guide](/channels/email/aws-ses) |
+| SMS - AWS SNS | 12 | [AWS SNS SMS Guide](/channels/sms/aws-sns) |
+
+<Note>
+  Channel type 8 (SMS - KAPSystem) is no longer supported.
+</Note>
+
+## Delivery Status Information
+
+OsmoX provides different delivery status options to reflect the state of your notifications:
+
+| Status | Value | Description |
+|--------|-------|-------------|
+| PENDING | 1 | The notification is awaiting processing |
+| IN PROGRESS | 2 | The notification is currently being sent |
+| AWAITING_CONFIRMATION | 3 | The notification is awaiting confirmation |
+| QUEUED_CONFIRMATION | 4 | The notification is added to confirmation queue |
+| SUCCESS | 5 | The notification was successfully delivered |
+| FAILED | 6 | The notification delivery failed |
+
+<Info>
+  For more information, see the [Delivery Status Lifecycle](/guides/delivery-status) guide.
+</Info>
+
+## Test Mode Feature
+
+OsmoX Admin users can enable/disable **Test Mode** for applications. This feature allows functional testing without sending notifications to real recipients.
+
+<Card title="Test Mode Guide" icon="flask" href="/guides/test-mode">
+  Learn how to configure and use test mode for safe testing
+</Card>
+
+### Key Points
+
+- Providers associated with test mode enabled applications **DO NOT** send notifications to end recipients
+- Admin users can add a whitelist to send notifications only to specific recipients
+- Whitelist must be either `null` or a valid JSON with provider IDs as keys and arrays of recipient strings as values
+
+**Example Whitelist:**
+
+```json
+{
+  "2": ["allowed@example.com", "test@email.co"],
+  "5": ["+19800176002", "+19800176003"]
+}
+```
+
+## Direct Database Access
+
+Developers can also populate the `notify_notifications` database table directly, though using the API is recommended. For database structure details, see the [Database Design](/getting-started/database) documentation.

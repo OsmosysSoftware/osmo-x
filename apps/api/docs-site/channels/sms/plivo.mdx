@@ -1,0 +1,78 @@
+---
+title: Plivo SMS
+description: Send SMS messages using Plivo
+icon: message
+---
+
+# Plivo SMS
+
+Plivo enables sending SMS through its API, allowing developers to programmatically send and receive text messages worldwide.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `6` (Plivo SMS) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="PLIVO_SMS_AUTH_ID" type="string" required>
+  Plivo Auth ID
+</ParamField>
+
+<ParamField path="PLIVO_SMS_AUTH_TOKEN" type="string" required>
+  Plivo Auth Token
+</ParamField>
+
+<ParamField path="PLIVO_SMS_NUMBER" type="string" required>
+  Plivo registered phone number
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "PLIVO_SMS_AUTH_ID": "PlivoAuthId",
+  "PLIVO_SMS_AUTH_TOKEN": "PlivoAuthToken",
+  "PLIVO_SMS_NUMBER": "+919000180002"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 6,
+  "data": {
+    "to": "+15005550006",
+    "message": "This is a test message from OsmoX."
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="to" type="string" required>
+  Recipient's phone number in E.164 format
+</ParamField>
+
+<ParamField path="message" type="string" required>
+  The SMS message content
+</ParamField>
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| plivo | ^4.75.1 | Plivo client for SMS and voice calls |
+
+## Reference
+
+- [Plivo Messaging Quickstart](https://www.plivo.com/docs/messaging/quickstart/node-expressjs/)

@@ -1,4 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { config } from 'dotenv';
+
+config();
 
 interface MasterProviderConfiguration {
   name: string;
@@ -6,16 +10,21 @@ interface MasterProviderConfiguration {
   configuration: object;
 }
 
+const DEFAULT_ADMIN_PASSWORD = 'Admin123';
+const SALT_ROUNDS = 10;
+
 export class InitialSeed1745495895857 implements MigrationInterface {
   name = 'InitialSeed1745495895857';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Seed Admin User START ---------------------------------------------------
+    const adminPassword = process.env.ADMIN_PASSWORD || DEFAULT_ADMIN_PASSWORD;
+    const hashedPassword = await bcrypt.hash(adminPassword, SALT_ROUNDS);
+
     const usersData = [
       {
         username: 'Admin',
-        // Admin123
-        password: '$2b$10$iUUsgPtfqu./C2fnnb80EOlNxc3q73woJd2.Ns0D66xHh0iX4E1vq',
+        password: hashedPassword,
         role: 1,
         status: 1,
       },

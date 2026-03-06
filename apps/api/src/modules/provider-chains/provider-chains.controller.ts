@@ -2,105 +2,136 @@ import {
   Body,
   Controller,
   Delete,
-  HttpException,
-  Logger,
+  Get,
   Post,
   Put,
+  Query,
+  Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProviderChainsService } from './provider-chains.service';
-import { JsendFormatter } from 'src/common/jsend-formatter';
-import { CreateProviderChainInput } from './dto/create-provider-chain.input';
-import { DeleteProviderChainInput } from './dto/delete-provider-chain.input';
-import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
-import { UpdateProviderChainInput } from './dto/update-provider-chain.input';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
-import { RolesGuard } from 'src/common/guards/role.guard';
+import { Request } from 'express';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginatedResponse } from 'src/common/dto/paginated-response.dto';
+import { LinkBuilder } from 'src/common/utils/link-builder.helper';
+import { CreateProviderChainInput } from './dto/create-provider-chain.input';
+import { UpdateProviderChainInput } from './dto/update-provider-chain.input';
+import { ProviderChainResponseDto } from './dto/provider-chain-response.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtPayload } from 'src/common/constants/jwtInterface';
+import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
+import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
+@ApiTags('Provider Chains')
+@ApiBearerAuth()
+@ApiExtraModels(ProviderChainResponseDto)
 @Controller('provider-chains')
-@Roles(UserRoles.ADMIN)
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(SnakeCaseInterceptor)
+@Roles(UserRoles.ORG_ADMIN)
 export class ProviderChainsController {
-  constructor(
-    private readonly providerChainsService: ProviderChainsService,
-    private readonly jsend: JsendFormatter,
-    private readonly logger: Logger = new Logger(ProviderChainsController.name),
-    private readonly providerChainMembersService: ProviderChainMembersService,
-  ) {}
+  constructor(private readonly providerChainsService: ProviderChainsService) {}
 
-  @Post()
-  async addProviderChain(
-    @Body() providerChainData: CreateProviderChainInput,
-  ): Promise<Record<string, unknown>> {
-    try {
-      this.logger.debug(`Provider chain Request Data: ${JSON.stringify(providerChainData)}`);
-      const createdProviderChain =
-        await this.providerChainsService.createProviderChain(providerChainData);
-      this.logger.log('Provider chain created successfully.');
-      return this.jsend.success({ providerChain: createdProviderChain });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
+  @Get()
+  @ApiOperation({ summary: 'List provider chains' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of provider chains',
+    type: PaginatedResponse,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async findAll(
+    @Query() query: PaginationQueryDto,
+    @Query('organization_id') queryOrgId: number,
+    @CurrentUser() user: JwtPayload,
+    @Req() req: Request,
+  ): Promise<PaginatedResponse<ProviderChainResponseDto>> {
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+    const { items, meta } = await this.providerChainsService.getAllProviderChainsAsDto(
+      query,
+      targetOrgId,
+    );
+    const { protocol, host } = LinkBuilder.extractBaseUrl(req);
+    const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
 
-      this.logger.error('Error while creating provider chain');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      throw error;
-    }
+    return new PaginatedResponse(items, links, meta);
   }
 
-  @Delete()
-  async deleteProviderChain(
-    @Body() deleteProviderChainInput: DeleteProviderChainInput,
-  ): Promise<Record<string, unknown>> {
-    try {
-      this.logger.debug(`Provider chain id to delete: ${deleteProviderChainInput.chainId}`);
-      const entries = await this.providerChainMembersService.getAllProviderChainMembersByChainId(
-        deleteProviderChainInput.chainId,
-      );
-      const providerChainMembersDeleted = entries ? entries.map((entry) => entry.id) : null;
+  @Post()
+  @ApiOperation({ summary: 'Create a new provider chain' })
+  @ApiResponse({
+    status: 201,
+    description: 'Provider chain created successfully',
+    type: ProviderChainResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async create(
+    @Body() createProviderChainInput: CreateProviderChainInput,
+    @Body('organizationId') orgId: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ProviderChainResponseDto> {
+    const targetOrgId = resolveOrgId(user, orgId);
 
-      const deletedProviderChain = await this.providerChainsService.softDeleteProviderChain(
-        deleteProviderChainInput.chainId,
-      );
-      this.logger.log('Provider chain deleted successfully.');
-      return this.jsend.success({
-        chainId: deleteProviderChainInput.chainId,
-        deleted: deletedProviderChain,
-        providerChainMembersDeleted: providerChainMembersDeleted,
-      });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      this.logger.error('Error while deleting provider chain');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      throw error;
-    }
+    return this.providerChainsService.createProviderChainAsDto(
+      createProviderChainInput,
+      targetOrgId,
+    );
   }
 
   @Put()
-  async updateProviderChain(
-    @Body() updateProviderChainData: UpdateProviderChainInput,
-  ): Promise<Record<string, unknown>> {
-    try {
-      this.logger.debug(
-        `Provider chain updation Request Data: ${JSON.stringify(updateProviderChainData)}`,
-      );
-      const createdProviderChain =
-        await this.providerChainsService.updateProviderChain(updateProviderChainData);
-      this.logger.log('Provider chain updated successfully.');
-      return this.jsend.success({ updatedProviderChain: createdProviderChain });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
+  @ApiOperation({ summary: 'Update a provider chain' })
+  @ApiResponse({
+    status: 200,
+    description: 'Provider chain updated successfully',
+    type: ProviderChainResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async update(
+    @Body() updateProviderChainInput: UpdateProviderChainInput,
+    @Body('organizationId') orgId: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ProviderChainResponseDto> {
+    const targetOrgId = resolveOrgId(user, orgId);
 
-      this.logger.error('Error while updating provider chain');
-      this.logger.error(JSON.stringify(error, ['message', 'stack'], 2));
-      throw error;
-    }
+    return this.providerChainsService.updateProviderChainAsDto(
+      updateProviderChainInput,
+      targetOrgId,
+    );
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Delete a provider chain' })
+  @ApiResponse({ status: 200, description: 'Provider chain deleted successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async remove(
+    @Body('chainId') chainId: number,
+    @Body('organizationId') orgId: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<boolean> {
+    const targetOrgId = resolveOrgId(user, orgId);
+
+    return this.providerChainsService.softDeleteProviderChainByOrg(chainId, targetOrgId);
   }
 }

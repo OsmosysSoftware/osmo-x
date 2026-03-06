@@ -4,277 +4,192 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-OsmoX is a centralized multi-channel notification management system that provides a unified API for sending notifications across email, SMS, WhatsApp, and push notifications. The project consists of two main applications:
+OsmoX is a centralized multi-channel notification management system being transformed into a multi-tenant SaaS platform. It provides a unified API for sending notifications across email, SMS, WhatsApp, and push notifications. It is a monorepo with two independent applications, each with its own `node_modules` — always `cd` into the app directory before running npm commands.
 
-- **API** (`apps/api`): NestJS backend that handles notification requests, queuing, and delivery
-- **Portal** (`apps/portal`): Angular frontend for managing notifications and configurations
-
-## Monorepo Structure
-
-This is a monorepo with two independent applications. Each application has its own dependencies and must be set up separately:
-
-```
+```text
 apps/
-├── api/          # NestJS backend (Node.js 20.x)
-└── portal/       # Angular frontend (Angular 19)
+├── api/          # NestJS backend (Node.js 20.x, NestJS 11)
+└── portal/       # Angular frontend (Angular 20, PrimeNG 20, Tailwind v4)
 ```
 
-## Common Development Commands
+### Reference Implementation
 
-### API (apps/api)
+The `~/work/osmosys/interview-app/` repository defines our coding standards for both frontend and backend. When implementing new patterns, check the interview-app for established conventions (auth flow, error handling, API design, component patterns).
+
+### Multi-Tenant Architecture (In Progress)
+
+- **Organization hierarchy**: Super Admin → Organization → Org Admin / Users
+- **Role system**: ORG_USER (0), ORG_ADMIN (1), SUPER_ADMIN (2)
+- **API prefix**: Global prefix `/api` set via `setGlobalPrefix('api')` in `main.ts`; no version prefix
+- **Error format**: RFC 7807 Problem JSON via `ProblemJsonFilter` (global)
+- **Response format**: Snake_case responses via SnakeCaseInterceptor
+- **ORM**: TypeORM (NOT MikroORM); all tables prefixed with `notify_`
+- **GraphQL**: Frozen (not removed); new features are REST-first
+
+## Development Commands
+
+### API (`apps/api`)
 
 ```bash
 cd apps/api
-
-# Install dependencies
 npm install
+cp .env.example .env         # First-time setup: configure DB, Redis, etc.
 
-# Development
-npm run start:dev           # Start dev server with watch mode
-npm run start:debug         # Start with debugging
+npm run start:dev             # Dev server with watch mode
+npm run build                 # Production build
 
-# Building
-npm run build              # Build for production
+npm test                      # Run all unit tests (Jest)
+npx jest --testPathPattern="providers.service" # Run a single test file
+npm run test:watch            # Tests in watch mode
+npm run test:cov              # Coverage report
+npm run test:e2e              # E2E tests
 
-# Testing
-npm test                   # Run unit tests
-npm run test:watch         # Run tests in watch mode
-npm run test:cov           # Generate coverage report
-npm run test:e2e           # Run end-to-end tests
+npm run lint                  # ESLint (--max-warnings=0)
+npm run lint:fix              # Auto-fix
+npm run format                # Prettier
 
-# Linting & Formatting
-npm run lint               # Lint with ESLint (max-warnings=0)
-npm run lint:fix           # Auto-fix linting issues
-npm run format             # Format with Prettier
-
-# Database Migrations
-npm run typeorm:create-migration    # Create new migration
-npm run typeorm:generate-migration  # Generate migration from entities
+# Database migrations (TypeORM, must be run from apps/api)
 npm run typeorm:run-migration       # Run pending migrations
 npm run typeorm:revert-migration    # Revert last migration
-npm run database:reset              # Reset database
+npm run typeorm:create-migration    # Create empty migration
+npm run typeorm:generate-migration  # Auto-generate from entity changes
 
-# Start scheduler (required for notification processing)
+# Scheduler (required for notification processing, run from apps/api)
 ./scheduler.sh
 ```
 
-### Portal (apps/portal)
+### Portal (`apps/portal`)
 
 ```bash
 cd apps/portal
-
-# Install dependencies
 npm install
 
-# Development
-npm start                  # Start dev server (localhost:4200)
-ng serve                   # Alternative to npm start
+npm start                     # Dev server at localhost:4200
+npm run build:prod            # Production build
+npm test                      # Unit tests (Karma/Jasmine)
 
-# Building
-npm run build              # Development build
-npm run build:prod         # Production build
+npm run lint                  # ESLint (--max-warnings=0)
+npm run lint:fix              # Auto-fix
+npm run lint-fix-format       # Combined: format + lint + format
 
-# Testing
-npm test                   # Run unit tests with Karma
-
-# Linting & Formatting
-npm run lint               # Lint with ESLint (max-warnings=0)
-npm run lint:fix           # Auto-fix linting issues
-npm run prettier-format    # Format with Prettier
-npm run lint-fix-format    # Combined: format + lint + format
+npm run generate:api          # Regenerate TypeScript types from backend OpenAPI spec
 ```
 
 ## Architecture
 
-### Backend Architecture (NestJS)
+### Data Flow
 
-The API follows a modular NestJS architecture organized into:
+1. Client creates notification via REST or GraphQL API
+2. Notification saved to PostgreSQL with `Pending` status
+3. `scheduler.sh` (a bash loop running from `apps/api`) periodically POSTs to `/notifications/queue` and `/notifications/confirm` to enqueue pending notifications and check confirmations
+4. Bull queues (Redis-backed) process notifications by channel type in parallel
+5. Queue consumers call provider-specific services to deliver notifications
+6. Status updated: `Pending` → `In Progress` → `Awaiting Confirmation` → `Success`/`Failed`
+7. Completed notifications archived to `notify_archived_notifications` table
 
-**Core Modules** (`apps/api/src/modules/`):
-- `auth/` - Authentication & JWT handling
-- `notifications/` - Core notification CRUD and business logic
-- `archived-notifications/` - Completed notification archival
-- `providers/` - Provider-specific implementations (email, SMS, WhatsApp providers)
-- `master-providers/` - Provider type catalog and configuration schemas
-- `provider-chains/` - Per-application provider chains by type
-- `provider-chain-members/` - Ordered members within provider chains
-- `applications/` - Application management
-- `users/` - User management
-- `server-api-keys/` - API key authentication
-- `webhook/` - Webhook configuration and delivery
+### Backend (`apps/api/src`)
 
-**Job Processing** (`apps/api/src/jobs/`):
-- `consumers/` - Bull queue consumers for processing notifications
-- `producers/` - Queue producers that enqueue notification IDs
+**Entry point:** `main.ts` — sets up NestJS with Swagger (available at `/api`), global `ValidationPipe`, `HttpExceptionFilter` with JSend response format, and CORS.
 
-**Configuration** (`apps/api/src/config/`):
-- `database/` - Database configuration
-- `typeorm/` - TypeORM configuration and migrations
-- `logger.config.ts` - Winston logger setup
+**Module structure (`modules/`):**
 
-**Data Flow:**
-1. Client creates notification via REST/GraphQL API
-2. Notification saved to PostgreSQL database with `Pending` status
-3. Scheduler script periodically calls API endpoints to enqueue pending notifications
-4. Bull queues (backed by Redis) process notifications by channel type in parallel
-5. Queue consumers invoke provider-specific services to send notifications
-6. Notification status updated based on provider response
-7. Completed notifications eventually archived to `notify_archived_notifications` table
+- `notifications/` — Core notification CRUD and business logic
+- `providers/` — Provider implementations, each in its own subdirectory:
+  - `smtp/`, `mailgun/`, `aws-ses/` (email)
+  - `sms-twilio/`, `sms-plivo/`, `sms-sns/` (SMS)
+  - `wa-twilio/`, `wa-twilio-business/`, `wa360dialog/` (WhatsApp)
+  - `push-sns/` (push), `vc-twilio/` (voice call)
+- `master-providers/` — Provider type catalog with configuration schemas
+- `provider-chains/` — Per-application fallback chains by notification type
+- `provider-chain-members/` — Ordered members within a provider chain
+- `applications/` — Application management (test mode, whitelisting)
+- `auth/` — JWT authentication
+- `server-api-keys/` — API key authentication
+- `users/` — User management
+- `webhook/` — Webhook configuration and delivery
+- `archived-notifications/` — Completed notification archival and cleanup
 
-### Frontend Architecture (Angular)
+**Job processing (`jobs/`):**
 
-The Portal is an Angular application using:
-- **PrimeNG** for UI components
-- **Apollo Client** for GraphQL communication with the API
-- **Modular routing** with lazy-loaded modules
+- `producers/notifications/` — Enqueues notification IDs to Bull queues
+- `consumers/notifications/` — Processes queued notifications via provider services
 
-Structure (`apps/portal/src/app/`):
-- `auth/` - Authentication guards and services
-- `graphql/` - Apollo Client configuration and GraphQL queries
-- `views/` - Feature modules and components
+**Common utilities (`common/`):**
 
-## Database
+- `constants/` — Database, notification, and miscellaneous constants
+- `guards/` — `api-key/`, `gql-auth.guard.ts`, `role.guard.ts`
+- `decorators/` — Custom validators (`is-data-valid`, `is-valid-whitelist`, `roles`)
+- `jsend-formatter.ts` — All REST responses use JSend format
+- `http-exception.filter.ts` — Global exception handler
 
-**PostgreSQL** is required. Key tables:
-- `notify_notifications` - Active notifications
-- `notify_archived_notifications` - Completed/archived notifications
-- `notify_providers` - Configured provider instances
-- `notify_master_providers` - Provider type templates
-- `notify_provider_chains` - Application-specific provider chains
-- `notify_provider_chain_members` - Chain member ordering
-- `notify_applications` - Application configurations
-- `notify_users` - User accounts
-- `notify_webhooks` - Webhook configurations
+**Database:**
 
-Migrations are managed via TypeORM and stored in `apps/api/src/database/migrations/`.
+- PostgreSQL with TypeORM; migrations in `src/database/migrations/`
+- All tables prefixed with `notify_` (e.g., `notify_notifications`, `notify_providers`)
+- `database-error.interceptor.ts` — Global interceptor for DB error handling
 
-## Queue System
+**GraphQL:** Auto-generated schema from code decorators (code-first approach); the `schema.gpl` file is auto-generated output. Playground available when `NODE_ENV=development`.
 
-Uses **Bull** (backed by Redis) for job processing. Separate queues exist for each notification channel type (email, SMS, WhatsApp, etc.) to enable parallel processing.
+### Frontend (`apps/portal/src/app`)
 
-The `scheduler.sh` script must run continuously to:
-- Process pending notifications
-- Confirm awaiting confirmations
-- Archive completed notifications
+- **Angular 20** with zoneless change detection (NO Zone.js), signals, standalone components
+- **PrimeNG v20** for UI components, **Tailwind CSS v4** for utilities
+- **OpenAPI-generated types** (`openapi-typescript`) — snake_case fields used directly, NO conversion
+- `core/` — Singleton services, guards, interceptors, models, generated API types
+- `features/` — Feature modules (lazy-loaded): dashboard, applications, providers, notifications, users, etc.
+- `shared/` — Reusable components, pipes, directives
+- `layout/` — App shell (Sakai-based): topbar, sidebar, menu, footer
+- `pages/` — Non-feature pages: login, not-found
 
 ## Code Style
 
 ### API (TypeScript/NestJS)
-- Airbnb JavaScript Style Guide with 100-character line limit
-- ESLint enforces explicit return types, no `any` types, no unused vars
-- Prettier for code formatting
-- **Blank lines required before/after block-like statements**
-- **Max warnings: 0** - linting must pass with zero warnings
 
-### Portal (TypeScript/Angular)
-- Airbnb TypeScript configuration
-- ESLint + Prettier integration
-- **Max warnings: 0** - linting must pass with zero warnings
+- **Always use `nest generate`** to scaffold new modules, controllers, services, etc. — never create files manually
+- Airbnb style, 100-char line limit, Prettier formatting
+- `@typescript-eslint/explicit-function-return-type: error` (with `allowExpressions: true`)
+- `@typescript-eslint/no-explicit-any: error`
+- `no-console: warn` — use Winston logger instead
+- Blank lines required before/after block-like statements
+- Zero warnings policy (`--max-warnings=0`)
 
-## Environment Setup
+### Portal (TypeScript/Angular 20)
 
-### Prerequisites
-- Node.js 20.x (use `nvm install 20 && nvm use 20`)
-- PostgreSQL 16.x or higher
-- Redis 6.x or higher
-- Git 2.x or higher
-
-### Local Development Setup
-
-1. Clone and install API dependencies:
-   ```bash
-   cd apps/api
-   npm install
-   cp .env.example .env  # Configure DB, Redis, etc.
-   ```
-
-2. Run database migrations:
-   ```bash
-   npm run typeorm:run-migration
-   ```
-
-3. Start API server:
-   ```bash
-   npm run start:dev
-   ```
-
-4. Start scheduler (in separate terminal):
-   ```bash
-   ./scheduler.sh
-   ```
-
-5. Install and start Portal (in separate terminal):
-   ```bash
-   cd apps/portal
-   npm install
-   npm start  # Runs on localhost:4200
-   ```
-
-## Testing Strategy
-
-- **Unit tests**: Jest for API, Jasmine/Karma for Portal
-- **E2E tests**: Available for API via `npm run test:e2e`
-- All features/bug fixes must include tests
-- Coverage reports available via `npm run test:cov` (API)
-
-## Commit Message Convention
-
-Follow **strict commit message format**:
-
-```
-<type>: <subject>
-
-<body>
-
-<footer>
-```
-
-**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `sample`
-
-**Rules**:
-- Use imperative, present tense: "change" not "changed"
-- No capitalization of first letter
-- No period at end of subject
-- Max 100 characters per line
-- Footer for breaking changes and issue references
-
-**Example**: `feat: add WhatsApp provider support`
+- **Always use `ng generate`** to scaffold new components, services, pipes, guards, etc. — never create files manually
+- **Separate files**: Always use `templateUrl` and `styleUrl` — NO inline `template` or `styles` in components. Each component must have separate `.ts`, `.html`, and `.scss` files (test files are optional)
+- Standalone components only (NO NgModules)
+- `ChangeDetectionStrategy.OnPush` on ALL components
+- Signals for state (`signal()`, `computed()`), `input()`/`output()` functions (NOT decorators)
+- `inject()` for DI (NOT constructor injection)
+- Modern control flow: `@if`, `@for`, `@switch` (NOT `*ngIf`, `*ngFor`, `*ngSwitch`)
+- `@typescript-eslint/no-explicit-any: error`
+- Blank lines required before/after block-like statements
+- Zero warnings policy (`--max-warnings=0`)
 
 ## Key Concepts
 
-### Provider Chains
-Provider chains define fallback sequences for notification delivery. If the primary provider fails, the system automatically tries the next provider in the chain. Chains are configured per application and per provider type.
+**Provider Chains:** Fallback sequences for notification delivery — if the primary provider fails, the next in the chain is tried. Configured per application and per notification type.
 
-### Test Mode
-Applications can enable test mode with whitelisted recipients to prevent notifications from being sent to real users during development/testing.
+**Test Mode:** Applications can enable test mode with whitelisted recipients to prevent sending to real users during development.
 
-### Notification Lifecycle
-1. `Pending` - Created, waiting to be queued
-2. `In Progress` - Being processed by queue consumer
-3. `Awaiting Confirmation` - Sent to provider, waiting for delivery confirmation
-4. `Success` / `Failed` - Final delivery status
-5. Archived - Moved to `notify_archived_notifications` after completion
+**Notification Statuses:** `Pending` → `In Progress` → `Awaiting Confirmation` → `Success`/`Failed` → Archived
 
-## GraphQL API
+## Documentation Site
 
-The API exposes both REST and GraphQL endpoints. GraphQL schema is defined in `apps/api/src/schema.gpl`.
+Mintlify-powered docs site in `apps/api/docs-site/`. Source markdown lives in `apps/api/docs/` — the docs-site contains MDX conversions with Mintlify components (Cards, Steps, Notes, etc.).
 
-## Documentation
+```bash
+# Local preview (from docs-site directory)
+cd apps/api/docs-site
+npx mintlify dev
+```
 
-Comprehensive docs in `apps/api/docs/`:
-- `development-setup.md` - Local setup guide
-- `production-setup.md` - Production deployment
-- `usage-guide.md` - API usage examples
-- `database-design.md` - Complete database schema
-- `block-diagram.md` - System architecture diagram
-- `add-new-provider.md` - Guide for adding notification providers
-- `api-documentation.md` - API endpoint reference
-- `webhook-guide.md` - Webhook configuration
-- `test-mode-guide.md` - Test mode usage
+- **Navigation config**: `apps/api/docs-site/mint.json`
+- **Sync skill**: Run `/update-docs [file or topic]` to sync source docs to docs-site
+- **Auto-warn**: Hookify rule triggers when files in `apps/api/docs/` are modified
 
-## Important Notes
+## Environment
 
-- **Each app has separate node_modules**: Always `cd` into `apps/api` or `apps/portal` before running npm commands
-- **Scheduler is required**: Notifications won't process without `scheduler.sh` running
-- **Zero warnings policy**: All linting must pass with `--max-warnings=0`
-- **Database migrations**: Always run migrations after pulling changes that modify the schema
+Requires Node.js 20.x, PostgreSQL 16+, Redis 6+. See `apps/api/.env.example` for all configuration options including server, security (JWT, API keys), notification processing, logging, and database settings.
+
+Docker Compose: `apps/api/docker-compose.yml` runs all services (PostgreSQL, Redis, API, Dozzle log viewer). See `apps/api/docs/docker-compose-usage.md` for details.

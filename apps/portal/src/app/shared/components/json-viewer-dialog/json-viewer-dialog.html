@@ -1,0 +1,26 @@
+<p-dialog
+  [header]="header()"
+  [visible]="visible()"
+  (visibleChange)="onHide()"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '60vw', maxHeight: '80vh' }"
+>
+  <div class="overflow-auto" style="max-height: 60vh">
+    <pre class="text-sm leading-relaxed m-0 whitespace-pre-wrap break-all">{{ data() | json }}</pre>
+  </div>
+
+  <div class="flex justify-end gap-2 mt-4">
+    <p-button
+      label="Copy"
+      icon="pi pi-copy"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="copyToClipboard()"
+    />
+    <p-button label="Close" icon="pi pi-times" severity="secondary" (onClick)="onHide()" />
+  </div>
+</p-dialog>

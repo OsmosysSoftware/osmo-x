@@ -1,0 +1,178 @@
+<div class="card">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1
+        class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
+      >
+        <i class="pi pi-user text-primary"></i>
+        User Profile
+      </h1>
+      <p class="text-muted-color mt-2">Manage your personal information</p>
+    </div>
+    <div>
+      <p-button
+        label="Change Password"
+        icon="pi pi-key"
+        severity="secondary"
+        (onClick)="openChangePassword()"
+      />
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex flex-col gap-4">
+      <p-skeleton height="3rem" />
+      <p-skeleton height="3rem" />
+      <p-skeleton height="3rem" />
+    </div>
+  } @else {
+    <!-- Profile Form -->
+    <div class="flex flex-col gap-4">
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-surface-900 dark:text-surface-0 font-medium mb-2"
+          >Email</label
+        >
+        <input
+          pInputText
+          id="email"
+          type="email"
+          [ngModel]="email()"
+          class="w-full"
+          [disabled]="true"
+        />
+      </div>
+
+      <!-- First name -->
+      <div>
+        <label for="firstName" class="block text-surface-900 dark:text-surface-0 font-medium mb-2"
+          >First name</label
+        >
+        <input
+          pInputText
+          id="firstName"
+          [ngModel]="firstName()"
+          (ngModelChange)="firstName.set($event)"
+          placeholder="Enter your first name"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Last name -->
+      <div>
+        <label for="lastName" class="block text-surface-900 dark:text-surface-0 font-medium mb-2"
+          >Last name</label
+        >
+        <input
+          pInputText
+          id="lastName"
+          [ngModel]="lastName()"
+          (ngModelChange)="lastName.set($event)"
+          placeholder="Enter your last name"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Action Buttons - Right aligned -->
+      <div class="flex justify-end gap-2 mt-4">
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="!hasChanges()"
+          (onClick)="cancelChanges()"
+        />
+        <p-button
+          label="Save Changes"
+          icon="pi pi-check"
+          [disabled]="!hasChanges()"
+          [loading]="saving()"
+          (onClick)="saveProfile()"
+        />
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Change Password Dialog -->
+<p-dialog
+  header="Change Password"
+  [visible]="passwordDialogVisible()"
+  (visibleChange)="passwordDialogVisible.set($event)"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '450px' }"
+>
+  <div class="flex flex-col gap-4 mt-2">
+    <div>
+      <label for="currentPassword" class="block text-sm font-medium mb-2">
+        Current password <span class="text-red-500">*</span>
+      </label>
+      <p-password
+        id="currentPassword"
+        [ngModel]="currentPassword()"
+        (ngModelChange)="currentPassword.set($event)"
+        placeholder="Enter current password"
+        [toggleMask]="true"
+        [feedback]="false"
+        [fluid]="true"
+      />
+    </div>
+    <div>
+      <label for="newPassword" class="block text-sm font-medium mb-2">
+        New password <span class="text-red-500">*</span>
+      </label>
+      <p-password
+        id="newPassword"
+        [ngModel]="newPassword()"
+        (ngModelChange)="newPassword.set($event)"
+        placeholder="Enter new password (min 6 characters)"
+        [toggleMask]="true"
+        [feedback]="false"
+        [fluid]="true"
+      />
+    </div>
+    <div>
+      <label for="confirmPassword" class="block text-sm font-medium mb-2">
+        Confirm password <span class="text-red-500">*</span>
+      </label>
+      <p-password
+        id="confirmPassword"
+        [ngModel]="confirmPassword()"
+        (ngModelChange)="confirmPassword.set($event)"
+        placeholder="Confirm new password"
+        [toggleMask]="true"
+        [feedback]="false"
+        [fluid]="true"
+      />
+      @if (passwordMismatch()) {
+        <small class="text-red-500 mt-1 block">Passwords do not match</small>
+      }
+    </div>
+  </div>
+
+  <!-- Action Buttons - Right aligned -->
+  <div class="flex justify-end gap-2 mt-6">
+    <p-button
+      label="Cancel"
+      icon="pi pi-times"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="passwordDialogVisible.set(false)"
+      [disabled]="changingPassword()"
+    />
+    <p-button
+      label="Change Password"
+      icon="pi pi-check"
+      [disabled]="!isPasswordFormValid()"
+      [loading]="changingPassword()"
+      (onClick)="changePassword()"
+    />
+  </div>
+</p-dialog>

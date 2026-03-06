@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Repository, Brackets } from 'typeorm';
-import { QueryOptionsDto } from '../dtos/query-options.dto';
+import { QueryOptionsDto, SortOrder } from '../dtos/query-options.dto';
+import { PaginationQueryDto } from '../../dto/pagination-query.dto';
+import { PaginationHelper, PaginationMeta } from '../../utils/pagination.helper';
+import { Status } from '../../constants/database';
 
 @Injectable()
 export abstract class CoreService<TEntity> {
@@ -32,21 +35,48 @@ export abstract class CoreService<TEntity> {
 
     const queryBuilder = this.repository.createQueryBuilder(alias);
 
-    // Perform a Left Join to fetch and display related entityDetails
+    // Perform a Left Join to fetch and display related entityDetails (filter joined entities by active status)
     if (alias === 'notification' || alias === 'archivedNotification') {
-      queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
+      queryBuilder.leftJoinAndSelect(
+        `${alias}.applicationDetails`,
+        'application',
+        'application.status = :joinStatus',
+        { joinStatus: Status.ACTIVE },
+      );
     } else if (alias === 'providerChain') {
-      queryBuilder.leftJoinAndSelect(`${alias}.applicationDetails`, 'application');
+      queryBuilder.leftJoinAndSelect(
+        `${alias}.applicationDetails`,
+        'application',
+        'application.status = :joinStatus',
+        { joinStatus: Status.ACTIVE },
+      );
     } else if (alias === 'providerChainMember') {
-      queryBuilder.leftJoinAndSelect(`${alias}.providerDetails`, 'provider');
-      queryBuilder.leftJoinAndSelect(`${alias}.providerChainDetails`, 'provider-chain');
+      queryBuilder.leftJoinAndSelect(
+        `${alias}.providerDetails`,
+        'provider',
+        'provider.status = :providerJoinStatus',
+        { providerJoinStatus: Status.ACTIVE },
+      );
+      queryBuilder.leftJoinAndSelect(
+        `${alias}.providerChainDetails`,
+        'provider-chain',
+        '"provider-chain".status = :chainJoinStatus',
+        { chainJoinStatus: Status.ACTIVE },
+      );
     }
 
     // Apply base conditions
-    baseConditions.forEach((condition) => {
-      queryBuilder.andWhere(`${alias}.${condition.field} = :${condition.field}`, {
-        [condition.field]: condition.value,
-      });
+    baseConditions.forEach((condition, idx) => {
+      if (condition.operator === 'in') {
+        const paramName = `base_${idx}`;
+        queryBuilder.andWhere(`${alias}.${condition.field} IN (:...${paramName})`, {
+          [paramName]: condition.value,
+        });
+      } else {
+        queryBuilder.andWhere(`${alias}.${condition.field} = :${condition.field}`, {
+          [condition.field]: condition.value,
+        });
+      }
     });
 
     // Implement search with OR condition using searchableFields
@@ -127,5 +157,32 @@ export abstract class CoreService<TEntity> {
 
     const [items, total] = await queryBuilder.getManyAndCount();
     return { items, total };
+  }
+
+  /**
+   * Page-based pagination for REST endpoints.
+   * Converts PaginationQueryDto (page/limit) to offset internally
+   * and delegates to the existing findAll query builder.
+   */
+  async findAllPaginated(
+    query: PaginationQueryDto,
+    alias: string,
+    searchableFields: string[] = [],
+    baseConditions: Array<{ field: string; value: unknown; operator?: string }> = [],
+  ): Promise<{ items: TEntity[]; total: number; meta: PaginationMeta }> {
+    const { page, limit, offset, sort } = PaginationHelper.normalizePaginationParams(query);
+
+    const options: QueryOptionsDto = {
+      offset,
+      limit,
+      sortBy: sort?.field,
+      sortOrder: sort?.order === 'desc' ? SortOrder.DESC : SortOrder.ASC,
+      search: query.search,
+    };
+
+    const { items, total } = await this.findAll(options, alias, searchableFields, baseConditions);
+    const meta = PaginationHelper.buildPaginationMeta(page, limit, total);
+
+    return { items, total, meta };
   }
 }

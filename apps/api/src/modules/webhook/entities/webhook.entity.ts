@@ -7,16 +7,18 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 
 @Entity('notify_webhooks')
 @ObjectType()
+@Index('IDX_notify_webhooks_provider_id', ['providerId'])
 export class Webhook {
   @PrimaryGeneratedColumn()
   @Field()
   id: number;
 
-  @Column({ name: 'provider_id' })
+  @Column({ name: 'provider_id', comment: 'FK to notify_providers' })
   @Field()
   providerId: number;
 
@@ -35,6 +37,14 @@ export class Webhook {
   @UpdateDateColumn({ name: 'updated_on' })
   @Field()
   updatedOn: Date;
+
+  @Column({ name: 'created_by', nullable: true })
+  @Field({ nullable: true })
+  createdBy: number;
+
+  @Column({ name: 'updated_by', nullable: true })
+  @Field({ nullable: true })
+  updatedBy: number;
 
   @Column({
     type: 'smallint',

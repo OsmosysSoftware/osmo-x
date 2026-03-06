@@ -1,0 +1,240 @@
+<div class="card">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1
+        class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
+      >
+        <i class="pi pi-inbox text-primary"></i> Archived Notifications
+      </h1>
+      <p class="text-muted-color mt-2">Browse completed and archived notification records</p>
+    </div>
+  </div>
+
+  <p-toolbar class="mb-4">
+    <ng-template #start>
+      <div class="flex items-center gap-2 flex-wrap">
+        <p-select
+          [options]="channelTypeOptions"
+          [(ngModel)]="selectedChannelType"
+          placeholder="Channel type"
+          [showClear]="true"
+          (onChange)="onFilterChange()"
+          [style]="{ minWidth: '10rem' }"
+        />
+        <p-select
+          [options]="deliveryStatusOptions"
+          [(ngModel)]="selectedDeliveryStatus"
+          placeholder="Delivery status"
+          [showClear]="true"
+          (onChange)="onFilterChange()"
+          [style]="{ minWidth: '10rem' }"
+        />
+        <p-select
+          [options]="applicationOptions()"
+          [(ngModel)]="selectedApplicationId"
+          placeholder="Application"
+          [showClear]="true"
+          (onChange)="onFilterChange()"
+          [style]="{ minWidth: '10rem' }"
+        />
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon class="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            [value]="searchText()"
+            (input)="onSearchInput($event)"
+            placeholder="Search data..."
+          />
+        </p-iconfield>
+        <p-button
+          icon="pi pi-filter-slash"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Clear filters"
+          tooltipPosition="top"
+          (onClick)="clearFilters()"
+        />
+        <p-button
+          icon="pi pi-refresh"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Refresh"
+          tooltipPosition="top"
+          (onClick)="loadNotifications()"
+        />
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  @if (loading()) {
+    <p-skeleton height="300px" />
+  } @else {
+    <p-table
+      [value]="notifications()"
+      [rowHover]="true"
+      [stripedRows]="true"
+      [tableStyle]="{ 'min-width': '80rem' }"
+      selectionMode="single"
+      (onRowSelect)="onRowSelect($event)"
+    >
+      <ng-template #header>
+        <tr>
+          <th style="width: 5rem">Notif. ID</th>
+          <th>Channel Type</th>
+          <th>Delivery Status</th>
+          <th style="min-width: 8rem">Application</th>
+          <th style="min-width: 8rem">Provider</th>
+          <th style="width: 5rem">Data</th>
+          <th style="width: 5rem">Result</th>
+          <th pSortableColumn="created_on" style="min-width: 10rem">
+            Archived On <p-sortIcon field="created_on" />
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-n>
+        <tr [pSelectableRow]="n" class="cursor-pointer">
+          <td>{{ n.notification_id }}</td>
+          <td>{{ n.channel_type | channelType }}</td>
+          <td>
+            <app-status-badge [status]="n.delivery_status" />
+          </td>
+          <td>{{ getApplicationName(n.application_id) }}</td>
+          <td>{{ getProviderName(n.provider_id) }}</td>
+          <td>
+            <p-button
+              icon="pi pi-eye"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              pTooltip="View data"
+              tooltipPosition="top"
+              (onClick)="viewJson(n.data, 'Notification Data'); $event.stopPropagation()"
+            />
+          </td>
+          <td>
+            @if (n.result) {
+              <p-button
+                icon="pi pi-eye"
+                [rounded]="true"
+                [text]="true"
+                severity="info"
+                pTooltip="View result"
+                tooltipPosition="top"
+                (onClick)="viewJson(n.result, 'Notification Result'); $event.stopPropagation()"
+              />
+            }
+          </td>
+          <td>{{ n.created_on | date: 'short' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="8" class="!text-center py-8 text-muted-color">
+            No archived notifications found
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    @if (pageInfo(); as pi) {
+      <div class="mt-4">
+        <app-pagination [pageInfo]="pi" (paginationChange)="onPageChange($event)" />
+      </div>
+    }
+  }
+</div>
+
+<p-dialog
+  header="Archived Notification Details"
+  [visible]="detailDialogVisible()"
+  (visibleChange)="detailDialogVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '700px' }"
+>
+  @if (selectedNotification(); as n) {
+    <div class="flex flex-col gap-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <span class="font-semibold text-muted-color block mb-1">Notification ID</span>
+          <span>{{ n.notification_id }}</span>
+        </div>
+        <div>
+          <span class="font-semibold text-muted-color block mb-1">Channel Type</span>
+          <span>{{ n.channel_type | channelType }}</span>
+        </div>
+        <div>
+          <span class="font-semibold text-muted-color block mb-1">Delivery Status</span>
+          <app-status-badge [status]="n.delivery_status" />
+        </div>
+        <div>
+          <span class="font-semibold text-muted-color block mb-1">Application</span>
+          <span>{{ getApplicationName(n.application_id) }}</span>
+        </div>
+        <div>
+          <span class="font-semibold text-muted-color block mb-1">Provider</span>
+          <span>{{ getProviderName(n.provider_id) }}</span>
+        </div>
+        <div>
+          <span class="font-semibold text-muted-color block mb-1">Archived On</span>
+          <span>{{ n.created_on | date: 'medium' }}</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <span class="font-semibold text-muted-color">Data</span>
+          <p-button
+            icon="pi pi-copy"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            pTooltip="Copy"
+            tooltipPosition="top"
+            (onClick)="copyJson(n.data)"
+          />
+        </div>
+        <pre
+          class="bg-surface-100 dark:bg-surface-800 p-4 rounded-lg text-sm overflow-auto max-h-64"
+          >{{ n.data | json }}</pre
+        >
+      </div>
+
+      @if (n.result) {
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-muted-color">Result</span>
+            <p-button
+              icon="pi pi-copy"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              pTooltip="Copy"
+              tooltipPosition="top"
+              (onClick)="copyJson(n.result)"
+            />
+          </div>
+          <pre
+            class="bg-surface-100 dark:bg-surface-800 p-4 rounded-lg text-sm overflow-auto max-h-64"
+            >{{ n.result | json }}</pre
+          >
+        </div>
+      }
+    </div>
+  }
+</p-dialog>
+
+<app-json-viewer-dialog
+  [visible]="jsonDialogVisible()"
+  [data]="jsonDialogData()"
+  [header]="jsonDialogHeader()"
+  (visibleChange)="jsonDialogVisible.set($event)"
+/>

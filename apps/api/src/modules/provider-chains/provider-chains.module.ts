@@ -6,7 +6,6 @@ import { ProviderChainsResolver } from './provider-chains.resolver';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ProviderChainsController } from './provider-chains.controller';
-import { JsendFormatter } from 'src/common/jsend-formatter';
 import { ApplicationsModule } from '../applications/applications.module';
 import { UsersModule } from '../users/users.module';
 import { ProvidersModule } from '../providers/providers.module';
@@ -21,14 +20,7 @@ import { ProviderChainMembersModule } from '../provider-chain-members/provider-c
     forwardRef(() => ProvidersModule),
     forwardRef(() => ProviderChainMembersModule),
   ],
-  providers: [
-    Logger,
-    ProviderChainsService,
-    ProviderChainsResolver,
-    JwtService,
-    ConfigService,
-    JsendFormatter,
-  ],
+  providers: [Logger, ProviderChainsService, ProviderChainsResolver, JwtService, ConfigService],
   exports: [TypeOrmModule, ProviderChainsService],
   controllers: [ProviderChainsController],
 })

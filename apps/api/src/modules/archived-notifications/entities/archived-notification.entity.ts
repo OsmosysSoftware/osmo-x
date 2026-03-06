@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { IsEnum, IsOptional, IsObject } from 'class-validator';
 import { Status } from 'src/common/constants/database';
@@ -18,6 +19,9 @@ import { ProviderChain } from 'src/modules/provider-chains/entities/provider-cha
 
 @Entity({ name: 'notify_archived_notifications' })
 @ObjectType()
+@Index('IDX_notify_archived_notifications_application_id', ['applicationId'])
+@Index('IDX_notify_archived_notifications_delivery_status', ['deliveryStatus'])
+@Index('IDX_notify_archived_notifications_created_on', ['createdOn'])
 export class ArchivedNotification {
   @PrimaryGeneratedColumn()
   @Field()
@@ -82,7 +86,7 @@ export class ArchivedNotification {
   @Field()
   status: number;
 
-  @Column({ name: 'application_id', default: null })
+  @Column({ name: 'application_id', default: null, comment: 'FK to notify_applications' })
   @Field()
   applicationId: number;
 

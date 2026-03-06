@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  Index,
 } from 'typeorm';
 import { IsEnum, IsOptional } from 'class-validator';
 import { IsEnabledStatus, ProviderType, Status } from 'src/common/constants/database';
@@ -18,6 +19,8 @@ import { ArchivedNotification } from 'src/modules/archived-notifications/entitie
 
 @Entity({ name: 'notify_provider_chains' })
 @ObjectType()
+@Index('IDX_notify_provider_chains_application_id', ['applicationId'])
+@Index('IDX_notify_provider_chains_app_default', ['applicationId', 'isDefault'])
 export class ProviderChain {
   @PrimaryGeneratedColumn({ name: 'chain_id' })
   @Field()
@@ -27,11 +30,15 @@ export class ProviderChain {
   @Field()
   chainName: string;
 
-  @Column({ name: 'application_id' })
+  @Column({ name: 'application_id', comment: 'FK to notify_applications' })
   @Field()
   applicationId: number;
 
-  @Column({ name: 'provider_type', type: 'smallint' })
+  @Column({
+    name: 'provider_type',
+    type: 'smallint',
+    comment: 'Provider type from ProviderType enum',
+  })
   @IsEnum(ProviderType)
   @Field()
   providerType: number;
@@ -62,6 +69,14 @@ export class ProviderChain {
   @UpdateDateColumn({ name: 'updated_on' })
   @Field()
   updatedOn: Date;
+
+  @Column({ name: 'created_by', nullable: true })
+  @Field({ nullable: true })
+  createdBy: number;
+
+  @Column({ name: 'updated_by', nullable: true })
+  @Field({ nullable: true })
+  updatedBy: number;
 
   @Column({
     name: 'status',

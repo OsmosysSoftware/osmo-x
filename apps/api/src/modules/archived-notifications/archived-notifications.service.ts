@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ArchivedNotification } from './entities/archived-notification.entity';
 import { DataSource, In, LessThan, QueryRunner, Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
@@ -10,7 +10,11 @@ import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ArchivedNotificationResponse } from './dtos/archived-notification-response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CoreService } from 'src/common/graphql/services/core.service';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.helper';
 import ms = require('ms');
+import { ArchivedNotificationResponseDto } from './dto/archived-notification-response.dto';
+import { ApplicationsService } from '../applications/applications.service';
 
 @Injectable()
 export class ArchivedNotificationsService extends CoreService<ArchivedNotification> {
@@ -21,6 +25,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     private readonly archivedNotificationRepository: Repository<ArchivedNotification>,
     private readonly configService: ConfigService,
     private dataSource: DataSource,
+    private readonly applicationsService: ApplicationsService,
   ) {
     super(archivedNotificationRepository);
   }
@@ -118,6 +123,101 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       this.logger.error(`Cron job failed: ${error.message}`, error.stack);
       throw error;
     }
+  }
+
+  private mapToDto(n: ArchivedNotification): ArchivedNotificationResponseDto {
+    return {
+      id: n.id,
+      notificationId: n.notificationId,
+      providerId: n.providerId,
+      channelType: n.channelType,
+      data: n.data,
+      deliveryStatus: n.deliveryStatus,
+      result: n.result,
+      createdBy: n.createdBy,
+      updatedBy: n.updatedBy,
+      status: n.status,
+      applicationId: n.applicationId,
+      retryCount: n.retryCount,
+      notificationSentOn: n.notificationSentOn,
+      providerChainId: n.providerChainId,
+      createdOn: n.createdOn,
+      updatedOn: n.updatedOn,
+    };
+  }
+
+  async findById(archivedNotificationId: number): Promise<ArchivedNotification | null> {
+    return this.archivedNotificationRepository.findOne({
+      where: { id: archivedNotificationId, status: Status.ACTIVE },
+    });
+  }
+
+  async findByIdAsDto(
+    archivedNotificationId: number,
+    organizationId: number,
+  ): Promise<ArchivedNotificationResponseDto> {
+    const notification = await this.findById(archivedNotificationId);
+
+    if (!notification) {
+      throw new BadRequestException('Archived notification not found');
+    }
+
+    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    if (!appIds.includes(notification.applicationId)) {
+      throw new BadRequestException('Archived notification not found');
+    }
+
+    return this.mapToDto(notification);
+  }
+
+  async getAllArchivedNotificationsAsDto(
+    query: PaginationQueryDto,
+    organizationId: number,
+    filters?: { channelType?: number; deliveryStatus?: number; applicationId?: number },
+  ): Promise<{ items: ArchivedNotificationResponseDto[]; meta: PaginationMeta }> {
+    let appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    // If filtering by applicationId, restrict to that app (within org scope)
+    if (filters?.applicationId) {
+      appIds = appIds.includes(filters.applicationId) ? [filters.applicationId] : [];
+    }
+
+    if (appIds.length === 0) {
+      const { page, limit } = PaginationHelper.normalizePaginationParams(query);
+
+      return {
+        items: [],
+        meta: PaginationHelper.buildPaginationMeta(page, limit, 0),
+      };
+    }
+
+    const baseConditions: Array<{ field: string; value: unknown; operator?: string }> = [
+      { field: 'status', value: Status.ACTIVE },
+      { field: 'applicationId', value: appIds, operator: 'in' },
+    ];
+
+    if (filters?.channelType) {
+      baseConditions.push({ field: 'channelType', value: filters.channelType });
+    }
+
+    if (filters?.deliveryStatus) {
+      baseConditions.push({ field: 'deliveryStatus', value: filters.deliveryStatus });
+    }
+
+    const searchableFields = ['createdBy', 'data', 'result'];
+
+    const { items, meta } = await super.findAllPaginated(
+      query,
+      'archivedNotification',
+      searchableFields,
+      baseConditions,
+    );
+
+    return {
+      items: items.map((n) => this.mapToDto(n)),
+      meta,
+    };
   }
 
   async getAllArchivedNotifications(

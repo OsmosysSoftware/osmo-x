@@ -1,3 +1,6 @@
+# Dependencies
+/node_modules
+
 # OS
 .DS_Store
 
@@ -17,3 +20,9 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 .serena/
+
+# Claude Code
+.claude/*
+!.claude/hookify.*.local.md
+!.claude/skills/
+.playwright-mcp/

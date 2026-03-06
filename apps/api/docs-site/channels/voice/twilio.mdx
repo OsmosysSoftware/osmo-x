@@ -1,0 +1,129 @@
+---
+title: Twilio Voice
+description: Make voice calls using Twilio
+icon: phone
+---
+
+# Twilio Voice Call
+
+Using the Twilio REST API, you can make outgoing calls to phones, SIP-enabled endpoints, and Twilio Voice SDK connections.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `10` (Twilio Voice Call) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="TWILIO_VC_ACCOUNT_SID" type="string" required>
+  Twilio account SID
+</ParamField>
+
+<ParamField path="TWILIO_VC_AUTH_TOKEN" type="string" required>
+  Twilio account auth token
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "TWILIO_VC_ACCOUNT_SID": "twilio-account-sid",
+  "TWILIO_VC_AUTH_TOKEN": "twilio-auth-token"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 10,
+  "data": {
+    "from": "+15005550006",
+    "to": "+91xxxxxxxxxx",
+    "url": "http://your-server-url/calls/message"
+  }
+}
+```
+
+### Using TwiML Directly
+
+```json
+{
+  "providerId": 10,
+  "data": {
+    "from": "+15005550006",
+    "to": "+91xxxxxxxxxx",
+    "twiml": "<Response><Say>Hello there!</Say></Response>"
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="from" type="string" required>
+  The phone number, SIP address, or client identifier to use as the caller ID
+</ParamField>
+
+<ParamField path="to" type="string" required>
+  The phone number or client identifier to call
+</ParamField>
+
+<ParamField path="url" type="string">
+  The absolute URL that returns the TwiML instructions for the call. Twilio will call this URL when the call connects.
+</ParamField>
+
+<ParamField path="twiml" type="string">
+  TwiML instructions for the call. Max 4000 characters. Use this instead of `url` for simple voice messages.
+</ParamField>
+
+<Note>
+  If both `url` and `twiml` are provided, the `twiml` parameter will be ignored.
+</Note>
+
+## TwiML Examples
+
+<Tabs>
+  <Tab title="Say">
+    ```xml
+    <Response>
+      <Say voice="alice">Hello! This is an automated message from OsmoX.</Say>
+    </Response>
+    ```
+  </Tab>
+  <Tab title="Play">
+    ```xml
+    <Response>
+      <Play>https://example.com/audio/greeting.mp3</Play>
+    </Response>
+    ```
+  </Tab>
+  <Tab title="Gather">
+    ```xml
+    <Response>
+      <Gather numDigits="1" action="/handle-key">
+        <Say>Press 1 to confirm, or 2 to cancel.</Say>
+      </Gather>
+    </Response>
+    ```
+  </Tab>
+</Tabs>
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| twilio | ^5.8.0 | Twilio client for voice and messaging |
+
+## References
+
+- [Twilio Voice Quickstart](https://www.twilio.com/docs/voice/quickstart)
+- [TwiML for Programmable Voice](https://www.twilio.com/docs/voice/twiml)
+- [CallListInstanceCreateOptions](https://github.com/twilio/twilio-node/blob/main/src/rest/api/v2010/account/call.ts)

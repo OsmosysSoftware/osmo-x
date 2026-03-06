@@ -1,10 +1,10 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { JsendFormatter } from 'src/common/jsend-formatter';
 import { Provider } from './entities/provider.entity';
 import { ProvidersService } from './providers.service';
 import { IsDataValidConstraint } from 'src/common/decorators/is-data-valid.decorator';
 import { ProvidersResolver } from './providers.resolver';
+import { ProvidersController } from './providers.controller';
 import { ApplicationsService } from '../applications/applications.service';
 import { ApplicationsModule } from '../applications/applications.module';
 import { UsersModule } from '../users/users.module';
@@ -15,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
 import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
 import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
 import { MasterProvidersModule } from '../master-providers/master-providers.module';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Provider]),
@@ -31,11 +32,11 @@ import { MasterProvidersModule } from '../master-providers/master-providers.modu
     JwtService,
     ProvidersService,
     ConfigService,
-    JsendFormatter,
     IsDataValidConstraint,
     ProvidersResolver,
     Logger,
   ],
+  controllers: [ProvidersController],
   exports: [
     TypeOrmModule,
     ProvidersService,

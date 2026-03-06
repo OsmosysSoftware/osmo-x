@@ -1,0 +1,356 @@
+<div class="card">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1
+        class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
+      >
+        <i class="pi pi-link text-primary"></i> Provider Chains
+      </h1>
+      <p class="text-muted-color mt-2">Manage provider fallback chains and their members</p>
+    </div>
+  </div>
+
+  <p-toolbar class="mb-4">
+    <ng-template #start>
+      <div class="flex flex-wrap gap-2">
+        <p-button
+          label="New Chain"
+          icon="pi pi-plus"
+          (onClick)="openCreateDialog()"
+          [disabled]="orgContext.isAllOrgsMode()"
+          [pTooltip]="orgContext.isAllOrgsMode() ? 'Select a specific organization first' : ''"
+          tooltipPosition="top"
+        />
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search..." />
+        </p-iconfield>
+        <p-button
+          icon="pi pi-refresh"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Refresh"
+          (onClick)="loadChains()"
+        />
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  @if (loading()) {
+    <p-skeleton height="300px" />
+  } @else {
+    <p-table
+      #dt
+      [value]="chains()"
+      [globalFilterFields]="['chain_name']"
+      [rowHover]="true"
+      [stripedRows]="true"
+      [tableStyle]="{ 'min-width': '60rem' }"
+      dataKey="chain_id"
+    >
+      <ng-template #header>
+        <tr>
+          <th style="width: 3rem"></th>
+          <th pSortableColumn="chain_name" style="min-width: 12rem">
+            Name <p-sortIcon field="chain_name" />
+          </th>
+          <th>Provider Type</th>
+          <th style="min-width: 8rem">Application</th>
+          <th>Status</th>
+          <th pSortableColumn="created_on" style="min-width: 10rem">
+            Created <p-sortIcon field="created_on" />
+          </th>
+          <th style="min-width: 8rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-c>
+        <tr>
+          <td>
+            <p-button
+              [icon]="isExpanded(c.chain_id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+              [text]="true"
+              [rounded]="true"
+              size="small"
+              severity="secondary"
+              pTooltip="Show members"
+              (onClick)="toggleExpand(c)"
+            />
+          </td>
+          <td>{{ c.chain_name }}</td>
+          <td>{{ getProviderTypeLabel(c.provider_type) }}</td>
+          <td>{{ getApplicationName(c.application_id) }}</td>
+          <td>
+            <p-tag
+              [value]="c.status === 1 ? 'Active' : 'Inactive'"
+              [severity]="c.status === 1 ? 'success' : 'danger'"
+              [rounded]="true"
+            />
+          </td>
+          <td>{{ c.created_on | date: 'short' }}</td>
+          <td>
+            <div class="flex items-center gap-2">
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                pTooltip="Edit"
+                (onClick)="openEditDialog(c)"
+                [disabled]="orgContext.isAllOrgsMode()"
+              />
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                size="small"
+                pTooltip="Delete"
+                (onClick)="confirmDelete(c)"
+                [disabled]="orgContext.isAllOrgsMode()"
+              />
+            </div>
+          </td>
+        </tr>
+        @if (isExpanded(c.chain_id)) {
+          <tr>
+            <td [attr.colspan]="8" class="p-0">
+              <div class="chain-members-panel">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-semibold text-sm text-muted-color">
+                    <i class="pi pi-list mr-1"></i> Chain Members (Fallback Order)
+                  </span>
+                  <div class="flex items-center gap-2">
+                    @if (getChainMembers(c.chain_id).orderChanged) {
+                      <p-button
+                        label="Save Order"
+                        icon="pi pi-save"
+                        size="small"
+                        (onClick)="savePriorityOrder(c.chain_id)"
+                        [loading]="getChainMembers(c.chain_id).saving"
+                      />
+                    }
+                    <p-button
+                      label="Add Member"
+                      icon="pi pi-plus"
+                      size="small"
+                      severity="secondary"
+                      (onClick)="openAddMemberDialog(c.chain_id)"
+                      [disabled]="orgContext.isAllOrgsMode()"
+                    />
+                  </div>
+                </div>
+
+                @if (getChainMembers(c.chain_id).loading) {
+                  <p-skeleton height="80px" />
+                } @else if (getChainMembers(c.chain_id).members.length === 0) {
+                  <div class="text-center py-4 text-muted-color text-sm">
+                    No members in this chain. Add a provider to get started.
+                  </div>
+                } @else {
+                  <div
+                    cdkDropList
+                    (cdkDropListDropped)="onMemberDrop(c.chain_id, $event)"
+                    class="members-list"
+                  >
+                    @for (
+                      member of getChainMembers(c.chain_id).members;
+                      track member.id;
+                      let i = $index
+                    ) {
+                      <div cdkDrag class="member-row">
+                        <div class="flex items-center gap-3 flex-1">
+                          <i
+                            cdkDragHandle
+                            class="pi pi-bars text-muted-color cursor-grab drag-handle"
+                          ></i>
+                          <span class="priority-badge">{{ i + 1 }}</span>
+                          <span class="font-medium">{{ getProviderName(member.provider_id) }}</span>
+                          <p-tag
+                            [value]="member.is_active === 1 ? 'Active' : 'Inactive'"
+                            [severity]="member.is_active === 1 ? 'success' : 'danger'"
+                            [rounded]="true"
+                            class="text-xs"
+                          />
+                        </div>
+                        <p-button
+                          icon="pi pi-times"
+                          severity="danger"
+                          [text]="true"
+                          [rounded]="true"
+                          size="small"
+                          pTooltip="Remove"
+                          (onClick)="confirmRemoveMember(c.chain_id, member)"
+                          [disabled]="orgContext.isAllOrgsMode()"
+                        />
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="7" class="text-center py-8 text-muted-color">No provider chains found</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    @if (pageInfo(); as pi) {
+      <div class="mt-4">
+        <app-pagination [pageInfo]="pi" (paginationChange)="onPageChange($event)" />
+      </div>
+    }
+  }
+</div>
+
+<!-- Create Dialog -->
+<p-dialog
+  header="Create Provider Chain"
+  [visible]="createDialogVisible()"
+  (visibleChange)="createDialogVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="flex flex-col gap-2">
+      <label for="create-chain-name" class="font-semibold">Chain name *</label>
+      <input
+        pInputText
+        id="create-chain-name"
+        [ngModel]="createForm().chain_name"
+        (ngModelChange)="updateCreateForm('chain_name', $event)"
+        placeholder="e.g. Email Fallback Chain"
+        [fluid]="true"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="create-provider-type" class="font-semibold">Provider type *</label>
+      <p-select
+        id="create-provider-type"
+        [options]="providerTypeOptions"
+        [ngModel]="createForm().provider_type"
+        (ngModelChange)="updateCreateForm('provider_type', $event)"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select provider type"
+        appendTo="body"
+        [fluid]="true"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="create-application" class="font-semibold">Application *</label>
+      <p-select
+        id="create-application"
+        [options]="applications()"
+        [ngModel]="createForm().application_id"
+        (ngModelChange)="updateCreateForm('application_id', $event)"
+        optionLabel="name"
+        optionValue="application_id"
+        placeholder="Select application"
+        [filter]="true"
+        filterPlaceholder="Search applications"
+        appendTo="body"
+        [fluid]="true"
+      />
+    </div>
+  </div>
+  <ng-template #footer>
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancel" severity="secondary" (onClick)="createDialogVisible.set(false)" />
+      <p-button
+        label="Create"
+        icon="pi pi-check"
+        (onClick)="createChain()"
+        [disabled]="saving() || !isCreateFormValid()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Edit Dialog -->
+<p-dialog
+  header="Edit Provider Chain"
+  [visible]="editDialogVisible()"
+  (visibleChange)="editDialogVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="flex flex-col gap-2">
+      <label for="edit-chain-name" class="font-semibold">Chain name *</label>
+      <input
+        pInputText
+        id="edit-chain-name"
+        [ngModel]="editForm().chain_name"
+        (ngModelChange)="updateEditForm('chain_name', $event)"
+        placeholder="e.g. Email Fallback Chain"
+        [fluid]="true"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="edit-provider-type" class="font-semibold">Provider type *</label>
+      <p-select
+        id="edit-provider-type"
+        [options]="providerTypeOptions"
+        [ngModel]="editForm().provider_type"
+        (ngModelChange)="updateEditForm('provider_type', $event)"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select provider type"
+        appendTo="body"
+        [fluid]="true"
+      />
+    </div>
+  </div>
+  <ng-template #footer>
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancel" severity="secondary" (onClick)="editDialogVisible.set(false)" />
+      <p-button label="Save" icon="pi pi-check" (onClick)="updateChain()" [disabled]="saving()" />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Add Member Dialog -->
+<p-dialog
+  header="Add Chain Member"
+  [visible]="addMemberDialogVisible()"
+  (visibleChange)="addMemberDialogVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="flex flex-col gap-2">
+      <label for="add-member-provider" class="font-semibold">Provider *</label>
+      <p-select
+        id="add-member-provider"
+        [options]="addMemberChainId() ? getAvailableProviders(addMemberChainId()!) : []"
+        [ngModel]="addMemberProviderId()"
+        (ngModelChange)="addMemberProviderId.set($event)"
+        optionLabel="name"
+        optionValue="provider_id"
+        placeholder="Select a provider"
+        [filter]="true"
+        filterPlaceholder="Search providers"
+        appendTo="body"
+        [fluid]="true"
+      />
+    </div>
+  </div>
+  <ng-template #footer>
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancel" severity="secondary" (onClick)="addMemberDialogVisible.set(false)" />
+      <p-button
+        label="Add"
+        icon="pi pi-plus"
+        (onClick)="addMember()"
+        [disabled]="saving() || !addMemberProviderId()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog />

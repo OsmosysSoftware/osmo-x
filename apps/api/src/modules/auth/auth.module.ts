@@ -4,12 +4,14 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LocalStrategy } from './strategies/local.strategy';
 import { AuthResolver } from './auth.resolver';
+import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { ServerApiKeysModule } from '../server-api-keys/server-api-keys.module';
 import { ApplicationsModule } from '../applications/applications.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
   imports: [
@@ -27,7 +29,15 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     ServerApiKeysModule,
     ApplicationsModule,
   ],
-  providers: [AuthResolver, AuthService, JwtStrategy, LocalStrategy, UsersService],
+  controllers: [AuthController],
+  providers: [
+    AuthResolver,
+    AuthService,
+    JwtStrategy,
+    JwtRefreshStrategy,
+    LocalStrategy,
+    UsersService,
+  ],
   exports: [AuthService, UsersService],
 })
 export class AuthModule {}

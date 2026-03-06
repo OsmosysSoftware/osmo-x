@@ -1,92 +1,166 @@
 # Development Setup
 
-This document outlines the steps required to set up your OsmoX for development. By following these steps, you'll be able to run your application locally with the necessary environment variables and database configuration.
+This document outlines the steps required to set up OsmoX for development. By following these steps, you'll be able to run the API and Portal locally.
 
 ## Prerequisites
 
-Before setting up OsmoX for development, ensure you have the following prerequisites with the specified versions:
+Before setting up OsmoX for development, ensure you have the following:
 
-- **NVM (Node Version Manager):** Use NVM to manage Node.js versions.
-- **Node.js** Node.js v20.x or higher. Can be installed via `nvm` using `nvm install 20` and used with `nvm use 20`.
-- **Git:** Git v2.x or higher.
-- **PostgreSQL:** PostgreSQL v16.x or higher.
-- **Redis:** Redis v6.x or higher
+- **Node.js** v20.x or higher (use [NVM](https://github.com/nvm-sh/nvm) to manage versions)
+- **Git** v2.x or higher
+- **Docker** and **Docker Compose** (recommended for running PostgreSQL and Redis)
 
-These prerequisites are essential for deploying and running OsmoX in an environment.
+> **Note:** You can run PostgreSQL and Redis natively instead of Docker, but Docker is the recommended approach.
 
-Please make sure to have these versions installed on your development server before proceeding with the setup.
+## Quick Start (Docker — Recommended)
 
-Make sure Redis and PostgreSQL server are up and running.
+This starts all services (API, PostgreSQL, Redis, Dozzle log viewer) in Docker containers.
+
+### 1. Clone and configure
 
 ```bash
+git clone https://github.com/OsmosysSoftware/osmo-x.git
+cd osmo-x/apps/api
+cp .env.example .env
+```
+
+Edit `.env` with your preferred settings. Key values to review:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `ADMIN_EMAIL` | `admin@osmox.dev` | Email for the seeded admin user |
+| `ADMIN_PASSWORD` | `Admin123` | Password for the seeded admin user |
+| `DB_USERNAME` | — | PostgreSQL username |
+| `DB_PASSWORD` | — | PostgreSQL password |
+| `DB_NAME` | — | PostgreSQL database name |
+| `JWT_SECRET` | — | Secret key for JWT tokens (min 32 chars) |
+| `JWT_REFRESH_SECRET` | — | Secret key for refresh tokens (min 32 chars) |
+
+### 2. Start services
+
+```bash
+docker compose up -d
+```
+
+### 3. Run database migrations
+
+```bash
+docker exec osmo-x-api npm run typeorm:run-migration
+```
+
+This creates all tables and seeds the admin user with the credentials from your `.env` file.
+
+### 4. Verify
+
+- **API**: <http://localhost:3000>
+- **Swagger docs**: <http://localhost:3000/api>
+- **Dozzle logs**: <http://localhost:8080>
+
+### 5. Login
+
+Use the admin credentials you configured (defaults: `admin@osmox.dev` / `Admin123`).
+
+For more Docker options, see [Docker Compose Usage](docker-compose-usage.md).
+
+## Portal Setup
+
+The portal is the Angular frontend for managing notifications, providers, and applications.
+
+### Docker (Recommended)
+
+```bash
+cd osmo-x/apps/portal
+docker compose up -d --build
+```
+
+The portal will be available at <http://localhost:4200>.
+
+### Development mode
+
+For active development with hot-reload:
+
+```bash
+cd osmo-x/apps/portal
+npm install
+npm start
+```
+
+The dev server runs at <http://localhost:4200>. The portal connects to the API at `http://localhost:3000` by default (configured in `src/environments/environment.ts`).
+
+### Login to Portal
+
+Open <http://localhost:4200> and log in with your admin credentials:
+
+| Field | Default Value |
+| --- | --- |
+| Email | `admin@osmox.dev` |
+| Password | `Admin123` |
+
+> These are set during the initial migration via `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the API's `.env` file. Change the password from the portal's profile page after first login.
+
+## Native Development Setup (Without Docker for API)
+
+If you prefer to run the API natively (without Docker), you need PostgreSQL and Redis running locally.
+
+### 1. Prerequisites
+
+```bash
+# Ensure PostgreSQL and Redis are running
 sudo systemctl status redis
 sudo systemctl status postgresql
 ```
 
-## Getting Started
+### 2. Clone and configure
 
-1. Clone the repository to your local machine:
-
-   ```sh
-   git clone https://github.com/OsmosysSoftware/osmo-x.git
-   cd osmo-x/apps/api
-   ```
-
-2. Install project dependencies:
-
-   ```sh
-   npm install
-   ```
-
-3. Create a `.env` file in the project root and add the required environment variables. Copy the example environment configuration file and modify it with your specific settings:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   Check the `.env.example` file for the required environment variables and ensure all necessary values are set correctly in the `.env` file.
-
-   Make sure to replace the example values with appropriate values as per your setup and configuration. Update values such as `SERVER_PORT`, `DB_HOST`, `DB_PORT`, `DB_NAME`, database credentials and `REDIS_HOST` as required for your local setup. Default server Port is `3000`, you can update it if you want to use a different port of your choice.
-
-4. Set up the database:
-
-   Ensure your database server (e.g., PostgreSQL) is running.
-
-   Run database migrations to create tables:
-
-   ```sh
-   npm run typeorm:run-migration
-   ```
-
-5. Start the development server:
-
-   ```sh
-   npm run start:dev
-   ```
-
-   OsmoX will now be running locally at `http://localhost:3000`.
-
-## Start the scheduler script
-
-Start the [scheduler script](../scheduler.sh) on Terminal(Linux/Unix) or Git-Bash(Windows):
-
-```sh
-# Ensure API directory is active
+```bash
+git clone https://github.com/OsmosysSoftware/osmo-x.git
 cd osmo-x/apps/api
-# Start scheduler script
+npm install
+cp .env.example .env
+```
+
+Edit `.env` — set `DB_HOST=localhost`, `DB_PORT` to your PostgreSQL port, and configure database credentials.
+
+### 3. Run migrations and start
+
+```bash
+npm run typeorm:run-migration
+npm run start:dev
+```
+
+The API will be running at <http://localhost:3000>.
+
+## Start the Scheduler
+
+The scheduler is required for notification processing. It periodically triggers:
+
+- Processing of `Pending` notifications
+- Provider confirmation of `Awaiting Confirmation` notifications
+- Archiving of completed notifications
+- Deletion of old archived notifications (if enabled)
+
+```bash
+cd osmo-x/apps/api
 ./scheduler.sh
 ```
 
-This script will periodically call OsmoX APIs that facilitate the following processes:
-- Processing of all `Pending` notifications
-- Provider Confirmation of all `Awaiting Confirmation` notifications
-- Archiving of all completed notifications in `notify_notifications` table
-- Deleting archived notifications older than X days from `notify_archived_notifications` table (if it is enabled)
+> In Docker mode, the scheduler runs automatically inside the API container.
 
-## ALTERNATIVELY – Dockerize the application and use a local database instead of the dockerized one
+## Default Admin Credentials
 
-Follow this guide to [Dockerize the application and use local db instead of dockerized db](./use-local-db-instead-of-dockerized-db/README.md)
+The initial migration seeds an admin user. Credentials are configurable via environment variables:
 
-## Use the application
+| Env Variable | Default | Description |
+| --- | --- | --- |
+| `ADMIN_EMAIL` | `admin@osmox.dev` | Admin login email |
+| `ADMIN_PASSWORD` | `Admin123` | Admin login password |
 
-For details on using the application and making API calls, refer to our [Usage Guide](usage-guide.md).
+The admin user is created with the `SUPER_ADMIN` role, which has full platform access.
+
+> **Important:** Change the default password in production. You can update it from the portal's profile page or by setting `ADMIN_PASSWORD` before running migrations.
+
+## Next Steps
+
+- [Usage Guide](usage-guide.md) — How to configure providers and send notifications
+- [Docker Compose Usage](docker-compose-usage.md) — Advanced Docker configuration
+- [API Documentation](api-documentation.md) — Full API reference

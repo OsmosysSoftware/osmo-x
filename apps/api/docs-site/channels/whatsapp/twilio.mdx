@@ -1,0 +1,78 @@
+---
+title: Twilio WhatsApp
+description: Send WhatsApp messages using Twilio
+icon: whatsapp
+---
+
+# Twilio WhatsApp
+
+Using the WhatsApp Business Platform with Twilio, you can send and receive messages to WhatsApp users using the same Twilio Messaging APIs.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `4` (Twilio WhatsApp) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="TWILIO_WA_ACCOUNT_SID" type="string" required>
+  Twilio account SID
+</ParamField>
+
+<ParamField path="TWILIO_WA_AUTH_TOKEN" type="string" required>
+  Twilio auth token
+</ParamField>
+
+<ParamField path="TWILIO_WA_NUMBER" type="string" required>
+  Twilio registered WhatsApp phone number
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "TWILIO_WA_ACCOUNT_SID": "ACapiKeyMsg",
+  "TWILIO_WA_AUTH_TOKEN": "some-auth-token",
+  "TWILIO_WA_NUMBER": "+15005550006"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 4,
+  "data": {
+    "to": "+919004812051",
+    "message": "Your appointment is coming up on July 21 at 3PM"
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="to" type="string" required>
+  Recipient's WhatsApp phone number in E.164 format
+</ParamField>
+
+<ParamField path="message" type="string" required>
+  The WhatsApp message content
+</ParamField>
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| twilio | ^5.8.0 | Twilio client for messaging |
+
+## Reference
+
+- [Twilio WhatsApp Documentation](https://www.twilio.com/docs/whatsapp)

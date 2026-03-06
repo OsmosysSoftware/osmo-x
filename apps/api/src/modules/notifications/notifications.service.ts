@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  AppException,
+  NotFoundException,
+  ValidationException,
+} from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
@@ -14,6 +20,8 @@ import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { NotificationResponse } from './dtos/notification-response.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.helper';
 import { ApplicationsService } from '../applications/applications.service';
 import { ProvidersService } from '../providers/providers.service';
 import { RetryNotification } from './entities/retry-notification.entity';
@@ -25,6 +33,7 @@ import { ProviderChainsService } from '../provider-chains/provider-chains.servic
 import { Provider } from '../providers/entities/provider.entity';
 import { ProviderChain } from '../provider-chains/entities/provider-chain.entity';
 import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
+import { NotificationResponseDto } from './dto/notification-response.dto';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -76,8 +85,9 @@ export class NotificationsService extends CoreService<Notification> {
         const providerChainEntry = providerEntry as ProviderChain;
 
         if (!providerChainEntry) {
-          throw new BadRequestException(
-            `ProviderChain ${notificationData.providerChain} not found.`,
+          throw new NotFoundException(
+            ErrorCodes.CHAIN_NOT_FOUND,
+            `ProviderChain ${notificationData.providerChain} not found`,
           );
         }
 
@@ -88,8 +98,9 @@ export class NotificationsService extends CoreService<Notification> {
           );
 
         if (!firstPriorityProviderChainMember) {
-          throw new BadRequestException(
-            `ProviderChain ${notificationData.providerChain} does not have any active members.`,
+          throw new NotFoundException(
+            ErrorCodes.CHAIN_NOT_FOUND,
+            `ProviderChain ${notificationData.providerChain} does not have any active members`,
           );
         }
 
@@ -98,14 +109,15 @@ export class NotificationsService extends CoreService<Notification> {
         if (!firstPriorityProviderId) {
           const message = `No active providers found for providerChain ${notificationData.providerChain}`;
           this.logger.error(message);
-          throw new BadRequestException(message);
+          throw new NotFoundException(ErrorCodes.PROVIDER_NOT_FOUND, message);
         }
 
         const firstPriorityProviderEntry =
           await this.providersService.getById(firstPriorityProviderId);
 
         if (!firstPriorityProviderEntry) {
-          throw new BadRequestException(
+          throw new NotFoundException(
+            ErrorCodes.PROVIDER_NOT_FOUND,
             `Provider ${firstPriorityProviderId} not found for ProviderChain ${notificationData.providerChain}`,
           );
         }
@@ -115,7 +127,7 @@ export class NotificationsService extends CoreService<Notification> {
         notification.providerId = firstPriorityProviderId;
         notification.channelType = firstPriorityProviderEntry.channelType;
       } catch (error) {
-        if (error instanceof BadRequestException) {
+        if (error instanceof AppException) {
           throw error;
         }
 
@@ -132,7 +144,10 @@ export class NotificationsService extends CoreService<Notification> {
       const simpleProviderEntry = providerEntry as Provider;
 
       if (!simpleProviderEntry) {
-        throw new BadRequestException(`Provider with ID ${notificationData.providerId} not found.`);
+        throw new NotFoundException(
+          ErrorCodes.PROVIDER_NOT_FOUND,
+          `Provider with ID ${notificationData.providerId} not found`,
+        );
       }
 
       notification.channelType = simpleProviderEntry.channelType;
@@ -163,8 +178,9 @@ export class NotificationsService extends CoreService<Notification> {
     inputProviderChain: string | null = null,
   ): Promise<Provider | ProviderChain> {
     if (inputProviderId && inputProviderChain) {
-      throw new BadRequestException(
-        `Conflicting request: both providerId (${inputProviderId}) and providerChain (${inputProviderChain}) were provided. Provide only one.`,
+      throw new ValidationException(
+        ErrorCodes.VALIDATION_FAILED,
+        `Conflicting request: both providerId (${inputProviderId}) and providerChain (${inputProviderChain}) were provided. Provide only one`,
       );
     }
 
@@ -173,7 +189,10 @@ export class NotificationsService extends CoreService<Notification> {
       const providerEntry = await this.providersService.getById(inputProviderId);
 
       if (!providerEntry) {
-        throw new NotFoundException(`Provider with ID ${inputProviderId} not found.`);
+        throw new NotFoundException(
+          ErrorCodes.PROVIDER_NOT_FOUND,
+          `Provider with ID ${inputProviderId} not found`,
+        );
       }
 
       return providerEntry;
@@ -185,13 +204,19 @@ export class NotificationsService extends CoreService<Notification> {
         await this.providerChainsService.getByProviderChainName(inputProviderChain);
 
       if (!providerChainEntry) {
-        throw new NotFoundException(`ProviderChain "${inputProviderChain}" not found.`);
+        throw new NotFoundException(
+          ErrorCodes.CHAIN_NOT_FOUND,
+          `ProviderChain "${inputProviderChain}" not found`,
+        );
       }
 
       return providerChainEntry;
     }
 
-    throw new BadRequestException('Invalid request: provide either providerId or providerChain.');
+    throw new ValidationException(
+      ErrorCodes.VALIDATION_FAILED,
+      'Invalid request: provide either providerId or providerChain',
+    );
   }
 
   // Get application details using applicationId
@@ -200,12 +225,16 @@ export class NotificationsService extends CoreService<Notification> {
       const applicationEntry = await this.applicationsService.findById(applicationId);
 
       if (!applicationEntry || !applicationEntry.name) {
-        throw new Error('Related Application does not exist');
+        throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Application not found');
       }
 
       return applicationEntry;
     } catch (error) {
-      throw new Error(`Error fetching application: ${error}`);
+      if (error instanceof AppException) {
+        throw error;
+      }
+
+      throw new NotFoundException(ErrorCodes.APP_NOT_FOUND, 'Error fetching application');
     }
   }
 
@@ -473,6 +502,31 @@ export class NotificationsService extends CoreService<Notification> {
     });
   }
 
+  async findById(notificationId: number): Promise<Notification | null> {
+    return this.notificationRepository.findOne({
+      where: { id: notificationId, status: Status.ACTIVE },
+    });
+  }
+
+  async findByIdAsDto(
+    notificationId: number,
+    organizationId: number,
+  ): Promise<NotificationResponseDto> {
+    const notification = await this.findById(notificationId);
+
+    if (!notification) {
+      throw new NotFoundException(ErrorCodes.NOTIFICATION_NOT_FOUND, 'Notification not found');
+    }
+
+    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    if (!appIds.includes(notification.applicationId)) {
+      throw new NotFoundException(ErrorCodes.NOTIFICATION_NOT_FOUND, 'Notification not found');
+    }
+
+    return this.mapNotificationToDto(notification);
+  }
+
   async findActiveOrArchivedNotificationById(
     notificationId: number,
   ): Promise<SingleNotificationResponse> {
@@ -492,11 +546,82 @@ export class NotificationsService extends CoreService<Notification> {
         return new SingleNotificationResponse(archivedEntry);
       }
 
-      throw new NotFoundException(`Notification with ID ${notificationId} not found in any table`);
+      throw new NotFoundException(
+        ErrorCodes.NOTIFICATION_NOT_FOUND,
+        `Notification with ID ${notificationId} not found in any table`,
+      );
     } catch (error) {
       this.logger.error(`Error finding notification: ${error.message}`, error.stack);
       return error;
     }
+  }
+
+  private mapNotificationToDto(n: Notification): NotificationResponseDto {
+    return {
+      id: n.id,
+      providerId: n.providerId,
+      channelType: n.channelType,
+      data: n.data,
+      deliveryStatus: n.deliveryStatus,
+      result: n.result,
+      createdBy: n.createdBy,
+      updatedBy: n.updatedBy,
+      status: n.status,
+      applicationId: n.applicationId,
+      retryCount: n.retryCount,
+      notificationSentOn: n.notificationSentOn,
+      providerChainId: n.providerChainId,
+      createdOn: n.createdOn,
+      updatedOn: n.updatedOn,
+    };
+  }
+
+  async getAllNotificationsAsDto(
+    query: PaginationQueryDto,
+    organizationId: number,
+    filters?: { channelType?: number; deliveryStatus?: number; applicationId?: number },
+  ): Promise<{ items: NotificationResponseDto[]; meta: PaginationMeta }> {
+    let appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    // If filtering by applicationId, restrict to that app (within org scope)
+    if (filters?.applicationId) {
+      appIds = appIds.includes(filters.applicationId) ? [filters.applicationId] : [];
+    }
+
+    if (appIds.length === 0) {
+      const { page, limit } = PaginationHelper.normalizePaginationParams(query);
+
+      return {
+        items: [],
+        meta: PaginationHelper.buildPaginationMeta(page, limit, 0),
+      };
+    }
+
+    const baseConditions: Array<{ field: string; value: unknown; operator?: string }> = [
+      { field: 'status', value: Status.ACTIVE },
+      { field: 'applicationId', value: appIds, operator: 'in' },
+    ];
+
+    if (filters?.channelType) {
+      baseConditions.push({ field: 'channelType', value: filters.channelType });
+    }
+
+    if (filters?.deliveryStatus) {
+      baseConditions.push({ field: 'deliveryStatus', value: filters.deliveryStatus });
+    }
+
+    const searchableFields = ['createdBy', 'data', 'result'];
+    const { items, meta } = await super.findAllPaginated(
+      query,
+      'notification',
+      searchableFields,
+      baseConditions,
+    );
+
+    return {
+      items: items.map((n) => this.mapNotificationToDto(n)),
+      meta,
+    };
   }
 
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {

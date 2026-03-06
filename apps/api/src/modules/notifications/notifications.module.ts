@@ -8,7 +8,6 @@ import { NotificationQueueProducer } from 'src/jobs/producers/notifications/noti
 import { SmtpNotificationConsumer } from 'src/jobs/consumers/notifications/smtp-notifications.job.consumer';
 import { ConfigService } from '@nestjs/config';
 import { MailgunNotificationConsumer } from 'src/jobs/consumers/notifications/mailgun-notifications.job.consumer';
-import { JsendFormatter } from 'src/common/jsend-formatter';
 import { Wa360dialogNotificationsConsumer } from 'src/jobs/consumers/notifications/wa360dialog-notifications.job.consumer';
 import { MailgunModule } from '../providers/mailgun/mailgun.module';
 import { SmtpModule } from '../providers/smtp/smtp.module';
@@ -26,7 +25,6 @@ import { ApplicationsService } from '../applications/applications.service';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { ProvidersModule } from '../providers/providers.module';
-import { ProvidersService } from '../providers/providers.service';
 import { SmsPlivoModule } from '../providers/sms-plivo/sms-plivo.module';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
 import { WaTwilioBusinessModule } from '../providers/wa-twilio-business/wa-twilio-business.module';
@@ -96,14 +94,12 @@ const consumers = [
     NotificationQueueProducer,
     ScheduleService,
     ConfigService,
-    JsendFormatter,
     Logger,
     NotificationsResolver,
     ServerApiKeysService,
     JwtService,
     ApplicationsService,
     UsersService,
-    ProvidersService,
     QueueService,
     ArchivedNotificationsService,
     RequestLoggerMiddleware,
@@ -115,7 +111,6 @@ const consumers = [
     JwtService,
     ApplicationsService,
     UsersService,
-    ProvidersService,
     QueueService,
     ...consumers,
   ],

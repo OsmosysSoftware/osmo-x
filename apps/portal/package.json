@@ -1,65 +1,82 @@
 {
   "name": "osmox-portal",
-  "version": "7.3.0",
+  "version": "1.0.0",
+  "description": "OsmoX notification management portal",
+  "author": "Osmosys",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint --max-warnings=0",
-    "lint:fix": "ng lint --fix",
-    "prettier-format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
-    "lint-fix-format": "npm run prettier-format && npm run lint:fix && npm run prettier-format"
+    "lint": "eslint . --max-warnings=0 --ignore-pattern '.angular/**'",
+    "build:prod": "ng build --configuration production",
+    "lint:fix": "eslint . --fix --ignore-pattern '.angular/**'",
+    "prettier-format": "prettier --write \"**/*.{js,ts,html,scss,json}\"",
+    "lint-fix-format": "npm run prettier-format && npm run lint:fix && npm run prettier-format",
+    "generate:api": "openapi-typescript http://localhost:3000/api/docs-json -o src/app/core/types/api.types.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,html}": [
+      "prettier --write"
+    ],
+    "*.{js,scss,json}": [
+      "prettier --write"
+    ]
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^19.2.14",
-    "@angular/cdk": "^19.2.16",
-    "@angular/common": "^19.2.14",
-    "@angular/compiler": "^19.2.14",
-    "@angular/core": "^19.2.14",
-    "@angular/forms": "^19.2.14",
-    "@angular/platform-browser": "^19.2.14",
-    "@angular/platform-browser-dynamic": "^19.2.14",
-    "@angular/router": "^19.2.14",
-    "@apollo/client": "^3.11.8",
-    "@primeng/themes": "^19.1.3",
-    "apollo-angular": "^8.0.2",
-    "graphql": "^16.11.0",
-    "primeflex": "^3.3.1",
+    "@angular/common": "^20.3.0",
+    "@angular/compiler": "^20.3.0",
+    "@angular/core": "^20.3.0",
+    "@angular/forms": "^20.3.0",
+    "@angular/platform-browser": "^20.3.0",
+    "@angular/router": "^20.3.0",
+    "@primeuix/themes": "^1.2.5",
+    "chart.js": "^4.5.1",
+    "openapi-fetch": "^0.15.0",
+    "postcss": "^8.5.6",
     "primeicons": "^7.0.0",
-    "primeng": "^19.1.3",
-    "rxjs": "~7.8.2",
-    "tslib": "^2.8.1",
-    "zone.js": "^0.15.1"
+    "primeng": "^20.2.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^19.2.15",
-    "@angular-eslint/builder": "^19.6.0",
-    "@angular-eslint/eslint-plugin": "^17.5.3",
-    "@angular-eslint/eslint-plugin-template": "^17.5.3",
-    "@angular-eslint/schematics": "^19.6.0",
-    "@angular-eslint/template-parser": "^19.6.0",
-    "@angular/cli": "^19.2.15",
-    "@angular/compiler-cli": "^19.2.14",
-    "@types/jasmine": "~5.1.9",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
-    "eslint": "^8.57.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-airbnb-typescript": "^18.0.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.32.0",
+    "@angular/build": "^20.3.8",
+    "@angular/cli": "^20.3.8",
+    "@angular/compiler-cli": "^20.3.0",
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/jasmine": "~5.1.0",
+    "angular-eslint": "20.5.0",
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
-    "jasmine-core": "~5.10.0",
-    "karma": "^6.4.4",
+    "husky": "^9.1.7",
+    "jasmine-core": "~5.9.0",
+    "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.1",
+    "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "lint-staged": "^16.2.6",
+    "openapi-typescript": "^7.10.1",
     "prettier": "^3.6.2",
-    "typescript": "^5.5.4"
+    "tailwindcss": "^4.1.16",
+    "tailwindcss-primeui": "^0.6.1",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "8.46.1"
   }
 }

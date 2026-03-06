@@ -1,0 +1,181 @@
+---
+title: Webhooks
+description: Configure webhooks for real-time notification updates
+icon: webhook
+---
+
+# Webhook Configuration
+
+Webhooks are a powerful way to receive real-time updates and notifications from OsmoX. This guide will help you configure and use webhooks effectively.
+
+## Prerequisites
+
+Before setting up webhooks, ensure you have:
+
+- An active OsmoX account
+- A webhook URL that your application will listen to
+- A provider ID on which you want to add the webhook
+
+## Registering a Webhook
+
+Use the following GraphQL mutation to register a webhook:
+
+<Tabs>
+  <Tab title="GraphQL">
+    ```graphql
+    mutation RegisterWebhook {
+      webhook(createWebhookInput: {
+        providerId: 10,
+        webhookUrl: "http://localhost:4200/webhook"
+      }) {
+        webhookUrl
+        providerId
+        createdOn
+        updatedOn
+        status
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="cURL">
+    ```bash
+    curl --location 'http://localhost:3000/graphql' \
+    --header 'Content-Type: application/json' \
+    --header 'x-api-key: OsmoX-test-key' \
+    --header 'Authorization: Bearer OsmoX-test-key' \
+    --data '{"query":"mutation RegisterWebhook { webhook(createWebhookInput: { providerId: 10, webhookUrl: \"http://localhost:4200/webhook\" }) { webhookUrl providerId createdOn updatedOn status } }","variables":{}}'
+    ```
+  </Tab>
+</Tabs>
+
+### Response
+
+```json
+{
+  "data": {
+    "webhook": {
+      "webhookUrl": "http://localhost:4200/webhook",
+      "providerId": 10,
+      "createdOn": "2024-07-15T05:04:00.000Z",
+      "updatedOn": "2024-07-15T05:04:00.000Z",
+      "status": 1
+    }
+  }
+}
+```
+
+## Handling Webhook Events
+
+Once registered, OsmoX will send POST requests to your webhook URL with notification updates.
+
+### Example Payload
+
+```json
+{
+  "id": 51,
+  "providerId": 4,
+  "channelType": 8,
+  "data": {
+    "indiaDltContentTemplateId": "1607100000000292563",
+    "indiaDltPrincipalEntityId": "1601538161788246351",
+    "to": "+919810450807",
+    "text": "Dear Lakshaya, A new ticket ABCDEF is created.\n\nRegards,\nOQSHA\nPowered by Osmosys"
+  },
+  "deliveryStatus": 5,
+  "result": {
+    "result": {
+      "messages": []
+    }
+  },
+  "createdOn": "2024-07-12T09:14:26.000Z",
+  "updatedOn": "2024-07-12T09:14:27.000Z",
+  "createdBy": "sampleOsmoXApp",
+  "updatedBy": "sampleOsmoXApp",
+  "status": 1,
+  "applicationId": 1,
+  "retryCount": 0
+}
+```
+
+### Payload Fields
+
+<ParamField path="id" type="number">
+  Notification ID
+</ParamField>
+
+<ParamField path="providerId" type="number">
+  The provider used to send the notification
+</ParamField>
+
+<ParamField path="channelType" type="number">
+  The channel type (1=SMTP, 2=Mailgun, etc.)
+</ParamField>
+
+<ParamField path="data" type="object">
+  The original notification data
+</ParamField>
+
+<ParamField path="deliveryStatus" type="number">
+  Current delivery status (see [Delivery Status](/guides/delivery-status))
+</ParamField>
+
+<ParamField path="result" type="object">
+  Provider response data
+</ParamField>
+
+<ParamField path="applicationId" type="number">
+  The application ID
+</ParamField>
+
+<ParamField path="retryCount" type="number">
+  Number of retry attempts
+</ParamField>
+
+## Processing Webhooks
+
+Your webhook handler should:
+
+1. Receive the POST request
+2. Extract required information from the payload
+3. Perform necessary actions (e.g., update database, trigger workflows)
+4. Return a success response (HTTP 200)
+
+### Example Handler (Node.js/Express)
+
+```javascript
+app.post('/webhook', (req, res) => {
+  const notification = req.body;
+
+  console.log(`Notification ${notification.id} status: ${notification.deliveryStatus}`);
+
+  // Update your database or trigger other actions
+  updateNotificationStatus(notification.id, notification.deliveryStatus);
+
+  res.status(200).json({ received: true });
+});
+```
+
+## Retry Strategy
+
+OsmoX uses an exponential backoff strategy for webhook retries. If a request fails, it will retry after increasing intervals.
+
+<Note>
+  Webhook verification is planned for future releases.
+</Note>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Respond Quickly" icon="bolt">
+    Return HTTP 200 immediately to acknowledge receipt, then process asynchronously
+  </Card>
+  <Card title="Handle Duplicates" icon="copy">
+    Use the notification ID to handle potential duplicate deliveries
+  </Card>
+  <Card title="Secure Endpoints" icon="shield">
+    Consider implementing signature verification when available
+  </Card>
+  <Card title="Log Everything" icon="file-lines">
+    Log all webhook payloads for debugging and auditing
+  </Card>
+</CardGroup>

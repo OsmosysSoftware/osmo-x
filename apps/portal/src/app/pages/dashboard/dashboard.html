@@ -1,0 +1,169 @@
+<div class="card">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1
+        class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
+      >
+        <i class="pi pi-home text-primary"></i>
+        Dashboard
+      </h1>
+      <p class="text-muted-color mt-2">OsmoX notification management overview</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="border border-surface rounded-lg p-4">
+          <p-skeleton height="80px" />
+        </div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="border border-surface rounded-lg p-8">
+      <div class="text-center py-12">
+        <i class="pi pi-exclamation-triangle text-6xl text-red-400 mb-4"></i>
+        <p class="text-muted-color">{{ error() }}</p>
+      </div>
+    </div>
+  } @else if (stats(); as s) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="border border-surface rounded-lg p-4">
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900"
+          >
+            <i class="pi pi-bell text-2xl text-blue-500"></i>
+          </div>
+          <div>
+            <p class="text-muted-color text-sm mb-1">Total Notifications</p>
+            <p class="text-2xl font-bold m-0">{{ s.total_notifications }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border border-surface rounded-lg p-4">
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900"
+          >
+            <i class="pi pi-check-circle text-2xl text-green-500"></i>
+          </div>
+          <div>
+            <p class="text-muted-color text-sm mb-1">Successful</p>
+            <p class="text-2xl font-bold m-0">{{ s.successful_notifications }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border border-surface rounded-lg p-4">
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900"
+          >
+            <i class="pi pi-times-circle text-2xl text-red-500"></i>
+          </div>
+          <div>
+            <p class="text-muted-color text-sm mb-1">Failed</p>
+            <p class="text-2xl font-bold m-0">{{ s.failed_notifications }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border border-surface rounded-lg p-4">
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900"
+          >
+            <i class="pi pi-clock text-2xl text-yellow-500"></i>
+          </div>
+          <div>
+            <p class="text-muted-color text-sm mb-1">Pending</p>
+            <p class="text-2xl font-bold m-0">{{ s.pending_notifications }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="border border-surface rounded-lg p-4">
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900"
+          >
+            <i class="pi pi-th-large text-2xl text-purple-500"></i>
+          </div>
+          <div>
+            <p class="text-muted-color text-sm mb-1">Applications</p>
+            <p class="text-2xl font-bold m-0">{{ s.total_applications }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border border-surface rounded-lg p-4">
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center justify-center w-12 h-12 rounded-full bg-cyan-100 dark:bg-cyan-900"
+          >
+            <i class="pi pi-server text-2xl text-cyan-500"></i>
+          </div>
+          <div>
+            <p class="text-muted-color text-sm mb-1">Providers</p>
+            <p class="text-2xl font-bold m-0">{{ s.total_providers }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border border-surface rounded-lg p-4">
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900"
+          >
+            <i class="pi pi-chart-line text-2xl text-emerald-500"></i>
+          </div>
+          <div>
+            <p class="text-muted-color text-sm mb-1">Success Rate</p>
+            <p class="text-2xl font-bold m-0">{{ s.success_rate }}%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Analytics Section -->
+  <div class="flex items-center justify-between mb-4 mt-8">
+    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">Analytics</h2>
+    <p-selectButton
+      [options]="periodOptions"
+      [ngModel]="selectedPeriod()"
+      (ngModelChange)="onPeriodChange($event)"
+      optionLabel="label"
+      optionValue="value"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+    <app-notification-trends-widget
+      [data]="analytics()?.trends ?? []"
+      [loading]="analyticsLoading()"
+    />
+    <app-channel-breakdown-widget
+      [data]="analytics()?.channel_breakdown ?? []"
+      [loading]="analyticsLoading()"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 mb-4">
+    <app-application-stats-widget
+      [data]="analytics()?.application_stats ?? []"
+      [loading]="analyticsLoading()"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 gap-4">
+    <app-provider-health-widget
+      [data]="analytics()?.provider_stats ?? []"
+      [loading]="analyticsLoading()"
+    />
+  </div>
+</div>

@@ -1,13 +1,29 @@
+name: ${COMPOSE_PROJECT_NAME:-osmo-x}-api
+
 services:
   osmox-api:
-    image: osmox-api-${COMPOSE_PROJECT_NAME}
-    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
+    image: osmox-api-${COMPOSE_PROJECT_NAME:-osmo-x}
+    container_name: ${COMPOSE_PROJECT_NAME:-osmo-x}-api
+    restart: unless-stopped
     ports:
-      - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
+      - '127.0.0.1:${SERVER_PORT:-3000}:${SERVER_PORT:-3000}'
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
     volumes:
       - ./logs:/app/logs
+    healthcheck:
+      test: ['CMD', 'node', '-e', "require('http').get('http://localhost:${SERVER_PORT:-3000}/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '${LOG_MAX_SIZE:-10m}'
+        max-file: '${LOG_MAX_FILES:-5}'

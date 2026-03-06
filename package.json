@@ -1,0 +1,23 @@
+{
+  "name": "osmo-x",
+  "private": true,
+  "description": "OsmoX monorepo - multi-channel notification management platform",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0"
+  },
+  "lint-staged": {
+    "apps/api/**/*.ts": [
+      "bash -c 'cd apps/api && npm run lint:fix'",
+      "bash -c 'cd apps/api && npm run format'"
+    ],
+    "apps/portal/**/*.ts": [
+      "bash -c 'cd apps/portal && npm run lint:fix'",
+      "bash -c 'cd apps/portal && npm run format'"
+    ]
+  },
+  "version": "1.0.0"
+}

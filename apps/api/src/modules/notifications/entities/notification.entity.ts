@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  Index,
 } from 'typeorm';
 import { IsEnum, IsOptional, IsObject } from 'class-validator';
 import { Status } from 'src/common/constants/database';
@@ -20,16 +21,28 @@ import { ProviderChain } from 'src/modules/provider-chains/entities/provider-cha
 
 @Entity({ name: 'notify_notifications' })
 @ObjectType()
+@Index('IDX_notify_notifications_application_id', ['applicationId'])
+@Index('IDX_notify_notifications_delivery_status', ['deliveryStatus'])
+@Index('IDX_notify_notifications_status', ['status'])
+@Index('IDX_notify_notifications_created_on', ['createdOn'])
+@Index('IDX_notify_notifications_app_delivery', ['applicationId', 'deliveryStatus'])
+@Index('IDX_notify_notifications_provider_id', ['providerId'])
 export class Notification {
   @PrimaryGeneratedColumn()
   @Field()
   id: number;
 
-  @Column({ name: 'provider_id', default: null })
+  @Column({ name: 'provider_id', default: null, comment: 'FK to notify_providers' })
   @Field()
   providerId: number;
 
-  @Column({ name: 'channel_type', type: 'smallint', width: 1, default: null })
+  @Column({
+    name: 'channel_type',
+    type: 'smallint',
+    width: 1,
+    default: null,
+    comment: 'Notification channel: 0=SMTP, 1=Mailgun, etc.',
+  })
   @IsEnum(ChannelType)
   @Field()
   channelType: number;
@@ -44,6 +57,7 @@ export class Notification {
     type: 'smallint',
     width: 1,
     default: DeliveryStatus.PENDING,
+    comment: '0=Pending, 1=In Progress, 2=Awaiting Confirmation, 3=Success, 4=Failed',
   })
   @IsEnum(DeliveryStatus)
   @Field()
@@ -80,7 +94,7 @@ export class Notification {
   @Field()
   status: number;
 
-  @Column({ name: 'application_id', default: null })
+  @Column({ name: 'application_id', default: null, comment: 'FK to notify_applications' })
   @Field()
   applicationId: number;
 
@@ -93,7 +107,7 @@ export class Notification {
   @IsOptional()
   notificationSentOn: Date;
 
-  @Column({ name: 'provider_chain_id', nullable: true })
+  @Column({ name: 'provider_chain_id', nullable: true, comment: 'FK to notify_provider_chains' })
   @Field({ nullable: true })
   @IsOptional()
   providerChainId: number;

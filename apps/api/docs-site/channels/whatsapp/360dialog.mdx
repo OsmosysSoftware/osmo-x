@@ -1,0 +1,118 @@
+---
+title: 360Dialog
+description: Send WhatsApp messages using 360Dialog
+icon: whatsapp
+---
+
+# 360Dialog
+
+360dialog is a leading and official accredited Meta WhatsApp solution provider (BSP), providing building blocks and services around messaging, WhatsApp newsletters, and performance marketing with the WhatsApp Business API.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `3` (360Dialog) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="WA_360_DIALOG_API_KEY" type="string" required>
+  360Dialog API key
+</ParamField>
+
+<ParamField path="WA_360_DIALOG_URL" type="string" required>
+  API URL (typically `https://waba.360dialog.io/v1/messages`)
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "WA_360_DIALOG_API_KEY": "your-api-key",
+  "WA_360_DIALOG_URL": "https://waba.360dialog.io/v1/messages"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 3,
+  "data": {
+    "to": "919004812051",
+    "type": "template",
+    "template": {
+      "namespace": "d8bcb6bd_2ab2_439c_9d9e_947501266c77",
+      "name": "ir_incident_resolution",
+      "language": {
+        "policy": "deterministic",
+        "code": "en"
+      },
+      "components": [
+        {
+          "type": "body",
+          "parameters": [
+            { "type": "text", "text": "John Doe" },
+            { "type": "text", "text": "WNK227" },
+            { "type": "text", "text": "Incident Description" },
+            { "type": "text", "text": "Location" },
+            { "type": "text", "text": "Assignee" },
+            { "type": "text", "text": "Reporter" },
+            { "type": "text", "text": "Open" },
+            { "type": "text", "text": "10" },
+            { "type": "text", "text": "15755" }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="to" type="string" required>
+  Recipient's phone number (without + prefix)
+</ParamField>
+
+<ParamField path="type" type="string" required>
+  Message type (e.g., `template`)
+</ParamField>
+
+<ParamField path="template" type="object" required>
+  Template configuration object
+</ParamField>
+
+<ParamField path="template.namespace" type="string" required>
+  Template namespace from 360Dialog
+</ParamField>
+
+<ParamField path="template.name" type="string" required>
+  Template name
+</ParamField>
+
+<ParamField path="template.language" type="object" required>
+  Language configuration with `policy` and `code`
+</ParamField>
+
+<ParamField path="template.components" type="array" required>
+  Array of component objects with parameters
+</ParamField>
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| @nestjs/axios | ^3.1.1 | NestJS Axios integration for HTTP requests |
+
+## References
+
+- [360Dialog Sandbox Documentation](https://docs.360dialog.com/partner/first-steps/sandbox)
+- [Send Template Messages](https://docs.360dialog.com/partner/first-steps/sandbox#5.-send-a-template-message-optional)

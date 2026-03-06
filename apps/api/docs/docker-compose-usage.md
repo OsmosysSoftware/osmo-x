@@ -1,126 +1,171 @@
 # Docker Compose Setup Guide
 
-This document explains how to run the osmo-x API using the newly added Docker Compose files. Multiple configurations allow flexible setups with Redis and Postgres.
+This document explains how to run OsmoX using Docker Compose. The API's `docker-compose.yml` starts all required backend services: PostgreSQL, Redis, the API, and Dozzle (log viewer). The portal has its own `docker-compose.yml`.
 
-## Docker Compose Files
+## Services
 
-| File                       | Purpose                                     |
-| -------------------------- | ------------------------------------------- |
-| `docker-compose.api.yml`   | Starts only the osmo-x API container        |
-| `docker-compose.redis.yml` | Starts the API along with a Redis container |
-| `docker-compose.db.yml`    | Starts the API with a Postgres container    |
+### API (`apps/api/docker-compose.yml`)
 
+| Service | Purpose |
+| --- | --- |
+| `osmox-postgres` | PostgreSQL database with healthcheck |
+| `osmox-redis` | Redis with AOF persistence and healthcheck |
+| `osmox-api` | OsmoX API server (waits for healthy DB and Redis) |
+| `osmox-dozzle` | Dozzle web UI for viewing container logs |
+| `osmox-dozzle-auth-init` | One-shot init container that generates Dozzle auth |
 
-## Commands to Start Each Setup
+### Portal (`apps/portal/docker-compose.yml`)
 
-### API only:
+| Service | Purpose |
+| --- | --- |
+| `osmox-portal` | Angular frontend served via Nginx |
 
-  ```shell
-  docker compose -f docker-compose.api.yml up -d
-  ```
+## Quick Start
 
-### API + Redis:
+1. Copy and configure your environment file:
 
-  ```shell
-  docker compose -f docker-compose.redis.yml up -d
-  ```
+   ```shell
+   cd apps/api
+   cp .env.example .env
+   # Edit .env with your database credentials, secrets, admin email/password, etc.
+   ```
 
-### API + Postgres:
+2. Start all backend services:
 
-  ```shell
-  docker compose -f docker-compose.db.yml up -d
-  ```
+   ```shell
+   docker compose up -d
+   ```
 
-## Environment Variable Configuration for Docker Compose Setups
+3. Run database migrations (first time only, or after updates with new migrations):
 
-### GLOBAL (Used in ALL Docker Compose setups)
+   ```shell
+   docker exec osmo-x-api npm run typeorm:run-migration
+   ```
+
+4. Start the portal:
+
+   ```shell
+   cd ../portal
+   docker compose up -d --build
+   ```
+
+5. Check that all services are healthy:
+
+   ```shell
+   docker compose ps
+   ```
+
+6. Access the services:
+   - **Portal**: `http://localhost:4200`
+   - **API**: `http://localhost:3000` (or your configured `SERVER_PORT`)
+   - **Swagger docs**: `http://localhost:3000/api`
+   - **Dozzle logs**: `http://localhost:8080` (or your configured `DOZZLE_HOST_PORT`)
+
+7. Log in to the portal with your admin credentials (defaults: `admin@osmox.dev` / `Admin123`). See [Default Admin Credentials](#default-admin-credentials) below.
+
+## Default Admin Credentials
+
+The initial migration seeds an admin user with configurable credentials:
+
+| Env Variable | Default | Description |
+| --- | --- | --- |
+| `ADMIN_EMAIL` | `admin@osmox.dev` | Admin login email |
+| `ADMIN_PASSWORD` | `Admin123` | Admin login password |
+
+Set these in `.env` **before** running migrations. The admin is created with the `SUPER_ADMIN` role.
+
+## Environment Variables for Docker
+
+These variables in `.env` are used by the Docker Compose setup:
 
 ```env
-DB_TYPE=postgres
+# Database (used by osmox-postgres and osmox-api)
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+DB_NAME=osmox_db
+DB_DOCKER_PORT=5433          # Host port mapped to PostgreSQL
+
+# Redis
+REDIS_DOCKER_PORT=6397       # Host port mapped to Redis
+
+# API
+SERVER_PORT=3000             # API server port
+
+# Docker
+COMPOSE_PROJECT_NAME=osmo-x  # Used for container naming
+
+# Dozzle (log viewer)
+ADMIN_USER=admin             # Dozzle admin username
+ADMIN_PASSWORD=your-password # Dozzle admin password
+DOZZLE_HOST_PORT=8080        # Host port for Dozzle UI
+
+# Logging
+LOG_MAX_SIZE=10m             # Max container log file size
+LOG_MAX_FILES=5              # Max rotated log files
 ```
 
-### API only:
+> **Note:** `DB_HOST` and `REDIS_HOST` are overridden by the Docker Compose file to use container hostnames. You do not need to change them for the Docker setup.
 
-  ```env
-  #### Database Configuration
-  DB_HOST=host.docker.internal # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
-  DB_PORT=5432 # Set the port used by postgres of your local machine
-  DB_USERNAME=your_username
-  DB_PASSWORD=your_password
-  DB_NAME=osmox_db
-  DB_DOCKER_PORT=5433 # IGNORE. Will not be used for current setup
+## Commands
 
-  #### Redis Configuration
-  REDIS_HOST=host.docker.internal # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
-  REDIS_PORT=6379 # Set the port used by redis of your local machine
-  REDIS_DOCKER_PORT=6397 # IGNORE. Will not be used for current setup
-  ```
+### Start services
 
-### API + Redis:
+```shell
+docker compose up -d
+```
 
-  ```env
-  #### Database Configuration
-  DB_HOST=host.docker.internal # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
-  DB_PORT=5432 # Set the port used by postgres of your local machine
-  DB_USERNAME=your_username
-  DB_PASSWORD=your_password
-  DB_NAME=osmox_db
-  DB_DOCKER_PORT=5433 # IGNORE. Will not be used for current setup
+### View logs
 
-  #### Redis Configuration
-  REDIS_HOST=osmox-redis
-  REDIS_PORT=6379
-  REDIS_DOCKER_PORT=6397
-  ```
+```shell
+docker compose logs -f osmox-api    # Follow API logs
+docker compose logs osmox-postgres  # View database logs
+```
 
-### API + Postgres:
+Or use Dozzle at `http://localhost:8080` for a web-based log viewer.
 
-  ```env
-  #### Database Configuration
-  DB_HOST=osmox-postgres
-  DB_PORT=5432
-  DB_USERNAME=your_username
-  DB_PASSWORD=your_password
-  DB_NAME=osmox_db
-  DB_DOCKER_PORT=5433
+### Stop and remove
 
-  #### Redis Configuration
-  REDIS_HOST=host.docker.internal # or <IP-ADDRESS-USED-TO-REACH-YOUR-HOST-MACHINE>
-  REDIS_PORT=6379 # Set the port used by redis of your local machine
-  REDIS_DOCKER_PORT=6397 # IGNORE. Will not be used for current setup
-  ```
+```shell
+docker compose down       # Stop containers
+docker compose down -v    # Stop and remove volumes (deletes data)
+```
+
+### Rebuild after code changes
+
+```shell
+docker compose up -d --build osmox-api
+```
+
+## Alternative Configurations
+
+If you already have your own database or Redis, use the separate compose files:
+
+| File | What it runs | Use when |
+| --- | --- | --- |
+| `docker-compose.yml` | API + PostgreSQL + Redis + Dozzle | Full stack (default) |
+| `docker-compose.api.yml` | API only | You have your own DB and Redis |
+| `docker-compose.db.yml` | API + PostgreSQL | You have your own Redis |
+| `docker-compose.redis.yml` | API + Redis | You have your own DB |
+
+```shell
+# API only (configure DB_HOST, REDIS_HOST in .env to point to your services)
+docker compose -f docker-compose.api.yml up -d
+
+# API + PostgreSQL (configure REDIS_HOST in .env)
+docker compose -f docker-compose.db.yml up -d
+
+# API + Redis (configure DB_HOST in .env)
+docker compose -f docker-compose.redis.yml up -d
+```
+
+When using external DB or Redis, set `DB_HOST`/`REDIS_HOST` in `.env` to your service address (e.g., `host.docker.internal` on Mac/Windows, or your machine's LAN IP on Linux).
 
 ## Notes for Linux Users
 
-* To fetch your machine’s LAN IP (needed when connecting the API container to a locally running DB/Redis), run:
-
-    ```shell
-    hostname -I | awk '{print $1}'
-    ```
-
-* Use this IP as your DB_HOST or REDIS_HOST inside Docker, instead of localhost.
-* On Mac and Windows, you may alternatively use:
-
-    ```shell
-    host.docker.internal
-    ```
-
-## Commands to Stop and Remove Each Setup
-
-### Remove API only:
+- To fetch your machine's LAN IP (useful when connecting external services):
 
   ```shell
-  docker compose -f docker-compose.api.yml down -v
+  hostname -I | awk '{print $1}'
   ```
 
-### Remove API + Redis:
-
-  ```shell
-  docker compose -f docker-compose.redis.yml down -v
-  ```
-
-### Remove API + Postgres:
-
-  ```shell
-  docker compose -f docker-compose.db.yml down -v
-  ```
+- On Mac and Windows, you can use `host.docker.internal` to reference the host machine.

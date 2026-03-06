@@ -1,0 +1,139 @@
+---
+title: AWS SES
+description: Send emails using Amazon Simple Email Service
+icon: envelope
+---
+
+# AWS SES
+
+Amazon Simple Email Service (SES) is an email platform that provides an easy, cost-effective way to send and receive email using your own email addresses and domains.
+
+## Configuration
+
+### Database Setup
+
+Create a new entry in the `notify_providers` table with the following settings:
+
+| Field | Value |
+|-------|-------|
+| `channel_type` | `11` (AWS SES) |
+| `is_enabled` | `1` |
+
+### Configuration Fields
+
+<ParamField path="AWS_ACCESS_KEY_ID" type="string" required>
+  Access key for AWS instance
+</ParamField>
+
+<ParamField path="AWS_SECRET_ACCESS_KEY" type="string" required>
+  Secret access key for AWS
+</ParamField>
+
+<ParamField path="AWS_REGION" type="string" required>
+  Region of the AWS instance
+</ParamField>
+
+**Example Configuration:**
+
+```json
+{
+  "AWS_ACCESS_KEY_ID": "Aws-Access-key",
+  "AWS_SECRET_ACCESS_KEY": "Aws-Secret-Key",
+  "AWS_REGION": "us-east-1"
+}
+```
+
+## Request Format
+
+### Sample Request Body
+
+```json
+{
+  "providerId": 11,
+  "data": {
+    "from": "sender@example.com",
+    "to": "recipient@example.com",
+    "cc": "cc@example.com",
+    "bcc": "bcc@example.com",
+    "subject": "Test subject",
+    "text": "This is a test notification",
+    "html": "<b>This is a test notification</b>",
+    "replyTo": "reply@example.com",
+    "attachments": [
+      {
+        "filename": "names.txt",
+        "content": "John Doe\nJane Doe"
+      }
+    ]
+  }
+}
+```
+
+### Request Fields
+
+<ParamField path="from" type="string" required>
+  Sender's email address
+</ParamField>
+
+<ParamField path="to" type="string" required>
+  Recipient's email address
+</ParamField>
+
+<ParamField path="cc" type="string">
+  CC email address
+</ParamField>
+
+<ParamField path="bcc" type="string">
+  BCC email address
+</ParamField>
+
+<ParamField path="subject" type="string" required>
+  Email subject
+</ParamField>
+
+<ParamField path="text" type="string">
+  Plain text version of the email
+</ParamField>
+
+<ParamField path="html" type="string">
+  HTML version of the email
+</ParamField>
+
+<ParamField path="replyTo" type="string">
+  Reply-to email address
+</ParamField>
+
+<ParamField path="attachments" type="array">
+  Array of attachment objects
+</ParamField>
+
+## File Content Encoding
+
+<Warning>
+  Ensure the encoding matches the file type. Incorrect encoding may cause the file to be unreadable or rejected.
+</Warning>
+
+### Text-Based Files
+
+For files with extensions: `txt`, `csv`, `html`, `json`, or `xml`:
+- Encode the file content as a **UTF-8** string
+- Pass this UTF-8 string to the `content` field
+
+### Other File Types
+
+For PDFs, images, spreadsheets, etc.:
+- Encode the file content using **Base64**
+- Pass the Base64 encoded string to the `content` field
+
+## Dependencies
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| @aws-sdk/client-ses | ^3.855.0 | AWS SDK for JavaScript SES client |
+
+## References
+
+- [What is AWS SES](https://docs.aws.amazon.com/ses/latest/dg/Welcome.html)
+- [AWS SES Integration Guide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/ses-examples-sending-email.html)
+- [SendRawEmailCommand Documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/ses/command/SendRawEmailCommand/)
+- [SES Transport using Nodemailer](https://nodemailer.com/transports/ses/)

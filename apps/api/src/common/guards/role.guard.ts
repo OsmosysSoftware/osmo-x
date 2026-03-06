@@ -50,8 +50,10 @@ export class RolesGuard implements CanActivate {
       const decodedToken = this.jwtService.verify(token, { secret });
       const userRoleId = decodedToken.role;
 
-      // Check if the user's role matches any of the required roles
-      return requiredRoles.includes(userRoleId);
+      // Hierarchical check: user's role must be >= the minimum required role
+      // Roles are ordered: ORG_USER(0) < ORG_ADMIN(1) < SUPER_ADMIN(2)
+      const minimumRequiredRole = Math.min(...(requiredRoles as unknown as number[]));
+      return userRoleId >= minimumRequiredRole;
     } catch (error) {
       return false; // Invalid token or other error
     }

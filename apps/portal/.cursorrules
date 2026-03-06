@@ -1,0 +1,230 @@
+# Angular 20 with PrimeNG - Cursor AI Rules
+
+## Core Angular 20 Rules
+
+### Components
+- Always use standalone components (no NgModules)
+- Use signals for state: `signal()`, `computed()`
+- Use `input()` and `output()` functions (NOT `@Input`/`@Output` decorators)
+- Use `inject()` for dependency injection (NOT constructor injection)
+- OnPush change detection required on ALL components: `changeDetection: ChangeDetectionStrategy.OnPush`
+- Import components/directives/pipes directly in `@Component` imports array
+
+### Templates
+- Use `@if` (NOT `*ngIf`)
+- Use `@for` with track (NOT `*ngFor`)
+- Use `@switch` (NOT `*ngSwitch`)
+- Use `[class.x]="condition()"` (NOT `[ngClass]`)
+- Use `[style.x]="value()"` (NOT `[ngStyle]`)
+- Always include `track` in `@for` loops for performance
+
+### State Management
+- Use signals for all reactive state
+- Use `computed()` for derived state
+- Update signals with `.update()` or `.set()` (NEVER `.mutate()`)
+- Example: `this.count.update(value => value + 1)`
+
+### Services
+- All services must have `providedIn: 'root'`
+- Use `inject()` function instead of constructor injection
+- Use signals for service state
+- Example: `private http = inject(HttpClient);`
+
+### Routing
+- Use lazy loading with `loadComponent()` or `loadChildren()`
+- Use functional guards (NOT class-based)
+- Example: `const authGuard = (): boolean => inject(AuthService).isAuthenticated();`
+
+## PrimeNG Components
+
+### Usage
+- Import PrimeNG components as standalone
+- Example: `import { ButtonModule } from 'primeng/button';`
+- Add to component imports: `imports: [ButtonModule, InputTextModule]`
+- Refer to https://primeng.org for component API
+- Common components: Button, InputText, Table, Dialog, Card, Dropdown, Calendar
+
+### Styling PrimeNG
+- PrimeNG components work seamlessly with Tailwind utility classes
+- Use `class` attribute for Tailwind utilities
+- Use `styleClass` for PrimeNG component-specific styling
+- Example: `<p-button label="Click" styleClass="w-full" class="mb-4" />`
+
+## Tailwind CSS (if enabled)
+
+### Utilities
+- Use Tailwind utility classes for layout and spacing
+- Responsive design: `md:grid-cols-2`, `lg:flex-row`
+- Dark mode (if configured): `dark:bg-gray-900`, `dark:text-white`
+- With tailwindcss-primeui: Use design tokens like `bg-primary`, `text-primary`
+
+### Best Practices
+- Prefer utilities over custom CSS
+- Use `@apply` in SCSS only for repeated patterns
+- Keep component templates clean with utility classes
+
+## Folder Structure
+
+### New Features
+- Create in `src/app/features/{feature-name}/`
+- Structure: `components/`, `models/`, `pages/`, `services/`
+- Feature routes in `{feature-name}.routes.ts`
+
+### Core Services
+- Singleton services → `src/app/core/services/`
+- Guards → `src/app/core/guards/`
+- Interceptors → `src/app/core/interceptors/`
+- Models → `src/app/core/models/`
+
+### Shared Components
+- Reusable components → `src/app/shared/components/`
+- Directives → `src/app/shared/directives/`
+- Pipes → `src/app/shared/pipes/`
+- Utils → `src/app/shared/utils/`
+
+## Code Patterns
+
+### Component Template
+```typescript
+import { Component, signal, computed, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+
+@Component({
+  selector: 'app-example',
+  imports: [CommonModule, ButtonModule],
+  templateUrl: './example.component.html',
+  styleUrls: ['./example.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ExampleComponent {
+  readonly title = input.required<string>();
+  readonly itemSelected = output<Item>();
+
+  readonly count = signal(0);
+  readonly doubled = computed(() => this.count() * 2);
+
+  increment(): void {
+    this.count.update(n => n + 1);
+  }
+}
+```
+
+### Service Template
+```typescript
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Injectable({ providedIn: 'root' })
+export class DataService {
+  private readonly http = inject(HttpClient);
+  private readonly data = signal<Item[]>([]);
+
+  readonly items = computed(() => this.data());
+
+  loadItems(): void {
+    this.http.get<Item[]>('/api/items')
+      .subscribe(items => this.data.set(items));
+  }
+}
+```
+
+### Template with Control Flow
+```html
+@if (loading()) {
+  <p-progressSpinner />
+} @else if (error()) {
+  <p-message severity="error" [text]="error()" />
+} @else {
+  @for (item of items(); track item.id) {
+    <p-card [header]="item.name">
+      {{ item.description }}
+    </p-card>
+  } @empty {
+    <p>No items found</p>
+  }
+}
+```
+
+### Functional Guard
+```typescript
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+
+export const authGuard = (): boolean => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isAuthenticated()) {
+    return true;
+  }
+
+  router.navigate(['/login']);
+  return false;
+};
+```
+
+## File Naming
+
+- Components: `user-list.component.ts`
+- Services: `auth.service.ts`
+- Guards: `auth.guard.ts`
+- Pipes: `date-format.pipe.ts`
+- Directives: `highlight.directive.ts`
+- Models: `user.model.ts`
+
+## Testing
+
+### Component Tests
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ExampleComponent } from './example.component';
+
+describe('ExampleComponent', () => {
+  let component: ExampleComponent;
+  let fixture: ComponentFixture<ExampleComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ExampleComponent]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ExampleComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should increment counter', () => {
+    expect(component.count()).toBe(0);
+    component.increment();
+    expect(component.count()).toBe(1);
+  });
+});
+```
+
+## ESLint Rules
+
+- ❌ NO `@Input()` / `@Output()` → Use `input()` / `output()`
+- ❌ NO `*ngIf` / `*ngFor` / `*ngSwitch` → Use `@if` / `@for` / `@switch`
+- ❌ NO constructor injection → Use `inject()`
+- ❌ NO direct signal mutation → Use `.set()` / `.update()`
+- ✅ ALWAYS use `ChangeDetectionStrategy.OnPush`
+- ✅ ALWAYS use signals for component state
+- ✅ ALWAYS use `readonly` for signals and computed
+- ✅ ALWAYS use standalone components
+
+## Resources
+
+- Angular: https://angular.dev
+- Angular AI: https://angular.dev/ai
+- PrimeNG: https://primeng.org
+- Tailwind CSS: https://tailwindcss.com
+- RxJS: https://rxjs.dev
+
+---
+
+**Remember**: This is Angular 20. Use modern patterns (signals, standalone, new control flow). Avoid deprecated patterns (decorators, modules, old control flow).

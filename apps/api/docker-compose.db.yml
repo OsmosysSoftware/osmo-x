@@ -1,37 +1,66 @@
+name: ${COMPOSE_PROJECT_NAME:-osmo-x}-db
+
 services:
-  osmox-api:
-    image: osmox-api-${COMPOSE_PROJECT_NAME}
+  osmox-postgres:
+    image: postgres:18-alpine
+    container_name: ${COMPOSE_PROJECT_NAME:-osmo-x}-postgres
     restart: unless-stopped
+    ports:
+      - '${DB_DOCKER_PORT:-5433}:5432'
+    environment:
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+      POSTGRES_DB: '${DB_NAME}'
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - osmox-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME} -d ${DB_NAME}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - osmox-network
+
+  osmox-api:
     build:
       context: .
       dockerfile: Dockerfile
+    image: osmox-api-${COMPOSE_PROJECT_NAME:-osmo-x}
+    container_name: ${COMPOSE_PROJECT_NAME:-osmo-x}-api
+    restart: unless-stopped
     ports:
-      - '127.0.0.1:${SERVER_PORT}:${SERVER_PORT}'
+      - '127.0.0.1:${SERVER_PORT:-3000}:${SERVER_PORT:-3000}'
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DB_HOST: ${COMPOSE_PROJECT_NAME:-osmo-x}-postgres
+      DB_PORT: 5432
     depends_on:
       osmox-postgres:
         condition: service_healthy
-    environment:
-      NODE_ENV: production
     volumes:
       - ./logs:/app/logs
-
-  osmox-postgres:
-    image: postgres:18
-    restart: unless-stopped
-    environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_DB: ${DB_NAME}
-    ports:
-      - ${DB_DOCKER_PORT}:5432
-    volumes:
-      - osmox-postgres-data-saas:/var/lib/postgresql
+    networks:
+      - osmox-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 5s
+      test: ['CMD', 'node', '-e', "require('http').get('http://localhost:${SERVER_PORT:-3000}/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '${LOG_MAX_SIZE:-10m}'
+        max-file: '${LOG_MAX_FILES:-5}'
 
 volumes:
-  osmox-postgres-data-saas: {}
+  osmox-postgres-data:
+    driver: local
+
+networks:
+  osmox-network:
+    driver: bridge

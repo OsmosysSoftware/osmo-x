@@ -1,0 +1,12 @@
+.git
+.gitignore
+.editorconfig
+/.vscode/*
+/node_modules
+/npm-debug.log
+/e2e
+/docs
+*.zip
+dist
+Dockerfile
+docker-compose.yml

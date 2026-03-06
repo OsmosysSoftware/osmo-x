@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="80" viewBox="60 0 700 130">
+  <defs>
+    <style><![CDATA[
+      .white{fill:#FFFFFF}
+      .lightTeal{fill:#07C983}
+      .textD{font-family:Arial, sans-serif; font-weight:700; font-size:110px; fill:#FFFFFF}
+      .strokeD{stroke:#FFFFFF; stroke-width:8; stroke-linecap:round; stroke-linejoin:round; fill:none}
+    ]]></style>
+  </defs>
+
+  <g transform="translate(40,20)">
+    <line x1="80" y1="40" x2="160" y2="40" class="strokeD"/>
+    <line x1="160" y1="40" x2="200" y2="10" class="strokeD"/>
+    <line x1="160" y1="40" x2="200" y2="70" class="strokeD"/>
+
+    <circle cx="80" cy="40" r="14" class="white"/>
+    <circle cx="160" cy="40" r="12" class="lightTeal"/>
+    <circle cx="200" cy="10" r="12" class="lightTeal"/>
+    <circle cx="200" cy="70" r="12" class="lightTeal"/>
+
+    <g transform="translate(220,-8)">
+      <rect x="0" y="0" rx="8" ry="8" width="72" height="48" class="lightTeal"/>
+      <polygon points="16,48 28,48 22,56" class="lightTeal"/>
+      <circle cx="50" cy="20" r="6" class="white"/>
+    </g>
+
+    <g transform="translate(220,50)">
+      <rect x="0" y="0" rx="8" ry="8" width="72" height="48" class="lightTeal"/>
+      <polygon points="16,0 28,0 22,-8" class="lightTeal"/>
+      <circle cx="50" cy="28" r="6" class="white"/>
+    </g>
+  </g>
+
+  <text x="360" y="95" class="textD">OsmoX</text>
+</svg>

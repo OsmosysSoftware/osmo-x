@@ -1,0 +1,94 @@
+# NestJS
+
+NestJS — A progressive Node.js framework for building efficient, reliable and scalable server-side applications.
+
+## Table of Contents
+
+- [Introduction](https://docs.nestjs.com/)
+- [First Steps](https://docs.nestjs.com/first-steps)
+
+## Fundamentals
+
+- [Modules](https://docs.nestjs.com/modules)
+- [Controllers](https://docs.nestjs.com/controllers)
+- [Providers](https://docs.nestjs.com/providers)
+- [Middleware](https://docs.nestjs.com/middleware)
+- [Exception Filters](https://docs.nestjs.com/exception-filters)
+- [Pipes](https://docs.nestjs.com/pipes)
+- [Guards](https://docs.nestjs.com/guards)
+- [Interceptors](https://docs.nestjs.com/interceptors)
+- [Custom Decorators](https://docs.nestjs.com/custom-decorators)
+
+## Techniques
+
+- [Configuration](https://docs.nestjs.com/techniques/configuration)
+- [Database (TypeORM)](https://docs.nestjs.com/techniques/database)
+- [Validation](https://docs.nestjs.com/techniques/validation)
+- [Caching](https://docs.nestjs.com/techniques/caching)
+- [Serialization](https://docs.nestjs.com/techniques/serialization)
+- [Task Scheduling](https://docs.nestjs.com/techniques/task-scheduling)
+- [Queues (Bull)](https://docs.nestjs.com/techniques/queues)
+- [Logging](https://docs.nestjs.com/techniques/logger)
+- [File Upload](https://docs.nestjs.com/techniques/file-upload)
+- [HTTP Module](https://docs.nestjs.com/techniques/http-module)
+- [Events](https://docs.nestjs.com/techniques/events)
+
+## Security
+
+- [Authentication](https://docs.nestjs.com/security/authentication)
+- [Authorization](https://docs.nestjs.com/security/authorization)
+- [Encryption and Hashing](https://docs.nestjs.com/security/encryption-and-hashing)
+- [Helmet](https://docs.nestjs.com/security/helmet)
+- [CORS](https://docs.nestjs.com/security/cors)
+- [Rate Limiting](https://docs.nestjs.com/security/rate-limiting)
+
+## OpenAPI (Swagger)
+
+- [Introduction](https://docs.nestjs.com/openapi/introduction)
+- [Types and Parameters](https://docs.nestjs.com/openapi/types-and-parameters)
+- [Operations](https://docs.nestjs.com/openapi/operations)
+- [Security](https://docs.nestjs.com/openapi/security)
+- [Mapped Types](https://docs.nestjs.com/openapi/mapped-types)
+- [Decorators](https://docs.nestjs.com/openapi/decorators)
+- [CLI Plugin](https://docs.nestjs.com/openapi/cli-plugin)
+
+## GraphQL
+
+- [Quick Start](https://docs.nestjs.com/graphql/quick-start)
+- [Resolvers](https://docs.nestjs.com/graphql/resolvers)
+- [Mutations](https://docs.nestjs.com/graphql/mutations)
+- [Subscriptions](https://docs.nestjs.com/graphql/subscriptions)
+- [Scalars](https://docs.nestjs.com/graphql/scalars)
+
+## Testing
+
+- [Unit Testing](https://docs.nestjs.com/fundamentals/testing)
+- [E2E Testing](https://docs.nestjs.com/fundamentals/testing#end-to-end-testing)
+
+## CLI
+
+- [Overview](https://docs.nestjs.com/cli/overview)
+- [Workspaces](https://docs.nestjs.com/cli/monorepo)
+- [Libraries](https://docs.nestjs.com/cli/libraries)
+- [Scripts](https://docs.nestjs.com/cli/scripts)
+
+# TypeORM
+
+- [TypeORM Documentation](https://typeorm.io/)
+- [Entity](https://typeorm.io/entities)
+- [Relations](https://typeorm.io/relations)
+- [Migrations](https://typeorm.io/migrations)
+- [Query Builder](https://typeorm.io/select-query-builder)
+- [Repository API](https://typeorm.io/repository-api)
+- [Find Options](https://typeorm.io/find-options)
+
+# Bull (Queue)
+
+- [Bull Documentation](https://docs.bullmq.io/)
+- [NestJS Bull Integration](https://docs.nestjs.com/techniques/queues)
+
+# PostgreSQL
+
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/current/)
+- [JSON Functions](https://www.postgresql.org/docs/current/functions-json.html)
+- [Full Text Search](https://www.postgresql.org/docs/current/textsearch.html)

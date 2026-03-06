@@ -1,0 +1,155 @@
+<div class="card">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1
+        class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
+      >
+        <i class="pi pi-building text-primary"></i> Organizations
+      </h1>
+      <p class="text-muted-color mt-2">Manage platform organizations</p>
+    </div>
+  </div>
+
+  <p-toolbar class="mb-4">
+    <ng-template #start>
+      <div class="flex flex-wrap gap-2">
+        <p-button label="New Organization" icon="pi pi-plus" (onClick)="openCreate()" />
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search..." />
+        </p-iconfield>
+        <p-button
+          icon="pi pi-refresh"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Refresh"
+          (onClick)="loadOrganizations()"
+        />
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  @if (loading()) {
+    <p-skeleton height="300px" />
+  } @else {
+    <p-table
+      #dt
+      [value]="organizations()"
+      [rows]="10"
+      [paginator]="true"
+      [globalFilterFields]="['name', 'slug']"
+      [rowHover]="true"
+      [stripedRows]="true"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} organizations"
+      [rowsPerPageOptions]="[10, 20, 50]"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="name" style="min-width: 12rem">Name <p-sortIcon field="name" /></th>
+          <th pSortableColumn="slug" style="min-width: 10rem">Slug <p-sortIcon field="slug" /></th>
+          <th>Status</th>
+          <th pSortableColumn="created_on" style="min-width: 10rem">
+            Created <p-sortIcon field="created_on" />
+          </th>
+          <th style="min-width: 8rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-org>
+        <tr>
+          <td>{{ org.name }}</td>
+          <td class="font-mono">{{ org.slug }}</td>
+          <td>
+            <p-tag
+              [value]="org.status === 1 ? 'Active' : 'Inactive'"
+              [severity]="org.status === 1 ? 'success' : 'danger'"
+              [rounded]="true"
+            />
+          </td>
+          <td>{{ org.created_on | date: 'short' }}</td>
+          <td>
+            <div class="flex items-center gap-2">
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                pTooltip="Edit"
+                (onClick)="openEdit(org)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                size="small"
+                pTooltip="Delete"
+                (onClick)="confirmDelete(org)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="5" class="!text-center py-8 text-muted-color">No organizations found</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+
+  <!-- Create/Edit Organization Dialog -->
+  <p-dialog
+    [visible]="dialogVisible()"
+    (visibleChange)="dialogVisible.set($event)"
+    [header]="editingOrg() ? 'Edit Organization' : 'New Organization'"
+    [modal]="true"
+    [style]="{ width: '28rem' }"
+  >
+    <div class="flex flex-col gap-4 mt-2">
+      <div class="flex flex-col gap-2">
+        <label for="orgName" class="font-medium">Name</label>
+        <input
+          pInputText
+          id="orgName"
+          [ngModel]="formName()"
+          (ngModelChange)="onNameChange($event)"
+          placeholder="Organization name"
+        />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="orgSlug" class="font-medium">Slug</label>
+        <input
+          pInputText
+          id="orgSlug"
+          [ngModel]="formSlug()"
+          (ngModelChange)="formSlug.set($event)"
+          placeholder="organization-slug"
+          class="font-mono"
+        />
+        <small class="text-muted-color"
+          >URL-friendly identifier (lowercase, alphanumeric, hyphens)</small
+        >
+      </div>
+    </div>
+    <ng-template #footer>
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        [text]="true"
+        (onClick)="dialogVisible.set(false)"
+      />
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        [disabled]="!isFormValid()"
+        [loading]="saving()"
+        (onClick)="save()"
+      />
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog />
+</div>
