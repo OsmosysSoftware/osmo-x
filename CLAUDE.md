@@ -176,7 +176,7 @@ npm run generate:api          # Regenerate TypeScript types from backend OpenAPI
 
 ## Documentation Site
 
-Mintlify-powered docs site in `apps/api/docs-site/`. Source markdown lives in `apps/api/docs/` — the docs-site contains MDX conversions with Mintlify components (Cards, Steps, Notes, etc.).
+Mintlify-powered docs site in `apps/api/docs-site/`. Source markdown lives in `apps/api/docs/` — the docs-site contains MDX conversions with Mintlify components (Cards, Steps, Notes, etc.). Navigation config: `apps/api/docs-site/mint.json`.
 
 ```bash
 # Local preview (from docs-site directory)
@@ -184,9 +184,9 @@ cd apps/api/docs-site
 npx mintlify dev
 ```
 
-- **Navigation config**: `apps/api/docs-site/mint.json`
-- **Sync skill**: Run `/update-docs [file or topic]` to sync source docs to docs-site
-- **Auto-warn**: Hookify rule triggers when files in `apps/api/docs/` are modified
+## Claude Code Setup
+
+See `docs/claude-code-setup.md` for the full reference on all Claude Code customizations — skills, hookify rules, plugins, MCP servers, memory, and settings.
 
 ## Environment
 
