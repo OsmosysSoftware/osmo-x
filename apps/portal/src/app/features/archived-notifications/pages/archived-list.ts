@@ -13,6 +13,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { DatePickerModule } from 'primeng/datepicker';
 import { MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
@@ -49,6 +50,7 @@ import { ChannelType, DeliveryStatus } from '../../../core/constants/notificatio
     IconFieldModule,
     InputIconModule,
     InputTextModule,
+    DatePickerModule,
     PaginationComponent,
     StatusBadgeComponent,
     ChannelTypePipe,
@@ -92,7 +94,15 @@ export class ArchivedListComponent implements OnInit {
   readonly selectedChannelType = signal<number | null>(null);
   readonly selectedDeliveryStatus = signal<number | null>(null);
   readonly selectedApplicationId = signal<number | null>(null);
+  readonly selectedDateFrom = signal<Date | null>(null);
+  readonly selectedDateTo = signal<Date | null>(null);
   readonly searchText = signal('');
+
+  // Sort state (signals keep PrimeNG table in sync to prevent re-sort on data change)
+  readonly tableSortField = signal('created_on');
+  readonly tableSortOrder = signal<number>(-1);
+  private currentSort = 'created_on';
+  private currentOrder: 'asc' | 'desc' = 'desc';
 
   // JSON viewer dialog
   readonly jsonDialogVisible = signal(false);
@@ -139,6 +149,19 @@ export class ArchivedListComponent implements OnInit {
       filters.search = this.searchText().trim();
     }
 
+    if (this.selectedDateFrom()) {
+      filters.date_from = this.selectedDateFrom()!.toISOString();
+    }
+
+    if (this.selectedDateTo()) {
+      filters.date_to = this.selectedDateTo()!.toISOString();
+    }
+
+    if (this.currentSort) {
+      filters.sort = this.currentSort;
+      filters.order = this.currentOrder;
+    }
+
     this.service.list(this.currentPage, this.currentLimit, filters).subscribe({
       next: (res) => {
         this.notifications.set(res.items ?? []);
@@ -167,6 +190,22 @@ export class ArchivedListComponent implements OnInit {
     this.loadNotifications();
   }
 
+  onSort(event: { field: string; order: number }): void {
+    const newSort = event.field;
+    const newOrder: 'asc' | 'desc' = event.order === 1 ? 'asc' : 'desc';
+
+    if (this.currentSort === newSort && this.currentOrder === newOrder) {
+      return;
+    }
+
+    this.tableSortField.set(newSort);
+    this.tableSortOrder.set(event.order);
+    this.currentSort = newSort;
+    this.currentOrder = newOrder;
+    this.currentPage = 1;
+    this.loadNotifications();
+  }
+
   onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
 
@@ -186,6 +225,8 @@ export class ArchivedListComponent implements OnInit {
     this.selectedChannelType.set(null);
     this.selectedDeliveryStatus.set(null);
     this.selectedApplicationId.set(null);
+    this.selectedDateFrom.set(null);
+    this.selectedDateTo.set(null);
     this.searchText.set('');
     this.currentPage = 1;
     this.loadNotifications();

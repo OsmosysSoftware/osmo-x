@@ -1850,6 +1850,10 @@ export interface operations {
         delivery_status?: number;
         /** @description Filter by application */
         application_id?: number;
+        /** @description Filter by created_on >= datetime (ISO 8601) */
+        date_from?: string;
+        /** @description Filter by created_on <= datetime (ISO 8601) */
+        date_to?: string;
       };
       header?: never;
       path?: never;
@@ -3227,6 +3231,10 @@ export interface operations {
         delivery_status?: number;
         /** @description Filter by application */
         application_id?: number;
+        /** @description Filter by created_on >= datetime (ISO 8601) */
+        date_from?: string;
+        /** @description Filter by created_on <= datetime (ISO 8601) */
+        date_to?: string;
       };
       header?: never;
       path?: never;

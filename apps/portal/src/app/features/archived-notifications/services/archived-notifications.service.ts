@@ -9,6 +9,10 @@ export interface NotificationFilters {
   delivery_status?: number;
   application_id?: number;
   search?: string;
+  date_from?: string;
+  date_to?: string;
+  sort?: string;
+  order?: 'asc' | 'desc';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -40,6 +44,22 @@ export class ArchivedNotificationsService {
 
     if (filters?.search) {
       params = params.set('search', filters.search);
+    }
+
+    if (filters?.date_from) {
+      params = params.set('date_from', filters.date_from);
+    }
+
+    if (filters?.date_to) {
+      params = params.set('date_to', filters.date_to);
+    }
+
+    if (filters?.sort) {
+      params = params.set('sort', filters.sort);
+    }
+
+    if (filters?.order) {
+      params = params.set('order', filters.order);
     }
 
     return this.http
