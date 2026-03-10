@@ -11,9 +11,8 @@ services:
       POSTGRES_USER: '${DB_USERNAME}'
       POSTGRES_PASSWORD: '${DB_PASSWORD}'
       POSTGRES_DB: '${DB_NAME}'
-      PGDATA: /var/lib/postgresql/data
     volumes:
-      - osmox-postgres-data:/var/lib/postgresql/data
+      - osmox-postgres-data-saas:/var/lib/postgresql
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME} -d ${DB_NAME}']
       interval: 10s
@@ -119,7 +118,7 @@ services:
       - osmox-network
 
 volumes:
-  osmox-postgres-data:
+  osmox-postgres-data-saas:
     driver: local
   osmox-redis-data:
     driver: local
