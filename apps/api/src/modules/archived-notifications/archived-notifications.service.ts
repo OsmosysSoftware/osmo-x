@@ -174,7 +174,13 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
   async getAllArchivedNotificationsAsDto(
     query: PaginationQueryDto,
     organizationId: number,
-    filters?: { channelType?: number; deliveryStatus?: number; applicationId?: number },
+    filters?: {
+      channelType?: number;
+      deliveryStatus?: number;
+      applicationId?: number;
+      dateFrom?: string;
+      dateTo?: string;
+    },
   ): Promise<{ items: ArchivedNotificationResponseDto[]; meta: PaginationMeta }> {
     let appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
 
@@ -203,6 +209,22 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
     if (filters?.deliveryStatus) {
       baseConditions.push({ field: 'deliveryStatus', value: filters.deliveryStatus });
+    }
+
+    if (filters?.dateFrom) {
+      baseConditions.push({
+        field: 'createdOn',
+        value: new Date(filters.dateFrom),
+        operator: 'gte',
+      });
+    }
+
+    if (filters?.dateTo) {
+      baseConditions.push({
+        field: 'createdOn',
+        value: new Date(filters.dateTo),
+        operator: 'lte',
+      });
     }
 
     const searchableFields = ['createdBy', 'data', 'result'];

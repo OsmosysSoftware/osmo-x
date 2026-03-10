@@ -71,6 +71,18 @@ export class ArchivedNotificationsController {
     type: Number,
     description: 'Filter by application',
   })
+  @ApiQuery({
+    name: 'date_from',
+    required: false,
+    type: String,
+    description: 'Filter by created_on >= datetime (ISO 8601)',
+  })
+  @ApiQuery({
+    name: 'date_to',
+    required: false,
+    type: String,
+    description: 'Filter by created_on <= datetime (ISO 8601)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of archived notifications',
@@ -83,6 +95,8 @@ export class ArchivedNotificationsController {
     @Query('channel_type') channelType: number,
     @Query('delivery_status') deliveryStatus: number,
     @Query('application_id') applicationId: number,
+    @Query('date_from') dateFrom: string,
+    @Query('date_to') dateTo: string,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<ArchivedNotificationResponseDto>> {
@@ -91,6 +105,8 @@ export class ArchivedNotificationsController {
       channelType: channelType ? Number(channelType) : undefined,
       deliveryStatus: deliveryStatus ? Number(deliveryStatus) : undefined,
       applicationId: applicationId ? Number(applicationId) : undefined,
+      dateFrom: dateFrom || undefined,
+      dateTo: dateTo || undefined,
     };
     const { items, meta } =
       await this.archivedNotificationsService.getAllArchivedNotificationsAsDto(

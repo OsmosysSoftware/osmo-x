@@ -37,6 +37,30 @@
           (onChange)="onFilterChange()"
           [style]="{ minWidth: '10rem' }"
         />
+        <p-datepicker
+          [(ngModel)]="selectedDateFrom"
+          placeholder="From datetime"
+          [showClear]="true"
+          [showTime]="true"
+          [showIcon]="true"
+          dateFormat="dd/mm/yy"
+          [hourFormat]="'24'"
+          (onSelect)="onFilterChange()"
+          (onClear)="onFilterChange()"
+          [style]="{ minWidth: '12rem' }"
+        />
+        <p-datepicker
+          [(ngModel)]="selectedDateTo"
+          placeholder="To datetime"
+          [showClear]="true"
+          [showTime]="true"
+          [showIcon]="true"
+          dateFormat="dd/mm/yy"
+          [hourFormat]="'24'"
+          (onSelect)="onFilterChange()"
+          (onClear)="onFilterChange()"
+          [style]="{ minWidth: '12rem' }"
+        />
       </div>
     </ng-template>
     <ng-template #end>
@@ -87,77 +111,81 @@
 
   @if (loading()) {
     <p-skeleton height="300px" />
-  } @else {
-    <p-table
-      [value]="notifications()"
-      [rowHover]="true"
-      [stripedRows]="true"
-      [tableStyle]="{ 'min-width': '80rem' }"
-      selectionMode="single"
-      (onRowSelect)="onRowSelect($event)"
-    >
-      <ng-template #header>
-        <tr>
-          <th style="width: 5rem">ID</th>
-          <th>Channel Type</th>
-          <th>Delivery Status</th>
-          <th style="min-width: 8rem">Application</th>
-          <th style="min-width: 8rem">Provider</th>
-          <th style="width: 5rem">Data</th>
-          <th style="width: 5rem">Result</th>
-          <th pSortableColumn="created_on" style="min-width: 10rem">
-            Created <p-sortIcon field="created_on" />
-          </th>
-        </tr>
-      </ng-template>
-      <ng-template #body let-n>
-        <tr [pSelectableRow]="n" class="cursor-pointer">
-          <td>{{ n.id }}</td>
-          <td>{{ n.channel_type | channelType }}</td>
-          <td>
-            <app-status-badge [status]="n.delivery_status" />
-          </td>
-          <td>{{ getApplicationName(n.application_id) }}</td>
-          <td>{{ getProviderName(n.provider_id) }}</td>
-          <td>
+  }
+
+  <p-table
+    [value]="notifications()"
+    [rowHover]="true"
+    [hidden]="loading()"
+    [stripedRows]="true"
+    [tableStyle]="{ 'min-width': '80rem' }"
+    [sortField]="tableSortField()"
+    [sortOrder]="tableSortOrder()"
+    (onSort)="onSort($event)"
+    selectionMode="single"
+    (onRowSelect)="onRowSelect($event)"
+  >
+    <ng-template #header>
+      <tr>
+        <th style="width: 5rem">ID</th>
+        <th>Channel Type</th>
+        <th>Delivery Status</th>
+        <th style="min-width: 8rem">Application</th>
+        <th style="min-width: 8rem">Provider</th>
+        <th style="width: 5rem">Data</th>
+        <th style="width: 5rem">Result</th>
+        <th pSortableColumn="created_on" style="min-width: 10rem">
+          Created <p-sortIcon field="created_on" />
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-n>
+      <tr [pSelectableRow]="n" class="cursor-pointer">
+        <td>{{ n.id }}</td>
+        <td>{{ n.channel_type | channelType }}</td>
+        <td>
+          <app-status-badge [status]="n.delivery_status" />
+        </td>
+        <td>{{ getApplicationName(n.application_id) }}</td>
+        <td>{{ getProviderName(n.provider_id) }}</td>
+        <td>
+          <p-button
+            icon="pi pi-eye"
+            [rounded]="true"
+            [text]="true"
+            severity="info"
+            pTooltip="View data"
+            tooltipPosition="top"
+            (onClick)="viewJson(n.data, 'Notification Data'); $event.stopPropagation()"
+          />
+        </td>
+        <td>
+          @if (n.result) {
             <p-button
               icon="pi pi-eye"
               [rounded]="true"
               [text]="true"
               severity="info"
-              pTooltip="View data"
+              pTooltip="View result"
               tooltipPosition="top"
-              (onClick)="viewJson(n.data, 'Notification Data'); $event.stopPropagation()"
+              (onClick)="viewJson(n.result, 'Notification Result'); $event.stopPropagation()"
             />
-          </td>
-          <td>
-            @if (n.result) {
-              <p-button
-                icon="pi pi-eye"
-                [rounded]="true"
-                [text]="true"
-                severity="info"
-                pTooltip="View result"
-                tooltipPosition="top"
-                (onClick)="viewJson(n.result, 'Notification Result'); $event.stopPropagation()"
-              />
-            }
-          </td>
-          <td>{{ n.created_on | date: 'short' }}</td>
-        </tr>
-      </ng-template>
-      <ng-template #emptymessage>
-        <tr>
-          <td colspan="8" class="!text-center py-8 text-muted-color">No notifications found</td>
-        </tr>
-      </ng-template>
-    </p-table>
+          }
+        </td>
+        <td>{{ n.created_on | date: 'short' }}</td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="8" class="!text-center py-8 text-muted-color">No notifications found</td>
+      </tr>
+    </ng-template>
+  </p-table>
 
-    @if (pageInfo(); as pi) {
-      <div class="mt-4">
-        <app-pagination [pageInfo]="pi" (paginationChange)="onPageChange($event)" />
-      </div>
-    }
+  @if (pageInfo(); as pi) {
+    <div class="mt-4">
+      <app-pagination [pageInfo]="pi" (paginationChange)="onPageChange($event)" />
+    </div>
   }
 </div>
 

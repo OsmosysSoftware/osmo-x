@@ -579,7 +579,13 @@ export class NotificationsService extends CoreService<Notification> {
   async getAllNotificationsAsDto(
     query: PaginationQueryDto,
     organizationId: number,
-    filters?: { channelType?: number; deliveryStatus?: number; applicationId?: number },
+    filters?: {
+      channelType?: number;
+      deliveryStatus?: number;
+      applicationId?: number;
+      dateFrom?: string;
+      dateTo?: string;
+    },
   ): Promise<{ items: NotificationResponseDto[]; meta: PaginationMeta }> {
     let appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
 
@@ -608,6 +614,22 @@ export class NotificationsService extends CoreService<Notification> {
 
     if (filters?.deliveryStatus) {
       baseConditions.push({ field: 'deliveryStatus', value: filters.deliveryStatus });
+    }
+
+    if (filters?.dateFrom) {
+      baseConditions.push({
+        field: 'createdOn',
+        value: new Date(filters.dateFrom),
+        operator: 'gte',
+      });
+    }
+
+    if (filters?.dateTo) {
+      baseConditions.push({
+        field: 'createdOn',
+        value: new Date(filters.dateTo),
+        operator: 'lte',
+      });
     }
 
     const searchableFields = ['createdBy', 'data', 'result'];

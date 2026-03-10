@@ -67,14 +67,23 @@ export abstract class CoreService<TEntity> {
 
     // Apply base conditions
     baseConditions.forEach((condition, idx) => {
+      const paramName = `base_${idx}`;
+
       if (condition.operator === 'in') {
-        const paramName = `base_${idx}`;
         queryBuilder.andWhere(`${alias}.${condition.field} IN (:...${paramName})`, {
           [paramName]: condition.value,
         });
+      } else if (condition.operator === 'gte') {
+        queryBuilder.andWhere(`${alias}.${condition.field} >= :${paramName}`, {
+          [paramName]: condition.value,
+        });
+      } else if (condition.operator === 'lte') {
+        queryBuilder.andWhere(`${alias}.${condition.field} <= :${paramName}`, {
+          [paramName]: condition.value,
+        });
       } else {
-        queryBuilder.andWhere(`${alias}.${condition.field} = :${condition.field}`, {
-          [condition.field]: condition.value,
+        queryBuilder.andWhere(`${alias}.${condition.field} = :${paramName}`, {
+          [paramName]: condition.value,
         });
       }
     });
@@ -152,8 +161,12 @@ export abstract class CoreService<TEntity> {
     // Pagination and Sorting
     if (options.offset !== undefined) queryBuilder.skip(options.offset);
     if (options.limit !== undefined) queryBuilder.take(options.limit);
-    if (options.sortBy)
+
+    if (options.sortBy) {
       queryBuilder.orderBy(`${alias}.${options.sortBy}`, options.sortOrder || 'ASC');
+    } else {
+      queryBuilder.orderBy(`${alias}.createdOn`, 'DESC');
+    }
 
     const [items, total] = await queryBuilder.getManyAndCount();
     return { items, total };
