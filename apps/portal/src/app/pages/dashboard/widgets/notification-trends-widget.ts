@@ -52,26 +52,42 @@ export class NotificationTrendsWidget {
     const borderColor = style.getPropertyValue('--surface-border');
     const textMuted = style.getPropertyValue('--text-color-secondary');
 
+    const greenColor = style.getPropertyValue('--p-green-400');
+    const redColor = style.getPropertyValue('--p-red-400');
+    const blueColor = style.getPropertyValue('--p-blue-400');
+
     this.chartData.set({
       labels: trends.map((t) => t.date.slice(5)),
       datasets: [
         {
+          label: 'Total',
+          borderColor: blueColor,
+          backgroundColor: blueColor + '20',
+          data: trends.map((t) => t.total),
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3,
+          pointHoverRadius: 6,
+        },
+        {
           label: 'Successful',
-          backgroundColor: style.getPropertyValue('--p-green-400'),
+          borderColor: greenColor,
+          backgroundColor: greenColor + '15',
           data: trends.map((t) => t.successful),
-          barThickness: 16,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointHoverRadius: 5,
         },
         {
           label: 'Failed',
-          backgroundColor: style.getPropertyValue('--p-red-400'),
+          borderColor: redColor,
+          backgroundColor: redColor + '15',
           data: trends.map((t) => t.failed),
-          barThickness: 16,
-        },
-        {
-          label: 'Other',
-          backgroundColor: style.getPropertyValue('--p-yellow-400'),
-          data: trends.map((t) => t.total - t.successful - t.failed),
-          barThickness: 16,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointHoverRadius: 5,
         },
       ],
     });
@@ -79,20 +95,22 @@ export class NotificationTrendsWidget {
     this.chartOptions.set({
       maintainAspectRatio: false,
       aspectRatio: 0.8,
+      interaction: { mode: 'index' as const, intersect: false },
       plugins: {
-        legend: { labels: { color: textColor } },
+        legend: {
+          labels: { color: textColor, usePointStyle: true, pointStyle: 'circle' },
+        },
         tooltip: { mode: 'index' as const, intersect: false },
       },
       scales: {
         x: {
-          stacked: true,
-          ticks: { color: textMuted },
+          ticks: { color: textMuted, maxRotation: 45 },
           grid: { color: 'transparent' },
         },
         y: {
-          stacked: true,
+          beginAtZero: true,
           ticks: { color: textMuted },
-          grid: { color: borderColor },
+          grid: { color: borderColor, drawBorder: false },
         },
       },
     });

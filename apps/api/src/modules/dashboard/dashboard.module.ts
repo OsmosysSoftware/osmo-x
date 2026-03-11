@@ -5,12 +5,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
 import { Notification } from '../notifications/entities/notification.entity';
+import { ArchivedNotification } from '../archived-notifications/entities/archived-notification.entity';
 import { Application } from '../applications/entities/application.entity';
 import { Provider } from '../providers/entities/provider.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Notification, Application, Provider]),
+    TypeOrmModule.forFeature([Notification, ArchivedNotification, Application, Provider]),
     ConfigModule,
     JwtModule,
   ],
