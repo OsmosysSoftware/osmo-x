@@ -58,11 +58,17 @@ export class ApplicationStatsWidget {
         {
           label: 'Successful',
           backgroundColor: style.getPropertyValue('--p-green-400'),
+          borderColor: style.getPropertyValue('--p-green-500'),
+          borderWidth: 1,
+          borderRadius: 4,
           data: apps.map((a) => a.successful),
         },
         {
           label: 'Failed',
           backgroundColor: style.getPropertyValue('--p-red-400'),
+          borderColor: style.getPropertyValue('--p-red-500'),
+          borderWidth: 1,
+          borderRadius: 4,
           data: apps.map((a) => a.failed),
         },
       ],
@@ -73,14 +79,17 @@ export class ApplicationStatsWidget {
       maintainAspectRatio: false,
       aspectRatio: 0.6,
       plugins: {
-        legend: { labels: { color: textColor } },
+        legend: {
+          labels: { color: textColor, usePointStyle: true, pointStyle: 'circle' },
+        },
         tooltip: { mode: 'index' as const, intersect: false },
       },
       scales: {
         x: {
           stacked: true,
+          beginAtZero: true,
           ticks: { color: textMuted },
-          grid: { color: borderColor },
+          grid: { color: borderColor, drawBorder: false },
         },
         y: {
           stacked: true,

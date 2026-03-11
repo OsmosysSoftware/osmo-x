@@ -1,5 +1,5 @@
 <div class="card">
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
       <h1
         class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
@@ -8,6 +8,26 @@
         Dashboard
       </h1>
       <p class="text-muted-color mt-2">OsmoX notification management overview</p>
+    </div>
+    <div class="flex items-center gap-3 flex-wrap">
+      <p-selectButton
+        [options]="sourceOptions"
+        [ngModel]="selectedSource()"
+        (ngModelChange)="onSourceChange($event)"
+        optionLabel="label"
+        optionValue="value"
+        size="small"
+        [pt]="filterPt"
+      />
+      <p-selectButton
+        [options]="periodOptions"
+        [ngModel]="selectedPeriod()"
+        (ngModelChange)="onPeriodChange($event)"
+        optionLabel="label"
+        optionValue="value"
+        size="small"
+        [pt]="filterPt"
+      />
     </div>
   </div>
 
@@ -130,17 +150,7 @@
     </div>
   }
 
-  <!-- Analytics Section -->
-  <div class="flex items-center justify-between mb-4 mt-8">
-    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">Analytics</h2>
-    <p-selectButton
-      [options]="periodOptions"
-      [ngModel]="selectedPeriod()"
-      (ngModelChange)="onPeriodChange($event)"
-      optionLabel="label"
-      optionValue="value"
-    />
-  </div>
+  <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 mt-8 mb-4">Analytics</h2>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
     <app-notification-trends-widget

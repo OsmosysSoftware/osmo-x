@@ -4,6 +4,8 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { DashboardStats, DashboardAnalytics } from '../../core/models/api.model';
 
+export type DashboardSource = 'active' | 'archived' | 'both';
+
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private readonly http = inject(HttpClient);
@@ -16,14 +18,20 @@ export class DashboardService {
   private readonly _analytics = signal<DashboardAnalytics | null>(null);
   readonly analytics = this._analytics.asReadonly();
 
-  loadStats(): Observable<DashboardStats> {
+  loadStats(source: DashboardSource = 'both', period: string = 'all'): Observable<DashboardStats> {
+    const params = new HttpParams().set('source', source).set('period', period);
+
     return this.http
-      .get<DashboardStats>(`${this.apiUrl}/stats`)
+      .get<DashboardStats>(`${this.apiUrl}/stats`, { params })
       .pipe(tap((stats) => this._stats.set(stats)));
   }
 
-  loadAnalytics(period: string = '30d', applicationId?: number): Observable<DashboardAnalytics> {
-    let params = new HttpParams().set('period', period);
+  loadAnalytics(
+    period: string = '24h',
+    source: DashboardSource = 'both',
+    applicationId?: number,
+  ): Observable<DashboardAnalytics> {
+    let params = new HttpParams().set('period', period).set('source', source);
 
     if (applicationId) {
       params = params.set('application_id', applicationId.toString());

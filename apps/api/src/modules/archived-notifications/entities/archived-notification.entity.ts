@@ -22,6 +22,8 @@ import { ProviderChain } from 'src/modules/provider-chains/entities/provider-cha
 @Index('IDX_notify_archived_notifications_application_id', ['applicationId'])
 @Index('IDX_notify_archived_notifications_delivery_status', ['deliveryStatus'])
 @Index('IDX_notify_archived_notifications_created_on', ['createdOn'])
+@Index('IDX_notify_archived_notifications_app_delivery', ['applicationId', 'deliveryStatus'])
+@Index('IDX_notify_archived_notifications_provider_id', ['providerId'])
 export class ArchivedNotification {
   @PrimaryGeneratedColumn()
   @Field()

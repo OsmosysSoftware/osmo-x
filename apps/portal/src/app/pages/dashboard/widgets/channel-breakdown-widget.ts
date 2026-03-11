@@ -106,10 +106,21 @@ export class ChannelBreakdownWidget {
     this.chartOptions.set({
       maintainAspectRatio: false,
       aspectRatio: 1,
+      cutout: '60%',
       plugins: {
         legend: {
           position: 'bottom' as const,
-          labels: { color: textColor, usePointStyle: true },
+          labels: { color: textColor, usePointStyle: true, pointStyle: 'circle', padding: 16 },
+        },
+        tooltip: {
+          callbacks: {
+            label: (context: { label: string; parsed: number; dataset: { data: number[] } }) => {
+              const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+              const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : '0';
+
+              return ` ${context.label}: ${context.parsed.toLocaleString()} (${pct}%)`;
+            },
+          },
         },
       },
     });

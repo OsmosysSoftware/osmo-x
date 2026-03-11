@@ -3,7 +3,7 @@
   @if (loading()) {
     <p-skeleton height="300px" />
   } @else if (chartData()) {
-    <p-chart type="bar" [data]="chartData()" [options]="chartOptions()" class="h-80" />
+    <p-chart type="line" [data]="chartData()" [options]="chartOptions()" class="h-80" />
   } @else {
     <div class="flex items-center justify-center h-80 text-muted-color">
       <p>No trend data available</p>
