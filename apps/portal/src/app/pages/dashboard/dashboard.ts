@@ -49,6 +49,16 @@ export class DashboardComponent implements OnInit {
   ];
   readonly selectedSource = signal<DashboardSource>('both');
 
+  readonly filterPt = {
+    root: {
+      style: {
+        '--p-togglebutton-content-checked-background': 'var(--p-primary-color)',
+        '--p-togglebutton-content-checked-shadow': 'none',
+        '--p-togglebutton-checked-color': 'var(--p-primary-contrast-color)',
+      },
+    },
+  };
+
   ngOnInit(): void {
     this.loadAll();
   }
