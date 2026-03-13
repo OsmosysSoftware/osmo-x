@@ -8,6 +8,7 @@ export interface NotificationFilters {
   channel_type?: number;
   delivery_status?: number;
   application_id?: number;
+  provider_id?: number;
   search?: string;
   date_from?: string;
   date_to?: string;
@@ -40,6 +41,10 @@ export class NotificationsService {
 
     if (filters?.application_id) {
       params = params.set('application_id', filters.application_id);
+    }
+
+    if (filters?.provider_id) {
+      params = params.set('provider_id', filters.provider_id);
     }
 
     if (filters?.search) {
