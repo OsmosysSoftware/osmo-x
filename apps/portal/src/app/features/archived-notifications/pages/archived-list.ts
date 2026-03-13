@@ -89,11 +89,13 @@ export class ArchivedListComponent implements OnInit {
   }));
 
   readonly applicationOptions = signal<{ label: string; value: number }[]>([]);
+  readonly providerOptions = signal<{ label: string; value: number }[]>([]);
 
   // Filter state
   readonly selectedChannelType = signal<number | null>(null);
   readonly selectedDeliveryStatus = signal<number | null>(null);
   readonly selectedApplicationId = signal<number | null>(null);
+  readonly selectedProviderId = signal<number | null>(null);
   readonly selectedDateFrom = signal<Date | null>(null);
   readonly selectedDateTo = signal<Date | null>(null);
   readonly searchText = signal('');
@@ -124,7 +126,12 @@ export class ArchivedListComponent implements OnInit {
     });
 
     this.providersService.list(1, 100).subscribe({
-      next: (res) => this.providers.set(res.items ?? []),
+      next: (res) => {
+        this.providers.set(res.items ?? []);
+        this.providerOptions.set(
+          (res.items ?? []).map((p) => ({ label: p.name, value: p.provider_id })),
+        );
+      },
     });
   }
 
@@ -143,6 +150,10 @@ export class ArchivedListComponent implements OnInit {
 
     if (this.selectedApplicationId()) {
       filters.application_id = this.selectedApplicationId()!;
+    }
+
+    if (this.selectedProviderId()) {
+      filters.provider_id = this.selectedProviderId()!;
     }
 
     if (this.searchText().trim()) {
@@ -225,6 +236,7 @@ export class ArchivedListComponent implements OnInit {
     this.selectedChannelType.set(null);
     this.selectedDeliveryStatus.set(null);
     this.selectedApplicationId.set(null);
+    this.selectedProviderId.set(null);
     this.selectedDateFrom.set(null);
     this.selectedDateTo.set(null);
     this.searchText.set('');

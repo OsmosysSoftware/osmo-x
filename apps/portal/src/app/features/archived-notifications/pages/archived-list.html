@@ -37,6 +37,14 @@
           (onChange)="onFilterChange()"
           [style]="{ minWidth: '10rem' }"
         />
+        <p-select
+          [options]="providerOptions()"
+          [ngModel]="selectedProviderId()"
+          (ngModelChange)="selectedProviderId.set($event); onFilterChange()"
+          placeholder="Provider"
+          [showClear]="true"
+          [style]="{ minWidth: '10rem' }"
+        />
         <p-datepicker
           [(ngModel)]="selectedDateFrom"
           placeholder="From datetime"
