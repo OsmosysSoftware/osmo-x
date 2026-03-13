@@ -120,6 +120,10 @@ export class ChainsListComponent implements OnInit {
   private currentPage = 1;
   private currentLimit = 20;
 
+  // Filter state
+  readonly applicationOptions = signal<{ label: string; value: number }[]>([]);
+  readonly selectedApplicationId = signal<number | null>(null);
+
   readonly providerTypeOptions: ProviderTypeOption[] = [
     { label: 'Email', value: 1 },
     { label: 'SMS', value: 2 },
@@ -148,8 +152,9 @@ export class ChainsListComponent implements OnInit {
 
   loadChains(): void {
     this.loading.set(true);
+    const appId = this.selectedApplicationId() ?? undefined;
 
-    this.service.list(this.currentPage, this.currentLimit).subscribe({
+    this.service.list(this.currentPage, this.currentLimit, appId).subscribe({
       next: (res) => {
         this.chains.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);
@@ -172,7 +177,12 @@ export class ChainsListComponent implements OnInit {
 
   loadApplications(): void {
     this.applicationsService.list(1, 100).subscribe({
-      next: (res) => this.applications.set(res.items ?? []),
+      next: (res) => {
+        this.applications.set(res.items ?? []);
+        this.applicationOptions.set(
+          (res.items ?? []).map((a) => ({ label: a.name, value: a.application_id })),
+        );
+      },
     });
   }
 
@@ -185,6 +195,17 @@ export class ChainsListComponent implements OnInit {
   onPageChange(event: { page: number; limit: number }): void {
     this.currentPage = event.page;
     this.currentLimit = event.limit;
+    this.loadChains();
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 1;
+    this.loadChains();
+  }
+
+  clearFilters(): void {
+    this.selectedApplicationId.set(null);
+    this.currentPage = 1;
     this.loadChains();
   }
 
