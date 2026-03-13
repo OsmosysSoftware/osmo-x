@@ -41,6 +41,18 @@ export class ProblemJsonFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       const exceptionResponse = exception.getResponse();
 
+      // Pass through Terminus health check responses (they have status + info/error/details)
+      if (
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null &&
+        'status' in exceptionResponse &&
+        'details' in exceptionResponse
+      ) {
+        response.status(status).json(exceptionResponse);
+
+        return;
+      }
+
       // Custom AppException format with errorCode
       if (
         typeof exceptionResponse === 'object' &&
