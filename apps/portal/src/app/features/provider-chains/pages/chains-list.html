@@ -23,10 +23,10 @@
         />
         <p-select
           [options]="applicationOptions()"
-          [(ngModel)]="selectedApplicationId"
+          [ngModel]="selectedApplicationId()"
+          (ngModelChange)="selectedApplicationId.set($event); onFilterChange()"
           placeholder="Application"
           [showClear]="true"
-          (onChange)="onFilterChange()"
           [style]="{ minWidth: '10rem' }"
         />
       </div>
