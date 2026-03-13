@@ -39,10 +39,10 @@
         />
         <p-select
           [options]="providerOptions()"
-          [(ngModel)]="selectedProviderId"
+          [ngModel]="selectedProviderId()"
+          (ngModelChange)="selectedProviderId.set($event); onFilterChange()"
           placeholder="Provider"
           [showClear]="true"
-          (onChange)="onFilterChange()"
           [style]="{ minWidth: '10rem' }"
         />
         <p-datepicker
