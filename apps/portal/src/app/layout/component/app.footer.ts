@@ -9,9 +9,11 @@ import { Component } from '@angular/core';
       target="_blank"
       rel="noopener noreferrer"
       class="text-primary font-bold hover:underline"
-      >Copyright &copy; 2025 Osmosys Software Solutions</a
+      >Copyright &copy; {{ currentYear }} Osmosys Software Solutions</a
     >
     | All Rights Reserved
   </div>`,
 })
-export class AppFooter {}
+export class AppFooter {
+  readonly currentYear = new Date().getFullYear();
+}
