@@ -12,7 +12,7 @@
 
   <p-toolbar class="mb-4">
     <ng-template #start>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex items-center gap-2 flex-wrap">
         <p-button
           label="New Provider"
           icon="pi pi-plus"
@@ -20,6 +20,14 @@
           [disabled]="orgContext.isAllOrgsMode()"
           [pTooltip]="orgContext.isAllOrgsMode() ? 'Select a specific organization first' : ''"
           tooltipPosition="top"
+        />
+        <p-select
+          [options]="applicationOptions()"
+          [(ngModel)]="selectedApplicationId"
+          placeholder="Application"
+          [showClear]="true"
+          (onChange)="onFilterChange()"
+          [style]="{ minWidth: '10rem' }"
         />
       </div>
     </ng-template>
@@ -30,11 +38,21 @@
           <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search..." />
         </p-iconfield>
         <p-button
+          icon="pi pi-filter-slash"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Clear filters"
+          tooltipPosition="top"
+          (onClick)="clearFilters()"
+        />
+        <p-button
           icon="pi pi-refresh"
           [rounded]="true"
           [text]="true"
           severity="secondary"
           pTooltip="Refresh"
+          tooltipPosition="top"
           (onClick)="loadProviders()"
         />
       </div>

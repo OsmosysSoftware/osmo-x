@@ -93,6 +93,10 @@ export class ProvidersListComponent implements OnInit {
     value: Number(key),
   }));
 
+  // Filter state
+  readonly applicationOptions = signal<{ label: string; value: number }[]>([]);
+  readonly selectedApplicationId = signal<number | null>(null);
+
   // Dialog state
   readonly dialogVisible = signal(false);
   readonly editingProvider = signal<Provider | null>(null);
@@ -111,7 +115,12 @@ export class ProvidersListComponent implements OnInit {
 
   loadApplications(): void {
     this.applicationsService.list(1, 100).subscribe({
-      next: (res) => this.applications.set(res.items ?? []),
+      next: (res) => {
+        this.applications.set(res.items ?? []);
+        this.applicationOptions.set(
+          (res.items ?? []).map((a) => ({ label: a.name, value: a.application_id })),
+        );
+      },
     });
   }
 
@@ -156,7 +165,9 @@ export class ProvidersListComponent implements OnInit {
 
   loadProviders(): void {
     this.loading.set(true);
-    this.providersService.list(this.currentPage, this.currentLimit).subscribe({
+    const appId = this.selectedApplicationId() ?? undefined;
+
+    this.providersService.list(this.currentPage, this.currentLimit, appId).subscribe({
       next: (res) => {
         this.providers.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);
@@ -169,6 +180,17 @@ export class ProvidersListComponent implements OnInit {
   onPageChange(event: { page: number; limit: number }): void {
     this.currentPage = event.page;
     this.currentLimit = event.limit;
+    this.loadProviders();
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 1;
+    this.loadProviders();
+  }
+
+  clearFilters(): void {
+    this.selectedApplicationId.set(null);
+    this.currentPage = 1;
     this.loadProviders();
   }
 
