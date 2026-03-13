@@ -16,6 +16,7 @@ import { DatabaseErrorInterceptor } from './database/database-error.interceptor'
 import { ArchivedNotificationsModule } from './modules/archived-notifications/archived-notifications.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { HealthModule } from './modules/health/health.module';
 
 const configService = new ConfigService();
 @Module({
@@ -45,6 +46,7 @@ const configService = new ConfigService();
     ArchivedNotificationsModule,
     OrganizationsModule,
     DashboardModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
