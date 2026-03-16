@@ -3,6 +3,8 @@ import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestj
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 
+const PING_TIMEOUT_MS = 3000;
+
 @Injectable()
 export class RedisHealthIndicator extends HealthIndicator {
   private readonly host: string;
@@ -24,8 +26,13 @@ export class RedisHealthIndicator extends HealthIndicator {
 
     try {
       await redis.connect();
-      const pong = await redis.ping();
-      await redis.quit();
+
+      const pong = await Promise.race([
+        redis.ping(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Redis PING timed out')), PING_TIMEOUT_MS),
+        ),
+      ]);
 
       if (pong !== 'PONG') {
         throw new Error('Redis ping did not return PONG');
@@ -33,12 +40,12 @@ export class RedisHealthIndicator extends HealthIndicator {
 
       return this.getStatus(key, true);
     } catch (error) {
-      await redis.quit().catch(() => {});
-
       throw new HealthCheckError(
         'Redis health check failed',
         this.getStatus(key, false, { message: (error as Error).message }),
       );
+    } finally {
+      await redis.quit().catch(() => {});
     }
   }
 }

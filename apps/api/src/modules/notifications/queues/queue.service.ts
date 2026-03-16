@@ -19,7 +19,7 @@ import { WebhookService } from 'src/modules/webhook/webhook.service';
 @Injectable()
 export class QueueService {
   private readonly logger = new Logger(QueueService.name);
-  private queues: Map<string, Queue> = new Map();
+  private readonly queues: Map<string, Queue> = new Map();
   private workers: Map<string, Worker> = new Map();
   private queueEvents: Map<string, QueueEvents> = new Map();
   private redisConfig: { host: string; port: number };
@@ -93,6 +93,10 @@ export class QueueService {
       this.cleanupInterval = ms(this.configService.get<string>('CLEANUP_INTERVAL', '7d'));
       this.startCleanupTask();
     }
+  }
+
+  getQueues(): Map<string, Queue> {
+    return this.queues;
   }
 
   private createQueue(queueName: string): Queue {
