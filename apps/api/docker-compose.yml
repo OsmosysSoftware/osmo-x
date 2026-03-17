@@ -83,7 +83,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME:-osmo-x}-dozzle
     restart: unless-stopped
     ports:
-      - '127.0.0.1:${DOZZLE_HOST_PORT:-8080}:8080'
+      - '${DOZZLE_HOST_PORT:-8080}:8080'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - osmox-dozzle-data:/data
