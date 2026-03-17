@@ -96,6 +96,7 @@ export class ProvidersListComponent implements OnInit {
   // Filter state
   readonly applicationOptions = signal<{ label: string; value: number }[]>([]);
   readonly selectedApplicationId = signal<number | null>(null);
+  readonly searchText = signal('');
 
   // Dialog state
   readonly dialogVisible = signal(false);
@@ -190,7 +191,9 @@ export class ProvidersListComponent implements OnInit {
 
   clearFilters(): void {
     this.selectedApplicationId.set(null);
+    this.searchText.set('');
     this.currentPage = 1;
+    this.dt()?.clear();
     this.loadProviders();
   }
 

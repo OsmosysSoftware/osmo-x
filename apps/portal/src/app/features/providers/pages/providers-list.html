@@ -35,7 +35,7 @@
       <div class="flex items-center gap-2">
         <p-iconfield iconPosition="left">
           <p-inputicon class="pi pi-search" />
-          <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search..." />
+          <input pInputText type="text" [value]="searchText()" (input)="onGlobalFilter($event)" placeholder="Search..." />
         </p-iconfield>
         <p-button
           icon="pi pi-filter-slash"

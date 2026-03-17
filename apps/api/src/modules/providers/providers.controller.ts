@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -75,8 +76,14 @@ export class ProvidersController {
     @Req() req: Request,
   ): Promise<PaginatedResponse<ProviderResponseDto>> {
     const targetOrgId = resolveOrgId(user, queryOrgId);
+    const parsedAppId = applicationId ? Number(applicationId) : undefined;
+
+    if (parsedAppId !== undefined && isNaN(parsedAppId)) {
+      throw new BadRequestException('application_id must be a valid number');
+    }
+
     const filters = {
-      applicationId: applicationId ? Number(applicationId) : undefined,
+      applicationId: parsedAppId,
     };
     const { items, meta } = await this.providersService.getAllProvidersAsDto(
       query,
