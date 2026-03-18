@@ -228,9 +228,17 @@
           <span>{{ getProviderName(n.provider_id) }}</span>
         </div>
         <div>
-          <span class="font-semibold text-muted-color block mb-1">Created</span>
+          <span class="font-semibold text-muted-color block mb-1">Created on</span>
           <span>{{ n.created_on | date: 'medium' }}</span>
+          <span class="text-muted-color text-xs block">({{ n.created_on | date: 'yyyy-MM-dd HH:mm:ss' : 'UTC' }} UTC)</span>
         </div>
+        @if (n.notification_sent_on) {
+          <div>
+            <span class="font-semibold text-muted-color block mb-1">Notification sent on</span>
+            <span>{{ n.notification_sent_on | date: 'medium' }}</span>
+            <span class="text-muted-color text-xs block">({{ n.notification_sent_on | date: 'yyyy-MM-dd HH:mm:ss' : 'UTC' }} UTC)</span>
+          </div>
+        }
       </div>
 
       <div>
