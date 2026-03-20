@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -53,6 +54,12 @@ export class ProviderChainsController {
     type: Number,
     description: 'Target org (SUPER_ADMIN only)',
   })
+  @ApiQuery({
+    name: 'application_id',
+    required: false,
+    type: Number,
+    description: 'Filter by application',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of provider chains',
@@ -64,11 +71,16 @@ export class ProviderChainsController {
     @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
+    @Query('application_id', new ParseIntPipe({ optional: true })) applicationId?: number,
   ): Promise<PaginatedResponse<ProviderChainResponseDto>> {
     const targetOrgId = resolveOrgId(user, queryOrgId);
+    const filters = {
+      applicationId,
+    };
     const { items, meta } = await this.providerChainsService.getAllProviderChainsAsDto(
       query,
       targetOrgId,
+      filters,
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);

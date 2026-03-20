@@ -198,8 +198,16 @@ export class ProviderChainsService extends CoreService<ProviderChain> {
   async getAllProviderChainsAsDto(
     query: PaginationQueryDto,
     organizationId: number,
+    filters?: {
+      applicationId?: number;
+    },
   ): Promise<{ items: ProviderChainResponseDto[]; meta: PaginationMeta }> {
-    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+    let appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    // If filtering by applicationId, restrict to that app (within org scope)
+    if (filters?.applicationId) {
+      appIds = appIds.includes(filters.applicationId) ? [filters.applicationId] : [];
+    }
 
     if (appIds.length === 0) {
       const { page, limit } = PaginationHelper.normalizePaginationParams(query);
