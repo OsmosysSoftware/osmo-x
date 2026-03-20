@@ -69,9 +69,9 @@ export class ProviderChainsController {
   async findAll(
     @Query() query: PaginationQueryDto,
     @Query('organization_id') queryOrgId: number,
-    @Query('application_id', new ParseIntPipe({ optional: true })) applicationId?: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
+    @Query('application_id', new ParseIntPipe({ optional: true })) applicationId?: number,
   ): Promise<PaginatedResponse<ProviderChainResponseDto>> {
     const targetOrgId = resolveOrgId(user, queryOrgId);
     const filters = {
