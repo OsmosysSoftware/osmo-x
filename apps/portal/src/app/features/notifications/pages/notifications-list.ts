@@ -90,11 +90,21 @@ export class NotificationsListComponent implements OnInit {
   }));
 
   readonly applicationOptions = signal<{ label: string; value: number }[]>([]);
+  readonly allProviderOptions = signal<{ label: string; value: number; applicationId: number }[]>(
+    [],
+  );
+  readonly providerOptions = computed(() => {
+    const appId = this.selectedApplicationId();
+    const all = this.allProviderOptions();
+
+    return appId ? all.filter((p) => p.applicationId === appId) : all;
+  });
 
   // Filter state
   readonly selectedChannelType = signal<number | null>(null);
   readonly selectedDeliveryStatus = signal<number | null>(null);
   readonly selectedApplicationId = signal<number | null>(null);
+  readonly selectedProviderId = signal<number | null>(null);
   readonly selectedDateFrom = signal<Date | null>(null);
   readonly selectedDateTo = signal<Date | null>(null);
   readonly searchText = signal('');
@@ -129,7 +139,25 @@ export class NotificationsListComponent implements OnInit {
     });
 
     this.providersService.list(1, 100).subscribe({
-      next: (res) => this.providers.set(res.items ?? []),
+      next: (res) => {
+        this.providers.set(res.items ?? []);
+        this.allProviderOptions.set(
+          (res.items ?? []).map((p) => ({
+            label: p.name,
+            value: p.provider_id,
+            applicationId: p.application_id,
+          })),
+        );
+      },
+      error: () => {
+        this.providers.set([]);
+        this.allProviderOptions.set([]);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load providers',
+        });
+      },
     });
   }
 
@@ -148,6 +176,10 @@ export class NotificationsListComponent implements OnInit {
 
     if (this.selectedApplicationId()) {
       filters.application_id = this.selectedApplicationId()!;
+    }
+
+    if (this.selectedProviderId()) {
+      filters.provider_id = this.selectedProviderId()!;
     }
 
     if (this.searchText().trim()) {
@@ -187,6 +219,26 @@ export class NotificationsListComponent implements OnInit {
   onPageChange(event: { page: number; limit: number }): void {
     this.currentPage = event.page;
     this.currentLimit = event.limit;
+    this.loadNotifications();
+  }
+
+  onApplicationFilterChange(appId: number | null): void {
+    this.selectedApplicationId.set(appId);
+
+    // Clear provider selection if it doesn't belong to the new application
+    const currentProvider = this.selectedProviderId();
+
+    if (currentProvider && appId) {
+      const providerBelongsToApp = this.allProviderOptions().some(
+        (p) => p.value === currentProvider && p.applicationId === appId,
+      );
+
+      if (!providerBelongsToApp) {
+        this.selectedProviderId.set(null);
+      }
+    }
+
+    this.currentPage = 1;
     this.loadNotifications();
   }
 
@@ -230,6 +282,7 @@ export class NotificationsListComponent implements OnInit {
     this.selectedChannelType.set(null);
     this.selectedDeliveryStatus.set(null);
     this.selectedApplicationId.set(null);
+    this.selectedProviderId.set(null);
     this.selectedDateFrom.set(null);
     this.selectedDateTo.set(null);
     this.searchText.set('');
