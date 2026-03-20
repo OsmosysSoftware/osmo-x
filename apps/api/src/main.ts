@@ -50,7 +50,10 @@ async function bootstrap(): Promise<void> {
   document = transformSwaggerToSnakeCase(document);
   SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
   app.setGlobalPrefix(globalPrefix, {
-    exclude: [{ path: '/', method: RequestMethod.GET }],
+    exclude: [
+      { path: '/', method: RequestMethod.GET },
+      { path: '/health', method: RequestMethod.GET },
+    ],
   });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ProblemJsonFilter());
