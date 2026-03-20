@@ -44,6 +44,7 @@
           severity="secondary"
           pTooltip="Clear filters"
           tooltipPosition="top"
+          aria-label="Clear filters"
           (onClick)="clearFilters()"
         />
         <p-button
@@ -53,6 +54,7 @@
           severity="secondary"
           pTooltip="Refresh"
           tooltipPosition="top"
+          aria-label="Refresh"
           (onClick)="loadProviders()"
         />
       </div>
@@ -101,6 +103,7 @@
                 icon="pi pi-pencil"
                 size="small"
                 pTooltip="Edit"
+                aria-label="Edit"
                 (onClick)="openEdit(p)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -109,6 +112,7 @@
                 severity="danger"
                 size="small"
                 pTooltip="Delete"
+                aria-label="Delete"
                 (onClick)="confirmDelete(p)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />

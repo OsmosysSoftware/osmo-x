@@ -82,6 +82,7 @@
           severity="secondary"
           pTooltip="Clear filters"
           tooltipPosition="top"
+          aria-label="Clear filters"
           (onClick)="clearFilters()"
         />
         @if (isOrgAdmin()) {
@@ -92,6 +93,7 @@
             severity="danger"
             pTooltip="Redis cleanup"
             tooltipPosition="top"
+            aria-label="Redis cleanup"
             [loading]="cleanupLoading()"
             (onClick)="triggerRedisCleanup()"
           />
@@ -103,6 +105,7 @@
           severity="secondary"
           pTooltip="Refresh"
           tooltipPosition="top"
+          aria-label="Refresh"
           (onClick)="loadNotifications()"
         />
       </div>
@@ -156,6 +159,7 @@
             severity="info"
             pTooltip="View data"
             tooltipPosition="top"
+            aria-label="View data"
             (onClick)="viewJson(n.data, 'Notification Data'); $event.stopPropagation()"
           />
         </td>
@@ -168,6 +172,7 @@
               severity="info"
               pTooltip="View result"
               tooltipPosition="top"
+              aria-label="View result"
               (onClick)="viewJson(n.result, 'Notification Result'); $event.stopPropagation()"
             />
           }
@@ -244,6 +249,7 @@
             size="small"
             pTooltip="Copy"
             tooltipPosition="top"
+            aria-label="Copy"
             (onClick)="copyJson(n.data)"
           />
         </div>
@@ -265,6 +271,7 @@
               size="small"
               pTooltip="Copy"
               tooltipPosition="top"
+              aria-label="Copy"
               (onClick)="copyJson(n.result)"
             />
           </div>

@@ -33,6 +33,7 @@
           [text]="true"
           severity="secondary"
           pTooltip="Refresh"
+          aria-label="Refresh"
           (onClick)="loadWebhooks()"
         />
       </div>
@@ -79,6 +80,7 @@
                 icon="pi pi-pencil"
                 size="small"
                 pTooltip="Edit"
+                aria-label="Edit"
                 (onClick)="openEdit(w)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -87,6 +89,7 @@
                 severity="danger"
                 size="small"
                 pTooltip="Delete"
+                aria-label="Delete"
                 (onClick)="confirmDelete(w)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
