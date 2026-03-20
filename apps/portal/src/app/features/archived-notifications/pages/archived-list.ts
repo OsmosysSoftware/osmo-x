@@ -151,6 +151,15 @@ export class ArchivedListComponent implements OnInit {
           })),
         );
       },
+      error: () => {
+        this.providers.set([]);
+        this.allProviderOptions.set([]);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load providers',
+        });
+      },
     });
   }
 
