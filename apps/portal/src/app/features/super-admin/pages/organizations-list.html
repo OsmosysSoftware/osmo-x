@@ -28,6 +28,7 @@
           [text]="true"
           severity="secondary"
           pTooltip="Refresh"
+          aria-label="Refresh"
           (onClick)="loadOrganizations()"
         />
       </div>
@@ -79,6 +80,7 @@
                 icon="pi pi-pencil"
                 size="small"
                 pTooltip="Edit"
+                aria-label="Edit"
                 (onClick)="openEdit(org)"
               />
               <p-button
@@ -86,6 +88,7 @@
                 severity="danger"
                 size="small"
                 pTooltip="Delete"
+                aria-label="Delete"
                 (onClick)="confirmDelete(org)"
               />
             </div>

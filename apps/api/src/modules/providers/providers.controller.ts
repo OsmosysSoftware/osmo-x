@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -55,6 +56,12 @@ export class ProvidersController {
     type: Number,
     description: 'Target org (SUPER_ADMIN only)',
   })
+  @ApiQuery({
+    name: 'application_id',
+    required: false,
+    type: Number,
+    description: 'Filter by application',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of providers',
@@ -64,11 +71,25 @@ export class ProvidersController {
   async findAll(
     @Query() query: PaginationQueryDto,
     @Query('organization_id') queryOrgId: number,
+    @Query('application_id') applicationId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<ProviderResponseDto>> {
     const targetOrgId = resolveOrgId(user, queryOrgId);
-    const { items, meta } = await this.providersService.getAllProvidersAsDto(query, targetOrgId);
+    const parsedAppId = applicationId ? Number(applicationId) : undefined;
+
+    if (parsedAppId !== undefined && isNaN(parsedAppId)) {
+      throw new BadRequestException('application_id must be a valid number');
+    }
+
+    const filters = {
+      applicationId: parsedAppId,
+    };
+    const { items, meta } = await this.providersService.getAllProvidersAsDto(
+      query,
+      targetOrgId,
+      filters,
+    );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
 

@@ -34,6 +34,7 @@
           [text]="true"
           severity="secondary"
           pTooltip="Refresh"
+          aria-label="Refresh"
           (onClick)="loadApplications()"
         />
       </div>
@@ -86,6 +87,7 @@
                 icon="pi pi-pencil"
                 size="small"
                 pTooltip="Edit"
+                aria-label="Edit"
                 (onClick)="openEdit(app)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -94,6 +96,7 @@
                 severity="danger"
                 size="small"
                 pTooltip="Delete"
+                aria-label="Delete"
                 (onClick)="confirmDelete(app)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -208,6 +211,7 @@
                   [text]="true"
                   [rounded]="true"
                   size="small"
+                  aria-label="Delete"
                   (onClick)="removeWhitelistRow($index)"
                   class="mt-1"
                 />

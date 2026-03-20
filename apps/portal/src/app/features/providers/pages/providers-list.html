@@ -12,7 +12,7 @@
 
   <p-toolbar class="mb-4">
     <ng-template #start>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex items-center gap-2 flex-wrap">
         <p-button
           label="New Provider"
           icon="pi pi-plus"
@@ -21,20 +21,40 @@
           [pTooltip]="orgContext.isAllOrgsMode() ? 'Select a specific organization first' : ''"
           tooltipPosition="top"
         />
+        <p-select
+          [options]="applicationOptions()"
+          [ngModel]="selectedApplicationId()"
+          (ngModelChange)="selectedApplicationId.set($event); onFilterChange()"
+          placeholder="Application"
+          [showClear]="true"
+          [style]="{ minWidth: '10rem' }"
+        />
       </div>
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-2">
         <p-iconfield iconPosition="left">
           <p-inputicon class="pi pi-search" />
-          <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search..." />
+          <input pInputText type="text" [value]="searchText()" (input)="onGlobalFilter($event)" placeholder="Search..." />
         </p-iconfield>
+        <p-button
+          icon="pi pi-filter-slash"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Clear filters"
+          tooltipPosition="top"
+          aria-label="Clear filters"
+          (onClick)="clearFilters()"
+        />
         <p-button
           icon="pi pi-refresh"
           [rounded]="true"
           [text]="true"
           severity="secondary"
           pTooltip="Refresh"
+          tooltipPosition="top"
+          aria-label="Refresh"
           (onClick)="loadProviders()"
         />
       </div>
@@ -83,6 +103,7 @@
                 icon="pi pi-pencil"
                 size="small"
                 pTooltip="Edit"
+                aria-label="Edit"
                 (onClick)="openEdit(p)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -91,6 +112,7 @@
                 severity="danger"
                 size="small"
                 pTooltip="Delete"
+                aria-label="Delete"
                 (onClick)="confirmDelete(p)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
