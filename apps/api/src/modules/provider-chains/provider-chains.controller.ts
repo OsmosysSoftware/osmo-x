@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -68,13 +69,13 @@ export class ProviderChainsController {
   async findAll(
     @Query() query: PaginationQueryDto,
     @Query('organization_id') queryOrgId: number,
-    @Query('application_id') applicationId: number,
+    @Query('application_id', new ParseIntPipe({ optional: true })) applicationId?: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<ProviderChainResponseDto>> {
     const targetOrgId = resolveOrgId(user, queryOrgId);
     const filters = {
-      applicationId: applicationId ? Number(applicationId) : undefined,
+      applicationId,
     };
     const { items, meta } = await this.providerChainsService.getAllProviderChainsAsDto(
       query,
