@@ -25,6 +25,8 @@
           [options]="applicationOptions()"
           [ngModel]="selectedApplicationId()"
           (ngModelChange)="selectedApplicationId.set($event); onFilterChange()"
+          optionLabel="label"
+          optionValue="value"
           placeholder="Application"
           [showClear]="true"
           [style]="{ minWidth: '10rem' }"
