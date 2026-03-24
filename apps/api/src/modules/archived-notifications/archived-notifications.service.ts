@@ -178,6 +178,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       channelType?: number;
       deliveryStatus?: number;
       applicationId?: number;
+      providerId?: number;
       dateFrom?: string;
       dateTo?: string;
     },
@@ -209,6 +210,10 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
     if (filters?.deliveryStatus) {
       baseConditions.push({ field: 'deliveryStatus', value: filters.deliveryStatus });
+    }
+
+    if (filters?.providerId) {
+      baseConditions.push({ field: 'providerId', value: filters.providerId });
     }
 
     if (filters?.dateFrom) {
