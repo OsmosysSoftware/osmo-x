@@ -12,7 +12,7 @@
 
   <p-toolbar class="mb-4">
     <ng-template #start>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex items-center gap-2 flex-wrap">
         <p-button
           label="New Chain"
           icon="pi pi-plus"
@@ -20,6 +20,14 @@
           [disabled]="orgContext.isAllOrgsMode()"
           [pTooltip]="orgContext.isAllOrgsMode() ? 'Select a specific organization first' : ''"
           tooltipPosition="top"
+        />
+        <p-select
+          [options]="applicationOptions()"
+          [ngModel]="selectedApplicationId()"
+          (ngModelChange)="selectedApplicationId.set($event); onFilterChange()"
+          placeholder="Application"
+          [showClear]="true"
+          [style]="{ minWidth: '10rem' }"
         />
       </div>
     </ng-template>
@@ -30,11 +38,22 @@
           <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search..." />
         </p-iconfield>
         <p-button
+          icon="pi pi-filter-slash"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Clear filters"
+          tooltipPosition="top"
+          (onClick)="clearFilters()"
+        />
+        <p-button
           icon="pi pi-refresh"
           [rounded]="true"
           [text]="true"
           severity="secondary"
           pTooltip="Refresh"
+          tooltipPosition="top"
+          aria-label="Refresh"
           (onClick)="loadChains()"
         />
       </div>
@@ -78,6 +97,7 @@
               size="small"
               severity="secondary"
               pTooltip="Show members"
+              aria-label="Show members"
               (onClick)="toggleExpand(c)"
             />
           </td>
@@ -98,6 +118,7 @@
                 icon="pi pi-pencil"
                 size="small"
                 pTooltip="Edit"
+                aria-label="Edit"
                 (onClick)="openEditDialog(c)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -106,6 +127,7 @@
                 severity="danger"
                 size="small"
                 pTooltip="Delete"
+                aria-label="Delete"
                 (onClick)="confirmDelete(c)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -180,6 +202,7 @@
                           [rounded]="true"
                           size="small"
                           pTooltip="Remove"
+                          aria-label="Remove"
                           (onClick)="confirmRemoveMember(c.chain_id, member)"
                           [disabled]="orgContext.isAllOrgsMode()"
                         />

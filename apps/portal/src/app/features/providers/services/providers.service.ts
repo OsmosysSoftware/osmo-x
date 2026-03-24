@@ -17,8 +17,12 @@ export class ProvidersService {
   private readonly _providers = signal<Provider[]>([]);
   readonly providers = this._providers.asReadonly();
 
-  list(page = 1, limit = 20): Observable<PaginatedResponse<Provider>> {
-    const params = new HttpParams().set('page', page).set('limit', limit);
+  list(page = 1, limit = 20, applicationId?: number): Observable<PaginatedResponse<Provider>> {
+    let params = new HttpParams().set('page', page).set('limit', limit);
+
+    if (applicationId) {
+      params = params.set('application_id', applicationId);
+    }
 
     return this.http
       .get<PaginatedResponse<Provider>>(this.apiUrl, { params })

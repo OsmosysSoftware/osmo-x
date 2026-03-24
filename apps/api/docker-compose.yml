@@ -67,7 +67,7 @@ services:
     networks:
       - osmox-network
     healthcheck:
-      test: ['CMD', 'node', '-e', "require('http').get('http://localhost:${SERVER_PORT:-3000}/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      test: ['CMD', 'node', '-e', "require('http').get('http://localhost:${SERVER_PORT:-3000}/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 30s
       timeout: 10s
       start_period: 40s

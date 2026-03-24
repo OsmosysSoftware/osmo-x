@@ -92,6 +92,12 @@ export class NotificationsController {
     type: String,
     description: 'Filter by created_on <= datetime (ISO 8601)',
   })
+  @ApiQuery({
+    name: 'provider_id',
+    required: false,
+    type: Number,
+    description: 'Filter by provider',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of notifications',
@@ -106,6 +112,7 @@ export class NotificationsController {
     @Query('application_id') applicationId: number,
     @Query('date_from') dateFrom: string,
     @Query('date_to') dateTo: string,
+    @Query('provider_id') providerId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<NotificationResponseDto>> {
@@ -114,6 +121,7 @@ export class NotificationsController {
       channelType: channelType ? Number(channelType) : undefined,
       deliveryStatus: deliveryStatus ? Number(deliveryStatus) : undefined,
       applicationId: applicationId ? Number(applicationId) : undefined,
+      providerId: providerId ? Number(providerId) : undefined,
       dateFrom: dateFrom || undefined,
       dateTo: dateTo || undefined,
     };

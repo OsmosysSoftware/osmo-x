@@ -37,6 +37,7 @@
           severity="secondary"
           pTooltip="Refresh"
           tooltipPosition="top"
+          aria-label="Refresh"
           (onClick)="loadUsers()"
         />
       </div>
@@ -97,6 +98,7 @@
                 size="small"
                 (onClick)="openEdit(u)"
                 pTooltip="Edit"
+                aria-label="Edit"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
               <p-button
@@ -105,6 +107,7 @@
                 severity="danger"
                 (onClick)="confirmDelete(u)"
                 pTooltip="Deactivate"
+                aria-label="Deactivate"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
             </div>
