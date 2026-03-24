@@ -33,6 +33,7 @@
           [text]="true"
           severity="secondary"
           pTooltip="Refresh"
+          aria-label="Refresh"
           (onClick)="loadApiKeys()"
         />
       </div>
@@ -80,6 +81,7 @@
                 severity="danger"
                 size="small"
                 pTooltip="Revoke"
+                aria-label="Revoke"
                 (onClick)="confirmRevoke(k)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -178,6 +180,7 @@
         [rounded]="true"
         [text]="true"
         pTooltip="Copy to clipboard"
+        aria-label="Copy to clipboard"
         (onClick)="copyKey()"
       />
     </div>

@@ -35,6 +35,7 @@
           [text]="true"
           severity="secondary"
           pTooltip="Refresh"
+          aria-label="Refresh"
           (onClick)="loadChains()"
         />
       </div>
@@ -78,6 +79,7 @@
               size="small"
               severity="secondary"
               pTooltip="Show members"
+              aria-label="Show members"
               (onClick)="toggleExpand(c)"
             />
           </td>
@@ -98,6 +100,7 @@
                 icon="pi pi-pencil"
                 size="small"
                 pTooltip="Edit"
+                aria-label="Edit"
                 (onClick)="openEditDialog(c)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -106,6 +109,7 @@
                 severity="danger"
                 size="small"
                 pTooltip="Delete"
+                aria-label="Delete"
                 (onClick)="confirmDelete(c)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
@@ -180,6 +184,7 @@
                           [rounded]="true"
                           size="small"
                           pTooltip="Remove"
+                          aria-label="Remove"
                           (onClick)="confirmRemoveMember(c.chain_id, member)"
                           [disabled]="orgContext.isAllOrgsMode()"
                         />
