@@ -15,50 +15,56 @@
       <div class="flex items-center gap-2 flex-wrap">
         <p-select
           [options]="channelTypeOptions"
-          [(ngModel)]="selectedChannelType"
+          [ngModel]="selectedChannelType()"
+          (ngModelChange)="selectedChannelType.set($event); onFilterChange()"
           placeholder="Channel type"
           [showClear]="true"
-          (onChange)="onFilterChange()"
           [style]="{ minWidth: '10rem' }"
         />
         <p-select
           [options]="deliveryStatusOptions"
-          [(ngModel)]="selectedDeliveryStatus"
+          [ngModel]="selectedDeliveryStatus()"
+          (ngModelChange)="selectedDeliveryStatus.set($event); onFilterChange()"
           placeholder="Delivery status"
           [showClear]="true"
-          (onChange)="onFilterChange()"
           [style]="{ minWidth: '10rem' }"
         />
         <p-select
           [options]="applicationOptions()"
-          [(ngModel)]="selectedApplicationId"
+          [ngModel]="selectedApplicationId()"
+          (ngModelChange)="onApplicationFilterChange($event)"
           placeholder="Application"
           [showClear]="true"
-          (onChange)="onFilterChange()"
+          [style]="{ minWidth: '10rem' }"
+        />
+        <p-select
+          [options]="providerOptions()"
+          [ngModel]="selectedProviderId()"
+          (ngModelChange)="selectedProviderId.set($event); onFilterChange()"
+          placeholder="Provider"
+          [showClear]="true"
           [style]="{ minWidth: '10rem' }"
         />
         <p-datepicker
-          [(ngModel)]="selectedDateFrom"
+          [ngModel]="selectedDateFrom()"
+          (ngModelChange)="selectedDateFrom.set($event); onFilterChange()"
           placeholder="From datetime"
           [showClear]="true"
           [showTime]="true"
           [showIcon]="true"
           dateFormat="dd/mm/yy"
           [hourFormat]="'24'"
-          (onSelect)="onFilterChange()"
-          (onClear)="onFilterChange()"
           [style]="{ minWidth: '12rem' }"
         />
         <p-datepicker
-          [(ngModel)]="selectedDateTo"
+          [ngModel]="selectedDateTo()"
+          (ngModelChange)="selectedDateTo.set($event); onFilterChange()"
           placeholder="To datetime"
           [showClear]="true"
           [showTime]="true"
           [showIcon]="true"
           dateFormat="dd/mm/yy"
           [hourFormat]="'24'"
-          (onSelect)="onFilterChange()"
-          (onClear)="onFilterChange()"
           [style]="{ minWidth: '12rem' }"
         />
       </div>
@@ -82,6 +88,7 @@
           severity="secondary"
           pTooltip="Clear filters"
           tooltipPosition="top"
+          aria-label="Clear filters"
           (onClick)="clearFilters()"
         />
         <p-button
@@ -91,6 +98,7 @@
           severity="secondary"
           pTooltip="Refresh"
           tooltipPosition="top"
+          aria-label="Refresh"
           (onClick)="loadNotifications()"
         />
       </div>
@@ -144,6 +152,7 @@
             severity="info"
             pTooltip="View data"
             tooltipPosition="top"
+            aria-label="View data"
             (onClick)="viewJson(n.data, 'Notification Data'); $event.stopPropagation()"
           />
         </td>
@@ -156,6 +165,7 @@
               severity="info"
               pTooltip="View result"
               tooltipPosition="top"
+              aria-label="View result"
               (onClick)="viewJson(n.result, 'Notification Result'); $event.stopPropagation()"
             />
           }
@@ -234,6 +244,7 @@
             size="small"
             pTooltip="Copy"
             tooltipPosition="top"
+            aria-label="Copy"
             (onClick)="copyJson(n.data)"
           />
         </div>
@@ -255,6 +266,7 @@
               size="small"
               pTooltip="Copy"
               tooltipPosition="top"
+              aria-label="Copy"
               (onClick)="copyJson(n.result)"
             />
           </div>

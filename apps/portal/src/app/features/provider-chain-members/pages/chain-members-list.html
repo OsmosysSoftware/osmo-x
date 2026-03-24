@@ -36,6 +36,7 @@
           severity="secondary"
           pTooltip="Refresh"
           tooltipPosition="top"
+          aria-label="Refresh"
           (onClick)="loadMembers()"
         />
       </div>
@@ -97,6 +98,7 @@
                 severity="danger"
                 size="small"
                 pTooltip="Remove"
+                aria-label="Remove"
                 (onClick)="confirmDelete(m)"
                 [disabled]="orgContext.isAllOrgsMode()"
               />
