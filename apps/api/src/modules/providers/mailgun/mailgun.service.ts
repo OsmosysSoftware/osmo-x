@@ -131,6 +131,7 @@ export class MailgunService {
         if (!fs.existsSync(icalEvent.path)) {
           throw new BadRequestException(`iCal file not found at path: ${icalEvent.path}`);
         }
+
         const filepath = path.resolve(icalEvent.path);
         const data = await fsPromise.readFile(filepath);
         return data.toString('utf-8');
