@@ -8,6 +8,7 @@ import {
   IcalEventValidation,
 } from '../create-notification-ical-event.dto';
 import { Type } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SMTPDataDto {
   @IsNotEmpty()
@@ -40,6 +41,10 @@ export class SMTPDataDto {
   attachments: CreateNotificationAttachmentDto[];
 
   @IsOptional()
+  @ApiPropertyOptional({
+    description: 'iCal event data for calendar invitations',
+    type: CreateNotificationIcalEventDto,
+  })
   @ValidateNested()
   @Type(() => CreateNotificationIcalEventDto)
   @IcalEventValidation()

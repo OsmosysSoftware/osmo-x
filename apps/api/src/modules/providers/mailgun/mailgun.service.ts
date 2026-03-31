@@ -13,6 +13,7 @@ import { CreateNotificationAttachmentDto } from 'src/modules/notifications/dtos/
 import { CreateNotificationIcalEventDto } from 'src/modules/notifications/dtos/create-notification-ical-event.dto';
 import { ProvidersService } from '../providers.service';
 import { Stream } from 'stream';
+import { Attachment } from 'nodemailer/lib/mailer';
 import MailComposer = require('nodemailer/lib/mail-composer');
 
 @Injectable()
@@ -88,7 +89,7 @@ export class MailgunService {
       | undefined;
     const calendarEventContent = await this.getIcalEventContent(icalEvent);
     const formattedAttachments = attachments
-      ? await this.formatAttachments(attachments)
+      ? await this.formatMimeAttachments(attachments)
       : undefined;
 
     const composer = new MailComposer({
@@ -166,6 +167,18 @@ export class MailgunService {
         };
       }),
     );
+  }
+
+  private async formatMimeAttachments(
+    attachments: CreateNotificationAttachmentDto[],
+  ): Promise<Attachment[]> {
+    const formattedAttachments = await this.formatAttachments(attachments);
+
+    return formattedAttachments.map((attachment) => ({
+      filename: attachment.filename,
+      content: attachment.data,
+      contentType: attachment.contentType,
+    }));
   }
 
   async getDeliveryStatus(messageId: string, providerId: number): Promise<EventsList> {
