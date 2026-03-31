@@ -10,8 +10,10 @@ import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import * as mime from 'mime-types';
 import { CreateNotificationAttachmentDto } from 'src/modules/notifications/dtos/create-notification-attachment.dto';
+import { CreateNotificationIcalEventDto } from 'src/modules/notifications/dtos/create-notification-ical-event.dto';
 import { ProvidersService } from '../providers.service';
 import { Stream } from 'stream';
+import MailComposer = require('nodemailer/lib/mail-composer');
 
 @Injectable()
 export class MailgunService {
@@ -55,6 +57,14 @@ export class MailgunService {
   ): Promise<Record<string, unknown>> {
     this.logger.debug('Formatting notification data for Mailgun');
 
+    const icalEvent =
+      (notificationData.icalEvent as CreateNotificationIcalEventDto | undefined) ??
+      (notificationData.ical_event as CreateNotificationIcalEventDto | undefined);
+
+    if (icalEvent) {
+      return this.formatMimeNotificationData(notificationData, icalEvent);
+    }
+
     if (notificationData.attachments) {
       const formattedNotificationData = { ...notificationData };
 
@@ -67,6 +77,66 @@ export class MailgunService {
     }
 
     return notificationData;
+  }
+
+  private async formatMimeNotificationData(
+    notificationData: Record<string, unknown>,
+    icalEvent: CreateNotificationIcalEventDto,
+  ): Promise<Record<string, unknown>> {
+    const attachments = notificationData.attachments as
+      | CreateNotificationAttachmentDto[]
+      | undefined;
+    const calendarEventContent = await this.getIcalEventContent(icalEvent);
+    const formattedAttachments = attachments
+      ? await this.formatAttachments(attachments)
+      : undefined;
+
+    const composer = new MailComposer({
+      from: notificationData.from as string,
+      to: notificationData.to as string | string[],
+      cc: notificationData.cc as string | string[] | undefined,
+      bcc: notificationData.bcc as string | string[] | undefined,
+      subject: notificationData.subject as string,
+      text: notificationData.text as string | undefined,
+      html: notificationData.html as string | undefined,
+      attachments: formattedAttachments,
+      icalEvent: {
+        method: icalEvent.method ?? 'REQUEST',
+        filename: icalEvent.filename ?? 'invite.ics',
+        content: calendarEventContent,
+      },
+    });
+
+    const message = await composer.compile().build();
+
+    return {
+      to: notificationData.to as string | string[],
+      message,
+    };
+  }
+
+  private async getIcalEventContent(icalEvent: CreateNotificationIcalEventDto): Promise<string> {
+    if (icalEvent.content) {
+      if (Buffer.isBuffer(icalEvent.content)) {
+        return icalEvent.content.toString('utf-8');
+      }
+
+      return icalEvent.content;
+    }
+
+    if (icalEvent.path) {
+      try {
+        const filepath = path.resolve(icalEvent.path);
+        const data = await fs.readFile(filepath);
+        return data.toString('utf-8');
+      } catch (error) {
+        throw new BadRequestException(
+          `Failed to read iCal file at path: ${icalEvent.path}: ${error.message}`,
+        );
+      }
+    }
+
+    throw new BadRequestException('Content or path must be provided for icalEvent');
   }
 
   private async formatAttachments(

@@ -3,6 +3,10 @@ import {
   AttachmentValidation,
   CreateNotificationAttachmentDto,
 } from '../create-notification-attachment.dto';
+import {
+  CreateNotificationIcalEventDto,
+  IcalEventValidation,
+} from '../create-notification-ical-event.dto';
 import { Type } from 'class-transformer';
 
 export class MailgunDataDto {
@@ -35,4 +39,10 @@ export class MailgunDataDto {
   @Type(() => CreateNotificationAttachmentDto)
   @AttachmentValidation()
   attachments: CreateNotificationAttachmentDto[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateNotificationIcalEventDto)
+  @IcalEventValidation()
+  icalEvent?: CreateNotificationIcalEventDto;
 }

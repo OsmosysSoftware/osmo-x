@@ -1,8 +1,12 @@
-import { IsString, IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, ValidateIf, ValidateNested } from 'class-validator';
 import {
   AttachmentValidation,
   CreateNotificationAttachmentDto,
 } from '../create-notification-attachment.dto';
+import {
+  CreateNotificationIcalEventDto,
+  IcalEventValidation,
+} from '../create-notification-ical-event.dto';
 import { Type } from 'class-transformer';
 
 export class SMTPDataDto {
@@ -34,4 +38,10 @@ export class SMTPDataDto {
   @Type(() => CreateNotificationAttachmentDto)
   @AttachmentValidation()
   attachments: CreateNotificationAttachmentDto[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateNotificationIcalEventDto)
+  @IcalEventValidation()
+  icalEvent?: CreateNotificationIcalEventDto;
 }

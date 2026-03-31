@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import * as mime from 'mime-types';
 import { CreateNotificationAttachmentDto } from 'src/modules/notifications/dtos/create-notification-attachment.dto';
+import { CreateNotificationIcalEventDto } from 'src/modules/notifications/dtos/create-notification-ical-event.dto';
 import { Stream } from 'stream';
 import { Attachment } from 'nodemailer/lib/mailer';
 
@@ -20,6 +21,7 @@ export interface AwsSesData {
   html?: string;
   replyTo?: string | string[];
   attachment?: Attachment[] | undefined;
+  icalEvent?: CreateNotificationIcalEventDto;
 }
 
 @Injectable()
@@ -104,6 +106,33 @@ export class AwsSesService {
   ): Promise<Record<string, unknown>> {
     this.logger.debug('Formatting notification data for AWS SES');
 
+    const icalEvent =
+      (notificationData.icalEvent as CreateNotificationIcalEventDto | undefined) ??
+      (notificationData.ical_event as CreateNotificationIcalEventDto | undefined);
+
+    if (icalEvent) {
+      const formattedNotificationData = { ...notificationData };
+      const calendarEventContent = await this.getIcalEventContent(icalEvent);
+
+      const formattedAttachments = notificationData.attachments
+        ? await this.formatAttachments(
+            notificationData.attachments as CreateNotificationAttachmentDto[],
+          )
+        : [];
+
+      // Push calendar event as attachment with text/calendar content type
+      formattedAttachments.push({
+        filename: icalEvent.filename ?? 'invite.ics',
+        content: calendarEventContent,
+        contentType: `text/calendar; method=${icalEvent.method ?? 'REQUEST'}; charset=UTF-8`,
+      });
+
+      formattedNotificationData.attachment = formattedAttachments;
+      formattedNotificationData.attachments = undefined;
+
+      return formattedNotificationData;
+    }
+
     if (notificationData.attachments) {
       const formattedNotificationData = { ...notificationData };
 
@@ -116,6 +145,30 @@ export class AwsSesService {
     }
 
     return notificationData;
+  }
+
+  private async getIcalEventContent(icalEvent: CreateNotificationIcalEventDto): Promise<string> {
+    if (icalEvent.content) {
+      if (Buffer.isBuffer(icalEvent.content)) {
+        return icalEvent.content.toString('utf-8');
+      }
+
+      return icalEvent.content as string;
+    }
+
+    if (icalEvent.path) {
+      try {
+        const filepath = path.resolve(icalEvent.path);
+        const data = await fs.readFile(filepath);
+        return data.toString('utf-8');
+      } catch (error) {
+        throw new BadRequestException(
+          `Failed to read iCal file at path: ${icalEvent.path}: ${error.message}`,
+        );
+      }
+    }
+
+    throw new BadRequestException('Content or path must be provided for icalEvent');
   }
 
   private async readFileContent(filepath: string): Promise<Buffer> {
