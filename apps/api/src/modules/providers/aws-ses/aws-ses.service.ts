@@ -4,7 +4,8 @@ import * as nodemailer from 'nodemailer';
 import * as aws from '@aws-sdk/client-ses';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import * as path from 'path';
-import * as fs from 'node:fs/promises';
+import * as fsPromise from 'node:fs/promises';
+import * as fs from 'fs';
 import * as mime from 'mime-types';
 import { CreateNotificationAttachmentDto } from 'src/modules/notifications/dtos/create-notification-attachment.dto';
 import { CreateNotificationIcalEventDto } from 'src/modules/notifications/dtos/create-notification-ical-event.dto';
@@ -158,8 +159,11 @@ export class AwsSesService {
 
     if (icalEvent.path) {
       try {
+        if (!fs.existsSync(icalEvent.path)) {
+          throw new BadRequestException(`iCal file not found at path: ${icalEvent.path}`);
+        }
         const filepath = path.resolve(icalEvent.path);
-        const data = await fs.readFile(filepath);
+        const data = await fsPromise.readFile(filepath);
         return data.toString('utf-8');
       } catch (error) {
         throw new BadRequestException(
@@ -173,7 +177,7 @@ export class AwsSesService {
 
   private async readFileContent(filepath: string): Promise<Buffer> {
     try {
-      return await fs.readFile(filepath);
+      return await fsPromise.readFile(filepath);
     } catch (error) {
       throw new BadRequestException(`Failed to read file at path: ${filepath}: ${error.message}`);
     }
