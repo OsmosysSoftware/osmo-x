@@ -71,6 +71,30 @@ In addition to the provided fields, there are several other options you can incl
 
 These options allow you to customize the email message according to your needs. Remember to adjust the options based on your specific use case and requirements.
 
+### iCal / Calendar invites
+
+Nodemailer/MailComposer supports calendar invites. To send an invite include an `icalEvent` object inside the `data` payload. Provide either `content` (the iCal text) or `path` (a filesystem path to a `.ics` file accessible by the API server). Optional fields: `method` (e.g. `REQUEST`) and `filename` (defaults to `invite.ics`).
+
+Example:
+
+```jsonc
+"data": {
+  "from": "sender@example.com",
+  "to": "recipient@example.com",
+  "subject": "Project sync",
+  "html": "<p>See invite</p>",
+  "icalEvent": {
+    "method": "REQUEST",
+    "filename": "sync.ics",
+    "content": "BEGIN:VCALENDAR\nVERSION:2.0\n...END:VCALENDAR"
+  }
+}
+```
+
+Notes:
+
+- If your SMTP provider uses Nodemailer and the server has access to a local `.ics` file, providing `path` works. Otherwise provide `content` as UTF-8 iCal text. The SMTP provider will build the proper MIME part for calendar invites.
+
 ### Dependencies
 
 | Package Name | Version | Description                                                                                 |

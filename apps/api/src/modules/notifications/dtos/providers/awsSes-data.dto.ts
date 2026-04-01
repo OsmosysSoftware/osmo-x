@@ -4,6 +4,10 @@ import {
   AttachmentValidation,
   CreateNotificationAttachmentDto,
 } from '../create-notification-attachment.dto';
+import {
+  CreateNotificationIcalEventDto,
+  IcalEventValidation,
+} from '../create-notification-ical-event.dto';
 import { IsStringOrStringArray } from 'src/common/decorators/is-string-or-stringarray.decorator';
 
 export class AwsSesDataDto {
@@ -52,4 +56,10 @@ export class AwsSesDataDto {
   @Type(() => CreateNotificationAttachmentDto)
   @AttachmentValidation()
   attachments: CreateNotificationAttachmentDto[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateNotificationIcalEventDto)
+  @IcalEventValidation()
+  icalEvent?: CreateNotificationIcalEventDto;
 }

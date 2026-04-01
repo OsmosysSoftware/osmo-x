@@ -104,3 +104,28 @@ These options allow you to customize the email message according to your needs. 
 | form-data    | ^4.0.0  | Used by mailgun.js to handle form data for HTTP requests |
 
 Reference: [Mailgun API Documentation](https://documentation.mailgun.com/en/latest/api-sending.html)
+
+### iCal / Calendar invites
+
+To send calendar invites include an `icalEvent` object inside the `data` payload. The `icalEvent` must provide either `content` (the iCal text) or `path` (a filesystem path to a .ics file accessible by the API server). Optional fields: `method` (e.g. `REQUEST`) and `filename` (defaults to `invite.ics`).
+
+Example:
+
+```jsonc
+"data": {
+  "from": "sender@example.com",
+  "to": "recipient@example.com",
+  "subject": "Meeting invite",
+  "html": "<p>See invite</p>",
+  "icalEvent": {
+    "method": "REQUEST",
+    "filename": "meeting.ics",
+    "content": "BEGIN:VCALENDAR\nVERSION:2.0\n...END:VCALENDAR"
+  }
+}
+```
+
+Notes:
+
+- The Mailgun provider in this project builds a raw MIME message for calendar invites (using MailComposer) and sends it via the Mailgun API. Provide either `content` (preferably UTF-8 iCal text) or a `path` to a `.ics` file on disk.
+- If you prefer to send an `.ics` as a regular attachment instead of a calendar invite, include it in the `attachments` array (use Base64 for binary files when required).

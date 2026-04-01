@@ -81,6 +81,30 @@ Make sure that the encoding matches the file type. Incorrect encoding may cause 
 - [Official AWS documentation for sendRawEmailCommand](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/ses/command/SendRawEmailCommand/)
 - [SES Transport using Nodemailer](https://nodemailer.com/transports/ses/)
 
+### iCal / Calendar invites
+
+To send calendar invites include an `icalEvent` object inside the `data` payload. Provide either `content` (the iCal text) or `path` (a filesystem path to a `.ics` file accessible by the API server). Optional fields: `method` (e.g. `REQUEST`) and `filename` (defaults to `invite.ics`).
+
+Example:
+
+```jsonc
+"data": {
+  "from": "sender@example.com",
+  "to": "recipient@example.com",
+  "subject": "Team meeting",
+  "html": "<p>See attached invite</p>",
+  "icalEvent": {
+    "method": "REQUEST",
+    "filename": "team-meeting.ics",
+    "content": "BEGIN:VCALENDAR\nVERSION:2.0\n...END:VCALENDAR"
+  }
+}
+```
+
+Notes:
+
+- If the provider implementation uses SES `SendRawEmail` the service can send the invite as a raw MIME message; otherwise include the `.ics` as an attachment (use Base64 encoding for binary content where required).
+
 ### Dependencies
 
 | Package Name        | Version  | Description                                                               |

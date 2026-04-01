@@ -1,9 +1,14 @@
-import { IsString, IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, ValidateIf, ValidateNested } from 'class-validator';
 import {
   AttachmentValidation,
   CreateNotificationAttachmentDto,
 } from '../create-notification-attachment.dto';
+import {
+  CreateNotificationIcalEventDto,
+  IcalEventValidation,
+} from '../create-notification-ical-event.dto';
 import { Type } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SMTPDataDto {
   @IsNotEmpty()
@@ -34,4 +39,14 @@ export class SMTPDataDto {
   @Type(() => CreateNotificationAttachmentDto)
   @AttachmentValidation()
   attachments: CreateNotificationAttachmentDto[];
+
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'iCal event data for calendar invitations',
+    type: CreateNotificationIcalEventDto,
+  })
+  @ValidateNested()
+  @Type(() => CreateNotificationIcalEventDto)
+  @IcalEventValidation()
+  icalEvent?: CreateNotificationIcalEventDto;
 }
