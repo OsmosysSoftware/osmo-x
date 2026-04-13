@@ -37,6 +37,7 @@ Here's a sample request body:
     // Set your respective providerId. ChannelType associated with providerId should be 3 (360Dialog)
     "providerId": 3,
     "data": {
+        "messaging_product": "whatsapp",
         "to": "919004812051",
         "type": "template",
         "template": {

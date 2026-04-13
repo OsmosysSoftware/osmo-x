@@ -1,5 +1,101 @@
-import { IsString, IsOptional, ValidateNested, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, ValidateNested, IsNotEmpty, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+
+class ImageDto {
+  @IsString()
+  @IsOptional()
+  id?: string;
+
+  @IsString()
+  @IsOptional()
+  link?: string;
+}
+
+class DocumentDto {
+  @IsString()
+  @IsOptional()
+  id?: string;
+
+  @IsString()
+  @IsOptional()
+  link?: string;
+
+  @IsString()
+  @IsOptional()
+  filename?: string;
+}
+
+class VideoDto {
+  @IsString()
+  @IsOptional()
+  id?: string;
+
+  @IsString()
+  @IsOptional()
+  link?: string;
+}
+
+class LocationDto {
+  @IsNumber()
+  latitude: number;
+
+  @IsNumber()
+  longitude: number;
+
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  address?: string;
+}
+
+class DateTimeDto {
+  @IsString()
+  @IsOptional()
+  fallback_value?: string;
+
+  @IsNumber()
+  @IsOptional()
+  day_of_week?: number;
+
+  @IsNumber()
+  @IsOptional()
+  year?: number;
+
+  @IsNumber()
+  @IsOptional()
+  month?: number;
+
+  @IsNumber()
+  @IsOptional()
+  day_of_month?: number;
+
+  @IsNumber()
+  @IsOptional()
+  hour?: number;
+
+  @IsNumber()
+  @IsOptional()
+  minute?: number;
+
+  @IsString()
+  @IsOptional()
+  calendar?: string;
+}
+
+class CurrencyDto {
+  @IsString()
+  fallback_value: string;
+
+  @IsString()
+  code: string;
+
+  @IsNumber()
+  amount_1000: number;
+}
 
 class ComponentDto {
   @IsString()
@@ -14,8 +110,39 @@ class ParameterDto {
   @IsString()
   type: string;
 
+  @ValidateNested()
+  @Type(() => ImageDto)
+  @IsOptional()
+  image?: ImageDto;
+
+  @ValidateNested()
+  @Type(() => DocumentDto)
+  @IsOptional()
+  document?: DocumentDto;
+
+  @ValidateNested()
+  @Type(() => VideoDto)
+  @IsOptional()
+  video?: VideoDto;
+
+  @ValidateNested()
+  @Type(() => LocationDto)
+  @IsOptional()
+  location?: LocationDto;
+
+  @ValidateNested()
+  @Type(() => DateTimeDto)
+  @IsOptional()
+  date_time?: DateTimeDto;
+
+  @ValidateNested()
+  @Type(() => CurrencyDto)
+  @IsOptional()
+  currency?: CurrencyDto;
+
   @IsString()
-  text: string;
+  @IsOptional()
+  text?: string;
 }
 
 class TextDto {
@@ -48,6 +175,11 @@ class TemplateDto {
 }
 
 export class Wa360DialogDataDto {
+  @ApiPropertyOptional({ example: 'whatsapp' })
+  @IsString()
+  @IsOptional()
+  messaging_product?: string;
+
   @IsNotEmpty()
   to: string;
 
