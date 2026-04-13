@@ -1,4 +1,12 @@
-import { IsString, IsOptional, ValidateNested, IsNotEmpty, IsNumber, ValidateIf, IsIn } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  ValidateNested,
+  IsNotEmpty,
+  IsNumber,
+  ValidateIf,
+  IsIn,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -8,7 +16,10 @@ class ImageDto {
   @IsOptional()
   id?: string;
 
-  @ApiPropertyOptional({ description: 'Publicly accessible URL of the image', example: 'https://example.com/image.png' })
+  @ApiPropertyOptional({
+    description: 'Publicly accessible URL of the image',
+    example: 'https://example.com/image.png',
+  })
   @IsString()
   @IsOptional()
   link?: string;
@@ -20,7 +31,10 @@ class DocumentDto {
   @IsOptional()
   id?: string;
 
-  @ApiPropertyOptional({ description: 'Publicly accessible URL of the document', example: 'https://example.com/doc.pdf' })
+  @ApiPropertyOptional({
+    description: 'Publicly accessible URL of the document',
+    example: 'https://example.com/doc.pdf',
+  })
   @IsString()
   @IsOptional()
   link?: string;
@@ -37,7 +51,10 @@ class VideoDto {
   @IsOptional()
   id?: string;
 
-  @ApiPropertyOptional({ description: 'Publicly accessible URL of the video', example: 'https://example.com/video.mp4' })
+  @ApiPropertyOptional({
+    description: 'Publicly accessible URL of the video',
+    example: 'https://example.com/video.mp4',
+  })
   @IsString()
   @IsOptional()
   link?: string;
@@ -57,14 +74,20 @@ class LocationDto {
   @IsOptional()
   name?: string;
 
-  @ApiPropertyOptional({ description: 'Address of the location', example: '1 Hacker Way, Menlo Park, CA' })
+  @ApiPropertyOptional({
+    description: 'Address of the location',
+    example: '1 Hacker Way, Menlo Park, CA',
+  })
   @IsString()
   @IsOptional()
   address?: string;
 }
 
 class DateTimeDto {
-  @ApiPropertyOptional({ description: 'Fallback value for unsupported clients', example: 'Monday, January 1, 2024' })
+  @ApiPropertyOptional({
+    description: 'Fallback value for unsupported clients',
+    example: 'Monday, January 1, 2024',
+  })
   @IsString()
   @IsOptional()
   fallback_value?: string;
@@ -120,11 +143,17 @@ class CurrencyDto {
 }
 
 class ComponentDto {
-  @ApiProperty({ description: 'Component type (e.g., header, body, footer, button)', example: 'body' })
+  @ApiProperty({
+    description: 'Component type (e.g., header, body, footer, button)',
+    example: 'body',
+  })
   @IsString()
   type: string;
 
-  @ApiProperty({ description: 'Array of parameter objects for the component', type: () => [ParameterDto] })
+  @ApiProperty({
+    description: 'Array of parameter objects for the component',
+    type: () => [ParameterDto],
+  })
   @ValidateNested({ each: true })
   @Type(() => ParameterDto)
   parameters: ParameterDto[];
@@ -138,43 +167,64 @@ class ParameterDto {
   @IsString()
   type: string;
 
-  @ApiPropertyOptional({ description: 'Image media object (used when type is image)', type: () => ImageDto })
+  @ApiPropertyOptional({
+    description: 'Image media object (used when type is image)',
+    type: () => ImageDto,
+  })
   @ValidateNested()
   @Type(() => ImageDto)
   @IsOptional()
   image?: ImageDto;
 
-  @ApiPropertyOptional({ description: 'Document media object (used when type is document)', type: () => DocumentDto })
+  @ApiPropertyOptional({
+    description: 'Document media object (used when type is document)',
+    type: () => DocumentDto,
+  })
   @ValidateNested()
   @Type(() => DocumentDto)
   @IsOptional()
   document?: DocumentDto;
 
-  @ApiPropertyOptional({ description: 'Video media object (used when type is video)', type: () => VideoDto })
+  @ApiPropertyOptional({
+    description: 'Video media object (used when type is video)',
+    type: () => VideoDto,
+  })
   @ValidateNested()
   @Type(() => VideoDto)
   @IsOptional()
   video?: VideoDto;
 
-  @ApiPropertyOptional({ description: 'Location object (used when type is location)', type: () => LocationDto })
+  @ApiPropertyOptional({
+    description: 'Location object (used when type is location)',
+    type: () => LocationDto,
+  })
   @ValidateNested()
   @Type(() => LocationDto)
   @IsOptional()
   location?: LocationDto;
 
-  @ApiPropertyOptional({ description: 'Date/time object (used when type is date_time)', type: () => DateTimeDto })
+  @ApiPropertyOptional({
+    description: 'Date/time object (used when type is date_time)',
+    type: () => DateTimeDto,
+  })
   @ValidateNested()
   @Type(() => DateTimeDto)
   @IsOptional()
   date_time?: DateTimeDto;
 
-  @ApiPropertyOptional({ description: 'Currency object (used when type is currency)', type: () => CurrencyDto })
+  @ApiPropertyOptional({
+    description: 'Currency object (used when type is currency)',
+    type: () => CurrencyDto,
+  })
   @ValidateNested()
   @Type(() => CurrencyDto)
   @IsOptional()
   currency?: CurrencyDto;
 
-  @ApiPropertyOptional({ description: 'Text value (required when type is text)', example: 'John Doe' })
+  @ApiPropertyOptional({
+    description: 'Text value (required when type is text)',
+    example: 'John Doe',
+  })
   @ValidateIf((o: ParameterDto) => o.type === 'text')
   @IsNotEmpty()
   @IsString()
@@ -199,7 +249,10 @@ class LanguageDto {
 }
 
 class TemplateDto {
-  @ApiProperty({ description: 'Template namespace from 360Dialog', example: 'd8bcb6bd_2ab2_439c_9d9e_947501266c77' })
+  @ApiProperty({
+    description: 'Template namespace from 360Dialog',
+    example: 'd8bcb6bd_2ab2_439c_9d9e_947501266c77',
+  })
   @IsString()
   namespace: string;
 
@@ -212,7 +265,10 @@ class TemplateDto {
   @Type(() => LanguageDto)
   language: LanguageDto;
 
-  @ApiProperty({ description: 'Array of component objects with parameters', type: () => [ComponentDto] })
+  @ApiProperty({
+    description: 'Array of component objects with parameters',
+    type: () => [ComponentDto],
+  })
   @ValidateNested({ each: true })
   @Type(() => ComponentDto)
   components: ComponentDto[];
@@ -228,7 +284,10 @@ export class Wa360DialogDataDto {
   @IsOptional()
   messaging_product?: string;
 
-  @ApiProperty({ description: "Recipient's phone number (without + prefix)", example: '919004812051' })
+  @ApiProperty({
+    description: "Recipient's phone number (without + prefix)",
+    example: '919004812051',
+  })
   @IsNotEmpty()
   to: string;
 
@@ -236,14 +295,20 @@ export class Wa360DialogDataDto {
   @IsNotEmpty()
   type: string;
 
-  @ApiPropertyOptional({ description: 'Template configuration object (required when type is template)', type: () => TemplateDto })
+  @ApiPropertyOptional({
+    description: 'Template configuration object (required when type is template)',
+    type: () => TemplateDto,
+  })
   @ValidateIf((o: Wa360DialogDataDto) => o.type === 'template')
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => TemplateDto)
   template?: TemplateDto;
 
-  @ApiPropertyOptional({ description: 'Text message object (required when type is text)', type: () => TextDto })
+  @ApiPropertyOptional({
+    description: 'Text message object (required when type is text)',
+    type: () => TextDto,
+  })
   @ValidateIf((o: Wa360DialogDataDto) => o.type === 'text')
   @IsNotEmpty()
   @ValidateNested()
