@@ -1,4 +1,4 @@
-import { IsString, IsOptional, ValidateNested, IsNotEmpty, IsNumber, ValidateIf } from 'class-validator';
+import { IsString, IsOptional, ValidateNested, IsNotEmpty, IsNumber, ValidateIf, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -222,8 +222,9 @@ export class Wa360DialogDataDto {
   @ApiPropertyOptional({
     description: "The messaging product. Always set to 'whatsapp'.",
     example: 'whatsapp',
+    enum: ['whatsapp'],
   })
-  @IsString()
+  @IsIn(['whatsapp'])
   @IsOptional()
   messaging_product?: string;
 
@@ -236,14 +237,16 @@ export class Wa360DialogDataDto {
   type: string;
 
   @ApiPropertyOptional({ description: 'Template configuration object (required when type is template)', type: () => TemplateDto })
+  @ValidateIf((o: Wa360DialogDataDto) => o.type === 'template')
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => TemplateDto)
-  @IsOptional()
   template?: TemplateDto;
 
   @ApiPropertyOptional({ description: 'Text message object (required when type is text)', type: () => TextDto })
+  @ValidateIf((o: Wa360DialogDataDto) => o.type === 'text')
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => TextDto)
-  @IsOptional()
   text?: TextDto;
 }
