@@ -37,6 +37,7 @@ Here's a sample request body:
     // Set your respective providerId. ChannelType associated with providerId should be 3 (360Dialog)
     "providerId": 3,
     "data": {
+        "messaging_product": "whatsapp",
         "to": "919004812051",
         "type": "template",
         "template": {
@@ -93,6 +94,16 @@ Here's a sample request body:
     }
 }
 ```
+
+### Request Fields
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `messaging_product` | string | No | The messaging product. Always `whatsapp`. |
+| `to` | string | Yes | Recipient's phone number (without `+` prefix). |
+| `type` | string | Yes | Message type (e.g., `template`). |
+| `template` | object | Conditional | Template configuration object (required when `type` is `template`). |
+| `text` | object | Conditional | Text message object (required when `type` is `text`). |
 
 ### Dependencies
 
