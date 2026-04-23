@@ -780,7 +780,7 @@ See `.env.example` for all configuration options. Key variables:
 - `DB_*` - Database connection settings
 - `REDIS_*` - Redis connection settings
 - `COMPOSE_PROJECT_NAME` - Docker project name
-- `ADMIN_USER` / `ADMIN_PASSWORD` - Dozzle log viewer credentials
+- `DOZZLE_ADMIN_USER` / `DOZZLE_ADMIN_PASSWORD` - Dozzle log viewer credentials
 
 ---
 

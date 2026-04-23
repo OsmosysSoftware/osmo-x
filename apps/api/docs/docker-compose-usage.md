@@ -95,8 +95,8 @@ SERVER_PORT=3000             # API server port
 COMPOSE_PROJECT_NAME=osmo-x  # Used for container naming
 
 # Dozzle (log viewer)
-ADMIN_USER=admin             # Dozzle admin username
-ADMIN_PASSWORD=your-password # Dozzle admin password
+DOZZLE_ADMIN_USER=admin             # Dozzle admin username
+DOZZLE_ADMIN_PASSWORD=your-password # Dozzle admin password
 DOZZLE_HOST_PORT=8080        # Host port for Dozzle UI
 
 # Logging
