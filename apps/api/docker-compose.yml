@@ -106,7 +106,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       ADMIN_USER: '${DOZZLE_ADMIN_USER:-admin}'
-      ADMIN_PASSWORD: '${DOZZLE_ADMIN_PASSWORD}'
+      ADMIN_PASSWORD: '${DOZZLE_ADMIN_PASSWORD:-admin}'
     command:
       - sh
       - -c
