@@ -113,6 +113,7 @@ export class DashboardService {
     period: string = '24h',
     applicationId?: number,
     source: DashboardSource = 'both',
+    timezone: string = 'UTC',
   ): Promise<DashboardAnalyticsResponseDto> {
     const orgApps = await this.applicationRepository.find({
       where: { organizationId, status: Status.ACTIVE },
@@ -132,7 +133,7 @@ export class DashboardService {
     const dateFilter = this.getDateFilter(period);
 
     const [trends, channelBreakdown, applicationStats, providerStats] = await Promise.all([
-      this.getTrends(appIds, dateFilter, source, period),
+      this.getTrends(appIds, dateFilter, source, period, timezone),
       this.getChannelBreakdown(appIds, dateFilter, source),
       this.getApplicationStats(appIds, orgApps, dateFilter, source),
       this.getProviderStats(appIds, dateFilter, source),
@@ -196,12 +197,13 @@ export class DashboardService {
     dateFilter: Date | null,
     source: DashboardSource,
     period: string,
+    timezone: string = 'UTC',
   ): Promise<TrendDataPointDto[]> {
     const isHourly = period.endsWith('h') || period === '1d';
-    const istCreatedOn = "(combined.created_on AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata'";
+    const tzCreatedOn = `(combined.created_on AT TIME ZONE 'UTC') AT TIME ZONE '${timezone}'`;
     const dateExpr = isHourly
-      ? `TO_CHAR(${istCreatedOn}, 'YYYY-MM-DD HH24:00')`
-      : `TO_CHAR(${istCreatedOn}, 'YYYY-MM-DD')`;
+      ? `TO_CHAR(${tzCreatedOn}, 'YYYY-MM-DD HH24:00')`
+      : `TO_CHAR(${tzCreatedOn}, 'YYYY-MM-DD')`;
 
     const where = this.buildWhereClause(appIds, dateFilter);
     const unionSql = this.buildUnion(source, 'SELECT created_on, delivery_status', where);

@@ -93,6 +93,12 @@ export class DashboardController {
     enum: ['active', 'archived', 'both'],
     description: 'Data source: active notifications, archived, or both (default: both)',
   })
+  @ApiQuery({
+    name: 'timezone',
+    required: false,
+    type: String,
+    description: 'IANA timezone name for grouping (e.g. Asia/Kolkata, Australia/Sydney). Defaults to UTC.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Dashboard analytics',
@@ -104,18 +110,35 @@ export class DashboardController {
     @Query('period') period: string,
     @Query('application_id') applicationId: number,
     @Query('source') source: string,
+    @Query('timezone') timezone: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<DashboardAnalyticsResponseDto> {
     const targetOrgId = resolveOrgId(user, queryOrgId);
     const validSource = VALID_SOURCES.includes(source as DashboardSource)
       ? (source as DashboardSource)
       : 'both';
+    const validTimezone = this.isValidTimezone(timezone) ? timezone : 'UTC';
 
     return this.dashboardService.getAnalytics(
       targetOrgId,
       period || '24h',
       applicationId,
       validSource,
+      validTimezone,
     );
+  }
+
+  private isValidTimezone(tz: string): boolean {
+    if (!tz) {
+      return false;
+    }
+
+    try {
+      Intl.DateTimeFormat(undefined, { timeZone: tz });
+
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
