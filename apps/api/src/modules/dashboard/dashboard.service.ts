@@ -199,8 +199,9 @@ export class DashboardService {
     period: string,
     timezone: string = 'UTC',
   ): Promise<TrendDataPointDto[]> {
+    const safeTimezone = this.sanitizeTimezone(timezone);
     const isHourly = period.endsWith('h') || period === '1d';
-    const tzCreatedOn = `(combined.created_on AT TIME ZONE 'UTC') AT TIME ZONE '${timezone}'`;
+    const tzCreatedOn = `(combined.created_on AT TIME ZONE 'UTC') AT TIME ZONE '${safeTimezone}'`;
     const dateExpr = isHourly
       ? `TO_CHAR(${tzCreatedOn}, 'YYYY-MM-DD HH24:00')`
       : `TO_CHAR(${tzCreatedOn}, 'YYYY-MM-DD')`;
@@ -224,6 +225,16 @@ export class DashboardService {
       successful: parseInt(r.successful, 10),
       failed: parseInt(r.failed, 10),
     }));
+  }
+
+  private sanitizeTimezone(timezone: string): string {
+    try {
+      Intl.DateTimeFormat(undefined, { timeZone: timezone });
+
+      return timezone;
+    } catch {
+      return 'UTC';
+    }
   }
 
   private async getChannelBreakdown(

@@ -32,7 +32,6 @@ export class DashboardService {
     applicationId?: number,
   ): Observable<DashboardAnalytics> {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    console.log('Detected timezone:', timezone);
     let params = new HttpParams()
       .set('period', period)
       .set('source', source)
