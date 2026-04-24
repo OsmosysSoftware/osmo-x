@@ -105,8 +105,8 @@ services:
       - osmox-dozzle-data:/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      ADMIN_USER: '${ADMIN_USER:-admin}'
-      ADMIN_PASSWORD: '${ADMIN_PASSWORD}'
+      ADMIN_USER: '${DOZZLE_ADMIN_USER:-admin}'
+      ADMIN_PASSWORD: '${DOZZLE_ADMIN_PASSWORD:?DOZZLE_ADMIN_PASSWORD is required. Set it in .env before starting the stack.}'
     command:
       - sh
       - -c
