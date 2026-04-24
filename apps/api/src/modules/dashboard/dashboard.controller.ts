@@ -97,7 +97,8 @@ export class DashboardController {
     name: 'timezone',
     required: false,
     type: String,
-    description: 'IANA timezone name for grouping (e.g. Asia/Kolkata, Australia/Sydney). Defaults to UTC.',
+    description:
+      'IANA timezone name for grouping (e.g. Asia/Kolkata, Australia/Sydney). Defaults to UTC.',
   })
   @ApiResponse({
     status: 200,
