@@ -31,7 +31,11 @@ export class DashboardService {
     source: DashboardSource = 'both',
     applicationId?: number,
   ): Observable<DashboardAnalytics> {
-    let params = new HttpParams().set('period', period).set('source', source);
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    let params = new HttpParams()
+      .set('period', period)
+      .set('source', source)
+      .set('timezone', timezone);
 
     if (applicationId) {
       params = params.set('application_id', applicationId.toString());
