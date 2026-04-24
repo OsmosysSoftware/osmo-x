@@ -198,9 +198,10 @@ export class DashboardService {
     period: string,
   ): Promise<TrendDataPointDto[]> {
     const isHourly = period.endsWith('h') || period === '1d';
+    const istCreatedOn = "(combined.created_on AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata'";
     const dateExpr = isHourly
-      ? "TO_CHAR(combined.created_on, 'YYYY-MM-DD HH24:00')"
-      : "TO_CHAR(combined.created_on, 'YYYY-MM-DD')";
+      ? `TO_CHAR(${istCreatedOn}, 'YYYY-MM-DD HH24:00')`
+      : `TO_CHAR(${istCreatedOn}, 'YYYY-MM-DD')`;
 
     const where = this.buildWhereClause(appIds, dateFilter);
     const unionSql = this.buildUnion(source, 'SELECT created_on, delivery_status', where);
