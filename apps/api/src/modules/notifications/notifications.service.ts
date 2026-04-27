@@ -592,6 +592,7 @@ export class NotificationsService extends CoreService<Notification> {
       sender?: string;
       subject?: string;
       messageBody?: string;
+      templateName?: string;
       dataFilter?: Record<string, string>;
     },
   ): Promise<{ items: NotificationResponseDto[]; meta: PaginationMeta }> {
@@ -656,6 +657,7 @@ export class NotificationsService extends CoreService<Notification> {
           sender: filters?.sender,
           subject: filters?.subject,
           messageBody: filters?.messageBody,
+          templateName: filters?.templateName,
           dataFilter: filters?.dataFilter,
         }),
     );

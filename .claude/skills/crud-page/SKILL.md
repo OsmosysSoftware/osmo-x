@@ -266,6 +266,27 @@ onImportUpload(event: { files: File[] }): void {
 
 ### Service patterns
 
+> **CRITICAL — snake_case end-to-end for filter interfaces:**
+> Filter/query-param interfaces in portal services MUST use snake_case property names that match the API query param names verbatim. **Never** use camelCase and translate at the HTTP boundary.
+>
+> ```typescript
+> // CORRECT — snake_case end-to-end, no translation step
+> export interface MyFilters {
+>   channel_type?: number;
+>   date_from?: string;
+>   application_id?: number;
+> }
+> if (filters?.channel_type) { params = params.set('channel_type', filters.channel_type); }
+>
+> // WRONG — camelCase with translation introduces drift and reviewer drag
+> export interface MyFilters {
+>   channelType?: number;   // ← wrong
+> }
+> if (filters?.channelType) { params = params.set('channel_type', filters.channelType); }
+> ```
+>
+> This applies to all filter/request DTO interfaces defined inside `services/*.service.ts` files. Response entity types from `core/models/api.model.ts` (generated from OpenAPI) are already snake_case — use them directly.
+
 **List with sort params** (all v1 APIs support this):
 ```typescript
 list(page = 1, limit = 20, sort?: string, order?: string): Observable<PaginatedResponse<T>> {

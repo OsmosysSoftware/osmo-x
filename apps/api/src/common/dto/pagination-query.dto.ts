@@ -4,7 +4,7 @@
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   IsInt,
   IsObject,
@@ -113,10 +113,19 @@ export class PaginationQueryDto {
   @IsOptional()
   @IsString()
   @MaxLength(255)
-  @Transform(({ value, obj }: { value: string; obj: Record<string, unknown> }) => {
-    return value ?? (obj.message_body as string | undefined);
+  message_body?: string;
+
+  @ApiPropertyOptional({
+    name: 'template_name',
+    description:
+      'Match against WhatsApp template name (data.template.name). ' +
+      'Applies to 360Dialog and Twilio WhatsApp Business providers.',
+    example: 'ir_incident_resolution',
   })
-  messageBody?: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  template_name?: string;
 
   @ApiPropertyOptional({
     name: 'data_filter',
@@ -132,8 +141,5 @@ export class PaginationQueryDto {
   @IsOptional()
   @IsObject()
   @Validate(IsDataFilterMap)
-  @Transform(({ value, obj }: { value: unknown; obj: Record<string, unknown> }) => {
-    return value ?? obj.data_filter;
-  })
-  dataFilter?: Record<string, string>;
+  data_filter?: Record<string, string>;
 }

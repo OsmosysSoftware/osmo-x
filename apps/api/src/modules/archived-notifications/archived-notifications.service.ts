@@ -187,6 +187,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       sender?: string;
       subject?: string;
       messageBody?: string;
+      templateName?: string;
       dataFilter?: Record<string, string>;
     },
   ): Promise<{ items: ArchivedNotificationResponseDto[]; meta: PaginationMeta }> {
@@ -252,6 +253,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
           sender: filters?.sender,
           subject: filters?.subject,
           messageBody: filters?.messageBody,
+          templateName: filters?.templateName,
           dataFilter: filters?.dataFilter,
         }),
     );

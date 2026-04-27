@@ -124,6 +124,13 @@ export class NotificationsController {
       'Match data.text/html/message and nested template/push body fields. Type ≥ 3 chars for fast results.',
   })
   @ApiQuery({
+    name: 'template_name',
+    required: false,
+    type: String,
+    description:
+      'Match WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio Business providers.',
+  })
+  @ApiQuery({
     name: 'data_filter',
     required: false,
     style: 'deepObject',
@@ -162,8 +169,9 @@ export class NotificationsController {
       recipient: query.recipient,
       sender: query.sender,
       subject: query.subject,
-      messageBody: query.messageBody,
-      dataFilter: query.dataFilter,
+      messageBody: query.message_body,
+      templateName: query.template_name,
+      dataFilter: query.data_filter,
     };
     const { items, meta } = await this.notificationsService.getAllNotificationsAsDto(
       query,

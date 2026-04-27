@@ -37,9 +37,9 @@ describe('NotificationDataFilterHelper', () => {
     helper.applyTo(qb, 'notification', { recipient: 'jane@example.com' });
     const [sql, params] = qb.getQueryAndParameters();
 
-    expect(sql).toContain("notification.data->'to'");
-    expect(sql).toContain("jsonb_array_elements_text(notification.data->'to')");
-    expect(sql).toContain("notification.data->>'target'");
+    expect(sql).toContain('"notification".data->\'to\'');
+    expect(sql).toContain('jsonb_array_elements_text("notification".data->\'to\')');
+    expect(sql).toContain('"notification".data->>\'target\'');
     expect(params).toContain('%jane@example.com%');
   });
 
@@ -48,7 +48,7 @@ describe('NotificationDataFilterHelper', () => {
     helper.applyTo(qb, 'notification', { sender: 'noreply@osmox.co' });
     const [sql, params] = qb.getQueryAndParameters();
 
-    expect(sql).toContain("notification.data->>'from' ILIKE");
+    expect(sql).toContain('"notification".data->>\'from\' ILIKE');
     expect(params).toContain('%noreply@osmox.co%');
   });
 
@@ -57,7 +57,7 @@ describe('NotificationDataFilterHelper', () => {
     helper.applyTo(qb, 'notification', { subject: 'Invoice' });
     const [sql, params] = qb.getQueryAndParameters();
 
-    expect(sql).toContain("notification.data->>'subject' ILIKE");
+    expect(sql).toContain('"notification".data->>\'subject\' ILIKE');
     expect(params).toContain('%Invoice%');
   });
 
@@ -66,11 +66,11 @@ describe('NotificationDataFilterHelper', () => {
     helper.applyTo(qb, 'notification', { messageBody: 'password' });
     const [sql, params] = qb.getQueryAndParameters();
 
-    expect(sql).toContain("notification.data->>'text'");
-    expect(sql).toContain("notification.data->>'html'");
-    expect(sql).toContain("notification.data->>'message'");
-    expect(sql).toContain("notification.data#>>'{text,body}'");
-    expect(sql).toContain("notification.data#>>'{message,default}'");
+    expect(sql).toContain('"notification".data->>\'text\'');
+    expect(sql).toContain('"notification".data->>\'html\'');
+    expect(sql).toContain('"notification".data->>\'message\'');
+    expect(sql).toContain('"notification".data#>>\'{text,body}\'');
+    expect(sql).toContain('"notification".data#>>\'{message,default}\'');
     expect(params).toContain('%password%');
   });
 
@@ -112,6 +112,15 @@ describe('NotificationDataFilterHelper', () => {
 
     // Base query has no WHERE because we didn't add any
     expect(generatedSql.toLowerCase()).not.toContain('where');
+  });
+
+  it("applies templateName against data->'template'->>'name' (360Dialog nested path)", () => {
+    const qb = buildQb();
+    helper.applyTo(qb, 'notification', { templateName: 'ir_incident' });
+    const [sql, params] = qb.getQueryAndParameters();
+
+    expect(sql).toContain("\"notification\".data->'template'->>'name' ILIKE");
+    expect(params).toContain('%ir_incident%');
   });
 
   it('combines multiple named filters via AND', () => {

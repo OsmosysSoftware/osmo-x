@@ -59,7 +59,7 @@ async function bootstrap(): Promise<void> {
       { path: '/health', method: RequestMethod.GET },
     ],
   });
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new ProblemJsonFilter());
   app.use(json({ limit: configService.get('REQUEST_MAX_SIZE', '50mb') }));
   app.use(urlencoded({ extended: true, limit: configService.get('REQUEST_MAX_SIZE', '50mb') }));

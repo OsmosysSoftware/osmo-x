@@ -6,7 +6,7 @@ import { SelectQueryBuilder } from 'typeorm';
  * The `data` shape varies per channel/provider:
  *   - Email:    { from, to, cc?, bcc?, subject, html, text, replyTo? }
  *   - SMS:      { to, message }
- *   - WhatsApp: { to, type, template?, text?: { body } }
+ *   - WhatsApp: { to, type, template?: { name, namespace, language, components }, text?: { body } }
  *   - Push:     { target, message: { GCM?, APNS?, default? } }
  *
  * All predicates use ILIKE '%v%' substring matching. The pg_trgm GIN expression
@@ -18,10 +18,16 @@ export interface NotificationDataFilters {
   sender?: string;
   subject?: string;
   messageBody?: string;
+  templateName?: string;
   dataFilter?: Record<string, string>;
 }
 
 const ADVANCED_KEY_RE = /^[a-zA-Z0-9_]{1,64}$/;
+
+/** Double-quote an alias so PostgreSQL preserves case in raw SQL strings. */
+function q(alias: string): string {
+  return `"${alias}"`;
+}
 
 @Injectable()
 export class NotificationDataFilterHelper {
@@ -33,13 +39,13 @@ export class NotificationDataFilterHelper {
     }
 
     if (filters.sender) {
-      qb.andWhere(`${alias}.data->>'from' ILIKE :ndf_sender`, {
+      qb.andWhere(`${q(alias)}.data->>'from' ILIKE :ndf_sender`, {
         ndf_sender: `%${filters.sender}%`,
       });
     }
 
     if (filters.subject) {
-      qb.andWhere(`${alias}.data->>'subject' ILIKE :ndf_subject`, {
+      qb.andWhere(`${q(alias)}.data->>'subject' ILIKE :ndf_subject`, {
         ndf_subject: `%${filters.subject}%`,
       });
     }
@@ -47,6 +53,12 @@ export class NotificationDataFilterHelper {
     if (filters.messageBody) {
       qb.andWhere(this.messageBodyPredicate(alias), {
         ndf_messageBody: `%${filters.messageBody}%`,
+      });
+    }
+
+    if (filters.templateName) {
+      qb.andWhere(`${q(alias)}.data->'template'->>'name' ILIKE :ndf_templateName`, {
+        ndf_templateName: `%${filters.templateName}%`,
       });
     }
 
@@ -59,7 +71,7 @@ export class NotificationDataFilterHelper {
           return;
         }
 
-        qb.andWhere(`${alias}.data->>:ndf_dfk_${i} ILIKE :ndf_dfv_${i}`, {
+        qb.andWhere(`${q(alias)}.data->>:ndf_dfk_${i} ILIKE :ndf_dfv_${i}`, {
           [`ndf_dfk_${i}`]: key,
           [`ndf_dfv_${i}`]: `%${value}%`,
         });
@@ -70,24 +82,28 @@ export class NotificationDataFilterHelper {
   private recipientPredicate(alias: string): string {
     // Match `to`/`cc`/`bcc` whether stored as scalar string or array of strings,
     // plus push `target`. jsonb_typeof guards skip undefined or unexpected types.
+    const a = q(alias);
+
     return `(
-      (jsonb_typeof(${alias}.data->'to')  = 'string' AND ${alias}.data->>'to'  ILIKE :ndf_recipient) OR
-      (jsonb_typeof(${alias}.data->'to')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${alias}.data->'to')  AS x(v) WHERE x.v ILIKE :ndf_recipient)) OR
-      (jsonb_typeof(${alias}.data->'cc')  = 'string' AND ${alias}.data->>'cc'  ILIKE :ndf_recipient) OR
-      (jsonb_typeof(${alias}.data->'cc')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${alias}.data->'cc')  AS x(v) WHERE x.v ILIKE :ndf_recipient)) OR
-      (jsonb_typeof(${alias}.data->'bcc') = 'string' AND ${alias}.data->>'bcc' ILIKE :ndf_recipient) OR
-      (jsonb_typeof(${alias}.data->'bcc') = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${alias}.data->'bcc') AS x(v) WHERE x.v ILIKE :ndf_recipient)) OR
-      (${alias}.data->>'target' ILIKE :ndf_recipient)
+      (jsonb_typeof(${a}.data->'to')  = 'string' AND ${a}.data->>'to'  ILIKE :ndf_recipient) OR
+      (jsonb_typeof(${a}.data->'to')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'to')  AS x(v) WHERE x.v ILIKE :ndf_recipient)) OR
+      (jsonb_typeof(${a}.data->'cc')  = 'string' AND ${a}.data->>'cc'  ILIKE :ndf_recipient) OR
+      (jsonb_typeof(${a}.data->'cc')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'cc')  AS x(v) WHERE x.v ILIKE :ndf_recipient)) OR
+      (jsonb_typeof(${a}.data->'bcc') = 'string' AND ${a}.data->>'bcc' ILIKE :ndf_recipient) OR
+      (jsonb_typeof(${a}.data->'bcc') = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'bcc') AS x(v) WHERE x.v ILIKE :ndf_recipient)) OR
+      (${a}.data->>'target' ILIKE :ndf_recipient)
     )`;
   }
 
   private messageBodyPredicate(alias: string): string {
+    const a = q(alias);
+
     return `(
-      ${alias}.data->>'text'    ILIKE :ndf_messageBody OR
-      ${alias}.data->>'html'    ILIKE :ndf_messageBody OR
-      ${alias}.data->>'message' ILIKE :ndf_messageBody OR
-      ${alias}.data#>>'{text,body}'        ILIKE :ndf_messageBody OR
-      ${alias}.data#>>'{message,default}'  ILIKE :ndf_messageBody
+      ${a}.data->>'text'    ILIKE :ndf_messageBody OR
+      ${a}.data->>'html'    ILIKE :ndf_messageBody OR
+      ${a}.data->>'message' ILIKE :ndf_messageBody OR
+      ${a}.data#>>'{text,body}'        ILIKE :ndf_messageBody OR
+      ${a}.data#>>'{message,default}'  ILIKE :ndf_messageBody
     )`;
   }
 }
