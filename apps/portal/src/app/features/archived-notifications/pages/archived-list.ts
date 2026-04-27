@@ -17,8 +17,6 @@ import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { ToolbarModule } from 'primeng/toolbar';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { MessageService } from 'primeng/api';
@@ -55,8 +53,6 @@ import { ChannelType, DeliveryStatus } from '../../../core/constants/notificatio
     SelectModule,
     TooltipModule,
     ToolbarModule,
-    IconFieldModule,
-    InputIconModule,
     InputTextModule,
     DatePickerModule,
     PaginationComponent,
@@ -115,7 +111,7 @@ export class ArchivedListComponent implements OnInit {
   readonly selectedProviderId = signal<number | null>(null);
   readonly selectedDateFrom = signal<Date | null>(null);
   readonly selectedDateTo = signal<Date | null>(null);
-  readonly searchText = signal('');
+
 
   // Property-specific filters from the shared notification-filters drawer.
   readonly propertyFilters = signal<NotificationFilters>({});
@@ -137,7 +133,7 @@ export class ArchivedListComponent implements OnInit {
   readonly jsonDialogData = signal<Record<string, unknown> | null>(null);
   readonly jsonDialogHeader = signal('JSON Data');
 
-  private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -175,34 +171,33 @@ export class ArchivedListComponent implements OnInit {
     const filters: NotificationFilters = {};
 
     if (this.selectedChannelType()) {
-      filters.channelType = this.selectedChannelType()!;
+      filters.channel_type = this.selectedChannelType()!;
     }
 
     if (this.selectedDeliveryStatus()) {
-      filters.deliveryStatus = this.selectedDeliveryStatus()!;
+      filters.delivery_status = this.selectedDeliveryStatus()!;
     }
 
     if (this.selectedApplicationId()) {
-      filters.applicationId = this.selectedApplicationId()!;
+      filters.application_id = this.selectedApplicationId()!;
     }
 
     if (this.selectedProviderId()) {
-      filters.providerId = this.selectedProviderId()!;
-    }
-
-    if (this.searchText().trim()) {
-      filters.search = this.searchText().trim();
+      filters.provider_id = this.selectedProviderId()!;
     }
 
     if (this.selectedDateFrom()) {
-      filters.dateFrom = this.selectedDateFrom()!.toISOString();
+      filters.date_from = this.selectedDateFrom()!.toISOString();
     }
 
     if (this.selectedDateTo()) {
-      filters.dateTo = this.selectedDateTo()!.toISOString();
+      filters.date_to = this.selectedDateTo()!.toISOString();
     }
 
+    // Property-specific filters from the unified search bar.
     const property = this.propertyFilters();
+
+    if (property.search?.trim()) filters.search = property.search.trim();
 
     if (property.recipient) filters.recipient = property.recipient;
 
@@ -210,7 +205,9 @@ export class ArchivedListComponent implements OnInit {
 
     if (property.subject) filters.subject = property.subject;
 
-    if (property.messageBody) filters.messageBody = property.messageBody;
+    if (property.message_body) filters.message_body = property.message_body;
+
+    if (property.template_name) filters.template_name = property.template_name;
 
     if (property.advancedFilters?.length) filters.advancedFilters = property.advancedFilters;
 
@@ -283,21 +280,6 @@ export class ArchivedListComponent implements OnInit {
     this.loadNotifications();
   }
 
-  onSearchInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-
-    this.searchText.set(value);
-
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
-    }
-
-    this.searchTimeout = setTimeout(() => {
-      this.currentPage = 1;
-      this.loadNotifications();
-    }, 400);
-  }
-
   clearFilters(): void {
     this.selectedChannelType.set(null);
     this.selectedDeliveryStatus.set(null);
@@ -305,7 +287,6 @@ export class ArchivedListComponent implements OnInit {
     this.selectedProviderId.set(null);
     this.selectedDateFrom.set(null);
     this.selectedDateTo.set(null);
-    this.searchText.set('');
     this.propertyFilters.set({});
     this.currentPage = 1;
     this.loadNotifications();
@@ -313,10 +294,12 @@ export class ArchivedListComponent implements OnInit {
 
   onPropertyFiltersChange(updated: NotificationFilters): void {
     this.propertyFilters.set({
+      search: updated.search,
       recipient: updated.recipient,
       sender: updated.sender,
       subject: updated.subject,
-      messageBody: updated.messageBody,
+      message_body: updated.message_body,
+      template_name: updated.template_name,
       advancedFilters: updated.advancedFilters,
     });
     this.currentPage = 1;

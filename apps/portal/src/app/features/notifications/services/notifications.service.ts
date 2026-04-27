@@ -22,32 +22,32 @@ export class NotificationsService {
   ): Observable<PaginatedResponse<Notification>> {
     let params = new HttpParams().set('page', page).set('limit', limit);
 
-    if (filters?.channelType) {
-      params = params.set('channel_type', filters.channelType);
+    if (filters?.channel_type) {
+      params = params.set('channel_type', filters.channel_type);
     }
 
-    if (filters?.deliveryStatus) {
-      params = params.set('delivery_status', filters.deliveryStatus);
+    if (filters?.delivery_status) {
+      params = params.set('delivery_status', filters.delivery_status);
     }
 
-    if (filters?.applicationId) {
-      params = params.set('application_id', filters.applicationId);
+    if (filters?.application_id) {
+      params = params.set('application_id', filters.application_id);
     }
 
-    if (filters?.providerId) {
-      params = params.set('provider_id', filters.providerId);
+    if (filters?.provider_id) {
+      params = params.set('provider_id', filters.provider_id);
     }
 
     if (filters?.search) {
       params = params.set('search', filters.search);
     }
 
-    if (filters?.dateFrom) {
-      params = params.set('date_from', filters.dateFrom);
+    if (filters?.date_from) {
+      params = params.set('date_from', filters.date_from);
     }
 
-    if (filters?.dateTo) {
-      params = params.set('date_to', filters.dateTo);
+    if (filters?.date_to) {
+      params = params.set('date_to', filters.date_to);
     }
 
     if (filters?.sort) {
@@ -70,8 +70,12 @@ export class NotificationsService {
       params = params.set('subject', filters.subject);
     }
 
-    if (filters?.messageBody) {
-      params = params.set('message_body', filters.messageBody);
+    if (filters?.message_body) {
+      params = params.set('message_body', filters.message_body);
+    }
+
+    if (filters?.template_name) {
+      params = params.set('template_name', filters.template_name);
     }
 
     for (const row of filters?.advancedFilters ?? []) {

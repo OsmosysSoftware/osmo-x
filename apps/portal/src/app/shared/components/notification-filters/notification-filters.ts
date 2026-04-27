@@ -1,26 +1,30 @@
-import {
+﻿import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
+  ElementRef,
   input,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { ChipModule } from 'primeng/chip';
-import { DrawerModule } from 'primeng/drawer';
-import { AutoCompleteModule, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
-import { IftaLabelModule } from 'primeng/iftalabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { PopoverModule } from 'primeng/popover';
 import { TooltipModule } from 'primeng/tooltip';
-import { DividerModule } from 'primeng/divider';
 import {
   AdvancedFilterRow,
   NotificationFilters,
 } from '../../../core/models/notification-filters.model';
+
+interface FilterToken {
+  id: string;
+  label: string;
+  namedKey?: keyof NotificationFilters;
+  dataFilterKey?: string;
+}
 
 interface ActiveChip {
   id: string;
@@ -28,112 +32,97 @@ interface ActiveChip {
   remove: () => void;
 }
 
-const RESERVED_KEYS = new Set<string>([
-  // Recipient (covered by named filter)
-  'to',
-  'cc',
-  'bcc',
-  'target',
-  // Sender
-  'from',
-  'replyTo',
-  // Subject
-  'subject',
-  // Message body (top-level + nested handled by named filter)
-  'text',
-  'html',
-  'message',
-  // Channel discriminator
-  'type',
-]);
-
 const ALLOWED_KEY_RE = /^[a-zA-Z0-9_]{1,64}$/;
-const KEY_SUGGESTIONS = ['template', 'locale', 'campaign_id', 'priority', 'tag', 'reference_id'];
+
+const FILTER_TOKENS: FilterToken[] = [
+  { id: 'recipient', label: 'Recipient', namedKey: 'recipient' },
+  { id: 'sender', label: 'Sender', namedKey: 'sender' },
+  { id: 'subject', label: 'Subject', namedKey: 'subject' },
+  { id: 'message_body', label: 'Message body', namedKey: 'message_body' },
+  { id: 'template_name', label: 'Template (WA360)', namedKey: 'template_name' },
+  { id: 'contentSid', label: 'ContentSid', dataFilterKey: 'contentSid' },
+];
 
 @Component({
   selector: 'app-notification-filters',
   standalone: true,
-  imports: [
-    FormsModule,
-    ButtonModule,
-    ChipModule,
-    DrawerModule,
-    AutoCompleteModule,
-    IftaLabelModule,
-    InputTextModule,
-    MessageModule,
-    TooltipModule,
-    DividerModule,
-  ],
+  imports: [FormsModule, ButtonModule, InputTextModule, MessageModule, PopoverModule, TooltipModule],
   templateUrl: './notification-filters.html',
   styleUrl: './notification-filters.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:click)': 'onDocumentClick()',
+  },
 })
 export class NotificationFiltersComponent {
-  // External contract
+  private readonly searchInputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
   readonly filters = input.required<NotificationFilters>();
   readonly filtersChange = output<NotificationFilters>();
   readonly clear = output<void>();
 
-  // Drawer state
-  readonly filtersOpen = signal(false);
+  // ---- Search bar state ----
+  readonly selectedToken = signal<FilterToken | null>(null);
+  readonly inputValue = signal<string>('');
+  readonly dropdownVisible = signal<boolean>(false);
 
-  // Local in-progress edits — committed to parent only on Apply.
-  readonly localFilters = signal<NotificationFilters>({});
+  // ---- Advanced popover state ----
+  readonly advRows = signal<AdvancedFilterRow[]>([]);
 
-  // Advanced rows — local; merged into localFilters only on Apply.
-  readonly advancedRows = signal<AdvancedFilterRow[]>([]);
+  readonly ALLOWED_KEY_RE = ALLOWED_KEY_RE;
 
-  // AutoComplete suggestions filtered by current typed prefix.
-  readonly filteredKeys = signal<string[]>(KEY_SUGGESTIONS);
+  // ---- Derived ----
 
-  // Surface RESERVED_KEYS in template for the inline error message branch.
-  readonly RESERVED_KEYS = RESERVED_KEYS;
+  readonly availableTokens = computed<FilterToken[]>(() => {
+    const f = this.filters();
+    const advKeys = new Set((f.advancedFilters ?? []).map((r) => r.key));
 
-  // Active chips read from the *applied* filters() input — not localFilters —
-  // so removing a chip emits filtersChange immediately, bypassing the drawer's
-  // Apply gate and updating the table without forcing the user to open the drawer.
+    return FILTER_TOKENS.filter((t) => {
+      if (t.namedKey) {
+
+        return !f[t.namedKey];
+      }
+
+      if (t.dataFilterKey) {
+
+        return !advKeys.has(t.dataFilterKey);
+      }
+
+      return true;
+    });
+  });
+
   readonly activeChips = computed<ActiveChip[]>(() => {
     const f = this.filters();
     const chips: ActiveChip[] = [];
 
-    if (f.recipient) {
+    if (f.search) {
       chips.push({
-        id: 'recipient',
-        label: `Recipient: ${f.recipient}`,
-        remove: () => this.emitWithoutKey('recipient'),
+        id: 'search',
+        label: `"${f.search}"`,
+        remove: () => this.removeField('search'),
       });
     }
 
-    if (f.sender) {
-      chips.push({
-        id: 'sender',
-        label: `Sender: ${f.sender}`,
-        remove: () => this.emitWithoutKey('sender'),
-      });
-    }
+    for (const token of FILTER_TOKENS) {
+      if (token.namedKey) {
+        const val = f[token.namedKey] as string | undefined;
 
-    if (f.subject) {
-      chips.push({
-        id: 'subject',
-        label: `Subject: ${f.subject}`,
-        remove: () => this.emitWithoutKey('subject'),
-      });
-    }
-
-    if (f.messageBody) {
-      chips.push({
-        id: 'messageBody',
-        label: `Message body: ${f.messageBody}`,
-        remove: () => this.emitWithoutKey('messageBody'),
-      });
+        if (val) {
+          chips.push({
+            id: token.id,
+            label: `${token.label} = ${val}`,
+            remove: () => this.removeField(token.namedKey as keyof NotificationFilters),
+          });
+        }
+      }
     }
 
     for (const row of f.advancedFilters ?? []) {
       chips.push({
-        id: `advanced:${row.id}`,
-        label: `${row.key}=${row.value}`,
-        remove: () => this.removeAdvancedFromApplied(row.id),
+        id: `adv:${row.id}`,
+        label: `${row.key} = ${row.value}`,
+        remove: () => this.removeAdvancedRow(row.id),
       });
     }
 
@@ -142,109 +131,197 @@ export class NotificationFiltersComponent {
 
   readonly activeCount = computed(() => this.activeChips().length);
 
-  // Apply button gating: every advanced row must have a non-empty value AND
-  // a valid key. Empty rows block Apply silently (no red); only filled-in
-  // invalid keys show the inline error message.
-  readonly canApply = computed(() =>
-    this.advancedRows().every((r) => Boolean(r.key) && Boolean(r.value) && this.isKeyValid(r.key)),
+  readonly placeholder = computed(() =>
+    this.selectedToken() || this.activeChips().length > 0 ? '' : 'Search or filter results...',
   );
 
-  constructor() {
-    // Hydrate localFilters from the applied filters() input — but ONLY when the
-    // drawer is closed. While the drawer is open the user's in-progress edits
-    // are sovereign; an external filters() change (e.g. URL nav, parent
-    // re-render, chip removal) must not wipe them.
-    effect(() => {
-      if (!this.filtersOpen()) {
-        const applied = this.filters();
+  readonly advCanApply = computed(
+    () =>
+      this.advRows().length > 0 &&
+      this.advRows().every(
+        (r) => Boolean(r.key) && Boolean(r.value) && ALLOWED_KEY_RE.test(r.key),
+      ),
+  );
 
-        this.localFilters.set({ ...applied });
-        this.advancedRows.set([...(applied.advancedFilters ?? [])]);
+  // ---- Search bar interactions ----
+
+  onBarClick(event: Event): void {
+    event.stopPropagation();
+    this.dropdownVisible.set(true);
+    this.searchInputRef()?.nativeElement.focus();
+  }
+
+  onFocus(): void {
+    this.dropdownVisible.set(true);
+  }
+
+  onInputBlur(): void {
+    // mousedown preventDefault on the dropdown div keeps focus in the input when
+    // clicking dropdown items, so this only fires when clicking truly outside
+    // (e.g. a PrimeNG dropdown that stops click propagation).
+    this.dropdownVisible.set(false);
+  }
+
+  onInputChange(value: string): void {
+    this.inputValue.set(value);
+  }
+
+  onKeydown(event: KeyboardEvent): void {
+    const val = this.inputValue().trim();
+    const token = this.selectedToken();
+
+    if (event.key === 'Enter') {
+      if (!val) {
+
+        return;
       }
-    });
-  }
 
-  // ---- localFilters editing ----
-
-  setLocal<K extends keyof NotificationFilters>(key: K, value: NotificationFilters[K]): void {
-    this.localFilters.update((f) => ({ ...f, [key]: value }));
-  }
-
-  // ---- Advanced rows editing ----
-
-  addRow(): void {
-    this.advancedRows.update((rows) => [
-      ...rows,
-      { id: this.makeId(), key: '', value: '' },
-    ]);
-  }
-
-  removeRow(index: number): void {
-    this.advancedRows.update((rows) => rows.filter((_, i) => i !== index));
-  }
-
-  updateKey(index: number, key: string): void {
-    this.advancedRows.update((rows) =>
-      rows.map((r, i) => (i === index ? { ...r, key } : r)),
-    );
-  }
-
-  updateValue(index: number, value: string): void {
-    this.advancedRows.update((rows) =>
-      rows.map((r, i) => (i === index ? { ...r, value } : r)),
-    );
-  }
-
-  searchKeys(event: AutoCompleteCompleteEvent): void {
-    const q = (event.query ?? '').toLowerCase();
-    const filtered = KEY_SUGGESTIONS.filter(
-      (k) => !RESERVED_KEYS.has(k) && k.toLowerCase().includes(q),
-    );
-
-    this.filteredKeys.set(filtered);
-  }
-
-  isKeyValid(key: string): boolean {
-    if (!key) {
-      return true; // empty key = not yet entered, not "invalid"
+      if (token) {
+        this.commitToken(token, val);
+      }
+      else {
+        this.commitSearch(val);
+      }
     }
+    else if (event.key === 'Escape') {
+      this.closeDropdown();
+    }
+    else if (event.key === 'Backspace' && !this.inputValue()) {
+      if (token) {
+        this.selectedToken.set(null);
+      } else {
+        const chips = this.activeChips();
 
-    return ALLOWED_KEY_RE.test(key) && !RESERVED_KEYS.has(key);
+        if (chips.length > 0) {
+          chips[chips.length - 1].remove();
+        }
+      }
+    }
   }
 
-  // ---- Apply / Reset ----
+  selectToken(token: FilterToken): void {
+    this.selectedToken.set(token);
+    this.inputValue.set('');
+    this.dropdownVisible.set(false);
+    setTimeout(() => this.searchInputRef()?.nativeElement.focus(), 0);
+  }
 
-  onApply(): void {
-    if (!this.canApply()) {
+  commitFromDropdown(): void {
+    const val = this.inputValue().trim();
+
+    if (!val) {
+
       return;
     }
 
-    const next: NotificationFilters = {
-      ...this.localFilters(),
-      advancedFilters: this.advancedRows().filter((r) => r.key && r.value),
-    };
+    const token = this.selectedToken();
 
-    this.filtersChange.emit(next);
-    this.filtersOpen.set(false);
+    if (token) {
+      this.commitToken(token, val);
+    }
+    else {
+      this.commitSearch(val);
+    }
   }
 
+  closeDropdown(): void {
+    this.dropdownVisible.set(false);
+    this.selectedToken.set(null);
+    this.inputValue.set('');
+  }
+
+  onDocumentClick(): void {
+    this.dropdownVisible.set(false);
+  }
+
+  private commitToken(token: FilterToken, value: string): void {
+    if (token.namedKey) {
+      this.filtersChange.emit({ ...this.filters(), [token.namedKey]: value });
+    }
+    else if (token.dataFilterKey) {
+      const row: AdvancedFilterRow = { id: this.makeId(), key: token.dataFilterKey, value };
+      const existing = this.filters().advancedFilters ?? [];
+
+      this.filtersChange.emit({ ...this.filters(), advancedFilters: [...existing, row] });
+    }
+
+    this.selectedToken.set(null);
+    this.inputValue.set('');
+    this.dropdownVisible.set(false);
+  }
+
+  private commitSearch(value: string): void {
+    // Clear all named text filters — keep only structural (dropdown) filters.
+    const f = this.filters();
+
+    this.filtersChange.emit({
+      channel_type: f.channel_type,
+      delivery_status: f.delivery_status,
+      application_id: f.application_id,
+      provider_id: f.provider_id,
+      date_from: f.date_from,
+      date_to: f.date_to,
+      sort: f.sort,
+      order: f.order,
+      search: value,
+    });
+    this.inputValue.set('');
+    this.dropdownVisible.set(false);
+  }
+
+  // ---- Advanced popover ----
+
+  openAdvanced(popover: { toggle: (event: MouseEvent) => void }, event: MouseEvent): void {
+    const applied = this.filters().advancedFilters ?? [];
+
+    this.advRows.set(applied.length ? [...applied] : [this.makeRow()]);
+    popover.toggle(event);
+  }
+
+  addAdvRow(): void {
+    this.advRows.update((rows) => [...rows, this.makeRow()]);
+  }
+
+  removeAdvRow(index: number): void {
+    this.advRows.update((rows) => rows.filter((_, i) => i !== index));
+  }
+
+  updateAdvKey(index: number, key: string): void {
+    this.advRows.update((rows) => rows.map((r, i) => (i === index ? { ...r, key } : r)));
+  }
+
+  updateAdvValue(index: number, value: string): void {
+    this.advRows.update((rows) => rows.map((r, i) => (i === index ? { ...r, value } : r)));
+  }
+
+  applyAdvanced(popover: { hide: () => void }): void {
+    if (!this.advCanApply()) {
+
+      return;
+    }
+
+    const rows = this.advRows().filter((r) => r.key && r.value);
+
+    this.filtersChange.emit({ ...this.filters(), advancedFilters: rows });
+    popover.hide();
+  }
+
+  // ---- Clear all ----
+
   onClearAll(): void {
-    // Clear local in-progress edits as well so the drawer reflects the cleared state.
-    this.localFilters.set({});
-    this.advancedRows.set([]);
     this.clear.emit();
   }
 
-  // ---- Chip removal helpers (operate on applied filters() directly) ----
+  // ---- Chip removal ----
 
-  private emitWithoutKey(key: keyof NotificationFilters): void {
+  private removeField(key: keyof NotificationFilters): void {
     const f = { ...this.filters() };
 
     delete f[key];
     this.filtersChange.emit(f);
   }
 
-  private removeAdvancedFromApplied(rowId: string): void {
+  private removeAdvancedRow(rowId: string): void {
     const f = { ...this.filters() };
 
     f.advancedFilters = (f.advancedFilters ?? []).filter((r) => r.id !== rowId);
@@ -253,5 +330,9 @@ export class NotificationFiltersComponent {
 
   private makeId(): string {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  private makeRow(): AdvancedFilterRow {
+    return { id: this.makeId(), key: '', value: '' };
   }
 }

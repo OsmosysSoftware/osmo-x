@@ -1,16 +1,17 @@
 /**
  * Shared filter shape for the Notifications and Archived Notifications list pages.
- * Property names use camelCase here; HTTP services convert to snake_case at the
- * boundary (recipient, sender, subject, message_body, data_filter[key]).
+ * Property names match the API query-param names verbatim (snake_case end-to-end).
+ * No translation at the HTTP boundary — filters.field_name maps directly to
+ * params.set('field_name', ...) and to the backend DTO field.
  */
 export interface NotificationFilters {
-  channelType?: number;
-  deliveryStatus?: number;
-  applicationId?: number;
-  providerId?: number;
+  channel_type?: number;
+  delivery_status?: number;
+  application_id?: number;
+  provider_id?: number;
   search?: string;
-  dateFrom?: string;
-  dateTo?: string;
+  date_from?: string;
+  date_to?: string;
   sort?: string;
   order?: 'asc' | 'desc';
 
@@ -18,7 +19,9 @@ export interface NotificationFilters {
   recipient?: string;
   sender?: string;
   subject?: string;
-  messageBody?: string;
+  message_body?: string;
+  /** WhatsApp 360Dialog / Twilio Business template name (data.template.name). */
+  template_name?: string;
 
   /**
    * Free-form key/value pairs against top-level `data` keys. Keys are
