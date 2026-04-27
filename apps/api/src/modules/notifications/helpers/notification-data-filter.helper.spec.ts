@@ -97,7 +97,7 @@ describe('NotificationDataFilterHelper', () => {
     helper.applyTo(qb, 'notification', {
       dataFilter: { ['bad-key!']: 'x', good_key: 'y' },
     });
-    const [sql, params] = qb.getQueryAndParameters();
+    const [, params] = qb.getQueryAndParameters();
 
     expect(params).toContain('good_key');
     expect(params).toContain('%y%');
@@ -108,10 +108,10 @@ describe('NotificationDataFilterHelper', () => {
   it('emits zero clauses when no filters are provided', () => {
     const qb = buildQb();
     helper.applyTo(qb, 'notification', {});
-    const [sql] = qb.getQueryAndParameters();
+    const [generatedSql] = qb.getQueryAndParameters();
 
     // Base query has no WHERE because we didn't add any
-    expect(sql.toLowerCase()).not.toContain('where');
+    expect(generatedSql.toLowerCase()).not.toContain('where');
   });
 
   it('combines multiple named filters via AND', () => {

@@ -25,11 +25,7 @@ const ADVANCED_KEY_RE = /^[a-zA-Z0-9_]{1,64}$/;
 
 @Injectable()
 export class NotificationDataFilterHelper {
-  applyTo<T>(
-    qb: SelectQueryBuilder<T>,
-    alias: string,
-    filters: NotificationDataFilters,
-  ): void {
+  applyTo<T>(qb: SelectQueryBuilder<T>, alias: string, filters: NotificationDataFilters): void {
     if (filters.recipient) {
       qb.andWhere(this.recipientPredicate(alias), {
         ndf_recipient: `%${filters.recipient}%`,

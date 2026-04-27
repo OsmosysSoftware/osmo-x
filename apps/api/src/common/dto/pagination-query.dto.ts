@@ -5,7 +5,16 @@
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsInt, IsObject, IsOptional, IsString, MaxLength, Min, Max, Validate } from 'class-validator';
+import {
+  IsInt,
+  IsObject,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+  Max,
+  Validate,
+} from 'class-validator';
 import { IsDataFilterMap } from '../validators/is-data-filter-map.validator';
 
 export class PaginationQueryDto {
