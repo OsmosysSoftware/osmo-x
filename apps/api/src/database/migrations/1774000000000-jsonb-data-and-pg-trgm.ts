@@ -16,9 +16,26 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  *   - jsonb deduplicates duplicate keys silently. The cast cannot fail on existing
  *     duplicates, but any code that produced duplicate-key JSON in `data` or
  *     `result` will now lose one of the duplicates after the migration.
+ *   - Free-text search (CAST(data AS text) ILIKE :search) behaviour changes subtly:
+ *     json preserves original whitespace, key order, and duplicate keys; jsonb strips
+ *     whitespace, reorders keys, and deduplicates. Substring searches on values
+ *     (the common case) are unaffected. Searches that relied on specific key ordering
+ *     or whitespace in the serialized text will silently change results.
  *
  * The default jsonb GIN opclass accelerates @> and ? operators (containment).
  * It does NOT accelerate `->>` `ILIKE`; the pg_trgm trigram indexes do.
+ *
+ * Prerequisites / privileges:
+ *   - pg_trgm is a trusted extension (PostgreSQL 13+). Any role with CREATE on the
+ *     database can install it. On PG 12 and earlier, or on RDS without the
+ *     rds_superuser grant, the migration role must have superuser or explicit
+ *     CREATE EXTENSION privilege. Verify before running on staging/production.
+ *
+ * Rollback order:
+ *   If JsonbTrigramIndexes1774000000100 has already been applied, revert it first
+ *   (npm run typeorm:revert-migration) before reverting this migration. The trigram
+ *   expression indexes reference (data->>'...') which becomes invalid once the column
+ *   reverts to the json type.
  */
 export class JsonbDataAndPgTrgm1774000000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

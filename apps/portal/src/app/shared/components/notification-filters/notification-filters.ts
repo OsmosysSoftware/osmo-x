@@ -251,7 +251,8 @@ export class NotificationFiltersComponent {
   }
 
   private commitSearch(value: string): void {
-    // Clear all named text filters — keep only structural (dropdown) filters.
+    // Replace all named text filters with the plain search term but preserve
+    // structural (dropdown/date/sort) filters and advancedFilters.
     const f = this.filters();
 
     this.filtersChange.emit({
@@ -263,6 +264,7 @@ export class NotificationFiltersComponent {
       date_to: f.date_to,
       sort: f.sort,
       order: f.order,
+      advancedFilters: f.advancedFilters,
       search: value,
     });
     this.inputValue.set('');
