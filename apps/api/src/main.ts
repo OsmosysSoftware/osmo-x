@@ -9,6 +9,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as packageJson from '../package.json';
 import { useContainer } from 'class-validator';
 import { urlencoded, json } from 'express';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { transformSwaggerToSnakeCase } from './common/utils/swagger-snake-case.transformer';
 
 const logDir = 'logs';
@@ -21,9 +22,12 @@ const configService = new ConfigService();
 const globalPrefix = configService.get('GLOBAL_API_PREFIX', '');
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: loggerConfig,
   });
+  // Enable qs-style deep-object query parsing so `?data_filter[key]=value` is parsed
+  // into req.query.data_filter = { key: 'value' }. Express 5 defaults to 'simple'.
+  app.set('query parser', 'extended');
   // used to inject services in validator decorators
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const config = new DocumentBuilder()
