@@ -367,6 +367,36 @@ export type UpdateMyEntityInput = components['schemas']['UpdateMyEntityInput'];
 ```
 NEVER create manual interfaces for API entities — always derive from the generated types.
 
+### snake_case for filter / query-param interfaces (MANDATORY)
+
+When the generated service contains a `Filters` interface for the list endpoint's query params (e.g. `MyEntityFilters` with `channel_type`, `application_id`, `date_from`), **every field must be snake_case** — exactly matching the backend query-param names. This is the same rule that applies to API response entities, applied to request shapes.
+
+```typescript
+// CORRECT - snake_case end-to-end, no translation step
+export interface MyEntityFilters {
+  channel_type?: number;
+  application_id?: number;
+  date_from?: string;
+  status?: number;
+}
+
+if (filters?.channel_type) {
+  params = params.set('channel_type', filters.channel_type);
+}
+
+// WRONG - camelCase in TS with inline translation
+// export interface MyEntityFilters {
+//   channelType?: number;        // adds a translation step on every set()
+//   applicationId?: number;
+//   dateFrom?: string;
+// }
+// if (filters?.channelType) {
+//   params = params.set('channel_type', filters.channelType);
+// }
+```
+
+Why: filter interfaces are part of the API contract just like response DTOs. Keeping `filters.field_name` ↔ `params.set('field_name', ...)` ↔ `?field_name=...` aligned end-to-end means renames stay consistent and there's no place for typo-driven silent drops. Generic TypeScript camelCase advice does not apply here — see `apps/portal/CLAUDE.md` § "snake_case applies to request shapes too".
+
 ## Step 6: Verify
 
 1. Run `cd apps/portal && npx ng build` — must succeed with zero errors

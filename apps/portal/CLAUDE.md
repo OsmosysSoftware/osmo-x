@@ -314,6 +314,44 @@ export type Application = components['schemas']['ApplicationResponseDto'];
 // export interface Application { applicationId: number; ... }
 ```
 
+### snake_case applies to request shapes too — NOT just responses
+
+The same snake_case rule covers **anything that crosses the HTTP boundary**, including:
+
+- Filter / query-param interfaces (e.g. `NotificationFilters`)
+- Request body DTOs sent to POST / PATCH / PUT endpoints
+- Sort field names passed in `?sort=` query params
+
+The portal must NOT translate field names at the HTTP boundary. One name, end-to-end.
+
+Why: keeps `filters.field_name` ↔ `params.set('field_name', ...)` ↔ `?field_name=...` ↔ backend DTO field aligned. Translation layers create drift, drop fields silently when one side is renamed, and add no value.
+
+```typescript
+// CORRECT - snake_case all the way through
+export interface NotificationFilters {
+  channel_type?: number;
+  delivery_status?: number;
+  date_from?: string;
+  message_body?: string;
+  data_filter?: Array<{ key: string; value: string }>;
+}
+
+if (filters?.channel_type) {
+  params = params.set('channel_type', filters.channel_type);
+}
+
+// WRONG - camelCase in TS with translation at the boundary
+// export interface NotificationFilters {
+//   channelType?: number;       // adds a translation step
+//   deliveryStatus?: number;    // breaks 1:1 alignment with API
+// }
+// if (filters?.channelType) {
+//   params = params.set('channel_type', filters.channelType);
+// }
+```
+
+This rule **overrides** generic TypeScript-idiom advice that says "use camelCase in TS, convert at boundary." For this codebase, project alignment with the API contract wins.
+
 ### Type Override Pattern (for backend serialization bugs only)
 
 ```typescript
