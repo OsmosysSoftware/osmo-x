@@ -81,6 +81,11 @@
             placeholder="Search data..."
           />
         </p-iconfield>
+        <app-notification-filters
+          [filters]="composedFilters()"
+          (filtersChange)="onPropertyFiltersChange($event)"
+          (clear)="onPropertyFiltersClear()"
+        />
         <p-button
           icon="pi pi-filter-slash"
           [rounded]="true"

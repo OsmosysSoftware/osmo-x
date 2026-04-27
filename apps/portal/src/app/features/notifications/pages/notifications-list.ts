@@ -26,6 +26,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
 import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
 import { JsonViewerDialog } from '../../../shared/components/json-viewer-dialog/json-viewer-dialog';
+import { NotificationFiltersComponent } from '../../../shared/components/notification-filters/notification-filters';
 import { NotificationsService, NotificationFilters } from '../services/notifications.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
 import { ProvidersService } from '../../providers/services/providers.service';
@@ -55,6 +56,7 @@ import { ChannelType, DeliveryStatus } from '../../../core/constants/notificatio
     StatusBadgeComponent,
     ChannelTypePipe,
     JsonViewerDialog,
+    NotificationFiltersComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './notifications-list.html',
@@ -109,6 +111,17 @@ export class NotificationsListComponent implements OnInit {
   readonly selectedDateTo = signal<Date | null>(null);
   readonly searchText = signal('');
 
+  // Property-specific filters from the shared notification-filters drawer
+  // (recipient/sender/subject/messageBody/advancedFilters). Held separately so
+  // the existing toolbar selects/dates/search keep working unchanged.
+  readonly propertyFilters = signal<NotificationFilters>({});
+
+  // Composed filters input passed into <app-notification-filters>. Includes the
+  // applied named/advanced filter state so chips render correctly.
+  readonly composedFilters = computed<NotificationFilters>(() => ({
+    ...this.propertyFilters(),
+  }));
+
   // Sort state (signals keep PrimeNG table in sync to prevent re-sort on data change)
   readonly tableSortField = signal('created_on');
   readonly tableSortOrder = signal<number>(-1);
@@ -162,19 +175,19 @@ export class NotificationsListComponent implements OnInit {
     const filters: NotificationFilters = {};
 
     if (this.selectedChannelType()) {
-      filters.channel_type = this.selectedChannelType()!;
+      filters.channelType = this.selectedChannelType()!;
     }
 
     if (this.selectedDeliveryStatus()) {
-      filters.delivery_status = this.selectedDeliveryStatus()!;
+      filters.deliveryStatus = this.selectedDeliveryStatus()!;
     }
 
     if (this.selectedApplicationId()) {
-      filters.application_id = this.selectedApplicationId()!;
+      filters.applicationId = this.selectedApplicationId()!;
     }
 
     if (this.selectedProviderId()) {
-      filters.provider_id = this.selectedProviderId()!;
+      filters.providerId = this.selectedProviderId()!;
     }
 
     if (this.searchText().trim()) {
@@ -182,12 +195,26 @@ export class NotificationsListComponent implements OnInit {
     }
 
     if (this.selectedDateFrom()) {
-      filters.date_from = this.selectedDateFrom()!.toISOString();
+      filters.dateFrom = this.selectedDateFrom()!.toISOString();
     }
 
     if (this.selectedDateTo()) {
-      filters.date_to = this.selectedDateTo()!.toISOString();
+      filters.dateTo = this.selectedDateTo()!.toISOString();
     }
+
+    // Property filters from the drawer (recipient, sender, subject, messageBody,
+    // advancedFilters). Merged in last so they win over any toolbar duplicates.
+    const property = this.propertyFilters();
+
+    if (property.recipient) filters.recipient = property.recipient;
+
+    if (property.sender) filters.sender = property.sender;
+
+    if (property.subject) filters.subject = property.subject;
+
+    if (property.messageBody) filters.messageBody = property.messageBody;
+
+    if (property.advancedFilters?.length) filters.advancedFilters = property.advancedFilters;
 
     if (this.currentSort) {
       filters.sort = this.currentSort;
@@ -281,6 +308,25 @@ export class NotificationsListComponent implements OnInit {
     this.selectedDateFrom.set(null);
     this.selectedDateTo.set(null);
     this.searchText.set('');
+    this.propertyFilters.set({});
+    this.currentPage = 1;
+    this.loadNotifications();
+  }
+
+  onPropertyFiltersChange(updated: NotificationFilters): void {
+    this.propertyFilters.set({
+      recipient: updated.recipient,
+      sender: updated.sender,
+      subject: updated.subject,
+      messageBody: updated.messageBody,
+      advancedFilters: updated.advancedFilters,
+    });
+    this.currentPage = 1;
+    this.loadNotifications();
+  }
+
+  onPropertyFiltersClear(): void {
+    this.propertyFilters.set({});
     this.currentPage = 1;
     this.loadNotifications();
   }

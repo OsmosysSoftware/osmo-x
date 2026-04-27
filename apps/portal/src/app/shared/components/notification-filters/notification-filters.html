@@ -1,0 +1,167 @@
+<p-button
+  label="Filters"
+  icon="pi pi-sliders-h"
+  severity="secondary"
+  [badge]="activeCount() ? activeCount().toString() : undefined"
+  badgeSeverity="contrast"
+  (onClick)="filtersOpen.set(true)"
+/>
+
+@if (activeChips().length) {
+  <div class="flex flex-wrap items-center gap-2 mt-3 mb-3">
+    @for (chip of activeChips(); track chip.id) {
+      <p-chip [label]="chip.label" [removable]="true" (onRemove)="chip.remove()" />
+    }
+    <p-button label="Clear all" severity="secondary" text size="small" (onClick)="onClearAll()" />
+  </div>
+}
+
+<p-drawer
+  [(visible)]="filtersOpen"
+  position="right"
+  header="Filters"
+  styleClass="!w-full md:!w-[28rem]"
+>
+  <div class="flex flex-col gap-4">
+    <p-iftaLabel>
+      <input
+        pInputText
+        id="ndf-recipient"
+        [ngModel]="localFilters().recipient ?? ''"
+        (ngModelChange)="setLocal('recipient', $event)"
+        [fluid]="true"
+        pTooltip="Searches To/CC/BCC and push target. Strip spaces or punctuation if results look off. Type at least 3 characters for fast results."
+        tooltipPosition="top"
+        showDelay="500"
+      />
+      <label for="ndf-recipient">Recipient</label>
+    </p-iftaLabel>
+
+    <p-iftaLabel>
+      <input
+        pInputText
+        id="ndf-sender"
+        [ngModel]="localFilters().sender ?? ''"
+        (ngModelChange)="setLocal('sender', $event)"
+        [fluid]="true"
+        pTooltip="Email From address. Type at least 3 characters for fast results."
+        tooltipPosition="top"
+        showDelay="500"
+      />
+      <label for="ndf-sender">Sender</label>
+    </p-iftaLabel>
+
+    <p-iftaLabel>
+      <input
+        pInputText
+        id="ndf-subject"
+        [ngModel]="localFilters().subject ?? ''"
+        (ngModelChange)="setLocal('subject', $event)"
+        [fluid]="true"
+        pTooltip="Email subject. Type at least 3 characters for fast results."
+        tooltipPosition="top"
+        showDelay="500"
+      />
+      <label for="ndf-subject">Subject</label>
+    </p-iftaLabel>
+
+    <p-iftaLabel>
+      <input
+        pInputText
+        id="ndf-message-body"
+        [ngModel]="localFilters().messageBody ?? ''"
+        (ngModelChange)="setLocal('messageBody', $event)"
+        [fluid]="true"
+        pTooltip="Searches plain text, HTML, SMS message, and template body. HTML markup is included. Type at least 3 characters for fast results."
+        tooltipPosition="top"
+        showDelay="500"
+      />
+      <label for="ndf-message-body">Message body</label>
+    </p-iftaLabel>
+
+    <p-divider />
+
+    <h4 class="text-sm font-medium m-0">Advanced filters</h4>
+
+    @if (!advancedRows().length) {
+      <p-message
+        severity="secondary"
+        variant="simple"
+        size="small"
+        icon="pi pi-info-circle"
+      >
+        Add custom data_filter[key]=value pairs to match keys not covered above.
+      </p-message>
+    }
+
+    @for (row of advancedRows(); track row.id; let i = $index) {
+      <div class="flex items-start gap-2">
+        <div class="flex-1">
+          <p-iftaLabel>
+            <p-autocomplete
+              [ngModel]="row.key"
+              (ngModelChange)="updateKey(i, $event)"
+              [suggestions]="filteredKeys()"
+              (completeMethod)="searchKeys($event)"
+              [dropdown]="true"
+              [forceSelection]="false"
+              [invalid]="row.key !== '' && !isKeyValid(row.key)"
+              [fluid]="true"
+              inputId="ndf-adv-key-{{ i }}"
+            />
+            <label for="ndf-adv-key-{{ i }}">Key</label>
+          </p-iftaLabel>
+          @if (row.key && !isKeyValid(row.key)) {
+            <small class="text-red-500 block mt-1">
+              {{
+                RESERVED_KEYS.has(row.key)
+                  ? 'Already covered by a named filter above.'
+                  : 'Use only letters, digits, or underscores (max 64 chars).'
+              }}
+            </small>
+          }
+        </div>
+
+        <p-iftaLabel class="flex-1">
+          <input
+            pInputText
+            [ngModel]="row.value"
+            (ngModelChange)="updateValue(i, $event)"
+            id="ndf-adv-val-{{ i }}"
+            [fluid]="true"
+          />
+          <label for="ndf-adv-val-{{ i }}">Value</label>
+        </p-iftaLabel>
+
+        <p-button
+          icon="pi pi-times"
+          [rounded]="true"
+          [text]="true"
+          severity="danger"
+          size="small"
+          pTooltip="Remove filter"
+          tooltipPosition="top"
+          (onClick)="removeRow(i)"
+          aria-label="Remove filter"
+        />
+      </div>
+    }
+
+    <p-button
+      icon="pi pi-plus"
+      label="Add filter"
+      severity="secondary"
+      [outlined]="true"
+      [fluid]="true"
+      size="small"
+      (onClick)="addRow()"
+    />
+  </div>
+
+  <ng-template #footer>
+    <div class="flex justify-end gap-2">
+      <p-button label="Reset" severity="secondary" text (onClick)="onClearAll()" />
+      <p-button label="Apply" [disabled]="!canApply()" (onClick)="onApply()" />
+    </div>
+  </ng-template>
+</p-drawer>

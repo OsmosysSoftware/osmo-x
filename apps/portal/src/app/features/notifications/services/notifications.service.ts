@@ -3,18 +3,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Notification, PaginatedResponse } from '../../../core/models/api.model';
+import { NotificationFilters } from '../../../core/models/notification-filters.model';
 
-export interface NotificationFilters {
-  channel_type?: number;
-  delivery_status?: number;
-  application_id?: number;
-  provider_id?: number;
-  search?: string;
-  date_from?: string;
-  date_to?: string;
-  sort?: string;
-  order?: 'asc' | 'desc';
-}
+export type { NotificationFilters };
 
 @Injectable({ providedIn: 'root' })
 export class NotificationsService {
@@ -31,32 +22,32 @@ export class NotificationsService {
   ): Observable<PaginatedResponse<Notification>> {
     let params = new HttpParams().set('page', page).set('limit', limit);
 
-    if (filters?.channel_type) {
-      params = params.set('channel_type', filters.channel_type);
+    if (filters?.channelType) {
+      params = params.set('channel_type', filters.channelType);
     }
 
-    if (filters?.delivery_status) {
-      params = params.set('delivery_status', filters.delivery_status);
+    if (filters?.deliveryStatus) {
+      params = params.set('delivery_status', filters.deliveryStatus);
     }
 
-    if (filters?.application_id) {
-      params = params.set('application_id', filters.application_id);
+    if (filters?.applicationId) {
+      params = params.set('application_id', filters.applicationId);
     }
 
-    if (filters?.provider_id) {
-      params = params.set('provider_id', filters.provider_id);
+    if (filters?.providerId) {
+      params = params.set('provider_id', filters.providerId);
     }
 
     if (filters?.search) {
       params = params.set('search', filters.search);
     }
 
-    if (filters?.date_from) {
-      params = params.set('date_from', filters.date_from);
+    if (filters?.dateFrom) {
+      params = params.set('date_from', filters.dateFrom);
     }
 
-    if (filters?.date_to) {
-      params = params.set('date_to', filters.date_to);
+    if (filters?.dateTo) {
+      params = params.set('date_to', filters.dateTo);
     }
 
     if (filters?.sort) {
@@ -65,6 +56,28 @@ export class NotificationsService {
 
     if (filters?.order) {
       params = params.set('order', filters.order);
+    }
+
+    if (filters?.recipient) {
+      params = params.set('recipient', filters.recipient);
+    }
+
+    if (filters?.sender) {
+      params = params.set('sender', filters.sender);
+    }
+
+    if (filters?.subject) {
+      params = params.set('subject', filters.subject);
+    }
+
+    if (filters?.messageBody) {
+      params = params.set('message_body', filters.messageBody);
+    }
+
+    for (const row of filters?.advancedFilters ?? []) {
+      if (row.key && row.value) {
+        params = params.append(`data_filter[${row.key}]`, row.value);
+      }
     }
 
     return this.http
