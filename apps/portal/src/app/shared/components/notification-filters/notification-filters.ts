@@ -39,8 +39,8 @@ const FILTER_TOKENS: FilterToken[] = [
   { id: 'sender', label: 'Sender', namedKey: 'sender' },
   { id: 'subject', label: 'Subject', namedKey: 'subject' },
   { id: 'message_body', label: 'Message body', namedKey: 'message_body' },
-  { id: 'template_name', label: 'Template (WA360)', namedKey: 'template_name' },
-  { id: 'contentSid', label: 'ContentSid', dataFilterKey: 'contentSid' },
+  { id: 'template_name', label: 'Template Name (WA360)', namedKey: 'template_name' },
+  { id: 'contentSid', label: 'ContentSid (Twilio)', dataFilterKey: 'contentSid' },
 ];
 
 @Component({
