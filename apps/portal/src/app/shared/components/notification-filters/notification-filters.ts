@@ -139,8 +139,10 @@ export class NotificationFiltersComponent {
     () =>
       this.advRows().length > 0 &&
       this.advRows().every(
-        (r) => Boolean(r.key) && Boolean(r.value) && ALLOWED_KEY_RE.test(r.key),
-      ),
+        (r) =>
+          Boolean(r.key.trim()) && Boolean(r.value.trim()) && ALLOWED_KEY_RE.test(r.key.trim()),
+      ) &&
+      new Set(this.advRows().map((r) => r.key.trim())).size === this.advRows().length,
   );
 
   // ---- Search bar interactions ----
@@ -302,7 +304,9 @@ export class NotificationFiltersComponent {
       return;
     }
 
-    const rows = this.advRows().filter((r) => r.key && r.value);
+    const rows = this.advRows()
+      .filter((r) => r.key && r.value)
+      .map((r) => ({ ...r, key: r.key.trim(), value: r.value.trim() }));
 
     this.filtersChange.emit({ ...this.filters(), advancedFilters: rows });
     popover.hide();
@@ -311,6 +315,10 @@ export class NotificationFiltersComponent {
   // ---- Clear all ----
 
   onClearAll(): void {
+    this.selectedToken.set(null);
+    this.inputValue.set('');
+    this.dropdownVisible.set(false);
+    this.advRows.set([]);
     this.clear.emit();
   }
 
