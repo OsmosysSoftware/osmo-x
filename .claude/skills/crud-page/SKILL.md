@@ -266,6 +266,27 @@ onImportUpload(event: { files: File[] }): void {
 
 ### Service patterns
 
+> **CRITICAL — snake_case end-to-end for filter interfaces:**
+> Filter/query-param interfaces in portal services MUST use snake_case property names that match the API query param names verbatim. **Never** use camelCase and translate at the HTTP boundary.
+>
+> ```typescript
+> // CORRECT — snake_case end-to-end, no translation step
+> export interface MyFilters {
+>   channel_type?: number;
+>   date_from?: string;
+>   application_id?: number;
+> }
+> if (filters?.channel_type) { params = params.set('channel_type', filters.channel_type); }
+>
+> // WRONG — camelCase with translation introduces drift and reviewer drag
+> export interface MyFilters {
+>   channelType?: number;   // ← wrong
+> }
+> if (filters?.channelType) { params = params.set('channel_type', filters.channelType); }
+> ```
+>
+> This applies to all filter/request DTO interfaces defined inside `services/*.service.ts` files. Response entity types from `core/models/api.model.ts` (generated from OpenAPI) are already snake_case — use them directly.
+
 **List with sort params** (all v1 APIs support this):
 ```typescript
 list(page = 1, limit = 20, sort?: string, order?: string): Observable<PaginatedResponse<T>> {
@@ -366,6 +387,36 @@ export type CreateMyEntityInput = components['schemas']['CreateMyEntityInput'];
 export type UpdateMyEntityInput = components['schemas']['UpdateMyEntityInput'];
 ```
 NEVER create manual interfaces for API entities — always derive from the generated types.
+
+### snake_case for filter / query-param interfaces (MANDATORY)
+
+When the generated service contains a `Filters` interface for the list endpoint's query params (e.g. `MyEntityFilters` with `channel_type`, `application_id`, `date_from`), **every field must be snake_case** — exactly matching the backend query-param names. This is the same rule that applies to API response entities, applied to request shapes.
+
+```typescript
+// CORRECT - snake_case end-to-end, no translation step
+export interface MyEntityFilters {
+  channel_type?: number;
+  application_id?: number;
+  date_from?: string;
+  status?: number;
+}
+
+if (filters?.channel_type) {
+  params = params.set('channel_type', filters.channel_type);
+}
+
+// WRONG - camelCase in TS with inline translation
+// export interface MyEntityFilters {
+//   channelType?: number;        // adds a translation step on every set()
+//   applicationId?: number;
+//   dateFrom?: string;
+// }
+// if (filters?.channelType) {
+//   params = params.set('channel_type', filters.channelType);
+// }
+```
+
+Why: filter interfaces are part of the API contract just like response DTOs. Keeping `filters.field_name` ↔ `params.set('field_name', ...)` ↔ `?field_name=...` aligned end-to-end means renames stay consistent and there's no place for typo-driven silent drops. Generic TypeScript camelCase advice does not apply here — see `apps/portal/CLAUDE.md` § "snake_case applies to request shapes too".
 
 ## Step 6: Verify
 

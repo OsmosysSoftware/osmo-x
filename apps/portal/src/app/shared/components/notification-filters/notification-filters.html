@@ -1,0 +1,180 @@
+﻿<!-- GitLab-style unified search + filter bar -->
+<div
+  class="relative flex-1 min-w-50 max-w-125 cursor-text"
+  role="presentation"
+  (click)="onBarClick($event)"
+>
+
+  <div
+    class="ndf-bar flex flex-wrap items-center gap-1 min-h-9 px-2 py-1 border border-surface-300 rounded-md bg-white transition-all duration-150"
+    [class.ndf-bar-focused]="dropdownVisible()"
+  >
+
+    <!-- Applied filter chips (inline inside the bar) -->
+    @for (chip of activeChips(); track chip.id) {
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-500 text-white rounded text-xs whitespace-nowrap max-w-55">
+        <span class="overflow-hidden text-ellipsis">{{ chip.label }}</span>
+        <button
+          type="button"
+          class="bg-transparent border-0 text-white cursor-pointer p-0 leading-none opacity-75 hover:opacity-100 shrink-0"
+          (click)="chip.remove(); $event.stopPropagation()"
+          aria-label="Remove filter"
+        >&times;</button>
+      </span>
+    }
+
+    <!-- Token type badge shown after user picks a filter type, e.g. "Recipient =" -->
+    @if (selectedToken()) {
+      <span class="inline-flex items-center px-2 py-0.5 bg-surface-100 rounded text-xs whitespace-nowrap shrink-0">
+        <span class="text-primary-500 font-semibold">{{ selectedToken()!.label }}</span>
+        <span class="text-surface-400">&nbsp;=</span>
+      </span>
+    }
+
+    <!-- Borderless input filling the rest of the bar -->
+    <input
+      #searchInput
+      type="text"
+      class="ndf-input"
+      [placeholder]="placeholder()"
+      [ngModel]="inputValue()"
+      (ngModelChange)="onInputChange($event)"
+      (focus)="onFocus()"
+      (blur)="onInputBlur()"
+      (keydown)="onKeydown($event)"
+      autocomplete="off"
+    />
+
+    <i class="pi pi-search text-surface-400 text-xs shrink-0"></i>
+
+    @if (activeCount() || selectedToken()) {
+      <button
+        type="button"
+        class="inline-flex items-center p-0.5 bg-transparent border-0 cursor-pointer rounded-full text-surface-400 hover:text-surface-600 hover:bg-surface-100 shrink-0"
+        pTooltip="Clear all filters"
+        tooltipPosition="top"
+        (click)="onClearAll(); $event.stopPropagation()"
+        aria-label="Clear all filters"
+      >
+        <i class="pi pi-times text-xs"></i>
+      </button>
+    }
+  </div>
+
+  <!-- Dropdown panel shown on focus/click -->
+  @if (dropdownVisible()) {
+    <div
+      class="absolute top-[calc(100%+4px)] left-0 right-0 z-1000 bg-white border border-surface-200 rounded-md shadow-md overflow-hidden"
+      (mousedown)="$event.preventDefault()"
+    >
+
+      <!-- "Search for this text" row — shown when user types without selecting a token type -->
+      @if (inputValue().trim() && !selectedToken()) {
+        <button
+          type="button"
+          class="flex items-center gap-2 w-full px-3 py-2 bg-transparent border-0 text-left cursor-pointer text-base text-surface-700 hover:bg-surface-50"
+          (click)="commitFromDropdown()"
+        >
+          <span>Search for "<strong>{{ inputValue() }}</strong>"</span>
+        </button>
+        <div class="h-px bg-surface-200 my-0.5"></div>
+      }
+
+      <!-- Hint when a token type is selected but no value typed yet -->
+      @if (selectedToken()) {
+        <div class="px-3 py-2 text-sm text-surface-400">
+          Type a value and press
+          <kbd class="inline-block px-1.5 py-0.5 text-xs border border-surface-300 rounded bg-surface-50 font-sans">Enter</kbd>
+          to apply
+        </div>
+      }
+
+      <!-- Filter type list (only when no token selected AND user is not typing) -->
+      @if (!selectedToken() && !inputValue().trim()) {
+        @if (availableTokens().length > 0) {
+          <div class="px-3 pt-2 pb-0.5 text-[0.7rem] font-semibold uppercase tracking-wider text-surface-400">
+            Filter by
+          </div>
+          @for (token of availableTokens(); track token.id) {
+            <button
+              type="button"
+              class="flex items-center w-full px-3 py-2 bg-transparent border-0 text-left cursor-pointer text-base text-surface-700 hover:bg-surface-50"
+              (click)="selectToken(token); $event.stopPropagation()"
+            >{{ token.label }}</button>
+          }
+        } @else if (!inputValue().trim()) {
+          <div class="px-3 py-2 text-sm text-surface-400">All filters applied.</div>
+        }
+      }
+
+    </div>
+  }
+</div>
+
+<!-- TODO: Advanced (free-form data_filter) popover button - commented out until the feature is ready to ship -->
+<!-- <p-popover #advPop>
+  <div style="min-width: 380px">
+    <h4 class="text-sm font-medium mt-0 mb-3">Advanced filters</h4>
+
+    @if (!advRows().length) {
+      <p-message severity="secondary" variant="simple" size="small" icon="pi pi-info-circle">
+        Add custom data_filter[key]=value pairs.
+      </p-message>
+    }
+
+    @for (row of advRows(); track row.id; let i = $index) {
+      <div class="flex items-center gap-2 mb-2">
+        <input
+          pInputText
+          [ngModel]="row.key"
+          (ngModelChange)="updateAdvKey(i, $event)"
+          placeholder="Key"
+          style="width: 140px"
+          [class.p-invalid]="row.key && !ALLOWED_KEY_RE.test(row.key)"
+        />
+        <input
+          pInputText
+          [ngModel]="row.value"
+          (ngModelChange)="updateAdvValue(i, $event)"
+          placeholder="Value"
+          class="flex-1"
+        />
+        <p-button
+          icon="pi pi-times"
+          [rounded]="true"
+          [text]="true"
+          severity="danger"
+          size="small"
+          (onClick)="removeAdvRow(i)"
+          aria-label="Remove row"
+        />
+      </div>
+    }
+
+    <div class="flex justify-between items-center mt-3">
+      <p-button
+        icon="pi pi-plus"
+        label="Add row"
+        severity="secondary"
+        [text]="true"
+        size="small"
+        (onClick)="addAdvRow()"
+      />
+      <p-button
+        label="Apply"
+        size="small"
+        [disabled]="!advCanApply()"
+        (onClick)="applyAdvanced(advPop)"
+      />
+    </div>
+  </div>
+</p-popover> -->
+
+<!-- <p-button
+  label="Advanced"
+  icon="pi pi-sliders-h"
+  severity="secondary"
+  [outlined]="true"
+  size="small"
+  (onClick)="openAdvanced(advPop, $event)"
+/> -->

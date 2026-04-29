@@ -47,7 +47,7 @@ export class Notification {
   @Field()
   channelType: number;
 
-  @Column({ type: 'json' })
+  @Column({ type: 'jsonb' })
   @IsObject()
   @Field(() => GraphQLJSONObject)
   data: Record<string, unknown>;
@@ -63,7 +63,7 @@ export class Notification {
   @Field()
   deliveryStatus: number;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   @IsObject()
   @IsOptional()
   @Field(() => GraphQLJSONObject, { nullable: true })

@@ -46,6 +46,7 @@ import { RequestLoggerMiddleware } from 'src/common/logger/request-logger.middle
 import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
 import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
 import { MasterProvidersModule } from '../master-providers/master-providers.module';
+import { NotificationDataFilterHelper } from './helpers/notification-data-filter.helper';
 
 const providerModules = [
   MailgunModule,
@@ -103,6 +104,7 @@ const consumers = [
     QueueService,
     ArchivedNotificationsService,
     RequestLoggerMiddleware,
+    NotificationDataFilterHelper,
     ...consumers,
   ],
   exports: [
@@ -112,6 +114,7 @@ const consumers = [
     ApplicationsService,
     UsersService,
     QueueService,
+    NotificationDataFilterHelper,
     ...consumers,
   ],
   controllers: [NotificationsController],

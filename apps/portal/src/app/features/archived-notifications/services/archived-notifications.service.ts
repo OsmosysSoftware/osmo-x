@@ -3,18 +3,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ArchivedNotification, PaginatedResponse } from '../../../core/models/api.model';
+import { NotificationFilters } from '../../../core/models/notification-filters.model';
 
-export interface NotificationFilters {
-  channel_type?: number;
-  delivery_status?: number;
-  application_id?: number;
-  provider_id?: number;
-  search?: string;
-  date_from?: string;
-  date_to?: string;
-  sort?: string;
-  order?: 'asc' | 'desc';
-}
+export type { NotificationFilters };
 
 @Injectable({ providedIn: 'root' })
 export class ArchivedNotificationsService {
@@ -65,6 +56,32 @@ export class ArchivedNotificationsService {
 
     if (filters?.order) {
       params = params.set('order', filters.order);
+    }
+
+    if (filters?.recipient) {
+      params = params.set('recipient', filters.recipient);
+    }
+
+    if (filters?.sender) {
+      params = params.set('sender', filters.sender);
+    }
+
+    if (filters?.subject) {
+      params = params.set('subject', filters.subject);
+    }
+
+    if (filters?.message_body) {
+      params = params.set('message_body', filters.message_body);
+    }
+
+    if (filters?.template_name) {
+      params = params.set('template_name', filters.template_name);
+    }
+
+    for (const row of filters?.advancedFilters ?? []) {
+      if (row.key && row.value) {
+        params = params.append(`data_filter[${row.key}]`, row.value);
+      }
     }
 
     return this.http

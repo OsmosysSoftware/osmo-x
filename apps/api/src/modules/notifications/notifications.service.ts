@@ -34,6 +34,7 @@ import { Provider } from '../providers/entities/provider.entity';
 import { ProviderChain } from '../provider-chains/entities/provider-chain.entity';
 import { ProviderChainMembersService } from '../provider-chain-members/provider-chain-members.service';
 import { NotificationResponseDto } from './dto/notification-response.dto';
+import { NotificationDataFilterHelper } from './helpers/notification-data-filter.helper';
 
 @Injectable()
 export class NotificationsService extends CoreService<Notification> {
@@ -52,6 +53,7 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly archivedNotificationsService: ArchivedNotificationsService,
     private readonly providerChainsService: ProviderChainsService,
     private readonly providerChainMembersService: ProviderChainMembersService,
+    private readonly dataFilterHelper: NotificationDataFilterHelper,
   ) {
     super(notificationRepository);
   }
@@ -586,6 +588,12 @@ export class NotificationsService extends CoreService<Notification> {
       providerId?: number;
       dateFrom?: string;
       dateTo?: string;
+      recipient?: string;
+      sender?: string;
+      subject?: string;
+      messageBody?: string;
+      templateName?: string;
+      dataFilter?: Record<string, string>;
     },
   ): Promise<{ items: NotificationResponseDto[]; meta: PaginationMeta }> {
     let appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
@@ -643,6 +651,15 @@ export class NotificationsService extends CoreService<Notification> {
       'notification',
       searchableFields,
       baseConditions,
+      (qb, alias) =>
+        this.dataFilterHelper.applyTo(qb, alias, {
+          recipient: filters?.recipient,
+          sender: filters?.sender,
+          subject: filters?.subject,
+          messageBody: filters?.messageBody,
+          templateName: filters?.templateName,
+          dataFilter: filters?.dataFilter,
+        }),
     );
 
     return {

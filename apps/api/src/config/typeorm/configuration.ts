@@ -25,5 +25,6 @@ export default new DataSource({
   entities: [],
   migrations: ['src/database/migrations/**'],
   migrationsTableName: 'notify_migrations',
+  migrationsTransactionMode: 'each',
   synchronize: false,
 } as DataSourceOptions);

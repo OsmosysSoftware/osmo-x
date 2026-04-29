@@ -98,6 +98,48 @@ export class NotificationsController {
     type: Number,
     description: 'Filter by provider',
   })
+  @ApiQuery({
+    name: 'recipient',
+    required: false,
+    type: String,
+    description: 'Match data.to/cc/bcc/target (string or array). Type ≥ 3 chars for fast results.',
+  })
+  @ApiQuery({
+    name: 'sender',
+    required: false,
+    type: String,
+    description: 'Match data.from. Type ≥ 3 chars for fast results.',
+  })
+  @ApiQuery({
+    name: 'subject',
+    required: false,
+    type: String,
+    description: 'Match data.subject. Type ≥ 3 chars for fast results.',
+  })
+  @ApiQuery({
+    name: 'message_body',
+    required: false,
+    type: String,
+    description:
+      'Match data.text/html/message and nested template/push body fields. Type ≥ 3 chars for fast results.',
+  })
+  @ApiQuery({
+    name: 'template_name',
+    required: false,
+    type: String,
+    description:
+      'Match WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio Business providers.',
+  })
+  @ApiQuery({
+    name: 'data_filter',
+    required: false,
+    style: 'deepObject',
+    explode: true,
+    schema: { type: 'object', additionalProperties: { type: 'string' } },
+    description:
+      'Top-level data JSON key/value pairs (data_filter[key]=value). Keys must match ' +
+      '^[a-zA-Z0-9_]{1,64}$. Multiple pairs are AND-combined.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of notifications',
@@ -124,6 +166,12 @@ export class NotificationsController {
       providerId: providerId ? Number(providerId) : undefined,
       dateFrom: dateFrom || undefined,
       dateTo: dateTo || undefined,
+      recipient: query.recipient,
+      sender: query.sender,
+      subject: query.subject,
+      messageBody: query.message_body,
+      templateName: query.template_name,
+      dataFilter: query.data_filter,
     };
     const { items, meta } = await this.notificationsService.getAllNotificationsAsDto(
       query,
