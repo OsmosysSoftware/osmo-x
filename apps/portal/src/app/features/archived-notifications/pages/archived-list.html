@@ -71,16 +71,11 @@
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-2">
-        <p-iconfield iconPosition="left">
-          <p-inputicon class="pi pi-search" />
-          <input
-            pInputText
-            type="text"
-            [value]="searchText()"
-            (input)="onSearchInput($event)"
-            placeholder="Search data..."
-          />
-        </p-iconfield>
+        <app-notification-filters
+          [filters]="composedFilters()"
+          (filtersChange)="onPropertyFiltersChange($event)"
+          (clear)="onPropertyFiltersClear()"
+        />
         <p-button
           icon="pi pi-filter-slash"
           [rounded]="true"

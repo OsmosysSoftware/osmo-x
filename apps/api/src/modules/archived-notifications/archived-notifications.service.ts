@@ -15,6 +15,7 @@ import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.he
 import ms = require('ms');
 import { ArchivedNotificationResponseDto } from './dto/archived-notification-response.dto';
 import { ApplicationsService } from '../applications/applications.service';
+import { NotificationDataFilterHelper } from '../notifications/helpers/notification-data-filter.helper';
 
 @Injectable()
 export class ArchivedNotificationsService extends CoreService<ArchivedNotification> {
@@ -26,6 +27,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     private readonly configService: ConfigService,
     private dataSource: DataSource,
     private readonly applicationsService: ApplicationsService,
+    private readonly dataFilterHelper: NotificationDataFilterHelper,
   ) {
     super(archivedNotificationRepository);
   }
@@ -181,6 +183,12 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       providerId?: number;
       dateFrom?: string;
       dateTo?: string;
+      recipient?: string;
+      sender?: string;
+      subject?: string;
+      messageBody?: string;
+      templateName?: string;
+      dataFilter?: Record<string, string>;
     },
   ): Promise<{ items: ArchivedNotificationResponseDto[]; meta: PaginationMeta }> {
     let appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
@@ -239,6 +247,15 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       'archivedNotification',
       searchableFields,
       baseConditions,
+      (qb, alias) =>
+        this.dataFilterHelper.applyTo(qb, alias, {
+          recipient: filters?.recipient,
+          sender: filters?.sender,
+          subject: filters?.subject,
+          messageBody: filters?.messageBody,
+          templateName: filters?.templateName,
+          dataFilter: filters?.dataFilter,
+        }),
     );
 
     return {

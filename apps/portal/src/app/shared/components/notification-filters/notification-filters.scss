@@ -1,0 +1,28 @@
+﻿:host {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// Borderless input — must override browser & any inherited input styles
+.ndf-input {
+  flex: 1;
+  min-width: 80px;
+  border: none;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  padding-block: 2px;
+  font-size: var(--p-inputtext-font-size, 1rem);
+  color: var(--p-text-color, inherit);
+
+  &::placeholder {
+    color: var(--p-text-muted-color, #9ca3af);
+  }
+}
+
+// Focused bar state — dynamic ring/border (hard to do cleanly with conditional Tailwind binding)
+.ndf-bar-focused {
+  border-color: var(--p-primary-color) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--p-primary-color) 15%, transparent);
+}

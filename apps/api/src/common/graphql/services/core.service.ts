@@ -1,9 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Repository, Brackets } from 'typeorm';
+import { Repository, Brackets, SelectQueryBuilder } from 'typeorm';
 import { QueryOptionsDto, SortOrder } from '../dtos/query-options.dto';
 import { PaginationQueryDto } from '../../dto/pagination-query.dto';
 import { PaginationHelper, PaginationMeta } from '../../utils/pagination.helper';
 import { Status } from '../../constants/database';
+
+/**
+ * Optional callback that lets domain services append additional WHERE clauses
+ * to a query builder. Runs after base conditions and the bracketed free-text
+ * search are applied, before sort/paging — so its andWhere() composes safely
+ * with the parenthesized search expression.
+ */
+export type ExtraFiltersFn<T> = (qb: SelectQueryBuilder<T>, alias: string) => void;
 
 @Injectable()
 export abstract class CoreService<TEntity> {
@@ -30,6 +38,7 @@ export abstract class CoreService<TEntity> {
     alias: string,
     searchableFields: string[] = [],
     baseConditions: Array<{ field: string; value: unknown; operator?: string }> = [],
+    applyExtraFilters?: ExtraFiltersFn<TEntity>,
   ): Promise<{ items: TEntity[]; total: number }> {
     this.logger.log(`Getting all ${alias} with options`);
 
@@ -101,6 +110,13 @@ export abstract class CoreService<TEntity> {
           });
         }),
       );
+    }
+
+    // Domain-specific extra filters (e.g. notification data JSON predicates).
+    // The previous andWhere(new Brackets(...)) ensures the OR group is parenthesized,
+    // so subsequent andWhere() calls compose safely.
+    if (applyExtraFilters) {
+      applyExtraFilters(queryBuilder, alias);
     }
 
     // Dynamic filters with special handling for date fields
@@ -182,6 +198,7 @@ export abstract class CoreService<TEntity> {
     alias: string,
     searchableFields: string[] = [],
     baseConditions: Array<{ field: string; value: unknown; operator?: string }> = [],
+    applyExtraFilters?: ExtraFiltersFn<TEntity>,
   ): Promise<{ items: TEntity[]; total: number; meta: PaginationMeta }> {
     const { page, limit, offset, sort } = PaginationHelper.normalizePaginationParams(query);
 
@@ -193,7 +210,13 @@ export abstract class CoreService<TEntity> {
       search: query.search,
     };
 
-    const { items, total } = await this.findAll(options, alias, searchableFields, baseConditions);
+    const { items, total } = await this.findAll(
+      options,
+      alias,
+      searchableFields,
+      baseConditions,
+      applyExtraFilters,
+    );
     const meta = PaginationHelper.buildPaginationMeta(page, limit, total);
 
     return { items, total, meta };

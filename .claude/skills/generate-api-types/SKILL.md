@@ -40,6 +40,6 @@ This runs `openapi-typescript http://localhost:3000/api/docs-json -o src/app/cor
    export type CreateApplicationInput = components['schemas']['CreateApplicationInput'];
    ```
 3. All services and components import from `api.model.ts` — NOT directly from `api.types.ts`
-4. Use snake_case field names directly — NO conversion to camelCase
+4. Use snake_case field names directly — NO conversion to camelCase. **This applies equally to handwritten interfaces in services for filter / query-param shapes** (e.g. `MyEntityFilters`) — they must use snake_case to stay aligned with the wire format and the auto-generated response types. See `apps/portal/CLAUDE.md` § "snake_case applies to request shapes too".
 5. Run `npx ng build` to verify no type errors
 6. If new fields were added, check if any components need updating (e.g., new columns in tables)
