@@ -17,7 +17,13 @@ export class ConfigService {
       throw new Error(`Failed to load /assets/config.json (${res.status})`);
     }
 
-    this._config.set((await res.json()) as AppConfig);
+    const parsed = (await res.json()) as Partial<AppConfig>;
+
+    if (typeof parsed?.apiUrl !== 'string' || typeof parsed?.apiDocsUrl !== 'string') {
+      throw new Error('Invalid /assets/config.json: apiUrl and apiDocsUrl must be strings');
+    }
+
+    this._config.set({ apiUrl: parsed.apiUrl, apiDocsUrl: parsed.apiDocsUrl });
   }
 
   get apiUrl(): string {
