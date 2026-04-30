@@ -80,12 +80,12 @@ The portal will be available at <http://localhost:4200> (or whichever `SERVER_PO
 
 #### Required env vars (`apps/portal/.env`)
 
-| Variable | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `COMPOSE_PROJECT_NAME` | yes | `osmox-portal` | Docker project namespace |
-| `SERVER_PORT` | yes | `4200` | Host port the container binds to (`127.0.0.1` only) |
-| `API_URL` | yes | `http://localhost:3000` | Backend URL written into `/assets/config.json` at container start |
-| `API_DOCS_URL` | no | derived from `${API_URL}/docs` | Override only if your docs URL is on a different host or path |
+| Variable | Always required | Notes |
+| --- | --- | --- |
+| `COMPOSE_PROJECT_NAME` | yes | Docker project namespace |
+| `SERVER_PORT` | yes | Host port the container binds to (`127.0.0.1` only) |
+| `API_URL` | env-var workflow only | Backend URL the entrypoint writes into `/assets/config.json` at container start. **Ignored** under the host-file workflow (`SKIP_RUNTIME_CONFIG_GENERATION=true`) where `runtime-config/config.json` is the source of truth. |
+| `API_DOCS_URL` | env-var workflow only, optional | Derived from `${API_URL}/docs` when unset. Override only if your docs URL is on a different host or path. Ignored under the host-file workflow. |
 
 #### Repointing at a different backend (no rebuild)
 
