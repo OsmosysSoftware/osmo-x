@@ -10,5 +10,10 @@ services:
     image: osmox-portal
     container_name: osmox-portal
     restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      API_URL: ${API_URL:-http://localhost:3000}
+      API_DOCS_URL: ${API_DOCS_URL:-http://localhost:3000/docs}
     ports:
       - '127.0.0.1:${SERVER_PORT}:80'

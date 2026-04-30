@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 import {
   Application,
   CreateApplicationInput,
@@ -12,7 +12,10 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ApplicationsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/applications`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/applications`;
+  }
 
   private readonly _applications = signal<Application[]>([]);
   readonly applications = this._applications.asReadonly();

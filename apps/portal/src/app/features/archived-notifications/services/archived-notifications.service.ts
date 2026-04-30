@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 import { ArchivedNotification, PaginatedResponse } from '../../../core/models/api.model';
 import { NotificationFilters } from '../../../core/models/notification-filters.model';
 
@@ -10,7 +10,10 @@ export type { NotificationFilters };
 @Injectable({ providedIn: 'root' })
 export class ArchivedNotificationsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/archived-notifications`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/archived-notifications`;
+  }
 
   private readonly _archivedNotifications = signal<ArchivedNotification[]>([]);
   readonly archivedNotifications = this._archivedNotifications.asReadonly();

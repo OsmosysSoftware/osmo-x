@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 import {
   Organization,
   CreateOrganizationInput,
@@ -11,7 +11,10 @@ import {
 @Injectable({ providedIn: 'root' })
 export class OrganizationsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/organizations`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/organizations`;
+  }
 
   private readonly _organizations = signal<Organization[]>([]);
   readonly organizations = this._organizations.asReadonly();

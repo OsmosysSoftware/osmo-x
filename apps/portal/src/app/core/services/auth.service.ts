@@ -2,7 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, map, catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { ConfigService } from './config.service';
 import {
   User,
   AuthResponse,
@@ -19,6 +19,7 @@ import { UserRoles, UserRole } from '../constants/roles';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly config = inject(ConfigService);
 
   private readonly STORAGE_KEY = 'auth_user';
   private readonly TOKEN_KEY = 'auth_token';
@@ -86,7 +87,7 @@ export class AuthService {
   }
 
   login(dto: LoginDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, dto).pipe(
+    return this.http.post<AuthResponse>(`${this.config.apiUrl}/auth/login`, dto).pipe(
       tap((response) => {
         this.handleAuthSuccess(response);
       }),
@@ -103,7 +104,7 @@ export class AuthService {
 
     const dto: RefreshTokenDto = { refresh_token: refreshToken };
 
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/refresh`, dto).pipe(
+    return this.http.post<AuthResponse>(`${this.config.apiUrl}/auth/refresh`, dto).pipe(
       tap((response) => {
         this.handleAuthSuccess(response);
       }),
@@ -116,7 +117,7 @@ export class AuthService {
   }
 
   getProfile(): Observable<User> {
-    return this.http.get<MeResponse>(`${environment.apiUrl}/auth/me`).pipe(
+    return this.http.get<MeResponse>(`${this.config.apiUrl}/auth/me`).pipe(
       tap((response) => {
         this.currentUser.set(response.user);
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(response.user));

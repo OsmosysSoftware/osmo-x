@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 import {
   ProviderChainMember,
   CreateProviderChainMemberInput,
@@ -13,7 +13,10 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ChainMembersService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/provider-chain-members`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/provider-chain-members`;
+  }
 
   private readonly _members = signal<ProviderChainMember[]>([]);
   readonly members = this._members.asReadonly();
