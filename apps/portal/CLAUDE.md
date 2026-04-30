@@ -255,11 +255,16 @@ export class ExampleComponent {
 
 ### Service Pattern (REQUIRED)
 
+The base API URL is loaded **at runtime** from `/assets/config.json` via `ConfigService` (see `Runtime Configuration` below). Services must inject `ConfigService` and read `apiUrl` through a lazy getter — a class-field initializer would run before `provideAppInitializer` resolves and capture the wrong value.
+
 ```typescript
 @Injectable({ providedIn: 'root' })
 export class DataService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/resource`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/resource`;
+  }
 
   private readonly _items = signal<Item[]>([]);
   readonly items = this._items.asReadonly();
@@ -271,6 +276,20 @@ export class DataService {
   }
 }
 ```
+
+### Runtime Configuration (REQUIRED)
+
+There is no `environment.ts` file — those were removed and `fileReplacements` is gone from `angular.json`. The portal builds **once** and is configured at deploy time via Docker env vars.
+
+- **`apps/portal/src/assets/config.json`** — committed default for `ng serve` and tests (localhost values). In Docker, this is **shadowed** by an nginx alias.
+- **`ConfigService`** (`apps/portal/src/app/core/services/config.service.ts`) — fetches `/assets/config.json` via `provideAppInitializer` before bootstrap. Validates the payload shape (`apiUrl`, `apiDocsUrl` must be strings) and throws fail-fast on a malformed file.
+- **`docker-entrypoint.sh`** — generates `/runtime-config/config.json` from `$API_URL` / `$API_DOCS_URL` on container start. nginx aliases `/assets/config.json` to that path.
+- **`apps/portal/.env`** — single source of truth for runtime values. Edit `API_URL`, run `docker compose up -d` (no rebuild). `API_DOCS_URL` is optional and derived from `API_URL` when unset.
+
+Two workflows are supported:
+
+1. **Env-var workflow (default):** edit `.env`, `docker compose up -d`. Entrypoint regenerates `config.json`.
+2. **Host-managed workflow (opt-in):** uncomment the `volumes:` and `SKIP_RUNTIME_CONFIG_GENERATION` blocks in `docker-compose.yml`, place a `runtime-config/config.json` on the host, and edit it freely — atomic-write edits propagate live (next browser refresh) without restarting the container. Directory mount only — file-level mounts break when editors atomic-write.
 
 ### Routing (REQUIRED)
 

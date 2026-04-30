@@ -116,6 +116,47 @@ This script periodically calls OsmoX APIs to:
 
 You can also run OsmoX using Docker while using a local database. See the Docker guide in `apps/api/docs/use-local-db-instead-of-dockerized-db/README.md` for details.
 
+## Portal Setup
+
+The portal is the Angular frontend for managing notifications, providers, and applications.
+
+<Steps>
+  <Step title="Configure environment">
+    ```bash
+    cd osmo-x/apps/portal
+    cp .env.example .env
+    ```
+
+    The portal's API URL is configured at **runtime** via `API_URL` in `.env` — no rebuild is needed when switching backends. The container generates `/assets/config.json` from this env var on every start. `API_DOCS_URL` is optional; when unset it's derived from `${API_URL}/docs`.
+  </Step>
+
+  <Step title="Start with Docker (recommended)">
+    ```bash
+    docker compose up -d --build
+    ```
+
+    The portal will be available at `http://localhost:4200`.
+  </Step>
+
+  <Step title="Repoint at a different backend">
+    Edit `API_URL` in `apps/portal/.env` and run `docker compose up -d` — no `--build` flag, no rebuild, ~2 seconds.
+  </Step>
+</Steps>
+
+<Tip>
+  For live host-side edits to `config.json` (no container restart needed), uncomment the bind-mount and `SKIP_RUNTIME_CONFIG_GENERATION` blocks in `apps/portal/docker-compose.yml`. Use a directory bind mount, not a file mount — file-level mounts break when editors atomic-write.
+</Tip>
+
+### Development mode (hot reload)
+
+```bash
+cd osmo-x/apps/portal
+npm install
+npm start
+```
+
+The dev server runs at `http://localhost:4200`. In dev mode the API URL comes from the committed default at `apps/portal/src/assets/config.json` — edit it locally to point at a different backend, or use the Docker workflow above.
+
 ## Next Steps
 
 <CardGroup cols={2}>

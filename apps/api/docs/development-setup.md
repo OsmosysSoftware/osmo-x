@@ -70,10 +70,21 @@ The portal is the Angular frontend for managing notifications, providers, and ap
 
 ```bash
 cd osmo-x/apps/portal
+cp .env.example .env       # first-time setup
 docker compose up -d --build
 ```
 
 The portal will be available at <http://localhost:4200>.
+
+The portal's API URL is configured at **runtime** via `API_URL` in `apps/portal/.env` — no rebuild is needed when switching backends. The container generates `/assets/config.json` from this env var on every start. Optionally, set `API_DOCS_URL`; if unset it's derived from `${API_URL}/docs`.
+
+```bash
+# Repoint the portal at a different backend without rebuilding:
+# 1. edit apps/portal/.env to set API_URL=http://my-api.example.com
+# 2. docker compose up -d
+```
+
+For host-managed runtime config (live edits to `config.json` without container restart), see the commented bind-mount block in `apps/portal/docker-compose.yml`.
 
 ### Development mode
 
@@ -85,7 +96,7 @@ npm install
 npm start
 ```
 
-The dev server runs at <http://localhost:4200>. The portal connects to the API at `http://localhost:3000` by default (configured in `src/environments/environment.ts`).
+The dev server runs at <http://localhost:4200>. The portal connects to the API at `http://localhost:3000` by default. In dev mode the URL comes from the committed default at `apps/portal/src/assets/config.json` — edit it locally to point at a different backend, or use the Docker workflow described above.
 
 ### Login to Portal
 
