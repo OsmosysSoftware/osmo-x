@@ -68,34 +68,35 @@ The portal is the Angular frontend for managing notifications, providers, and ap
 
 ### Docker (Recommended)
 
+The portal's runtime config (`apiUrl`, `apiDocsUrl`) lives in a host file at `apps/portal/runtime-config/config.json`, bind-mounted into the container. To repoint the portal at a different backend, you edit that JSON file on the host — no container restart, no rebuild.
+
 #### First-time setup
 
 ```bash
 cd osmo-x/apps/portal
-cp .env.example .env       # creates the env file you'll edit going forward
+cp .env.example .env
+
+mkdir -p runtime-config
+cp runtime-config.example.json runtime-config/config.json
+# (optional) edit runtime-config/config.json to point at your backend
+
 docker compose up -d --build
 ```
 
 The portal will be available at <http://localhost:4200> (or whichever `SERVER_PORT` you set in `.env`).
 
+#### Day-to-day
+
+To repoint at a different backend, edit `apps/portal/runtime-config/config.json` and refresh the browser. That's it — no `docker compose up`, no restart, no rebuild. nginx serves the host file directly through the bind mount.
+
 #### Required env vars (`apps/portal/.env`)
 
-| Variable | Always required | Notes |
-| --- | --- | --- |
-| `COMPOSE_PROJECT_NAME` | yes | Docker project namespace |
-| `SERVER_PORT` | yes | Host port the container binds to (`127.0.0.1` only) |
-| `API_URL` | env-var workflow only | Backend URL the entrypoint writes into `/assets/config.json` at container start. **Ignored** under the host-file workflow (`SKIP_RUNTIME_CONFIG_GENERATION=true`) where `runtime-config/config.json` is the source of truth. |
-| `API_DOCS_URL` | env-var workflow only, optional | Derived from `${API_URL}/docs` when unset. Override only if your docs URL is on a different host or path. Ignored under the host-file workflow. |
+| Variable | Notes |
+| --- | --- |
+| `COMPOSE_PROJECT_NAME` | Docker project namespace |
+| `SERVER_PORT` | Host port the container binds to (`127.0.0.1` only) |
 
-#### Repointing at a different backend (no rebuild)
-
-```bash
-# 1. edit apps/portal/.env  →  API_URL=http://my-api.example.com
-# 2. recreate the container — same image, ~2 seconds
-docker compose up -d
-```
-
-The image is unchanged. Compose recreates the container with the new env, the entrypoint regenerates `/runtime-config/config.json`, nginx serves it.
+`apiUrl` / `apiDocsUrl` are NOT environment variables — they're fields in `runtime-config/config.json`.
 
 #### Common operations
 
@@ -103,39 +104,8 @@ The image is unchanged. Compose recreates the container with the new env, the en
 docker compose stop                                       # stop, keep container
 docker compose down                                       # stop + remove
 docker compose logs -f                                    # tail logs
-docker exec osmox-portal cat /runtime-config/config.json  # verify what got written
+docker exec osmox-portal cat /runtime-config/config.json  # verify what's being served
 ```
-
-#### Optional: host-managed config (live edits, no restart)
-
-Useful during active debugging — edit a host JSON file and the running container picks it up on the next browser refresh.
-
-```bash
-# 1. one-time setup
-cd osmo-x/apps/portal
-mkdir runtime-config
-cp runtime-config.example.json runtime-config/config.json
-```
-
-Then edit `apps/portal/docker-compose.yml` and uncomment the two pre-commented blocks:
-
-```yaml
-environment:
-  # ...existing entries above...
-  SKIP_RUNTIME_CONFIG_GENERATION: "true"   # uncomment
-
-volumes:                                    # uncomment block
-  - ./runtime-config:/runtime-config:ro
-```
-
-```bash
-# 2. start with the override active
-docker compose up -d
-
-# 3. from now on: edit runtime-config/config.json, refresh the browser. No docker command needed.
-```
-
-Use a **directory** mount (`./runtime-config:/runtime-config:ro`), not a file mount — file-level bind mounts get severed when editors atomic-write (the default for VS Code, vim, most modern editors).
 
 ### Development mode
 
