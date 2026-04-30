@@ -68,23 +68,74 @@ The portal is the Angular frontend for managing notifications, providers, and ap
 
 ### Docker (Recommended)
 
+#### First-time setup
+
 ```bash
 cd osmo-x/apps/portal
-cp .env.example .env       # first-time setup
+cp .env.example .env       # creates the env file you'll edit going forward
 docker compose up -d --build
 ```
 
-The portal will be available at <http://localhost:4200>.
+The portal will be available at <http://localhost:4200> (or whichever `SERVER_PORT` you set in `.env`).
 
-The portal's API URL is configured at **runtime** via `API_URL` in `apps/portal/.env` — no rebuild is needed when switching backends. The container generates `/assets/config.json` from this env var on every start. Optionally, set `API_DOCS_URL`; if unset it's derived from `${API_URL}/docs`.
+#### Required env vars (`apps/portal/.env`)
+
+| Variable | Required | Default | Notes |
+| --- | --- | --- | --- |
+| `COMPOSE_PROJECT_NAME` | yes | `osmox-portal` | Docker project namespace |
+| `SERVER_PORT` | yes | `4200` | Host port the container binds to (`127.0.0.1` only) |
+| `API_URL` | yes | `http://localhost:3000` | Backend URL written into `/assets/config.json` at container start |
+| `API_DOCS_URL` | no | derived from `${API_URL}/docs` | Override only if your docs URL is on a different host or path |
+
+#### Repointing at a different backend (no rebuild)
 
 ```bash
-# Repoint the portal at a different backend without rebuilding:
-# 1. edit apps/portal/.env to set API_URL=http://my-api.example.com
-# 2. docker compose up -d
+# 1. edit apps/portal/.env  →  API_URL=http://my-api.example.com
+# 2. recreate the container — same image, ~2 seconds
+docker compose up -d
 ```
 
-For host-managed runtime config (live edits to `config.json` without container restart), see the commented bind-mount block in `apps/portal/docker-compose.yml`.
+The image is unchanged. Compose recreates the container with the new env, the entrypoint regenerates `/runtime-config/config.json`, nginx serves it.
+
+#### Common operations
+
+```bash
+docker compose stop                                       # stop, keep container
+docker compose down                                       # stop + remove
+docker compose logs -f                                    # tail logs
+docker exec osmox-portal cat /runtime-config/config.json  # verify what got written
+```
+
+#### Optional: host-managed config (live edits, no restart)
+
+Useful during active debugging — edit a host JSON file and the running container picks it up on the next browser refresh.
+
+```bash
+# 1. one-time setup
+cd osmo-x/apps/portal
+mkdir runtime-config
+cp runtime-config.example.json runtime-config/config.json
+```
+
+Then edit `apps/portal/docker-compose.yml` and uncomment the two pre-commented blocks:
+
+```yaml
+environment:
+  # ...existing entries above...
+  SKIP_RUNTIME_CONFIG_GENERATION: "true"   # uncomment
+
+volumes:                                    # uncomment block
+  - ./runtime-config:/runtime-config:ro
+```
+
+```bash
+# 2. start with the override active
+docker compose up -d
+
+# 3. from now on: edit runtime-config/config.json, refresh the browser. No docker command needed.
+```
+
+Use a **directory** mount (`./runtime-config:/runtime-config:ro`), not a file mount — file-level bind mounts get severed when editors atomic-write (the default for VS Code, vim, most modern editors).
 
 ### Development mode
 
