@@ -1,6 +1,8 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
+  inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
@@ -17,11 +19,13 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { orgContextInterceptor } from './core/interceptors/org-context.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { ConfigService } from './core/services/config.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
+    provideAppInitializer(() => inject(ConfigService).load()),
     provideAnimationsAsync(),
     provideRouter(
       routes,

@@ -10,5 +10,14 @@ services:
     image: osmox-portal
     container_name: osmox-portal
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - '127.0.0.1:${SERVER_PORT}:80'
+    # The portal reads /assets/config.json at bootstrap. nginx aliases that URL
+    # to /runtime-config/config.json, which is bind-mounted from this host
+    # directory. Edit ./runtime-config/config.json on the host to repoint the
+    # portal at a different backend — no container restart needed (just a
+    # browser refresh). See runtime-config.example.json for the file shape.
+    volumes:
+      - ./runtime-config:/runtime-config:ro

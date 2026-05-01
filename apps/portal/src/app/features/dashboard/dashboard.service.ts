@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { ConfigService } from '../../core/services/config.service';
 import { DashboardStats, DashboardAnalytics } from '../../core/models/api.model';
 
 export type DashboardSource = 'active' | 'archived' | 'both';
@@ -9,7 +9,10 @@ export type DashboardSource = 'active' | 'archived' | 'both';
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/dashboard`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/dashboard`;
+  }
 
   private readonly _stats = signal<DashboardStats | null>(null);
   readonly stats = this._stats.asReadonly();

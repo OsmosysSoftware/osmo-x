@@ -255,11 +255,16 @@ export class ExampleComponent {
 
 ### Service Pattern (REQUIRED)
 
+The base API URL is loaded **at runtime** from `/assets/config.json` via `ConfigService` (see `Runtime Configuration` below). Services must inject `ConfigService` and read `apiUrl` through a lazy getter — a class-field initializer would run before `provideAppInitializer` resolves and capture the wrong value.
+
 ```typescript
 @Injectable({ providedIn: 'root' })
 export class DataService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/resource`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/resource`;
+  }
 
   private readonly _items = signal<Item[]>([]);
   readonly items = this._items.asReadonly();
@@ -271,6 +276,30 @@ export class DataService {
   }
 }
 ```
+
+### Runtime Configuration (REQUIRED)
+
+There is no `environment.ts` file — those were removed and `fileReplacements` is gone from `angular.json`. The portal builds **once**; deploy-specific values live in a host-managed `config.json` that the running container serves directly.
+
+- **`apps/portal/src/assets/config.json`** — committed default for `ng serve` and tests (localhost values). In Docker, this is **shadowed** by an nginx alias.
+- **`apps/portal/runtime-config/config.json`** — host-managed file (gitignored), bind-mounted into the container at `/runtime-config/config.json`. **This is the source of truth** for the deployed portal's `apiUrl` / `apiDocsUrl`.
+- **`ConfigService`** (`apps/portal/src/app/core/services/config.service.ts`) — fetches `/assets/config.json` via `provideAppInitializer` before bootstrap. Validates the payload shape (`apiUrl`, `apiDocsUrl` must be strings) and throws fail-fast on a malformed file.
+- **`nginx.conf`** — aliases `/assets/config.json` → `/runtime-config/config.json` so the URL stays the same in dev (`ng serve`) and prod (Docker).
+- **`docker-entrypoint.sh`** — verifies the bind-mounted file is present, prints a clear error if not, then `exec`s nginx.
+
+**Workflow (single path):**
+
+1. **First-time setup:**
+   ```bash
+   cd apps/portal
+   cp .env.example .env
+   mkdir -p runtime-config
+   cp runtime-config.example.json runtime-config/config.json
+   docker compose up -d --build
+   ```
+2. **Day-to-day:** edit `runtime-config/config.json` on the host. Browser refresh picks up the new value — no container restart needed. nginx serves the host file directly through the directory bind mount.
+
+The bind mount is a **directory** mount (`./runtime-config:/runtime-config:ro`), not a file mount — file-level mounts get severed by editor atomic-writes.
 
 ### Routing (REQUIRED)
 

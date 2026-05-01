@@ -1,13 +1,16 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 import { UserResponse, CreateUserInput, UpdateUserInput } from '../../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/users`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/users`;
+  }
 
   private readonly _users = signal<UserResponse[]>([]);
   readonly users = this._users.asReadonly();

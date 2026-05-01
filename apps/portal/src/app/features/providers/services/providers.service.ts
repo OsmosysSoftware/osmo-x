@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 import {
   Provider,
   CreateProviderInput,
@@ -12,7 +12,10 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ProvidersService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/providers`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/providers`;
+  }
 
   private readonly _providers = signal<Provider[]>([]);
   readonly providers = this._providers.asReadonly();

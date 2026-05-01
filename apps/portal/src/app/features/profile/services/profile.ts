@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 
 export interface UpdateProfileDto {
   first_name?: string;
@@ -18,7 +18,10 @@ export interface ChangePasswordDto {
 })
 export class ProfileService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/users`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/users`;
+  }
 
   updateProfile(data: UpdateProfileDto): Observable<unknown> {
     return this.http.put(`${this.apiUrl}/profile`, data);

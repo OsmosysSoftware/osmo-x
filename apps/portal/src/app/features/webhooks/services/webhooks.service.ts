@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 import {
   Webhook,
   CreateWebhookInput,
@@ -12,7 +12,10 @@ import {
 @Injectable({ providedIn: 'root' })
 export class WebhooksService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/webhooks`;
+  private readonly config = inject(ConfigService);
+  private get apiUrl(): string {
+    return `${this.config.apiUrl}/webhooks`;
+  }
 
   private readonly _webhooks = signal<Webhook[]>([]);
   readonly webhooks = this._webhooks.asReadonly();

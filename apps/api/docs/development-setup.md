@@ -68,12 +68,44 @@ The portal is the Angular frontend for managing notifications, providers, and ap
 
 ### Docker (Recommended)
 
+The portal's runtime config (`apiUrl`, `apiDocsUrl`) lives in a host file at `apps/portal/runtime-config/config.json`, bind-mounted into the container. To repoint the portal at a different backend, you edit that JSON file on the host — no container restart, no rebuild.
+
+#### First-time setup
+
 ```bash
 cd osmo-x/apps/portal
+cp .env.example .env
+
+mkdir -p runtime-config
+cp runtime-config.example.json runtime-config/config.json
+# (optional) edit runtime-config/config.json to point at your backend
+
 docker compose up -d --build
 ```
 
-The portal will be available at <http://localhost:4200>.
+The portal will be available at <http://localhost:4200> (or whichever `SERVER_PORT` you set in `.env`).
+
+#### Day-to-day
+
+To repoint at a different backend, edit `apps/portal/runtime-config/config.json` and refresh the browser. That's it — no `docker compose up`, no restart, no rebuild. nginx serves the host file directly through the bind mount.
+
+#### Required env vars (`apps/portal/.env`)
+
+| Variable | Notes |
+| --- | --- |
+| `COMPOSE_PROJECT_NAME` | Docker project namespace |
+| `SERVER_PORT` | Host port the container binds to (`127.0.0.1` only) |
+
+`apiUrl` / `apiDocsUrl` are NOT environment variables — they're fields in `runtime-config/config.json`.
+
+#### Common operations
+
+```bash
+docker compose stop                                       # stop, keep container
+docker compose down                                       # stop + remove
+docker compose logs -f                                    # tail logs
+docker exec osmox-portal cat /runtime-config/config.json  # verify what's being served
+```
 
 ### Development mode
 
@@ -85,7 +117,7 @@ npm install
 npm start
 ```
 
-The dev server runs at <http://localhost:4200>. The portal connects to the API at `http://localhost:3000` by default (configured in `src/environments/environment.ts`).
+The dev server runs at <http://localhost:4200>. The portal connects to the API at `http://localhost:3000` by default. In dev mode the URL comes from the committed default at `apps/portal/src/assets/config.json` — edit it locally to point at a different backend, or use the Docker workflow described above.
 
 ### Login to Portal
 

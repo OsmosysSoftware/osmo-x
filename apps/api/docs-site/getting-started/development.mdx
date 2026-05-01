@@ -116,6 +116,65 @@ This script periodically calls OsmoX APIs to:
 
 You can also run OsmoX using Docker while using a local database. See the Docker guide in `apps/api/docs/use-local-db-instead-of-dockerized-db/README.md` for details.
 
+## Portal Setup
+
+The portal is the Angular frontend for managing notifications, providers, and applications.
+
+The portal's runtime config (`apiUrl`, `apiDocsUrl`) lives in a host file at `apps/portal/runtime-config/config.json`, bind-mounted into the container. To repoint the portal at a different backend, you edit that JSON file on the host — no container restart, no rebuild, no `docker` command.
+
+<Steps>
+  <Step title="First-time setup">
+    ```bash
+    cd osmo-x/apps/portal
+    cp .env.example .env
+
+    mkdir -p runtime-config
+    cp runtime-config.example.json runtime-config/config.json
+    # (optional) edit runtime-config/config.json to point at your backend
+
+    docker compose up -d --build
+    ```
+
+    The portal will be available at `http://localhost:4200` (or whichever `SERVER_PORT` is set in `.env`).
+  </Step>
+
+  <Step title="Day-to-day: repoint at a different backend">
+    Edit `apps/portal/runtime-config/config.json` and refresh the browser. That's it — nginx serves the host file directly through the directory bind mount.
+  </Step>
+</Steps>
+
+### Required `.env` variables
+
+| Variable | Notes |
+| --- | --- |
+| `COMPOSE_PROJECT_NAME` | Docker project namespace |
+| `SERVER_PORT` | Host port the container binds to (`127.0.0.1` only) |
+
+`apiUrl` / `apiDocsUrl` are **not** environment variables — they're fields in `runtime-config/config.json`.
+
+### Common operations
+
+```bash
+docker compose stop                                       # stop, keep container
+docker compose down                                       # stop + remove
+docker compose logs -f                                    # tail logs
+docker exec osmox-portal cat /runtime-config/config.json  # verify what's being served
+```
+
+<Warning>
+  The bind mount is a **directory** mount (`./runtime-config:/runtime-config:ro`), not a file mount — file-level bind mounts get severed when editors atomic-write (the default behavior for VS Code, vim, and most modern editors).
+</Warning>
+
+### Development mode (hot reload)
+
+```bash
+cd osmo-x/apps/portal
+npm install
+npm start
+```
+
+The dev server runs at `http://localhost:4200`. In dev mode the API URL comes from the committed default at `apps/portal/src/assets/config.json` — edit it locally to point at a different backend, or use the Docker workflow above.
+
 ## Next Steps
 
 <CardGroup cols={2}>
