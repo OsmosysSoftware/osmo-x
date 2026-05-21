@@ -10,7 +10,7 @@ import {
   ValidationArguments,
   Validate,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 @ValidatorConstraint({ name: 'AllowedProperties', async: false })
@@ -37,8 +37,8 @@ class AllowedPropertiesConstraint implements ValidatorConstraintInterface {
 class ExactlyOneDestinationConstraint implements ValidatorConstraintInterface {
   validate(_value: unknown, args: ValidationArguments): boolean {
     const obj = args.object as { target?: string; topicArn?: string };
-    const hasTarget = typeof obj.target === 'string' && obj.target.length > 0;
-    const hasTopic = typeof obj.topicArn === 'string' && obj.topicArn.length > 0;
+    const hasTarget = typeof obj.target === 'string' && obj.target.trim().length > 0;
+    const hasTopic = typeof obj.topicArn === 'string' && obj.topicArn.trim().length > 0;
 
     return hasTarget !== hasTopic;
   }
@@ -80,6 +80,7 @@ export class PushSnsDataDto {
     example: 'arn:aws:sns:us-west-2:505884080245:endpoint/GCM/Android/7fb080a5-...',
   })
   @ValidateIf((obj) => obj.target !== undefined)
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsNotEmpty({ message: 'target must not be empty when provided' })
   target?: string;
@@ -90,6 +91,7 @@ export class PushSnsDataDto {
     example: 'arn:aws:sns:us-west-2:505884080245:my-app-all-users',
   })
   @ValidateIf((obj) => obj.topicArn !== undefined)
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsNotEmpty({ message: 'topicArn must not be empty when provided' })
   topicArn?: string;
