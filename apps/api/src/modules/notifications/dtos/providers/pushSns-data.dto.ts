@@ -2,6 +2,7 @@
 import {
   IsNotEmpty,
   ValidateNested,
+  ValidateIf,
   IsOptional,
   IsString,
   ValidatorConstraint,
@@ -49,8 +50,16 @@ class MessagePayload {
 }
 
 export class PushSnsDataDto {
-  @IsNotEmpty()
-  target: string;
+  // Need at least one of target, topicArn for successful request
+  @IsNotEmpty({ message: 'Must provide target or topicArn parameter' })
+  @ValidateIf((obj) => !obj.topicArn, { message: 'Must provide target or topicArn parameter' })
+  @IsString()
+  target?: string;
+
+  @IsNotEmpty({ message: 'Must provide target or topicArn parameter' })
+  @ValidateIf((obj) => !obj.target, { message: 'Must provide target or topicArn parameter' })
+  @IsString()
+  topicArn?: string;
 
   @IsNotEmpty()
   @ValidateNested()

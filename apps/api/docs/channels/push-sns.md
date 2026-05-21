@@ -30,9 +30,19 @@ Then set the following configurations in the `configuration` field
 }
 ```
 
-### Sample Request Body
+### Request Fields
 
-Here's a sample request body:
+The `data` payload for an SNS push notification accepts either of the following destination fields. At least one must be provided; if both are omitted the request is rejected with a validation error.
+
+| Field      | Type   | Description                                                                                                                |
+| ---------- | ------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `target`   | string | The platform-application **endpoint ARN** for a single device. Maps to AWS SNS `TargetArn`. Use this for direct delivery.  |
+| `topicArn` | string | The **topic ARN** to broadcast to. Maps to AWS SNS `TopicArn`. Use this to deliver the message to all topic subscribers.   |
+| `message`  | object | Platform-specific payload keyed by `default`, `GCM`, `APNS`, or `APNS_SANDBOX`. At least one key is required.              |
+
+Pass exactly one of `target` or `topicArn` — AWS SNS validates that the ARN type matches the parameter and will reject a publish call where the wrong ARN type is supplied.
+
+### Sample Request Body — Device Endpoint
 
 ```jsonc
 {
@@ -44,6 +54,20 @@ Here's a sample request body:
     }
 }
 ```
+
+### Sample Request Body — Topic Broadcast
+
+```jsonc
+{
+    "providerId": 10,
+    "data": {
+        "message": {
+            "GCM": "{\"notification\":{\"title\":\"Broadcast\",\"body\":\"Sent to all topic subscribers\"}}"},
+        "topicArn": "arn:aws:sns:us-west-2:505884080245:my-app-all-users"
+    }
+}
+```
+
 For further payload information check here : [link](https://docs.aws.amazon.com/sns/latest/dg/sns-send-custom-platform-specific-payloads-mobile-devices.html)
 
 ### Dependencies

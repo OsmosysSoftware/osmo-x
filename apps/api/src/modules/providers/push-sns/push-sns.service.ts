@@ -3,7 +3,8 @@ import { PublishCommandInput, PublishCommandOutput, SNS } from '@aws-sdk/client-
 import { ProvidersService } from '../providers.service';
 
 export interface PushSnsData {
-  target: string;
+  target?: string;
+  topicArn?: string;
   message: object;
 }
 
@@ -32,12 +33,17 @@ export class PushSnsService {
   async sendPushNotification(data: PushSnsData, providerId: number): Promise<PublishCommandOutput> {
     await this.assignSnsConfig(providerId);
 
-    // Prepare SNS publish parameters
+    // Prepare SNS publish parameters: route to TopicArn for broadcast, TargetArn for device endpoint
     const params: PublishCommandInput = {
       Message: JSON.stringify(data.message),
       MessageStructure: 'json',
-      TargetArn: data.target,
     };
+
+    if (data.topicArn) {
+      params.TopicArn = data.topicArn;
+    } else {
+      params.TargetArn = data.target;
+    }
 
     this.logger.debug('Sending SNS push notification');
     return this.sns.publish(params);
