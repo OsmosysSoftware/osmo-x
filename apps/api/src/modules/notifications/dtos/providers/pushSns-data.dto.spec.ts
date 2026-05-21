@@ -78,4 +78,52 @@ describe('PushSnsDataDto', () => {
       expect(messages.some((m) => m.toLowerCase().includes('string'))).toBe(true);
     });
   });
+
+  describe('whitespace and empty-string handling', () => {
+    it('rejects whitespace-only target with a specific error', async () => {
+      const messages = await runValidation({
+        target: '   ',
+        message: validMessage,
+      });
+      expect(messages.some((m) => m === 'target must not be empty when provided')).toBe(true);
+    });
+
+    it('rejects whitespace-only topicArn with a specific error', async () => {
+      const messages = await runValidation({
+        topicArn: '\t\n  ',
+        message: validMessage,
+      });
+      expect(messages.some((m) => m === 'topicArn must not be empty when provided')).toBe(true);
+    });
+
+    it('rejects empty-string target with a specific error', async () => {
+      const messages = await runValidation({
+        target: '',
+        message: validMessage,
+      });
+      expect(messages.some((m) => m === 'target must not be empty when provided')).toBe(true);
+    });
+
+    it('trims surrounding whitespace from a valid target', async () => {
+      const raw = '  arn:aws:sns:us-east-1:123456789012:endpoint/GCM/MyApp/abc-123  ';
+      const instance = plainToInstance(PushSnsDataDto, {
+        target: raw,
+        message: validMessage,
+      });
+      const errors = await validate(instance);
+      expect(errors).toEqual([]);
+      expect(instance.target).toBe(raw.trim());
+    });
+
+    it('trims surrounding whitespace from a valid topicArn', async () => {
+      const raw = '  arn:aws:sns:us-east-1:123456789012:oqsha-all-users  ';
+      const instance = plainToInstance(PushSnsDataDto, {
+        topicArn: raw,
+        message: validMessage,
+      });
+      const errors = await validate(instance);
+      expect(errors).toEqual([]);
+      expect(instance.topicArn).toBe(raw.trim());
+    });
+  });
 });

@@ -8,7 +8,7 @@ import {
   ValidatorConstraintInterface,
   Validate,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OnlyOneOf } from '../create-notification.dto';
 
@@ -64,7 +64,9 @@ export class PushSnsDataDto {
     example: 'arn:aws:sns:us-west-2:505884080245:endpoint/GCM/Android/7fb080a5-...',
   })
   @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
+  @IsNotEmpty({ message: 'target must not be empty when provided' })
   target?: string;
 
   @ApiPropertyOptional({
@@ -73,7 +75,9 @@ export class PushSnsDataDto {
     example: 'arn:aws:sns:us-west-2:505884080245:my-app-all-users',
   })
   @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
+  @IsNotEmpty({ message: 'topicArn must not be empty when provided' })
   topicArn?: string;
 
   @ApiProperty({
