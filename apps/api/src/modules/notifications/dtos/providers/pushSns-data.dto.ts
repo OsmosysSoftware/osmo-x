@@ -2,14 +2,13 @@
 import {
   IsNotEmpty,
   ValidateNested,
-  ValidateIf,
   IsOptional,
   IsString,
   ValidatorConstraint,
   ValidatorConstraintInterface,
   Validate,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OnlyOneOf } from '../create-notification.dto';
 
@@ -64,10 +63,8 @@ export class PushSnsDataDto {
       'SNS endpoint ARN for single-device delivery. Provide exactly one of target or topicArn.',
     example: 'arn:aws:sns:us-west-2:505884080245:endpoint/GCM/Android/7fb080a5-...',
   })
-  @ValidateIf((obj) => obj.target !== undefined)
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: 'target must not be empty when provided' })
   target?: string;
 
   @ApiPropertyOptional({
@@ -75,10 +72,8 @@ export class PushSnsDataDto {
       'SNS topic ARN for broadcast delivery to all subscribers. Provide exactly one of target or topicArn.',
     example: 'arn:aws:sns:us-west-2:505884080245:my-app-all-users',
   })
-  @ValidateIf((obj) => obj.topicArn !== undefined)
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: 'topicArn must not be empty when provided' })
   topicArn?: string;
 
   @ApiProperty({
