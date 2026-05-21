@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { OnlyOneOf } from '../create-notification.dto';
+import { OnlyOneOf } from 'src/common/decorators/only-one-of.decorator';
 
 @ValidatorConstraint({ name: 'AllowedProperties', async: false })
 class AllowedPropertiesConstraint implements ValidatorConstraintInterface {
