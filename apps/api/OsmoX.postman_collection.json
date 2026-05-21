@@ -1825,6 +1825,72 @@
 						"description": "Allows successfully creating new notification for the SES Push Notification channel type for iOS."
 					},
 					"response": []
+				},
+				{
+					"name": "PushNotification_TopicBroadcast",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response has valid 'status' and 'data' properties\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"status\", \"success\");\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response contains a valid 'notification' object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.have.property(\"notification\").to.be.an(\"object\");\r",
+									"});\r",
+									"pm.test(\"Response 'channelType' is 9\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"channelType\", 9);\r",
+									"});\r",
+									"pm.test(\"Response 'deliveryStatus' is 1\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data.notification).to.have.property(\"deliveryStatus\", 1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"providerId\": 9,\n    \"data\": {\n        \"topicArn\": \"arn:aws:sns:us-west-2:505884080245:my-app-all-users\",\n        \"message\": {\n            \"GCM\": \"{\\\"notification\\\":{\\\"title\\\":\\\"Broadcast\\\",\\\"body\\\":\\\"Sent to all subscribers\\\"}}\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/notifications",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "Broadcasts a push notification to all subscribers of an SNS topic using topicArn instead of a single device target."
+					},
+					"response": []
 				}
 			],
 			"description": "Request to add push notification"

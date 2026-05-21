@@ -45,7 +45,13 @@ Create a new entry in the `notify_providers` table with the following settings:
 
 ## Request Format
 
-### Sample Request Body
+The `data` payload accepts either `target` (for delivery to a single device endpoint) or `topicArn` (for broadcast to all subscribers of a topic). At least one must be provided.
+
+<Note>
+  AWS SNS validates that the ARN type matches the parameter. Pass exactly one of `target` or `topicArn` — supplying the wrong ARN type in either slot will cause AWS to reject the publish call.
+</Note>
+
+### Sample Request Body — Device Endpoint
 
 ```json
 {
@@ -59,14 +65,32 @@ Create a new entry in the `notify_providers` table with the following settings:
 }
 ```
 
+### Sample Request Body — Topic Broadcast
+
+```json
+{
+  "providerId": 10,
+  "data": {
+    "message": {
+      "GCM": "{\"notification\":{\"title\":\"Broadcast\",\"body\":\"Sent to all topic subscribers\"}}"
+    },
+    "topicArn": "arn:aws:sns:us-west-2:505884080245:my-app-all-users"
+  }
+}
+```
+
 ### Request Fields
 
 <ParamField path="message" type="object" required>
   Platform-specific message payload. The key is the platform (e.g., `GCM` for Android, `APNS` for iOS).
 </ParamField>
 
-<ParamField path="target" type="string" required>
-  The ARN of the endpoint to send the notification to
+<ParamField path="target" type="string">
+  The endpoint ARN of a single device. Maps to AWS SNS `TargetArn`. Required when `topicArn` is not provided.
+</ParamField>
+
+<ParamField path="topicArn" type="string">
+  The ARN of a topic to broadcast to. Maps to AWS SNS `TopicArn`. Required when `target` is not provided.
 </ParamField>
 
 ### Message Format for Different Platforms
