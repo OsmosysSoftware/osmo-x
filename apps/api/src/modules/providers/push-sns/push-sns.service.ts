@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PublishCommandInput, PublishCommandOutput, SNS } from '@aws-sdk/client-sns';
 import { ProvidersService } from '../providers.service';
 
@@ -33,7 +33,14 @@ export class PushSnsService {
   async sendPushNotification(data: PushSnsData, providerId: number): Promise<PublishCommandOutput> {
     await this.assignSnsConfig(providerId);
 
-    // Prepare SNS publish parameters: route to TopicArn for broadcast, TargetArn for device endpoint
+    if (data.topicArn && data.target) {
+      throw new BadRequestException('Provide either target or topicArn, not both');
+    }
+
+    if (!data.topicArn && !data.target) {
+      throw new BadRequestException('Must provide target or topicArn parameter');
+    }
+
     const params: PublishCommandInput = {
       Message: JSON.stringify(data.message),
       MessageStructure: 'json',

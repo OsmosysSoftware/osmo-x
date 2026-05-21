@@ -7,9 +7,11 @@ import {
   IsString,
   ValidatorConstraint,
   ValidatorConstraintInterface,
+  ValidationArguments,
   Validate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 @ValidatorConstraint({ name: 'AllowedProperties', async: false })
 class AllowedPropertiesConstraint implements ValidatorConstraintInterface {
@@ -31,36 +33,73 @@ class AllowedPropertiesConstraint implements ValidatorConstraintInterface {
   }
 }
 
+@ValidatorConstraint({ name: 'ExactlyOneDestination', async: false })
+class ExactlyOneDestinationConstraint implements ValidatorConstraintInterface {
+  validate(_value: unknown, args: ValidationArguments): boolean {
+    const obj = args.object as { target?: string; topicArn?: string };
+    const hasTarget = typeof obj.target === 'string' && obj.target.length > 0;
+    const hasTopic = typeof obj.topicArn === 'string' && obj.topicArn.length > 0;
+
+    return hasTarget !== hasTopic;
+  }
+
+  defaultMessage(): string {
+    return 'Must provide exactly one of target or topicArn';
+  }
+}
+
 class MessagePayload {
+  @ApiPropertyOptional({
+    description: 'GCM/FCM message JSON string',
+    example: '{"notification":{"title":"Test","body":"Hello"}}',
+  })
   @IsOptional()
   @IsString()
   GCM?: string;
 
+  @ApiPropertyOptional({ description: 'APNS sandbox message JSON string' })
   @IsOptional()
   @IsString()
   APNS_SANDBOX?: string;
 
+  @ApiPropertyOptional({ description: 'APNS production message JSON string' })
   @IsOptional()
   @IsString()
   APNS?: string;
 
+  @ApiPropertyOptional({ description: 'Default fallback message string' })
   @IsOptional()
   @IsString()
   default?: string;
 }
 
 export class PushSnsDataDto {
-  // Need at least one of target, topicArn for successful request
-  @IsNotEmpty({ message: 'Must provide target or topicArn parameter' })
-  @ValidateIf((obj) => !obj.topicArn, { message: 'Must provide target or topicArn parameter' })
+  @ApiPropertyOptional({
+    description:
+      'SNS endpoint ARN for single-device delivery. Provide exactly one of target or topicArn.',
+    example: 'arn:aws:sns:us-west-2:505884080245:endpoint/GCM/Android/7fb080a5-...',
+  })
+  @ValidateIf((obj) => obj.target !== undefined)
   @IsString()
+  @IsNotEmpty({ message: 'target must not be empty when provided' })
   target?: string;
 
-  @IsNotEmpty({ message: 'Must provide target or topicArn parameter' })
-  @ValidateIf((obj) => !obj.target, { message: 'Must provide target or topicArn parameter' })
+  @ApiPropertyOptional({
+    description:
+      'SNS topic ARN for broadcast delivery to all subscribers. Provide exactly one of target or topicArn.',
+    example: 'arn:aws:sns:us-west-2:505884080245:my-app-all-users',
+  })
+  @ValidateIf((obj) => obj.topicArn !== undefined)
   @IsString()
+  @IsNotEmpty({ message: 'topicArn must not be empty when provided' })
   topicArn?: string;
 
+  @ApiProperty({
+    description:
+      'Platform-specific message payloads. Must contain at least one of: GCM, APNS_SANDBOX, APNS, default.',
+    type: () => MessagePayload,
+  })
+  @Validate(ExactlyOneDestinationConstraint)
   @IsNotEmpty()
   @ValidateNested()
   @Validate(AllowedPropertiesConstraint)

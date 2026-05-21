@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 
 const publishMock = jest.fn();
 
@@ -76,5 +76,21 @@ describe('PushSnsService', () => {
     expect(params.TargetArn).toBeUndefined();
     expect(params.Message).toBe(JSON.stringify(data.message));
     expect(params.MessageStructure).toBe('json');
+  });
+
+  it('should throw BadRequestException when both target and topicArn are provided', async () => {
+    const data = {
+      target: 'arn:aws:sns:us-east-1:123456789012:endpoint/GCM/MyApp/abc-123',
+      topicArn: 'arn:aws:sns:us-east-1:123456789012:oqsha-all-users',
+      message: { default: 'hello' },
+    };
+
+    await expect(service.sendPushNotification(data, 1)).rejects.toThrow(BadRequestException);
+  });
+
+  it('should throw BadRequestException when neither target nor topicArn is provided', async () => {
+    const data = { message: { default: 'hello' } };
+
+    await expect(service.sendPushNotification(data, 1)).rejects.toThrow(BadRequestException);
   });
 });
