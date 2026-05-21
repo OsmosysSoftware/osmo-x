@@ -7,11 +7,11 @@ import {
   IsString,
   ValidatorConstraint,
   ValidatorConstraintInterface,
-  ValidationArguments,
   Validate,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { OnlyOneOf } from '../create-notification.dto';
 
 @ValidatorConstraint({ name: 'AllowedProperties', async: false })
 class AllowedPropertiesConstraint implements ValidatorConstraintInterface {
@@ -30,21 +30,6 @@ class AllowedPropertiesConstraint implements ValidatorConstraintInterface {
 
   defaultMessage() {
     return 'Invalid properties found in the message payload. Input object must contain at least one of the allowed properties. Allowed properties are GCM, APNS_SANDBOX, APNS, and default.';
-  }
-}
-
-@ValidatorConstraint({ name: 'ExactlyOneDestination', async: false })
-class ExactlyOneDestinationConstraint implements ValidatorConstraintInterface {
-  validate(_value: unknown, args: ValidationArguments): boolean {
-    const obj = args.object as { target?: string; topicArn?: string };
-    const hasTarget = typeof obj.target === 'string' && obj.target.trim().length > 0;
-    const hasTopic = typeof obj.topicArn === 'string' && obj.topicArn.trim().length > 0;
-
-    return hasTarget !== hasTopic;
-  }
-
-  defaultMessage(): string {
-    return 'Must provide exactly one of target or topicArn';
   }
 }
 
@@ -101,7 +86,9 @@ export class PushSnsDataDto {
       'Platform-specific message payloads. Must contain at least one of: GCM, APNS_SANDBOX, APNS, default.',
     type: () => MessagePayload,
   })
-  @Validate(ExactlyOneDestinationConstraint)
+  @OnlyOneOf('target', 'topicArn', {
+    message: 'Either "target" or "topicArn" must be provided, but not both.',
+  })
   @IsNotEmpty()
   @ValidateNested()
   @Validate(AllowedPropertiesConstraint)
