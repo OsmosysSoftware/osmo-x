@@ -78,11 +78,9 @@ describe('DashboardComponent', () => {
 
       fixture.detectChanges();
 
-      // No analytics data → effect should observe empty data and the initChart
-      // body returns early without doing any chart work. We assert "no calls"
-      // BEFORE the 150ms setTimeout would fire by checking immediately.
-      // (The fact that we never advanced fakeAsync/tick means the timers
-      // queued by the widgets' effect haven't fired yet.)
+      // The widgets' effect defers initChart via setTimeout(150) in the source.
+      // We assert synchronously immediately after detectChanges, so the deferred
+      // timer has not yet fired and initChart has not been invoked.
       expect(trendsSpy).not.toHaveBeenCalled();
       expect(channelSpy).not.toHaveBeenCalled();
       expect(appStatsSpy).not.toHaveBeenCalled();
