@@ -5,7 +5,7 @@
   "author": "Osmosys Software Solutions Private Limited",
   "license": "MIT",
   "engines": {
-    "node": "20.x"
+    "node": ">=20"
   },
   "scripts": {
     "build": "nest build",
@@ -31,7 +31,7 @@
   "dependencies": {
     "@apollo/server": "^5.5.1",
     "@as-integrations/express5": "^1.1.2",
-    "@aws-sdk/client-ses": "^3.1055.0",
+    "@aws-sdk/client-sesv2": "^3.1055.0",
     "@aws-sdk/client-sns": "^3.1055.0",
     "@nestjs/apollo": "^13.4.2",
     "@nestjs/axios": "^4.0.1",
@@ -62,7 +62,7 @@
     "mime-types": "^2.1.35",
     "ms": "^2.1.3",
     "nest-winston": "^1.10.2",
-    "nodemailer": "^6.10.1",
+    "nodemailer": "^8.0.5",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -83,7 +83,7 @@
     "@types/jest": "^29.5.14",
     "@types/ms": "^0.7.34",
     "@types/node": "^20.19.41",
-    "@types/nodemailer": "^6.4.23",
+    "@types/nodemailer": "^8.0.0",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
@@ -99,6 +99,11 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "@apollo/server-plugin-landing-page-graphql-playground": {
+      "@apollo/server": "^5.5.1"
+    }
   },
   "jest": {
     "moduleFileExtensions": [

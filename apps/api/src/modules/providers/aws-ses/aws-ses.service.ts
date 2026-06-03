@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { ProvidersService } from '../providers.service';
 import * as nodemailer from 'nodemailer';
-import * as aws from '@aws-sdk/client-ses';
+import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import * as path from 'path';
 import * as fs from 'node:fs/promises';
@@ -31,10 +31,9 @@ export class AwsSesService {
     private logger: Logger = new Logger(AwsSesService.name),
   ) {}
 
-  private async getSesClient(providerId: number): Promise<aws.SES> {
+  private async getSesClient(providerId: number): Promise<SESv2Client> {
     const config = await this.providersService.getConfigById(providerId);
-    return new aws.SES({
-      apiVersion: '2010-12-01',
+    return new SESv2Client({
       region: config.AWS_REGION as string,
       credentials: {
         accessKeyId: config.AWS_ACCESS_KEY_ID as string,
@@ -53,11 +52,10 @@ export class AwsSesService {
       const ses = await this.getSesClient(providerId);
 
       // create Nodemailer SES transporter
-      const transporter = nodemailer.createTransport({
-        SES: { ses, aws },
-        sendingRate: 1,
-        maxConnections: 1,
-      });
+      const sesOptions: SESTransport.Options = {
+        SES: { sesClient: ses, SendEmailCommand },
+      };
+      const transporter = nodemailer.createTransport(sesOptions);
 
       // Prepare mail option parameters
       const mailOptions = {
@@ -79,7 +77,6 @@ export class AwsSesService {
     } catch (error) {
       if (error instanceof Error && error.name === 'MessageRejected') {
         this.logger.error('Error sending AWS SES email: messageRejectedError', { error });
-        /** @type { import('@aws-sdk/client-ses').MessageRejected} */
         const messageRejectedError = error;
         throw messageRejectedError;
       }
