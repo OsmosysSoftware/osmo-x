@@ -143,7 +143,7 @@ export class NotificationsListComponent implements OnInit {
   readonly canOverride = computed(
     () =>
       this.selectedNotifications().length > 0 &&
-      this.selectedNotifications().every((n) => n.delivery_status !== 5 && n.delivery_status !== 6),
+      this.selectedNotifications().some((n) => n.delivery_status !== 5 && n.delivery_status !== 6),
   );
 
   // Status override dialog
@@ -197,6 +197,7 @@ export class NotificationsListComponent implements OnInit {
 
   loadNotifications(): void {
     this.loading.set(true);
+    this.selectedNotifications.set([]);
 
     const filters: NotificationFilters = {};
 
@@ -484,11 +485,21 @@ export class NotificationsListComponent implements OnInit {
         this.overrideLoading.set(false);
         this.overrideDialogVisible.set(false);
         this.selectedNotifications.set([]);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Updated',
-          detail: `${result.updated} notification(s) updated successfully`,
-        });
+
+        if (result.not_found.length > 0) {
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Partial Update',
+            detail: `${result.updated} updated; ${result.not_found.length} not found: ${result.not_found.join(', ')}`,
+          });
+        } else {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Updated',
+            detail: `${result.updated} notification(s) updated successfully`,
+          });
+        }
+
         this.loadNotifications();
       },
       error: () => {

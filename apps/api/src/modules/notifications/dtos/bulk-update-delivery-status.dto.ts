@@ -1,6 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { ArrayMinSize, IsArray, IsIn, IsOptional, IsString, ValidateIf } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 
 const ALLOWED_STATUSES = [DeliveryStatus.PENDING, DeliveryStatus.SUCCESS, DeliveryStatus.FAILED];
@@ -22,6 +30,7 @@ export class BulkUpdateDeliveryStatusDto {
     example: 5,
   })
   @IsIn(ALLOWED_STATUSES)
+  @Type(() => Number)
   deliveryStatus: number;
 
   @ApiPropertyOptional({
@@ -33,6 +42,7 @@ export class BulkUpdateDeliveryStatusDto {
       o.deliveryStatus === DeliveryStatus.SUCCESS || o.deliveryStatus === DeliveryStatus.FAILED,
   )
   @IsString()
+  @IsNotEmpty()
   comment?: string;
 
   @ApiPropertyOptional({
