@@ -6,6 +6,7 @@ import {
   InternalServerErrorException,
   Logger,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -33,6 +34,7 @@ import { NotificationResponseDto } from './dto/notification-response.dto';
 import { QueueService } from './queues/queue.service';
 import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
 import { CreateNotificationDto } from './dtos/create-notification.dto';
+import { BulkUpdateDeliveryStatusDto } from './dtos/bulk-update-delivery-status.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -245,6 +247,49 @@ export class NotificationsController {
 
       throw new InternalServerErrorException('Redis cleanup failed');
     }
+  }
+
+  @Patch('bulk-status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ORG_ADMIN)
+  @ApiOperation({ summary: 'Manually override delivery status for one or more notifications' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Bulk update result',
+    schema: {
+      type: 'object',
+      properties: {
+        updated: { type: 'number' },
+        not_found: { type: 'array', items: { type: 'number' } },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden — ORG_ADMIN required' })
+  async bulkUpdateDeliveryStatus(
+    @Body() dto: BulkUpdateDeliveryStatusDto,
+    @CurrentUser() user: JwtPayload,
+    @Query('organization_id') queryOrgId: number,
+  ): Promise<{ updated: number; not_found: number[] }> {
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+    const result = await this.notificationsService.bulkUpdateDeliveryStatus(
+      dto.notificationIds,
+      dto.deliveryStatus,
+      targetOrgId,
+      user.userId,
+      user.email,
+      dto.comment,
+      dto.updatedBy,
+    );
+
+    return { updated: result.updated, not_found: result.notFound };
   }
 
   @Post()
