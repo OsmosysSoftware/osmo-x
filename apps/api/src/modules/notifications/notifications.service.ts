@@ -741,7 +741,7 @@ export class NotificationsService extends CoreService<Notification> {
 
       if (deliveryStatus === DeliveryStatus.SUCCESS || deliveryStatus === DeliveryStatus.FAILED) {
         notification.result = {
-          ...(notification.result as Record<string, unknown> | null ?? {}),
+          ...((notification.result as Record<string, unknown> | null) ?? {}),
           manual_override: {
             comment,
             updated_by: updatedByName,
