@@ -143,7 +143,9 @@ export class NotificationsListComponent implements OnInit {
   readonly canOverride = computed(
     () =>
       this.selectedNotifications().length > 0 &&
-      this.selectedNotifications().some((n) => n.delivery_status !== 5 && n.delivery_status !== 6),
+      this.selectedNotifications().every(
+        (n) => n.delivery_status !== 5 && n.delivery_status !== 6,
+      ),
   );
 
   // Status override dialog
