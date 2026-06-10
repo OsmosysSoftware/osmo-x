@@ -32,7 +32,11 @@ import { ApplicationsService } from '../../applications/services/applications.se
 import { ProvidersService } from '../../providers/services/providers.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Notification, Application, Provider, PageInfo } from '../../../core/models/api.model';
-import { ChannelType, DeliveryStatus } from '../../../core/constants/notification';
+import {
+  ChannelType,
+  DeliveryStatus,
+  DeliveryStatusValue,
+} from '../../../core/constants/notification';
 
 @Component({
   selector: 'app-notifications-list',
@@ -110,7 +114,6 @@ export class NotificationsListComponent implements OnInit {
   readonly selectedDateFrom = signal<Date | null>(null);
   readonly selectedDateTo = signal<Date | null>(null);
 
-
   // Property-specific filters from the shared notification-filters drawer
   // (recipient/sender/subject/message_body/advancedFilters). Held separately so
   // the existing toolbar selects/dates/search keep working unchanged.
@@ -144,7 +147,9 @@ export class NotificationsListComponent implements OnInit {
     () =>
       this.selectedNotifications().length > 0 &&
       this.selectedNotifications().every(
-        (n) => n.delivery_status !== 5 && n.delivery_status !== 6,
+        (n) =>
+          n.delivery_status !== DeliveryStatusValue.SUCCESS &&
+          n.delivery_status !== DeliveryStatusValue.FAILED,
       ),
   );
 
@@ -156,16 +161,14 @@ export class NotificationsListComponent implements OnInit {
   readonly requiresComment = computed(() => {
     const s = this.overrideDeliveryStatus();
 
-    return s === 5 || s === 6; // SUCCESS or FAILED
+    return s === DeliveryStatusValue.SUCCESS || s === DeliveryStatusValue.FAILED;
   });
 
   readonly overrideStatusOptions = [
-    { label: 'Pending', value: 1 },
-    { label: 'Success', value: 5 },
-    { label: 'Failed', value: 6 },
+    { label: DeliveryStatus[DeliveryStatusValue.PENDING], value: DeliveryStatusValue.PENDING },
+    { label: DeliveryStatus[DeliveryStatusValue.SUCCESS], value: DeliveryStatusValue.SUCCESS },
+    { label: DeliveryStatus[DeliveryStatusValue.FAILED], value: DeliveryStatusValue.FAILED },
   ];
-
-
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -451,7 +454,10 @@ export class NotificationsListComponent implements OnInit {
       return;
     }
 
-    if ((status === 5 || status === 6) && !this.overrideComment().trim()) {
+    if (
+      (status === DeliveryStatusValue.SUCCESS || status === DeliveryStatusValue.FAILED) &&
+      !this.overrideComment().trim()
+    ) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Required',
@@ -464,8 +470,7 @@ export class NotificationsListComponent implements OnInit {
     this.overrideLoading.set(true);
 
     const u = this.authService.user();
-    const displayName =
-      [u?.first_name, u?.last_name].filter(Boolean).join(' ') || u?.email || '';
+    const displayName = [u?.first_name, u?.last_name].filter(Boolean).join(' ') || u?.email || '';
 
     const body: {
       notification_ids: number[];
@@ -478,7 +483,7 @@ export class NotificationsListComponent implements OnInit {
       updated_by: displayName,
     };
 
-    if (status === 5 || status === 6) {
+    if (status === DeliveryStatusValue.SUCCESS || status === DeliveryStatusValue.FAILED) {
       body.comment = this.overrideComment().trim();
     }
 

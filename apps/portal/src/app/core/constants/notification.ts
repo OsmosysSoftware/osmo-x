@@ -1,3 +1,12 @@
+export const DeliveryStatusValue = {
+  PENDING: 1,
+  IN_PROGRESS: 2,
+  AWAITING_CONFIRMATION: 3,
+  QUEUED_CONFIRMATION: 4,
+  SUCCESS: 5,
+  FAILED: 6,
+} as const;
+
 export const DeliveryStatus: Record<number, string> = {
   1: 'Pending',
   2: 'In Progress',
