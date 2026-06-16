@@ -6,8 +6,9 @@ import {
 } from 'src/common/exceptions/app.exception';
 import { ErrorCodes } from 'src/common/constants/error-codes';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
+import { User } from '../users/entities/user.entity';
 import {
   DeliveryStatus,
   QueueAction,
@@ -47,6 +48,8 @@ export class NotificationsService extends CoreService<Notification> {
     private readonly notificationRepository: Repository<Notification>,
     @InjectRepository(RetryNotification)
     private readonly retryNotificationRepository: Repository<RetryNotification>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly notificationQueueService: NotificationQueueProducer,
     private readonly applicationsService: ApplicationsService,
     private readonly providersService: ProvidersService,
@@ -696,5 +699,62 @@ export class NotificationsService extends CoreService<Notification> {
     retryEntry.status = 1; // Assuming 1 means active
 
     await this.retryNotificationRepository.save(retryEntry);
+  }
+
+  async bulkUpdateDeliveryStatus(
+    notificationIds: number[],
+    deliveryStatus: number,
+    organizationId: number,
+    userId: number,
+    userEmail: string,
+    comment?: string,
+    displayName?: string,
+  ): Promise<{ updated: number; notFound: number[] }> {
+    const appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+
+    if (appIds.length === 0) {
+      return { updated: 0, notFound: notificationIds };
+    }
+
+    const notifications = await this.notificationRepository.find({
+      where: {
+        id: In(notificationIds),
+        status: Status.ACTIVE,
+        applicationId: In(appIds),
+      },
+    });
+
+    const foundIds = new Set(notifications.map((n) => n.id));
+    const notFound = notificationIds.filter((id) => !foundIds.has(id));
+
+    let updatedByName = displayName?.trim() || '';
+
+    if (!updatedByName) {
+      const user = await this.userRepository.findOne({ where: { userId } });
+      updatedByName =
+        user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : userEmail;
+    }
+
+    for (const notification of notifications) {
+      notification.deliveryStatus = deliveryStatus;
+      notification.updatedBy = updatedByName;
+
+      if (deliveryStatus === DeliveryStatus.SUCCESS || deliveryStatus === DeliveryStatus.FAILED) {
+        notification.result = {
+          ...((notification.result as Record<string, unknown> | null) ?? {}),
+          manual_override: {
+            comment,
+            updated_by: updatedByName,
+            updated_at: new Date().toISOString(),
+          },
+        };
+      } else {
+        notification.result = null;
+      }
+    }
+
+    await this.notificationRepository.save(notifications);
+
+    return { updated: notifications.length, notFound };
   }
 }

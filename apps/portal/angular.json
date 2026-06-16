@@ -32,7 +32,8 @@
               },
               {
                 "glob": "**/*",
-                "input": "src/assets"
+                "input": "src/assets",
+                "output": "assets"
               }
             ],
             "styles": ["src/styles.scss", "public/assets/styles.scss"]
@@ -87,10 +88,10 @@
                 "glob": "**/*",
                 "input": "public"
               },
-
               {
                 "glob": "**/*",
-                "input": "src/assets"
+                "input": "src/assets",
+                "output": "assets"
               }
             ],
             "styles": ["src/styles.scss", "public/assets/styles.scss"]
