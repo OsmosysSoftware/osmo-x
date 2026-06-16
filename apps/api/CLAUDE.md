@@ -85,7 +85,7 @@ nest g class <name>            # Generate class (entities, DTOs)
 ### Core Framework
 
 - **NestJS** v11 - Progressive Node.js framework
-- **Node.js** v20.x LTS
+- **Node.js** v24.x LTS
 - **TypeScript** v5.8+ - Strict types
 - **Express** v5 - HTTP server (via @nestjs/platform-express)
 
