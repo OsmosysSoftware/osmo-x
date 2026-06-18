@@ -96,6 +96,18 @@ export class NotificationsService {
     return this.http.get<Notification>(`${this.apiUrl}/${id}`);
   }
 
+  bulkUpdateStatus(body: {
+    notification_ids: number[];
+    delivery_status: number;
+    comment?: string;
+    updated_by?: string;
+  }): Observable<{ updated: number; not_found: number[] }> {
+    return this.http.patch<{ updated: number; not_found: number[] }>(
+      `${this.apiUrl}/bulk-status`,
+      body,
+    );
+  }
+
   redisCleanup(): Observable<Record<string, unknown>> {
     return this.http.post<Record<string, unknown>>(`${this.apiUrl}/redis/cleanup`, {});
   }

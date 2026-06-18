@@ -19,6 +19,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
+import { TextareaModule } from 'primeng/textarea';
+import { BadgeModule } from 'primeng/badge';
 import { MessageService } from 'primeng/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
@@ -30,7 +32,11 @@ import { ApplicationsService } from '../../applications/services/applications.se
 import { ProvidersService } from '../../providers/services/providers.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Notification, Application, Provider, PageInfo } from '../../../core/models/api.model';
-import { ChannelType, DeliveryStatus } from '../../../core/constants/notification';
+import {
+  ChannelType,
+  DeliveryStatus,
+  DeliveryStatusValue,
+} from '../../../core/constants/notification';
 
 @Component({
   selector: 'app-notifications-list',
@@ -48,6 +54,8 @@ import { ChannelType, DeliveryStatus } from '../../../core/constants/notificatio
     ToolbarModule,
     InputTextModule,
     DatePickerModule,
+    TextareaModule,
+    BadgeModule,
     PaginationComponent,
     StatusBadgeComponent,
     ChannelTypePipe,
@@ -106,7 +114,6 @@ export class NotificationsListComponent implements OnInit {
   readonly selectedDateFrom = signal<Date | null>(null);
   readonly selectedDateTo = signal<Date | null>(null);
 
-
   // Property-specific filters from the shared notification-filters drawer
   // (recipient/sender/subject/message_body/advancedFilters). Held separately so
   // the existing toolbar selects/dates/search keep working unchanged.
@@ -133,7 +140,35 @@ export class NotificationsListComponent implements OnInit {
   readonly isOrgAdmin = computed(() => this.authService.isOrgAdmin());
   readonly cleanupLoading = signal(false);
 
+  // Bulk selection
+  readonly selectedNotifications = signal<Notification[]>([]);
+  readonly hasSelection = computed(() => this.selectedNotifications().length > 0);
+  readonly canOverride = computed(
+    () =>
+      this.selectedNotifications().length > 0 &&
+      this.selectedNotifications().every(
+        (n) =>
+          n.delivery_status !== DeliveryStatusValue.SUCCESS &&
+          n.delivery_status !== DeliveryStatusValue.FAILED,
+      ),
+  );
 
+  // Status override dialog
+  readonly overrideDialogVisible = signal(false);
+  readonly overrideDeliveryStatus = signal<number | null>(null);
+  readonly overrideComment = signal('');
+  readonly overrideLoading = signal(false);
+  readonly requiresComment = computed(() => {
+    const s = this.overrideDeliveryStatus();
+
+    return s === DeliveryStatusValue.SUCCESS || s === DeliveryStatusValue.FAILED;
+  });
+
+  readonly overrideStatusOptions = [
+    { label: DeliveryStatus[DeliveryStatusValue.PENDING], value: DeliveryStatusValue.PENDING },
+    { label: DeliveryStatus[DeliveryStatusValue.SUCCESS], value: DeliveryStatusValue.SUCCESS },
+    { label: DeliveryStatus[DeliveryStatusValue.FAILED], value: DeliveryStatusValue.FAILED },
+  ];
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -167,6 +202,7 @@ export class NotificationsListComponent implements OnInit {
 
   loadNotifications(): void {
     this.loading.set(true);
+    this.selectedNotifications.set([]);
 
     const filters: NotificationFilters = {};
 
@@ -383,6 +419,102 @@ export class NotificationsListComponent implements OnInit {
           severity: 'error',
           summary: 'Error',
           detail: 'Failed to load notification details',
+        });
+      },
+    });
+  }
+
+  openDetailDialog(notification: Notification): void {
+    this.service.getById(notification.id).subscribe({
+      next: (n) => {
+        this.selectedNotification.set(n);
+        this.detailDialogVisible.set(true);
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load notification details',
+        });
+      },
+    });
+  }
+
+  openOverrideDialog(): void {
+    this.overrideDeliveryStatus.set(null);
+    this.overrideComment.set('');
+    this.overrideDialogVisible.set(true);
+  }
+
+  submitOverride(): void {
+    const status = this.overrideDeliveryStatus();
+    const ids = this.selectedNotifications().map((n) => n.id);
+
+    if (!status || ids.length === 0) {
+      return;
+    }
+
+    if (
+      (status === DeliveryStatusValue.SUCCESS || status === DeliveryStatusValue.FAILED) &&
+      !this.overrideComment().trim()
+    ) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Required',
+        detail: 'A comment is required for Success or Failed status',
+      });
+
+      return;
+    }
+
+    this.overrideLoading.set(true);
+
+    const u = this.authService.user();
+    const displayName = [u?.first_name, u?.last_name].filter(Boolean).join(' ') || u?.email || '';
+
+    const body: {
+      notification_ids: number[];
+      delivery_status: number;
+      comment?: string;
+      updated_by?: string;
+    } = {
+      notification_ids: ids,
+      delivery_status: status,
+      updated_by: displayName,
+    };
+
+    if (status === DeliveryStatusValue.SUCCESS || status === DeliveryStatusValue.FAILED) {
+      body.comment = this.overrideComment().trim();
+    }
+
+    this.service.bulkUpdateStatus(body).subscribe({
+      next: (result) => {
+        this.overrideLoading.set(false);
+        this.overrideDialogVisible.set(false);
+        this.selectedNotifications.set([]);
+
+        if (result.not_found.length > 0) {
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Partial Update',
+            detail: `${result.updated} updated; ${result.not_found.length} not found: ${result.not_found.join(', ')}`,
+          });
+        } else {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Updated',
+            detail: `${result.updated} notification(s) updated successfully`,
+          });
+        }
+
+        this.loadNotifications();
+      },
+      error: () => {
+        this.overrideLoading.set(false);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to update notifications',
         });
       },
     });

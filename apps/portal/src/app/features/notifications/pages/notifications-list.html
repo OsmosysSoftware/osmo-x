@@ -86,6 +86,18 @@
           aria-label="Clear filters"
           (onClick)="clearFilters()"
         />
+        @if (isOrgAdmin() && canOverride()) {
+          <p-button
+            icon="pi pi-pencil"
+            [rounded]="true"
+            [text]="true"
+            severity="warn"
+            [pTooltip]="'Override status (' + selectedNotifications().length + ' selected)'"
+            tooltipPosition="top"
+            aria-label="Override status"
+            (onClick)="openOverrideDialog()"
+          />
+        }
         @if (isOrgAdmin()) {
           <p-button
             icon="pi pi-trash"
@@ -126,11 +138,16 @@
     [sortField]="tableSortField()"
     [sortOrder]="tableSortOrder()"
     (onSort)="onSort($event)"
-    selectionMode="single"
-    (onRowSelect)="onRowSelect($event)"
+    selectionMode="multiple"
+    [selection]="selectedNotifications()"
+    (selectionChange)="selectedNotifications.set($event)"
+    dataKey="id"
   >
     <ng-template #header>
       <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox />
+        </th>
         <th style="width: 5rem">ID</th>
         <th>Channel Type</th>
         <th>Delivery Status</th>
@@ -141,10 +158,14 @@
         <th pSortableColumn="created_on" style="min-width: 10rem">
           Created <p-sortIcon field="created_on" />
         </th>
+        <th style="width: 4rem"></th>
       </tr>
     </ng-template>
     <ng-template #body let-n>
-      <tr [pSelectableRow]="n" class="cursor-pointer">
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="n" />
+        </td>
         <td>{{ n.id }}</td>
         <td>{{ n.channel_type | channelType }}</td>
         <td>
@@ -179,11 +200,23 @@
           }
         </td>
         <td>{{ n.created_on | date: 'short' }}</td>
+        <td>
+          <p-button
+            icon="pi pi-info-circle"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            pTooltip="View details"
+            tooltipPosition="top"
+            aria-label="View details"
+            (onClick)="openDetailDialog(n); $event.stopPropagation()"
+          />
+        </td>
       </tr>
     </ng-template>
     <ng-template #emptymessage>
       <tr>
-        <td colspan="8" class="!text-center py-8 text-muted-color">No notifications found</td>
+        <td colspan="10" class="text-center! py-8 text-muted-color">No notifications found</td>
       </tr>
     </ng-template>
   </p-table>
@@ -228,13 +261,17 @@
         <div>
           <span class="font-semibold text-muted-color block mb-1">Created on</span>
           <span>{{ n.created_on | date: 'medium' }}</span>
-          <span class="text-muted-color text-xs block">({{ n.created_on | date: 'yyyy-MM-dd HH:mm:ss' : 'UTC' }} UTC)</span>
+          <span class="text-muted-color text-xs block"
+            >({{ n.created_on | date: 'yyyy-MM-dd HH:mm:ss' : 'UTC' }} UTC)</span
+          >
         </div>
         @if (n.notification_sent_on) {
           <div>
             <span class="font-semibold text-muted-color block mb-1">Notification sent on</span>
             <span>{{ n.notification_sent_on | date: 'medium' }}</span>
-            <span class="text-muted-color text-xs block">({{ n.notification_sent_on | date: 'yyyy-MM-dd HH:mm:ss' : 'UTC' }} UTC)</span>
+            <span class="text-muted-color text-xs block"
+              >({{ n.notification_sent_on | date: 'yyyy-MM-dd HH:mm:ss' : 'UTC' }} UTC)</span
+            >
           </div>
         }
       </div>
@@ -284,6 +321,69 @@
       }
     </div>
   }
+</p-dialog>
+
+<p-dialog
+  header="Override Delivery Status"
+  [visible]="overrideDialogVisible()"
+  (visibleChange)="overrideDialogVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '480px' }"
+>
+  <div class="flex flex-col gap-4">
+    <p class="text-muted-color text-sm m-0">
+      Updating <strong>{{ selectedNotifications().length }}</strong> notification(s). This manually
+      overrides the delivery status and cannot be undone by the system.
+    </p>
+
+    <div class="flex flex-col gap-1">
+      <label for="override-status" class="font-semibold text-sm"
+        >New Status <span class="text-red-500">*</span></label
+      >
+      <p-select
+        inputId="override-status"
+        [options]="overrideStatusOptions"
+        [ngModel]="overrideDeliveryStatus()"
+        (ngModelChange)="overrideDeliveryStatus.set($event)"
+        placeholder="Select status"
+        appendTo="body"
+        [style]="{ width: '100%' }"
+      />
+    </div>
+
+    @if (requiresComment()) {
+      <div class="flex flex-col gap-1">
+        <label for="override-comment" class="font-semibold text-sm"
+          >Comment <span class="text-red-500">*</span></label
+        >
+        <textarea
+          id="override-comment"
+          pTextarea
+          rows="4"
+          [ngModel]="overrideComment()"
+          (ngModelChange)="overrideComment.set($event)"
+          placeholder="e.g. Messages are sent already but stuck in OsmoX"
+          style="width: 100%; resize: vertical"
+        ></textarea>
+      </div>
+    }
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      [text]="true"
+      (onClick)="overrideDialogVisible.set(false)"
+    />
+    <p-button
+      label="Apply Override"
+      icon="pi pi-check"
+      [loading]="overrideLoading()"
+      [disabled]="!overrideDeliveryStatus() || (requiresComment() && !overrideComment().trim())"
+      (onClick)="submitOverride()"
+    />
+  </ng-template>
 </p-dialog>
 
 <app-json-viewer-dialog
