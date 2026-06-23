@@ -109,4 +109,4 @@ Notes:
 
 | Package Name        | Version  | Description                                                               |
 | ------------------- | -------- | ------------------------------------------------------------------------- |
-| @aws-sdk/client-ses | ^3.855.0 | AWS SDK for JavaScript, used to interact with AWS services including SES. |
+| @aws-sdk/client-sesv2 | ^3.1055.0 | AWS SDK for JavaScript SESv2 client, used to send emails via Amazon SES. |

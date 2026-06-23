@@ -8,7 +8,7 @@ OsmoX is a centralized multi-channel notification management system being transf
 
 ```text
 apps/
-├── api/          # NestJS backend (Node.js 20.x, NestJS 11)
+├── api/          # NestJS backend (Node.js 24.x, NestJS 11)
 └── portal/       # Angular frontend (Angular 20, PrimeNG 20, Tailwind v4)
 ```
 
@@ -190,6 +190,6 @@ npx mintlify dev
 
 ## Environment
 
-Requires Node.js 20.x, PostgreSQL 16+, Redis 6+. See `apps/api/.env.example` for all configuration options including server, security (JWT, API keys), notification processing, logging, and database settings.
+Requires Node.js 24.x, PostgreSQL 16+, Redis 6+. See `apps/api/.env.example` for all configuration options including server, security (JWT, API keys), notification processing, logging, and database settings.
 
 Docker Compose: `apps/api/docker-compose.yml` runs all services (PostgreSQL, Redis, API, Dozzle log viewer). See `apps/api/docs/docker-compose-usage.md` for details.
