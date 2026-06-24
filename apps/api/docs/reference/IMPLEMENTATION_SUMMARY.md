@@ -66,6 +66,12 @@ GET    /api/v1/applications/:id     → Single application
 POST   /api/v1/applications         → Create application
 PATCH  /api/v1/applications/:id     → Update application
 DELETE /api/v1/applications/:id     → Delete application
+```
+
+> **Exception — root-level route (no `/api/v1/` prefix):**
+> `AccessibleApplicationsController` is mounted at `accessible-applications` and `main.ts` applies no global prefix, so the canonical path is `/accessible-applications`.
+
+```
 GET    /accessible-applications     → Applications accessible to the current user (JWT only, no role guard)
                                       SUPER_ADMIN → all org apps
                                       Others with permitted_application_ids set → filtered list
