@@ -250,7 +250,7 @@ docker compose logs -f osmox-api  # Follow API logs
 - **JwtAuthGuard** - Validates access tokens
 - **JwtRefreshGuard** - Validates refresh tokens
 - **ApiKeyGuard** - Validates server API keys (for external notification senders)
-- **RoleGuard** - Role-based access (ORG_USER, ORG_ADMIN, SUPER_ADMIN); NOTIFICATION_VIEWER (3) always returns false from RolesGuard and can only access JWT-only endpoints
+- **RoleGuard** - Role-based access (ORG_USER, ORG_ADMIN, SUPER_ADMIN); NOTIFICATION_VIEWER (3) passes only when explicitly listed in `@Roles()` — otherwise returns false
 - **OrgScopeGuard** - Ensures resource belongs to user's organization
 
 ### Role System
@@ -264,7 +264,7 @@ export const UserRoles = {
 };
 ```
 
-**NOTIFICATION_VIEWER guard rule**: Value `3` is intentionally outside the `>=` comparison used by `RolesGuard`. The guard short-circuits with `return false` for role 3 before reaching the numeric check, so NOTIFICATION_VIEWER can never pass any `@Roles()`-decorated endpoint. It can only access endpoints guarded by `JwtAuthGuard` alone (e.g., `GET /accessible-applications`).
+**NOTIFICATION_VIEWER guard rule**: Value `3` is intentionally outside the `>=` comparison used by `RolesGuard`. The guard short-circuits for role 3 and returns `true` only when `3` is explicitly included in the `@Roles()` decorator list — otherwise it returns `false`. Endpoints guarded by `JwtAuthGuard` alone (no `@Roles()` decorator), e.g., `GET /accessible-applications`, are not affected by RolesGuard at all.
 
 ---
 

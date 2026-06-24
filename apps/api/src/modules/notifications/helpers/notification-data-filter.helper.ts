@@ -37,10 +37,13 @@ export class NotificationDataFilterHelper {
   applyTo<T>(qb: SelectQueryBuilder<T>, alias: string, filters: NotificationDataFilters): void {
     if (filters.recipient) {
       const values = this.splitValues(filters.recipient);
-      const clauses = values.map((_, i) => this.recipientPredicate(alias, `ndf_recipient_${i}`));
-      const params = Object.fromEntries(values.map((v, i) => [`ndf_recipient_${i}`, `%${v}%`]));
 
-      qb.andWhere(values.length === 1 ? clauses[0] : `(${clauses.join(' OR ')})`, params);
+      if (values.length > 0) {
+        const clauses = values.map((_, i) => this.recipientPredicate(alias, `ndf_recipient_${i}`));
+        const params = Object.fromEntries(values.map((v, i) => [`ndf_recipient_${i}`, `%${v}%`]));
+
+        qb.andWhere(values.length === 1 ? clauses[0] : `(${clauses.join(' OR ')})`, params);
+      }
     }
 
     if (filters.sender) {
@@ -84,6 +87,10 @@ export class NotificationDataFilterHelper {
 
         const values = this.splitValues(value);
 
+        if (values.length === 0) {
+          return;
+        }
+
         if (values.length === 1) {
           qb.andWhere(`${q(alias)}.data->>:ndf_dfk_${i} ILIKE :ndf_dfv_${i}_0`, {
             [`ndf_dfk_${i}`]: key,
@@ -117,6 +124,10 @@ export class NotificationDataFilterHelper {
     paramBase: string,
     values: string[],
   ): void {
+    if (values.length === 0) {
+      return;
+    }
+
     if (values.length === 1) {
       qb.andWhere(`${expression} ILIKE :${paramBase}_0`, { [`${paramBase}_0`]: `%${values[0]}%` });
     } else {

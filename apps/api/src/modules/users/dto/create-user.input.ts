@@ -5,7 +5,6 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MinLength,
@@ -52,7 +51,7 @@ export class CreateUserInput {
   })
   @IsOptional()
   @IsArray()
-  @IsNumber({}, { each: true })
+  @IsInt({ each: true })
   permittedApplicationIds?: number[];
 
   @ApiPropertyOptional({

@@ -275,16 +275,20 @@ export class ApplicationsService extends CoreService<Application> {
     organizationId: number,
   ): Promise<ApplicationResponseDto[]> {
     if (userRole === UserRoles.SUPER_ADMIN) {
-      const { items } = await this.getAllApplicationsAsDto(
-        { page: 1, limit: 1000 },
-        organizationId,
-      );
+      const apps = await this.applicationsRepository.find({
+        where: { organizationId, status: Status.ACTIVE },
+      });
 
-      return items;
+      return apps.map((app) => this.mapToDto(app));
     }
 
     const user = await this.usersService.findByUserId(userId);
-    const permittedIds = user?.permittedApplicationIds;
+
+    if (!user) {
+      return [];
+    }
+
+    const permittedIds = user.permittedApplicationIds;
 
     if (permittedIds?.length) {
       const apps = await this.applicationsRepository.find({
@@ -298,9 +302,11 @@ export class ApplicationsService extends CoreService<Application> {
       return [];
     }
 
-    const { items } = await this.getAllApplicationsAsDto({ page: 1, limit: 1000 }, organizationId);
+    const apps = await this.applicationsRepository.find({
+      where: { organizationId, status: Status.ACTIVE },
+    });
 
-    return items;
+    return apps.map((app) => this.mapToDto(app));
   }
 
   async softDeleteApplicationAsDto(

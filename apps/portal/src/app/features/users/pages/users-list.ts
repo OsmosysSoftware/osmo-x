@@ -140,6 +140,8 @@ export class UsersListComponent implements OnInit {
 
     if (role === UserRoles.SUPER_ADMIN) {
       this.formPermittedApplicationIds.set(this.availableApplicationOptions().map((a) => a.value));
+    } else {
+      this.formPermittedApplicationIds.set([]);
     }
   }
 

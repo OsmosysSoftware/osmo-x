@@ -6,6 +6,7 @@ import {
   signal,
   computed,
 } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { DatePipe, JsonPipe } from '@angular/common';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { FormsModule } from '@angular/forms';
@@ -124,6 +125,7 @@ export class FilteredList implements OnInit {
   readonly jsonDialogVisible = signal(false);
   readonly jsonDialogData = signal<Record<string, unknown> | null>(null);
   readonly jsonDialogHeader = signal('JSON Data');
+  private loadSubscription?: Subscription;
 
   // True when at least one of the mandatory property filters is applied.
   // Toolbar-level filters (channel type, date range, etc.) alone are not sufficient.
@@ -227,7 +229,8 @@ export class FilteredList implements OnInit {
       filters.order = this.currentOrder;
     }
 
-    this.service.list(this.currentPage, this.currentLimit, filters).subscribe({
+    this.loadSubscription?.unsubscribe();
+    this.loadSubscription = this.service.list(this.currentPage, this.currentLimit, filters).subscribe({
       next: (res) => {
         this.notifications.set(res.items ?? []);
         this.pageInfo.set(res.page_info ?? null);

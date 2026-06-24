@@ -45,7 +45,7 @@ Existing endpoints remain untouched for backward compatibility. External notific
 
 Backward compatible: existing `BASIC(0)` → `ORG_USER(0)`, `ADMIN(1)` → `ORG_ADMIN(1)`.
 
-**NOTIFICATION_VIEWER guard rule**: value `3` sits outside the `>=` comparison in `RolesGuard`. The guard short-circuits with `return false` before the numeric check, so role 3 can never pass any `@Roles()`-decorated endpoint. It can only access `JwtAuthGuard`-only endpoints (e.g., `GET /accessible-applications`).
+**NOTIFICATION_VIEWER guard rule**: value `3` is outside the `>=` comparison in `RolesGuard`. The guard short-circuits for role 3 and returns `true` only when `3` is explicitly included in the `@Roles()` decorator list — otherwise it returns `false`. Endpoints guarded by `JwtAuthGuard` alone (no `@Roles()` decorator), e.g., `GET /accessible-applications` (no `/api/v1/` prefix), are not affected by RolesGuard at all.
 
 ---
 
