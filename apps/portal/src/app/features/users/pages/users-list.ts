@@ -15,6 +15,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { TooltipModule } from 'primeng/tooltip';
 import { PasswordModule } from 'primeng/password';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -24,6 +25,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { OrgContextService } from '../../../core/services/org-context.service';
 import { UsersService } from '../services/users.service';
+import { ApplicationsService } from '../../applications/services/applications.service';
 import { UserResponse, CreateUserInput, UpdateUserInput } from '../../../core/models/api.model';
 import { UserRoles, UserRoleLabels } from '../../../core/constants/roles';
 
@@ -44,6 +46,7 @@ interface RoleOption {
     DialogModule,
     InputTextModule,
     SelectModule,
+    MultiSelectModule,
     TooltipModule,
     PasswordModule,
     ConfirmDialogModule,
@@ -58,6 +61,7 @@ interface RoleOption {
 })
 export class UsersListComponent implements OnInit {
   private readonly service = inject(UsersService);
+  private readonly applicationsService = inject(ApplicationsService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
   readonly orgContext = inject(OrgContextService);
@@ -76,14 +80,25 @@ export class UsersListComponent implements OnInit {
   readonly formLastName = signal('');
   readonly formPassword = signal('');
   readonly formRole = signal<number>(UserRoles.ORG_USER);
+  readonly formPermittedApplicationIds = signal<number[]>([]);
+
+  readonly availableApplicationOptions = signal<{ label: string; value: number }[]>([]);
 
   readonly roleOptions: RoleOption[] = [
-    { label: 'User', value: UserRoles.ORG_USER },
-    { label: 'Organization Admin', value: UserRoles.ORG_ADMIN },
+    { label: UserRoleLabels[UserRoles.ORG_USER], value: UserRoles.ORG_USER },
+    { label: UserRoleLabels[UserRoles.ORG_ADMIN], value: UserRoles.ORG_ADMIN },
+    { label: UserRoleLabels[UserRoles.NOTIFICATION_VIEWER], value: UserRoles.NOTIFICATION_VIEWER },
   ];
 
   ngOnInit(): void {
     this.loadUsers();
+    this.applicationsService.list(1, 100).subscribe({
+      next: (res) => {
+        this.availableApplicationOptions.set(
+          (res.items ?? []).map((a) => ({ label: a.name, value: a.application_id })),
+        );
+      },
+    });
   }
 
   loadUsers(): void {
@@ -116,7 +131,16 @@ export class UsersListComponent implements OnInit {
     this.formLastName.set('');
     this.formPassword.set('');
     this.formRole.set(UserRoles.ORG_USER);
+    this.formPermittedApplicationIds.set([]);
     this.dialogVisible.set(true);
+  }
+
+  onRoleChange(role: number): void {
+    this.formRole.set(role);
+
+    if (role === UserRoles.SUPER_ADMIN) {
+      this.formPermittedApplicationIds.set(this.availableApplicationOptions().map((a) => a.value));
+    }
   }
 
   openEdit(user: UserResponse): void {
@@ -126,7 +150,20 @@ export class UsersListComponent implements OnInit {
     this.formLastName.set(user.last_name || '');
     this.formPassword.set('');
     this.formRole.set(user.user_role);
+
+    if (user.user_role === UserRoles.SUPER_ADMIN) {
+      this.formPermittedApplicationIds.set(this.availableApplicationOptions().map((a) => a.value));
+    } else {
+      this.formPermittedApplicationIds.set(user.permitted_application_ids ?? []);
+    }
+
     this.dialogVisible.set(true);
+  }
+
+  selectAllApplications(): void {
+    this.formPermittedApplicationIds.set(
+      this.availableApplicationOptions().map((a) => a.value),
+    );
   }
 
   isFormValid(): boolean {
@@ -180,6 +217,8 @@ export class UsersListComponent implements OnInit {
         updateData.user_role = this.formRole() as UpdateUserInput['user_role'];
       }
 
+      updateData.permitted_application_ids = this.formPermittedApplicationIds();
+
       const password = this.formPassword().trim();
 
       if (password) {
@@ -207,6 +246,7 @@ export class UsersListComponent implements OnInit {
           first_name: this.formFirstName().trim() || undefined,
           last_name: this.formLastName().trim() || undefined,
           user_role: this.formRole() as CreateUserInput['user_role'],
+          permitted_application_ids: this.formPermittedApplicationIds(),
         })
         .subscribe({
           next: () => {

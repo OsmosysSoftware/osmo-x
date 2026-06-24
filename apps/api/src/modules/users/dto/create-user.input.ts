@@ -1,9 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEmail,
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   MinLength,
@@ -36,12 +38,22 @@ export class CreateUserInput {
   lastName?: string;
 
   @ApiProperty({
-    description: 'User role: 0=OrgUser, 1=OrgAdmin',
+    description: 'User role: 0=OrgUser, 1=OrgAdmin, 3=NotificationViewer',
     example: 0,
-    enum: [UserRoles.ORG_USER, UserRoles.ORG_ADMIN],
+    enum: [UserRoles.ORG_USER, UserRoles.ORG_ADMIN, UserRoles.NOTIFICATION_VIEWER],
   })
-  @IsEnum([UserRoles.ORG_USER, UserRoles.ORG_ADMIN])
+  @IsEnum([UserRoles.ORG_USER, UserRoles.ORG_ADMIN, UserRoles.NOTIFICATION_VIEWER])
   userRole: number;
+
+  @ApiPropertyOptional({
+    description: 'Application IDs this user is permitted to access (for NOTIFICATION_VIEWER)',
+    example: [1, 2, 3],
+    type: [Number],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  permittedApplicationIds?: number[];
 
   @ApiPropertyOptional({
     description: 'Target organization ID (SUPER_ADMIN only, defaults to own org)',

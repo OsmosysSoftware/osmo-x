@@ -17,7 +17,7 @@ export class ProvidersService {
     return `${this.config.apiUrl}/providers`;
   }
 
-  private readonly _providers = signal<Provider[]>([]);
+private readonly _providers = signal<Provider[]>([]);
   readonly providers = this._providers.asReadonly();
 
   list(page = 1, limit = 20, applicationId?: number): Observable<PaginatedResponse<Provider>> {

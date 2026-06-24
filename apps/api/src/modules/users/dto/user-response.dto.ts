@@ -14,10 +14,18 @@ export class UserResponseDto {
   lastName?: string;
 
   @ApiProperty({
-    description: 'User role: 0=OrgUser, 1=OrgAdmin, 2=SuperAdmin',
+    description: 'User role: 0=OrgUser, 1=OrgAdmin, 2=SuperAdmin, 3=NotificationViewer',
     example: 0,
   })
   userRole: number;
+
+  @ApiPropertyOptional({
+    description: 'Application IDs this user is permitted to access (NOTIFICATION_VIEWER only)',
+    example: [1, 2, 3],
+    type: [Number],
+    nullable: true,
+  })
+  permittedApplicationIds?: number[] | null;
 
   @ApiPropertyOptional({ description: 'Organization ID', example: 1 })
   organizationId?: number;

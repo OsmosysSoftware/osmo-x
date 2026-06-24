@@ -37,3 +37,22 @@ export const orgAdminGuard: CanActivateFn = roleGuard(UserRoles.ORG_ADMIN);
  * Guard that requires SUPER_ADMIN role.
  */
 export const superAdminGuard: CanActivateFn = roleGuard(UserRoles.SUPER_ADMIN);
+
+/**
+ * Guard that blocks NOTIFICATION_VIEWER from accessing pages outside their scope.
+ * Redirects them to /filtered-notifications.
+ */
+export const blockNotificationViewerGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (!authService.isAuthenticated()) {
+    return router.createUrlTree(['/auth/login']);
+  }
+
+  if (authService.isNotificationViewer()) {
+    return router.createUrlTree(['/filtered-notifications']);
+  }
+
+  return true;
+};

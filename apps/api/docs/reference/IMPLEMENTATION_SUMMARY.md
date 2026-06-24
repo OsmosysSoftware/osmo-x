@@ -41,8 +41,11 @@ Existing endpoints remain untouched for backward compatibility. External notific
 | `ORG_USER` | 0 | Within org | Read notifications, view dashboards |
 | `ORG_ADMIN` | 1 | Within org | Manage apps, providers, users, API keys |
 | `SUPER_ADMIN` | 2 | Platform-wide | Manage organizations, system config |
+| `NOTIFICATION_VIEWER` | 3 | Within org (filtered) | Notification Search page only; must supply at least one property filter |
 
 Backward compatible: existing `BASIC(0)` → `ORG_USER(0)`, `ADMIN(1)` → `ORG_ADMIN(1)`.
+
+**NOTIFICATION_VIEWER guard rule**: value `3` sits outside the `>=` comparison in `RolesGuard`. The guard short-circuits with `return false` before the numeric check, so role 3 can never pass any `@Roles()`-decorated endpoint. It can only access `JwtAuthGuard`-only endpoints (e.g., `GET /accessible-applications`).
 
 ---
 
@@ -58,11 +61,16 @@ GET    /api/v1/auth/me              → Current user profile
 
 ### Applications
 ```
-GET    /api/v1/applications         → Paginated list (org-scoped)
+GET    /api/v1/applications         → Paginated list (org-scoped, requires ORG_ADMIN)
 GET    /api/v1/applications/:id     → Single application
 POST   /api/v1/applications         → Create application
 PATCH  /api/v1/applications/:id     → Update application
 DELETE /api/v1/applications/:id     → Delete application
+GET    /accessible-applications     → Applications accessible to the current user (JWT only, no role guard)
+                                      SUPER_ADMIN → all org apps
+                                      Others with permitted_application_ids set → filtered list
+                                      NOTIFICATION_VIEWER with no IDs → empty list
+                                      Others with no IDs → all org apps
 ```
 
 ### Providers

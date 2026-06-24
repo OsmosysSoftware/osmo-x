@@ -90,6 +90,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/notifications/bulk-status': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Manually override delivery status for one or more notifications */
+    patch: operations['NotificationsController_bulkUpdateDeliveryStatus'];
+    trace?: never;
+  };
   '/providers': {
     parameters: {
       query?: never;
@@ -210,6 +227,26 @@ export interface paths {
     };
     /** Get application by ID */
     get: operations['ApplicationsController_findOne'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/accessible-applications': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List applications accessible to the current user
+     * @description Returns all org applications for ORG_ADMIN+. For NOTIFICATION_VIEWER, returns only their permitted applications.
+     */
+    get: operations['AccessibleApplicationsController_getAccessible'];
     put?: never;
     post?: never;
     delete?: never;
@@ -675,6 +712,33 @@ export interface components {
       /** @description Pagination metadata */
       page_info: components['schemas']['PageInfoDto'];
     };
+    BulkUpdateDeliveryStatusDto: {
+      /**
+       * @description IDs of notifications to update
+       * @example [
+       *       100,
+       *       200,
+       *       300
+       *     ]
+       */
+      notification_ids: number[];
+      /**
+       * @description 1=PENDING, 5=SUCCESS, 6=FAILED
+       * @example 5
+       * @enum {number}
+       */
+      delivery_status: 1 | 5 | 6;
+      /**
+       * @description Comment explaining the override (required for SUCCESS and FAILED)
+       * @example Messages were delivered but got stuck in OsmoX
+       */
+      comment?: string;
+      /**
+       * @description Display name of the person making the override (used in the result field)
+       * @example Jagrat Singh
+       */
+      updated_by?: string;
+    };
     CreateNotificationDto: {
       dummy: Record<string, never>;
       provider_id?: number;
@@ -829,10 +893,19 @@ export interface components {
        */
       last_name?: string;
       /**
-       * @description User role: 0=OrgUser, 1=OrgAdmin, 2=SuperAdmin
+       * @description User role: 0=OrgUser, 1=OrgAdmin, 2=SuperAdmin, 3=NotificationViewer
        * @example 0
        */
       user_role: number;
+      /**
+       * @description Application IDs this user is permitted to access (NOTIFICATION_VIEWER only)
+       * @example [
+       *       1,
+       *       2,
+       *       3
+       *     ]
+       */
+      permitted_application_ids?: number[] | null;
       /**
        * @description Organization ID
        * @example 1
@@ -910,11 +983,20 @@ export interface components {
        */
       last_name?: string;
       /**
-       * @description User role: 0=OrgUser, 1=OrgAdmin
+       * @description User role: 0=OrgUser, 1=OrgAdmin, 3=NotificationViewer
        * @example 0
        * @enum {number}
        */
-      user_role: 0 | 1;
+      user_role: 0 | 1 | 3;
+      /**
+       * @description Application IDs this user is permitted to access (for NOTIFICATION_VIEWER)
+       * @example [
+       *       1,
+       *       2,
+       *       3
+       *     ]
+       */
+      permitted_application_ids?: number[];
       /**
        * @description Target organization ID (SUPER_ADMIN only, defaults to own org)
        * @example 1
@@ -948,11 +1030,20 @@ export interface components {
        */
       password?: string;
       /**
-       * @description User role: 0=OrgUser, 1=OrgAdmin
+       * @description Application IDs this user is permitted to access (for NOTIFICATION_VIEWER)
+       * @example [
+       *       1,
+       *       2,
+       *       3
+       *     ]
+       */
+      permitted_application_ids?: number[];
+      /**
+       * @description User role: 0=OrgUser, 1=OrgAdmin, 3=NotificationViewer
        * @example 0
        * @enum {number}
        */
-      user_role?: 0 | 1;
+      user_role?: 0 | 1 | 3;
     };
     ApplicationResponseDto: {
       /**
@@ -1842,6 +1933,20 @@ export interface operations {
         order?: 'asc' | 'desc';
         /** @description Search text (searches across data, result, and createdBy fields) */
         search?: string;
+        /** @description Match data.to/cc/bcc/target (string or array). Type ≥ 3 chars for fast results. */
+        recipient?: string;
+        /** @description Match data.from. Type ≥ 3 chars for fast results. */
+        sender?: string;
+        /** @description Match data.subject. Type ≥ 3 chars for fast results. */
+        subject?: string;
+        /** @description Match data.text/html/message and nested template/push body fields. Type ≥ 3 chars for fast results. */
+        message_body?: string;
+        /** @description Match WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio Business providers. */
+        template_name?: string;
+        /** @description Top-level data JSON key/value pairs (data_filter[key]=value). Keys must match ^[a-zA-Z0-9_]{1,64}$. Multiple pairs are AND-combined. */
+        data_filter?: {
+          [key: string]: string;
+        };
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
         /** @description Filter by channel type */
@@ -1854,6 +1959,8 @@ export interface operations {
         date_from?: string;
         /** @description Filter by created_on <= datetime (ISO 8601) */
         date_to?: string;
+        /** @description Filter by provider */
+        provider_id?: number;
       };
       header?: never;
       path?: never;
@@ -2003,6 +2110,57 @@ export interface operations {
       };
     };
   };
+  NotificationsController_bulkUpdateDeliveryStatus: {
+    parameters: {
+      query?: {
+        /** @description Target org (SUPER_ADMIN only) */
+        organization_id?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['BulkUpdateDeliveryStatusDto'];
+      };
+    };
+    responses: {
+      /** @description Bulk update result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            updated?: number;
+            not_found?: number[];
+          };
+        };
+      };
+      /** @description Validation error */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Forbidden — ORG_ADMIN required */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   ProvidersController_findAll: {
     parameters: {
       query?: {
@@ -2016,8 +2174,24 @@ export interface operations {
         order?: 'asc' | 'desc';
         /** @description Search text (searches across data, result, and createdBy fields) */
         search?: string;
+        /** @description Match against notification recipients. Searches data.to, data.cc, data.bcc, and data.target (push). Supports both string and array values. */
+        recipient?: string;
+        /** @description Match against email From address (data.from). */
+        sender?: string;
+        /** @description Match against email subject (data.subject). */
+        subject?: string;
+        /** @description Match against message body. Searches data.text, data.html, data.message, data.text.body (WhatsApp), and data.message.default (push). HTML markup is included in the search. */
+        message_body?: string;
+        /** @description Match against WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio WhatsApp Business providers. */
+        template_name?: string;
+        /** @description Top-level key/value pairs to match against the notification data JSON. Repeat as data_filter[key]=value. Keys must match ^[a-zA-Z0-9_]{1,64}$ and are AND-combined. Swagger UI: rendered with style: deepObject via @ApiQuery on the controller. */
+        data_filter?: {
+          [key: string]: string;
+        };
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
+        /** @description Filter by application */
+        application_id?: number;
       };
       header?: never;
       path?: never;
@@ -2415,6 +2589,20 @@ export interface operations {
         order?: 'asc' | 'desc';
         /** @description Search text (searches across data, result, and createdBy fields) */
         search?: string;
+        /** @description Match against notification recipients. Searches data.to, data.cc, data.bcc, and data.target (push). Supports both string and array values. */
+        recipient?: string;
+        /** @description Match against email From address (data.from). */
+        sender?: string;
+        /** @description Match against email subject (data.subject). */
+        subject?: string;
+        /** @description Match against message body. Searches data.text, data.html, data.message, data.text.body (WhatsApp), and data.message.default (push). HTML markup is included in the search. */
+        message_body?: string;
+        /** @description Match against WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio WhatsApp Business providers. */
+        template_name?: string;
+        /** @description Top-level key/value pairs to match against the notification data JSON. Repeat as data_filter[key]=value. Keys must match ^[a-zA-Z0-9_]{1,64}$ and are AND-combined. Swagger UI: rendered with style: deepObject via @ApiQuery on the controller. */
+        data_filter?: {
+          [key: string]: string;
+        };
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
       };
@@ -2589,6 +2777,27 @@ export interface operations {
       };
     };
   };
+  AccessibleApplicationsController_getAccessible: {
+    parameters: {
+      query?: {
+        organization_id?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ApplicationResponseDto'][];
+        };
+      };
+    };
+  };
   ProviderChainsController_findAll: {
     parameters: {
       query?: {
@@ -2602,8 +2811,24 @@ export interface operations {
         order?: 'asc' | 'desc';
         /** @description Search text (searches across data, result, and createdBy fields) */
         search?: string;
+        /** @description Match against notification recipients. Searches data.to, data.cc, data.bcc, and data.target (push). Supports both string and array values. */
+        recipient?: string;
+        /** @description Match against email From address (data.from). */
+        sender?: string;
+        /** @description Match against email subject (data.subject). */
+        subject?: string;
+        /** @description Match against message body. Searches data.text, data.html, data.message, data.text.body (WhatsApp), and data.message.default (push). HTML markup is included in the search. */
+        message_body?: string;
+        /** @description Match against WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio WhatsApp Business providers. */
+        template_name?: string;
+        /** @description Top-level key/value pairs to match against the notification data JSON. Repeat as data_filter[key]=value. Keys must match ^[a-zA-Z0-9_]{1,64}$ and are AND-combined. Swagger UI: rendered with style: deepObject via @ApiQuery on the controller. */
+        data_filter?: {
+          [key: string]: string;
+        };
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
+        /** @description Filter by application */
+        application_id?: number;
       };
       header?: never;
       path?: never;
@@ -2750,6 +2975,20 @@ export interface operations {
         order?: 'asc' | 'desc';
         /** @description Search text (searches across data, result, and createdBy fields) */
         search?: string;
+        /** @description Match against notification recipients. Searches data.to, data.cc, data.bcc, and data.target (push). Supports both string and array values. */
+        recipient?: string;
+        /** @description Match against email From address (data.from). */
+        sender?: string;
+        /** @description Match against email subject (data.subject). */
+        subject?: string;
+        /** @description Match against message body. Searches data.text, data.html, data.message, data.text.body (WhatsApp), and data.message.default (push). HTML markup is included in the search. */
+        message_body?: string;
+        /** @description Match against WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio WhatsApp Business providers. */
+        template_name?: string;
+        /** @description Top-level key/value pairs to match against the notification data JSON. Repeat as data_filter[key]=value. Keys must match ^[a-zA-Z0-9_]{1,64}$ and are AND-combined. Swagger UI: rendered with style: deepObject via @ApiQuery on the controller. */
+        data_filter?: {
+          [key: string]: string;
+        };
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
         /** @description Filter members by provider chain ID */
@@ -2971,6 +3210,20 @@ export interface operations {
         order?: 'asc' | 'desc';
         /** @description Search text (searches across data, result, and createdBy fields) */
         search?: string;
+        /** @description Match against notification recipients. Searches data.to, data.cc, data.bcc, and data.target (push). Supports both string and array values. */
+        recipient?: string;
+        /** @description Match against email From address (data.from). */
+        sender?: string;
+        /** @description Match against email subject (data.subject). */
+        subject?: string;
+        /** @description Match against message body. Searches data.text, data.html, data.message, data.text.body (WhatsApp), and data.message.default (push). HTML markup is included in the search. */
+        message_body?: string;
+        /** @description Match against WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio WhatsApp Business providers. */
+        template_name?: string;
+        /** @description Top-level key/value pairs to match against the notification data JSON. Repeat as data_filter[key]=value. Keys must match ^[a-zA-Z0-9_]{1,64}$ and are AND-combined. Swagger UI: rendered with style: deepObject via @ApiQuery on the controller. */
+        data_filter?: {
+          [key: string]: string;
+        };
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
       };
@@ -3075,6 +3328,20 @@ export interface operations {
         order?: 'asc' | 'desc';
         /** @description Search text (searches across data, result, and createdBy fields) */
         search?: string;
+        /** @description Match against notification recipients. Searches data.to, data.cc, data.bcc, and data.target (push). Supports both string and array values. */
+        recipient?: string;
+        /** @description Match against email From address (data.from). */
+        sender?: string;
+        /** @description Match against email subject (data.subject). */
+        subject?: string;
+        /** @description Match against message body. Searches data.text, data.html, data.message, data.text.body (WhatsApp), and data.message.default (push). HTML markup is included in the search. */
+        message_body?: string;
+        /** @description Match against WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio WhatsApp Business providers. */
+        template_name?: string;
+        /** @description Top-level key/value pairs to match against the notification data JSON. Repeat as data_filter[key]=value. Keys must match ^[a-zA-Z0-9_]{1,64}$ and are AND-combined. Swagger UI: rendered with style: deepObject via @ApiQuery on the controller. */
+        data_filter?: {
+          [key: string]: string;
+        };
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
       };
@@ -3223,6 +3490,20 @@ export interface operations {
         order?: 'asc' | 'desc';
         /** @description Search text (searches across data, result, and createdBy fields) */
         search?: string;
+        /** @description Match data.to/cc/bcc/target (string or array). Type ≥ 3 chars for fast results. */
+        recipient?: string;
+        /** @description Match data.from. Type ≥ 3 chars for fast results. */
+        sender?: string;
+        /** @description Match data.subject. Type ≥ 3 chars for fast results. */
+        subject?: string;
+        /** @description Match data.text/html/message and nested template/push body fields. Type ≥ 3 chars for fast results. */
+        message_body?: string;
+        /** @description Match WhatsApp template name (data.template.name). Applies to 360Dialog and Twilio Business providers. */
+        template_name?: string;
+        /** @description Top-level data JSON key/value pairs (data_filter[key]=value). Keys must match ^[a-zA-Z0-9_]{1,64}$. Multiple pairs are AND-combined. */
+        data_filter?: {
+          [key: string]: string;
+        };
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
         /** @description Filter by channel type */
@@ -3235,6 +3516,8 @@ export interface operations {
         date_from?: string;
         /** @description Filter by created_on <= datetime (ISO 8601) */
         date_to?: string;
+        /** @description Filter by provider */
+        provider_id?: number;
       };
       header?: never;
       path?: never;
@@ -3615,6 +3898,10 @@ export interface operations {
       query?: {
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
+        /** @description Time period filter (default: all) */
+        period?: '1h' | '6h' | '24h' | '7d' | '30d' | 'all';
+        /** @description Data source: active notifications, archived, or both (default: both) */
+        source?: 'active' | 'archived' | 'both';
       };
       header?: never;
       path?: never;
@@ -3645,10 +3932,14 @@ export interface operations {
       query?: {
         /** @description Target org (SUPER_ADMIN only) */
         organization_id?: number;
-        /** @description Time period filter (default: 30d) */
-        period?: '7d' | '30d' | '90d' | 'all';
+        /** @description Time period filter (default: 24h) */
+        period?: '1h' | '6h' | '24h' | '7d' | '30d' | 'all';
         /** @description Filter by specific application */
         application_id?: number;
+        /** @description Data source: active notifications, archived, or both (default: both) */
+        source?: 'active' | 'archived' | 'both';
+        /** @description IANA timezone name for grouping (e.g. Asia/Kolkata, Australia/Sydney). Defaults to UTC. */
+        timezone?: string;
       };
       header?: never;
       path?: never;

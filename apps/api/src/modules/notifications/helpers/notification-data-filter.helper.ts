@@ -12,6 +12,9 @@ import { SelectQueryBuilder } from 'typeorm';
  * All predicates use ILIKE '%v%' substring matching. The pg_trgm GIN expression
  * indexes on (data->>'subject'/'from'/'to') accelerate substring search; trigram
  * indexes require ≥ 3 character search patterns to be useful.
+ *
+ * Comma-separated values are supported for recipient, sender, subject, templateName,
+ * and dataFilter entries — each term is matched with OR so any hit returns the row.
  */
 export interface NotificationDataFilters {
   recipient?: string;
@@ -33,21 +36,29 @@ function q(alias: string): string {
 export class NotificationDataFilterHelper {
   applyTo<T>(qb: SelectQueryBuilder<T>, alias: string, filters: NotificationDataFilters): void {
     if (filters.recipient) {
-      qb.andWhere(this.recipientPredicate(alias), {
-        ndf_recipient: `%${filters.recipient}%`,
-      });
+      const values = this.splitValues(filters.recipient);
+      const clauses = values.map((_, i) => this.recipientPredicate(alias, `ndf_recipient_${i}`));
+      const params = Object.fromEntries(values.map((v, i) => [`ndf_recipient_${i}`, `%${v}%`]));
+
+      qb.andWhere(values.length === 1 ? clauses[0] : `(${clauses.join(' OR ')})`, params);
     }
 
     if (filters.sender) {
-      qb.andWhere(`${q(alias)}.data->>'from' ILIKE :ndf_sender`, {
-        ndf_sender: `%${filters.sender}%`,
-      });
+      this.applyILike(
+        qb,
+        `${q(alias)}.data->>'from'`,
+        'ndf_sender',
+        this.splitValues(filters.sender),
+      );
     }
 
     if (filters.subject) {
-      qb.andWhere(`${q(alias)}.data->>'subject' ILIKE :ndf_subject`, {
-        ndf_subject: `%${filters.subject}%`,
-      });
+      this.applyILike(
+        qb,
+        `${q(alias)}.data->>'subject'`,
+        'ndf_subject',
+        this.splitValues(filters.subject),
+      );
     }
 
     if (filters.messageBody) {
@@ -57,41 +68,76 @@ export class NotificationDataFilterHelper {
     }
 
     if (filters.templateName) {
-      qb.andWhere(`${q(alias)}.data->'template'->>'name' ILIKE :ndf_templateName`, {
-        ndf_templateName: `%${filters.templateName}%`,
-      });
+      this.applyILike(
+        qb,
+        `${q(alias)}.data->'template'->>'name'`,
+        'ndf_templateName',
+        this.splitValues(filters.templateName),
+      );
     }
 
     if (filters.dataFilter) {
       Object.entries(filters.dataFilter).forEach(([key, value], i) => {
-        // Defense in depth: keys are already validated by IsDataFilterMap at the
-        // DTO boundary, but we revalidate here in case the helper is invoked from
-        // a path that bypasses the DTO.
         if (!ADVANCED_KEY_RE.test(key)) {
           return;
         }
 
-        qb.andWhere(`${q(alias)}.data->>:ndf_dfk_${i} ILIKE :ndf_dfv_${i}`, {
-          [`ndf_dfk_${i}`]: key,
-          [`ndf_dfv_${i}`]: `%${value}%`,
-        });
+        const values = this.splitValues(value);
+
+        if (values.length === 1) {
+          qb.andWhere(`${q(alias)}.data->>:ndf_dfk_${i} ILIKE :ndf_dfv_${i}_0`, {
+            [`ndf_dfk_${i}`]: key,
+            [`ndf_dfv_${i}_0`]: `%${values[0]}%`,
+          });
+        } else {
+          const clauses = values.map(
+            (_, j) => `${q(alias)}.data->>:ndf_dfk_${i} ILIKE :ndf_dfv_${i}_${j}`,
+          );
+          const params = {
+            [`ndf_dfk_${i}`]: key,
+            ...Object.fromEntries(values.map((v, j) => [`ndf_dfv_${i}_${j}`, `%${v}%`])),
+          };
+
+          qb.andWhere(`(${clauses.join(' OR ')})`, params);
+        }
       });
     }
   }
 
-  private recipientPredicate(alias: string): string {
-    // Match `to`/`cc`/`bcc` whether stored as scalar string or array of strings,
-    // plus push `target`. jsonb_typeof guards skip undefined or unexpected types.
+  private splitValues(value: string): string[] {
+    return value
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+
+  private applyILike<T>(
+    qb: SelectQueryBuilder<T>,
+    expression: string,
+    paramBase: string,
+    values: string[],
+  ): void {
+    if (values.length === 1) {
+      qb.andWhere(`${expression} ILIKE :${paramBase}_0`, { [`${paramBase}_0`]: `%${values[0]}%` });
+    } else {
+      const clauses = values.map((_, i) => `${expression} ILIKE :${paramBase}_${i}`);
+      const params = Object.fromEntries(values.map((v, i) => [`${paramBase}_${i}`, `%${v}%`]));
+
+      qb.andWhere(`(${clauses.join(' OR ')})`, params);
+    }
+  }
+
+  private recipientPredicate(alias: string, param: string): string {
     const a = q(alias);
 
     return `(
-      (jsonb_typeof(${a}.data->'to')  = 'string' AND ${a}.data->>'to'  ILIKE :ndf_recipient) OR
-      (jsonb_typeof(${a}.data->'to')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'to')  AS x(v) WHERE x.v ILIKE :ndf_recipient)) OR
-      (jsonb_typeof(${a}.data->'cc')  = 'string' AND ${a}.data->>'cc'  ILIKE :ndf_recipient) OR
-      (jsonb_typeof(${a}.data->'cc')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'cc')  AS x(v) WHERE x.v ILIKE :ndf_recipient)) OR
-      (jsonb_typeof(${a}.data->'bcc') = 'string' AND ${a}.data->>'bcc' ILIKE :ndf_recipient) OR
-      (jsonb_typeof(${a}.data->'bcc') = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'bcc') AS x(v) WHERE x.v ILIKE :ndf_recipient)) OR
-      (${a}.data->>'target' ILIKE :ndf_recipient)
+      (jsonb_typeof(${a}.data->'to')  = 'string' AND ${a}.data->>'to'  ILIKE :${param}) OR
+      (jsonb_typeof(${a}.data->'to')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'to')  AS x(v) WHERE x.v ILIKE :${param})) OR
+      (jsonb_typeof(${a}.data->'cc')  = 'string' AND ${a}.data->>'cc'  ILIKE :${param}) OR
+      (jsonb_typeof(${a}.data->'cc')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'cc')  AS x(v) WHERE x.v ILIKE :${param})) OR
+      (jsonb_typeof(${a}.data->'bcc') = 'string' AND ${a}.data->>'bcc' ILIKE :${param}) OR
+      (jsonb_typeof(${a}.data->'bcc') = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'bcc') AS x(v) WHERE x.v ILIKE :${param})) OR
+      (${a}.data->>'target' ILIKE :${param})
     )`;
   }
 

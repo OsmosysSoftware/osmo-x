@@ -53,11 +53,21 @@ export class User {
     type: 'smallint',
     width: 1,
     default: UserRoles.ORG_USER,
-    comment: '0=OrgUser, 1=OrgAdmin, 2=SuperAdmin',
+    comment: '0=OrgUser, 1=OrgAdmin, 2=SuperAdmin, 3=NotificationViewer',
   })
   @IsEnum(UserRoles)
   @Field()
   userRole: number;
+
+  @Column({
+    name: 'permitted_application_ids',
+    type: 'simple-json',
+    nullable: true,
+    comment: 'JSON array of application IDs this user can access (used for NOTIFICATION_VIEWER)',
+  })
+  @IsOptional()
+  @Field(() => [Number], { nullable: true })
+  permittedApplicationIds: number[] | null;
 
   @Column({
     name: 'organization_id',

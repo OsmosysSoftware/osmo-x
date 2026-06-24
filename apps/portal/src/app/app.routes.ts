@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { AppLayout } from './layout/component/app.layout';
 import { Notfound } from './pages/notfound/notfound';
 import { authGuard } from './core/guards/auth.guard';
-import { orgAdminGuard, superAdminGuard } from './core/guards/role.guard';
+import { orgAdminGuard, superAdminGuard, blockNotificationViewerGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -13,6 +13,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
+        canActivate: [blockNotificationViewerGuard],
         loadComponent: () =>
           import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
@@ -20,6 +21,7 @@ export const routes: Routes = [
       // Notification Routes
       {
         path: 'notifications',
+        canActivate: [blockNotificationViewerGuard],
         loadComponent: () =>
           import('./features/notifications/pages/notifications-list').then(
             (m) => m.NotificationsListComponent,
@@ -27,10 +29,18 @@ export const routes: Routes = [
       },
       {
         path: 'archived-notifications',
+        canActivate: [blockNotificationViewerGuard],
         loadComponent: () =>
           import('./features/archived-notifications/pages/archived-list').then(
             (m) => m.ArchivedListComponent,
           ),
+      },
+      {
+        path: 'filtered-notifications',
+        loadComponent: () =>
+          import(
+            './features/filtered-notifications/pages/filtered-list/filtered-list'
+          ).then((m) => m.FilteredList),
       },
 
       // Configuration Routes (ORG_ADMIN or higher)

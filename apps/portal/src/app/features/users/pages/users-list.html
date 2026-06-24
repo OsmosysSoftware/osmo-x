@@ -116,7 +116,7 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="6" class="!text-center py-8 text-muted-color">No users found</td>
+          <td colspan="6" class="text-center! py-8 text-muted-color">No users found</td>
         </tr>
       </ng-template>
     </p-table>
@@ -182,12 +182,39 @@
           id="role"
           [options]="roleOptions"
           [ngModel]="formRole()"
-          (ngModelChange)="formRole.set($event)"
+          (ngModelChange)="onRoleChange($event)"
           optionLabel="label"
           optionValue="value"
           placeholder="Select a role"
           appendTo="body"
         />
+      </div>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label for="permittedApps" class="font-medium">Permitted Applications</label>
+          <p-button
+            label="Select All"
+            size="small"
+            [text]="true"
+            (onClick)="selectAllApplications()"
+          />
+        </div>
+        <p-multiselect
+          id="permittedApps"
+          [options]="availableApplicationOptions()"
+          [ngModel]="formPermittedApplicationIds()"
+          (ngModelChange)="formPermittedApplicationIds.set($event)"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select applications"
+          [showClear]="true"
+          [filter]="true"
+          appendTo="body"
+          display="chip"
+        />
+        <small class="text-muted-color">
+          This user will only see these applications in their notification filters.
+        </small>
       </div>
     </div>
     <ng-template #footer>

@@ -14,7 +14,7 @@
     "lint:fix": "eslint . --fix --ignore-pattern '.angular/**'",
     "prettier-format": "prettier --write \"**/*.{js,ts,html,scss,json}\"",
     "lint-fix-format": "npm run prettier-format && npm run lint:fix && npm run prettier-format",
-    "generate:api": "openapi-typescript http://localhost:3000/api/docs-json -o src/app/core/types/api.types.ts",
+    "generate:api": "openapi-typescript http://localhost:3010/docs-json -o src/app/core/types/api.types.ts",
     "prepare": "husky"
   },
   "lint-staged": {

@@ -17,6 +17,10 @@ export class ApplicationsService {
     return `${this.config.apiUrl}/applications`;
   }
 
+  private get accessibleApiUrl(): string {
+    return `${this.config.apiUrl}/accessible-applications`;
+  }
+
   private readonly _applications = signal<Application[]>([]);
   readonly applications = this._applications.asReadonly();
 
@@ -26,6 +30,10 @@ export class ApplicationsService {
     return this.http
       .get<PaginatedResponse<Application>>(this.apiUrl, { params })
       .pipe(tap((res) => this._applications.set(res.items)));
+  }
+
+  listAccessible(): Observable<Application[]> {
+    return this.http.get<Application[]>(this.accessibleApiUrl);
   }
 
   getById(id: number): Observable<Application> {

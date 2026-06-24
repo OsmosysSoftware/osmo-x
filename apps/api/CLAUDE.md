@@ -250,18 +250,21 @@ docker compose logs -f osmox-api  # Follow API logs
 - **JwtAuthGuard** - Validates access tokens
 - **JwtRefreshGuard** - Validates refresh tokens
 - **ApiKeyGuard** - Validates server API keys (for external notification senders)
-- **RoleGuard** - Role-based access (ORG_USER, ORG_ADMIN, SUPER_ADMIN)
+- **RoleGuard** - Role-based access (ORG_USER, ORG_ADMIN, SUPER_ADMIN); NOTIFICATION_VIEWER (3) always returns false from RolesGuard and can only access JWT-only endpoints
 - **OrgScopeGuard** - Ensures resource belongs to user's organization
 
 ### Role System
 
 ```typescript
 export const UserRoles = {
-  ORG_USER: 0,      // Read within organization
-  ORG_ADMIN: 1,     // Manage within organization
-  SUPER_ADMIN: 2,   // Platform-level administration
+  ORG_USER: 0,             // Read within organization
+  ORG_ADMIN: 1,            // Manage within organization
+  SUPER_ADMIN: 2,          // Platform-level administration
+  NOTIFICATION_VIEWER: 3,  // Outside the numeric hierarchy — notification search only
 };
 ```
+
+**NOTIFICATION_VIEWER guard rule**: Value `3` is intentionally outside the `>=` comparison used by `RolesGuard`. The guard short-circuits with `return false` for role 3 before reaching the numeric check, so NOTIFICATION_VIEWER can never pass any `@Roles()`-decorated endpoint. It can only access endpoints guarded by `JwtAuthGuard` alone (e.g., `GET /accessible-applications`).
 
 ---
 
@@ -316,7 +319,7 @@ export class EntityName {
 
 ```text
 Organization
-├── User (organizationId, role: ORG_USER | ORG_ADMIN)
+├── User (organizationId, role: ORG_USER | ORG_ADMIN | NOTIFICATION_VIEWER, permitted_application_ids: number[] | null)
 ├── Application (organizationId)
 │   ├── Provider (applicationId, channelType, configuration)
 │   ├── ProviderChain (applicationId, providerType)

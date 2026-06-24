@@ -1,9 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEmail,
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   MinLength,
@@ -41,11 +43,21 @@ export class UpdateUserInput {
   password?: string;
 
   @ApiPropertyOptional({
-    description: 'User role: 0=OrgUser, 1=OrgAdmin',
-    example: 0,
-    enum: [UserRoles.ORG_USER, UserRoles.ORG_ADMIN],
+    description: 'Application IDs this user is permitted to access (for NOTIFICATION_VIEWER)',
+    example: [1, 2, 3],
+    type: [Number],
   })
   @IsOptional()
-  @IsEnum([UserRoles.ORG_USER, UserRoles.ORG_ADMIN])
+  @IsArray()
+  @IsNumber({}, { each: true })
+  permittedApplicationIds?: number[];
+
+  @ApiPropertyOptional({
+    description: 'User role: 0=OrgUser, 1=OrgAdmin, 3=NotificationViewer',
+    example: 0,
+    enum: [UserRoles.ORG_USER, UserRoles.ORG_ADMIN, UserRoles.NOTIFICATION_VIEWER],
+  })
+  @IsOptional()
+  @IsEnum([UserRoles.ORG_USER, UserRoles.ORG_ADMIN, UserRoles.NOTIFICATION_VIEWER])
   userRole?: number;
 }
