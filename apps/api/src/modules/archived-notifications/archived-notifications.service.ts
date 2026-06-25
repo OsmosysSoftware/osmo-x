@@ -12,7 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.helper';
-import ms = require('ms');
+import ms from 'ms';
 import { ArchivedNotificationResponseDto } from './dto/archived-notification-response.dto';
 import { ApplicationsService } from '../applications/applications.service';
 import { NotificationDataFilterHelper } from '../notifications/helpers/notification-data-filter.helper';
@@ -111,7 +111,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
         await queryRunner.release();
       }
     } catch (error) {
-      this.logger.error(`Failed to archive notifications: ${error.message}`);
+      this.logger.error(`Failed to archive notifications: ${(error as Error).message}`);
       throw error;
     }
   }
@@ -122,7 +122,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       await this.moveCompletedNotificationsToArchiveTable();
       this.logger.log(`Archive notifications cron task completed`);
     } catch (error) {
-      this.logger.error(`Cron job failed: ${error.message}`, error.stack);
+      this.logger.error(`Cron job failed: ${(error as Error).message}`, (error as Error).stack);
       throw error;
     }
   }
@@ -309,7 +309,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
         this.logger.log('Archived Notification Deletion Cron is disabled');
       }
     } catch (error) {
-      this.logger.error(`Cron job failed: ${error.message}`, error.stack);
+      this.logger.error(`Cron job failed: ${(error as Error).message}`, (error as Error).stack);
       throw error;
     }
   }
@@ -397,6 +397,23 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
           );
         } while (archivedEntriesBatch.length === batchSize);
 
+        // Retries have no FK to archived_notifications; prior deletion runs leave orphans unreachable by the batch loop above
+        const orphanedRetryResult = await queryRunner.manager
+          .createQueryBuilder()
+          .delete()
+          .from(RetryNotification)
+          .where('created_on < :cutoff', { cutoff: cutoffTimestamp })
+          .andWhere(
+            'NOT EXISTS (SELECT 1 FROM notify_archived_notifications a WHERE a.notification_id = notify_notification_retries.notification_id)',
+          )
+          .execute();
+
+        const orphanedRetryAffected =
+          typeof orphanedRetryResult.affected === 'number' ? orphanedRetryResult.affected : 0;
+        totalDeletedRetries += orphanedRetryAffected;
+
+        this.logger.debug(`Orphaned retry records deleted: ${orphanedRetryAffected}`);
+
         await queryRunner.commitTransaction();
 
         this.logger.log(
@@ -404,13 +421,19 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
         );
       } catch (error) {
         await queryRunner.rollbackTransaction();
-        this.logger.error('Error during deletion. Transaction rolled back.', error.stack);
+        this.logger.error(
+          'Error during deletion. Transaction rolled back.',
+          (error as Error).stack,
+        );
         throw error;
       } finally {
         await queryRunner.release();
       }
     } catch (error) {
-      this.logger.error(`Failed to delete archived notifications: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to delete archived notifications: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
       throw error;
     }
   }
