@@ -12,7 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CoreService } from 'src/common/graphql/services/core.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.helper';
-import ms from 'ms';
+import ms = require('ms');
 import { ArchivedNotificationResponseDto } from './dto/archived-notification-response.dto';
 import { ApplicationsService } from '../applications/applications.service';
 import { NotificationDataFilterHelper } from '../notifications/helpers/notification-data-filter.helper';
