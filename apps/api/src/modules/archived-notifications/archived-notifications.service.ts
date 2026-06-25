@@ -397,22 +397,39 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
           );
         } while (archivedEntriesBatch.length === batchSize);
 
-        // Retries have no FK to archived_notifications; prior deletion runs leave orphans unreachable by the batch loop above
-        const orphanedRetryResult = await queryRunner.manager
-          .createQueryBuilder()
-          .delete()
-          .from(RetryNotification)
-          .where('created_on < :cutoff', { cutoff: cutoffTimestamp })
-          .andWhere(
-            'NOT EXISTS (SELECT 1 FROM notify_archived_notifications a WHERE a.notification_id = notify_notification_retries.notification_id)',
-          )
-          .execute();
+        // Retries have no FK to archived_notifications; prior deletion runs can
+        // leave orphans that the batch loop above never reaches.
+        // TODO: also exclude retries whose notification_id still exists in notify_notifications
+        // (live notifications not yet archived) to avoid premature deletion
+        let orphanBatchCount: number;
 
-        const orphanedRetryAffected =
-          typeof orphanedRetryResult.affected === 'number' ? orphanedRetryResult.affected : 0;
-        totalDeletedRetries += orphanedRetryAffected;
+        do {
+          const orphanIds = await queryRunner.manager
+            .createQueryBuilder(RetryNotification, 'r')
+            .select('r.id', 'id')
+            .where('r.created_on < :cutoff', { cutoff: cutoffTimestamp })
+            .andWhere(
+              'NOT EXISTS (' +
+                'SELECT 1 FROM notify_archived_notifications a ' +
+                'WHERE a.notification_id = r.notification_id)',
+            )
+            .limit(batchSize)
+            .getRawMany<{ id: number }>();
 
-        this.logger.debug(`Orphaned retry records deleted: ${orphanedRetryAffected}`);
+          orphanBatchCount = orphanIds.length;
+
+          if (orphanBatchCount === 0) {
+            break;
+          }
+
+          await queryRunner.manager.delete(
+            RetryNotification,
+            orphanIds.map((r) => r.id),
+          );
+          totalDeletedRetries += orphanBatchCount;
+
+          this.logger.debug(`Orphaned retry batch deleted: ${orphanBatchCount}`);
+        } while (orphanBatchCount === batchSize);
 
         await queryRunner.commitTransaction();
 
