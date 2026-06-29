@@ -399,8 +399,6 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
         // Retries have no FK to archived_notifications; prior deletion runs can
         // leave orphans that the batch loop above never reaches.
-        // TODO: also exclude retries whose notification_id still exists in notify_notifications
-        // (live notifications not yet archived) to avoid premature deletion
         let orphanBatchCount: number;
 
         do {
@@ -409,9 +407,16 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
             .select('r.id', 'id')
             .where('r.created_on < :cutoff', { cutoff: cutoffTimestamp })
             .andWhere(
-              'NOT EXISTS (' +
-                'SELECT 1 FROM notify_archived_notifications a ' +
-                'WHERE a.notification_id = r.notification_id)',
+              `NOT EXISTS (
+                SELECT 1 FROM notify_archived_notifications a
+                WHERE a.notification_id = r.notification_id
+              )`,
+            )
+            .andWhere(
+              `NOT EXISTS (
+                SELECT 1 FROM notify_notifications n
+                WHERE n.id = r.notification_id
+              )`,
             )
             .limit(batchSize)
             .getRawMany<{ id: number }>();
