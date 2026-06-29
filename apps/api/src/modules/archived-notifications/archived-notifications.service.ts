@@ -348,7 +348,10 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       await queryRunner.connect();
 
       try {
-        // Phase 1: archive deletion in a single transaction
+        // Phase 1: archive deletion wrapped in a single transaction so a
+        // partial failure rolls back all batches atomically. Trade-off: long
+        // backlogs hold locks for the full run. Move commit inside the loop
+        // (matching Phase 2) only if lock contention becomes a problem.
         await queryRunner.startTransaction();
 
         try {
@@ -367,8 +370,16 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
               take: batchSize,
             });
 
+            const firstRecord =
+              archivedEntriesBatch.length > 0
+                ? JSON.stringify({
+                    id: archivedEntriesBatch[0].id,
+                    notificationId: archivedEntriesBatch[0].notificationId,
+                    createdOn: archivedEntriesBatch[0].createdOn,
+                  })
+                : 'None';
             this.logger.debug(
-              `Query found ${archivedEntriesBatch.length} records. First record: ${archivedEntriesBatch.length > 0 ? JSON.stringify({ id: archivedEntriesBatch[0].id, notificationId: archivedEntriesBatch[0].notificationId, createdOn: archivedEntriesBatch[0].createdOn }) : 'None'}`,
+              `Query found ${archivedEntriesBatch.length} records. First record: ${firstRecord}`,
             );
 
             if (archivedEntriesBatch.length === 0) {
@@ -396,7 +407,8 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
             totalDeletedArchived += archivedEntriesBatch.length;
 
             this.logger.debug(
-              `Batch processed: ${archivedEntriesBatch.length} archived notifications, ${retryAffected} retry records deleted`,
+              `Batch processed: ${archivedEntriesBatch.length} archived notifications, ` +
+                `${retryAffected} retry records deleted`,
             );
           } while (archivedEntriesBatch.length === batchSize);
 
