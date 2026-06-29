@@ -8,8 +8,6 @@ export class AddRetryNotificationCreatedOnIndex1774000000200 implements Migratio
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `DROP INDEX IF EXISTS "IDX_notify_notification_retries_created_on"`,
-    );
+    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_notify_notification_retries_created_on"`);
   }
 }
