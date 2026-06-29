@@ -346,108 +346,125 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
-      await queryRunner.startTransaction();
 
       try {
-        let archivedEntriesBatch: ArchivedNotification[] = [];
+        // Phase 1: archive deletion in a single transaction
+        await queryRunner.startTransaction();
 
-        do {
-          // Fetch archived entries to delete
-          archivedEntriesBatch = await queryRunner.manager.find(ArchivedNotification, {
-            where: {
-              createdOn: LessThan(cutoffTimestamp),
-              status: Status.ACTIVE,
-            },
-            order: {
-              createdOn: 'ASC',
-            },
-            take: batchSize,
-          });
+        try {
+          let archivedEntriesBatch: ArchivedNotification[] = [];
 
-          this.logger.debug(
-            `Query found ${archivedEntriesBatch.length} records. First record: ${archivedEntriesBatch.length > 0 ? JSON.stringify({ id: archivedEntriesBatch[0].id, notificationId: archivedEntriesBatch[0].notificationId, createdOn: archivedEntriesBatch[0].createdOn }) : 'None'}`,
-          );
+          do {
+            // Fetch archived entries to delete
+            archivedEntriesBatch = await queryRunner.manager.find(ArchivedNotification, {
+              where: {
+                createdOn: LessThan(cutoffTimestamp),
+                status: Status.ACTIVE,
+              },
+              order: {
+                createdOn: 'ASC',
+              },
+              take: batchSize,
+            });
 
-          if (archivedEntriesBatch.length === 0) {
             this.logger.debug(
-              `No more archived entries older than ${cutoffTimestamp} left to delete`,
+              `Query found ${archivedEntriesBatch.length} records. First record: ${archivedEntriesBatch.length > 0 ? JSON.stringify({ id: archivedEntriesBatch[0].id, notificationId: archivedEntriesBatch[0].notificationId, createdOn: archivedEntriesBatch[0].createdOn }) : 'None'}`,
             );
-            break;
-          }
 
-          // Get notification IDs for deleting related retry records
-          const notificationIds = archivedEntriesBatch.map((entry) => entry.notificationId);
+            if (archivedEntriesBatch.length === 0) {
+              this.logger.debug(
+                `No more archived entries older than ${cutoffTimestamp} left to delete`,
+              );
+              break;
+            }
 
-          // Delete retry entries first (foreign key constraint)
-          const retryDeleteResult = await queryRunner.manager.delete(RetryNotification, {
-            notification_id: In(notificationIds),
-          });
+            // Get notification IDs for deleting related retry records
+            const notificationIds = archivedEntriesBatch.map((entry) => entry.notificationId);
 
-          const retryAffected =
-            typeof retryDeleteResult.affected === 'number' ? retryDeleteResult.affected : 0;
-          totalDeletedRetries += retryAffected;
+            // Delete retry entries first (foreign key constraint)
+            const retryDeleteResult = await queryRunner.manager.delete(RetryNotification, {
+              notification_id: In(notificationIds),
+            });
 
-          // Delete archived notifications
-          const archivedIds = archivedEntriesBatch.map((entry) => entry.id);
-          await queryRunner.manager.delete(ArchivedNotification, archivedIds);
-          totalDeletedArchived += archivedEntriesBatch.length;
+            const retryAffected =
+              typeof retryDeleteResult.affected === 'number' ? retryDeleteResult.affected : 0;
+            totalDeletedRetries += retryAffected;
 
-          this.logger.debug(
-            `Batch processed: ${archivedEntriesBatch.length} archived notifications, ${retryAffected} retry records deleted`,
+            // Delete archived notifications
+            const archivedIds = archivedEntriesBatch.map((entry) => entry.id);
+            await queryRunner.manager.delete(ArchivedNotification, archivedIds);
+            totalDeletedArchived += archivedEntriesBatch.length;
+
+            this.logger.debug(
+              `Batch processed: ${archivedEntriesBatch.length} archived notifications, ${retryAffected} retry records deleted`,
+            );
+          } while (archivedEntriesBatch.length === batchSize);
+
+          await queryRunner.commitTransaction();
+        } catch (error) {
+          await queryRunner.rollbackTransaction();
+          this.logger.error(
+            'Error during archive deletion. Transaction rolled back.',
+            (error as Error).stack,
           );
-        } while (archivedEntriesBatch.length === batchSize);
+          throw error;
+        }
 
+        // Phase 2: orphan retry cleanup in independent per-batch transactions.
         // Retries have no FK to archived_notifications; prior deletion runs can
         // leave orphans that the batch loop above never reaches.
-        let orphanBatchCount: number;
+        let orphanBatchCount = 0;
 
         do {
-          const orphanIds = await queryRunner.manager
-            .createQueryBuilder(RetryNotification, 'r')
-            .select('r.id', 'id')
-            .where('r.created_on < :cutoff', { cutoff: cutoffTimestamp })
-            .andWhere(
-              `NOT EXISTS (
-                SELECT 1 FROM notify_archived_notifications a
-                WHERE a.notification_id = r.notification_id
-              )`,
-            )
-            .andWhere(
-              `NOT EXISTS (
-                SELECT 1 FROM notify_notifications n
-                WHERE n.id = r.notification_id
-              )`,
-            )
-            .limit(batchSize)
-            .getRawMany<{ id: number }>();
+          await queryRunner.startTransaction();
 
-          orphanBatchCount = orphanIds.length;
+          try {
+            const orphanIds = await queryRunner.manager
+              .createQueryBuilder(RetryNotification, 'r')
+              .select('r.id', 'id')
+              .where('r.created_on < :cutoff', { cutoff: cutoffTimestamp })
+              .andWhere(
+                `NOT EXISTS (
+                  SELECT 1 FROM notify_archived_notifications a
+                  WHERE a.notification_id = r.notification_id
+                )`,
+              )
+              .andWhere(
+                `NOT EXISTS (
+                  SELECT 1 FROM notify_notifications n
+                  WHERE n.id = r.notification_id
+                )`,
+              )
+              .limit(batchSize)
+              .getRawMany<{ id: number }>();
 
-          if (orphanBatchCount === 0) {
-            break;
+            orphanBatchCount = orphanIds.length;
+
+            if (orphanBatchCount === 0) {
+              await queryRunner.rollbackTransaction();
+              break;
+            }
+
+            await queryRunner.manager.delete(
+              RetryNotification,
+              orphanIds.map((r) => r.id),
+            );
+            totalDeletedRetries += orphanBatchCount;
+            await queryRunner.commitTransaction();
+            this.logger.debug(`Orphaned retry batch deleted: ${orphanBatchCount}`);
+          } catch (error) {
+            await queryRunner.rollbackTransaction();
+            this.logger.error(
+              'Error during orphan retry cleanup. Transaction rolled back.',
+              (error as Error).stack,
+            );
+            throw error;
           }
-
-          await queryRunner.manager.delete(
-            RetryNotification,
-            orphanIds.map((r) => r.id),
-          );
-          totalDeletedRetries += orphanBatchCount;
-
-          this.logger.debug(`Orphaned retry batch deleted: ${orphanBatchCount}`);
         } while (orphanBatchCount === batchSize);
-
-        await queryRunner.commitTransaction();
 
         this.logger.log(
           `Successfully deleted ${totalDeletedArchived} archived notifications and ${totalDeletedRetries} retry records older than ${cutoffTimestamp.toISOString()}`,
         );
-      } catch (error) {
-        await queryRunner.rollbackTransaction();
-        this.logger.error(
-          'Error during deletion. Transaction rolled back.',
-          (error as Error).stack,
-        );
-        throw error;
       } finally {
         await queryRunner.release();
       }
