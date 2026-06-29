@@ -14,7 +14,6 @@ if [ ! -f "$CONFIG_PATH" ]; then
   echo "ERROR: $CONFIG_PATH is missing." >&2
   echo "" >&2
   echo "First-time setup (run from apps/portal/):" >&2
-  echo "  mkdir -p runtime-config" >&2
   echo "  cp runtime-config.example.json runtime-config/config.json" >&2
   echo "" >&2
   echo "Then re-run: docker compose up -d" >&2
