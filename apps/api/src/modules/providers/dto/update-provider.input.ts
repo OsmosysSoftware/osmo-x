@@ -1,4 +1,4 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, Int } from '@nestjs/graphql';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsInt,
@@ -6,6 +6,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  Max,
   Min,
   ValidateIf,
 } from 'class-validator';
@@ -51,10 +52,11 @@ export class UpdateProviderInput {
       'Max retry attempts for this provider. Null reverts to global MAX_RETRY_COUNT env config',
     example: 3,
   })
-  @Field({ nullable: true })
+  @Field(() => Int, { nullable: true })
   @IsOptional()
   @ValidateIf((o) => o.maxRetryCount !== null)
   @IsInt()
   @Min(0)
+  @Max(10)
   maxRetryCount?: number | null;
 }

@@ -206,6 +206,8 @@
           (ngModelChange)="formMaxRetryCount.set($event)"
           [min]="0"
           [max]="10"
+          [minFractionDigits]="0"
+          [maxFractionDigits]="0"
           [showButtons]="true"
           placeholder="Global default"
         />
