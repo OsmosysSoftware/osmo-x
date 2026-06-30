@@ -352,6 +352,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
         // partial failure rolls back all batches atomically. Trade-off: long
         // backlogs hold locks for the full run. Move commit inside the loop
         // (matching Phase 2) only if lock contention becomes a problem.
+        this.logger.log('Phase 1: deleting archived notifications');
         await queryRunner.startTransaction();
 
         try {
@@ -425,6 +426,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
         // Phase 2: orphan retry cleanup in independent per-batch transactions.
         // Retries have no FK to archived_notifications; prior deletion runs can
         // leave orphans that the batch loop above never reaches.
+        this.logger.log('Phase 2: deleting orphaned retries');
         let orphanBatchCount = 0;
 
         do {
