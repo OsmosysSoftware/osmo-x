@@ -31,6 +31,14 @@ export class ProviderResponseDto {
   @ApiProperty({ description: 'Status: 1=Active, 0=Inactive', example: 1 })
   status: number;
 
+  @ApiPropertyOptional({
+    description:
+      'Max retry attempts configured for this provider. Null = use global MAX_RETRY_COUNT',
+    example: 3,
+    nullable: true,
+  })
+  maxRetryCount: number | null;
+
   @ApiPropertyOptional({ description: 'ID of user who created this record', example: 1 })
   createdBy: number | null;
 

@@ -198,6 +198,19 @@
           }}</span>
         </div>
       </div>
+      <div class="flex flex-col gap-2">
+        <label for="maxRetryCount" class="font-medium">Max Retries</label>
+        <p-inputNumber
+          inputId="maxRetryCount"
+          [ngModel]="formMaxRetryCount()"
+          (ngModelChange)="formMaxRetryCount.set($event)"
+          [min]="0"
+          [max]="10"
+          [showButtons]="true"
+          placeholder="Global default"
+        />
+        <small class="text-muted-color">Number of retry attempts before failing. Leave empty to use the server default.</small>
+      </div>
       @if (configFields().length > 0) {
         <div class="flex flex-col gap-3">
           <span class="font-medium">

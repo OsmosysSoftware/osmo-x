@@ -79,6 +79,15 @@ export class Provider {
   updatedBy: number;
 
   @Column({
+    name: 'max_retry_count',
+    type: 'int',
+    nullable: true,
+    comment: 'Max retry attempts for this provider. Null = use global MAX_RETRY_COUNT env config',
+  })
+  @Field({ nullable: true })
+  maxRetryCount: number | null;
+
+  @Column({
     name: 'status',
     type: 'smallint',
     width: 1,
