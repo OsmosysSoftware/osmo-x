@@ -137,12 +137,7 @@ export class UsersListComponent implements OnInit {
 
   onRoleChange(role: number): void {
     this.formRole.set(role);
-
-    if (role === UserRoles.SUPER_ADMIN) {
-      this.formPermittedApplicationIds.set(this.availableApplicationOptions().map((a) => a.value));
-    } else {
-      this.formPermittedApplicationIds.set([]);
-    }
+    this.formPermittedApplicationIds.set([]);
   }
 
   openEdit(user: UserResponse): void {
@@ -154,7 +149,7 @@ export class UsersListComponent implements OnInit {
     this.formRole.set(user.user_role);
 
     if (user.user_role === UserRoles.SUPER_ADMIN) {
-      this.formPermittedApplicationIds.set(this.availableApplicationOptions().map((a) => a.value));
+      this.selectAllApplications();
     } else {
       this.formPermittedApplicationIds.set(user.permitted_application_ids ?? []);
     }

@@ -159,13 +159,20 @@ export class ProvidersService extends CoreService<Provider> {
   async getAllProvidersAsDto(
     query: PaginationQueryDto,
     organizationId: number,
+    userId: number,
+    userRole: number,
     filters?: {
       applicationId?: number;
     },
   ): Promise<{ items: ProviderResponseDto[]; meta: PaginationMeta }> {
-    let appIds = await this.applicationsService.getApplicationIdsByOrganization(organizationId);
+    const accessibleApps = await this.applicationsService.getAccessibleApplicationsAsDto(
+      userId,
+      userRole,
+      organizationId,
+    );
+    let appIds = accessibleApps.map((app) => app.applicationId);
 
-    // If filtering by applicationId, restrict to that app (within org scope)
+    // If filtering by applicationId, restrict to that app (within accessible scope)
     if (filters?.applicationId) {
       appIds = appIds.includes(filters.applicationId) ? [filters.applicationId] : [];
     }

@@ -74,7 +74,7 @@
     <ng-template #end>
       <div class="flex items-center gap-2">
         <app-notification-filters
-          [filters]="composedFilters()"
+          [filters]="propertyFilters()"
           (filtersChange)="onPropertyFiltersChange($event)"
           (clear)="onPropertyFiltersClear()"
         />

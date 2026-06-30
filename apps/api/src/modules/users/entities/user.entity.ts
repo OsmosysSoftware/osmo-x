@@ -61,9 +61,10 @@ export class User {
 
   @Column({
     name: 'permitted_application_ids',
-    type: 'simple-json',
+    type: 'int',
+    array: true,
     nullable: true,
-    comment: 'JSON array of application IDs this user can access (used for NOTIFICATION_VIEWER)',
+    comment: 'Array of application IDs this user can access (used for NOTIFICATION_VIEWER)',
   })
   @IsOptional()
   @Field(() => [Number], { nullable: true })

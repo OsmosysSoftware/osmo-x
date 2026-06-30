@@ -88,6 +88,8 @@ export class ProvidersController {
     const { items, meta } = await this.providersService.getAllProvidersAsDto(
       query,
       targetOrgId,
+      user.userId,
+      user.role,
       filters,
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);

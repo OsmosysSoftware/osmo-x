@@ -46,10 +46,6 @@ export const blockNotificationViewerGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (!authService.isAuthenticated()) {
-    return router.createUrlTree(['/auth/login']);
-  }
-
   if (authService.isNotificationViewer()) {
     return router.createUrlTree(['/filtered-notifications']);
   }

@@ -6,7 +6,7 @@ import {
   signal,
   computed,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { DatePipe, JsonPipe } from '@angular/common';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { FormsModule } from '@angular/forms';
@@ -113,10 +113,6 @@ export class FilteredList implements OnInit {
 
   readonly propertyFilters = signal<NotificationFilters>({});
 
-  readonly composedFilters = computed<NotificationFilters>(() => ({
-    ...this.propertyFilters(),
-  }));
-
   readonly tableSortField = signal('created_on');
   readonly tableSortOrder = signal<number>(-1);
   private currentSort = 'created_on';
@@ -143,24 +139,21 @@ export class FilteredList implements OnInit {
   });
 
   ngOnInit(): void {
-    this.applicationsService.listAccessible().subscribe({
-      next: (items) => {
-        this.applications.set(items ?? []);
-        this.applicationOptions.set(
-          (items ?? []).map((a) => ({ label: a.name, value: a.application_id })),
-        );
-      },
-      error: () => {
-        this.applications.set([]);
-        this.applicationOptions.set([]);
-      },
-    });
+    forkJoin({
+      apps: this.applicationsService.listAccessible(),
+      providers: this.providersService.list(1, 100),
+    }).subscribe({
+      next: ({ apps, providers }) => {
+        const items = apps ?? [];
 
-    this.providersService.list(1, 100).subscribe({
-      next: (res) => {
-        this.providers.set(res.items ?? []);
+        this.applications.set(items);
+        this.applicationOptions.set(items.map((a) => ({ label: a.name, value: a.application_id })));
+
+        const providerItems = providers.items ?? [];
+
+        this.providers.set(providerItems);
         this.allProviderOptions.set(
-          (res.items ?? []).map((p) => ({
+          providerItems.map((p) => ({
             label: p.name,
             value: p.provider_id,
             applicationId: p.application_id,
@@ -168,6 +161,8 @@ export class FilteredList implements OnInit {
         );
       },
       error: () => {
+        this.applications.set([]);
+        this.applicationOptions.set([]);
         this.providers.set([]);
         this.allProviderOptions.set([]);
       },
