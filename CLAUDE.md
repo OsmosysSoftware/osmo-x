@@ -19,7 +19,7 @@ The `~/work/osmosys/interview-app/` repository defines our coding standards for 
 ### Multi-Tenant Architecture (In Progress)
 
 - **Organization hierarchy**: Super Admin → Organization → Org Admin / Users
-- **Role system**: ORG_USER (0), ORG_ADMIN (1), SUPER_ADMIN (2)
+- **Role system**: ORG_USER (0), ORG_ADMIN (1), SUPER_ADMIN (2), NOTIFICATION_VIEWER (3 — outside the numeric hierarchy, notification search only)
 - **API prefix**: Global prefix `/api` set via `setGlobalPrefix('api')` in `main.ts`; no version prefix
 - **Error format**: RFC 7807 Problem JSON via `ProblemJsonFilter` (global)
 - **Response format**: Snake_case responses via SnakeCaseInterceptor

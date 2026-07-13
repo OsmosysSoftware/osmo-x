@@ -7,6 +7,8 @@ export const UserRoles = {
   ORG_USER: 0,
   ORG_ADMIN: 1,
   SUPER_ADMIN: 2,
+  // Outside the numeric hierarchy — can only access filtered notification search
+  NOTIFICATION_VIEWER: 3,
 };
 
 export const ProviderType = {

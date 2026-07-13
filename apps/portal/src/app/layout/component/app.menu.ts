@@ -24,8 +24,25 @@ export class AppMenu {
   private readonly authService = inject(AuthService);
 
   readonly model = computed<MenuItem[]>(() => {
+    const isNotificationViewer = this.authService.isNotificationViewer();
     const isOrgAdmin = this.authService.hasMinimumRole(UserRoles.ORG_ADMIN);
     const isSuperAdmin = this.authService.isSuperAdmin();
+
+    // NOTIFICATION_VIEWER sees only the filtered search page
+    if (isNotificationViewer) {
+      return [
+        {
+          label: 'Notifications',
+          items: [
+            {
+              label: 'Notification Search',
+              icon: 'pi pi-fw pi-search',
+              routerLink: ['/filtered-notifications'],
+            },
+          ],
+        },
+      ];
+    }
 
     const items: MenuItem[] = [
       {
@@ -44,6 +61,11 @@ export class AppMenu {
             label: 'Archived Notifications',
             icon: 'pi pi-fw pi-inbox',
             routerLink: ['/archived-notifications'],
+          },
+          {
+            label: 'Notification Search',
+            icon: 'pi pi-fw pi-search',
+            routerLink: ['/filtered-notifications'],
           },
         ],
       },

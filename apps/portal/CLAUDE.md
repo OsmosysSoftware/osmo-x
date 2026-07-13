@@ -77,10 +77,12 @@ src/app/
 │   │   └── services/api-keys.service.ts
 │   ├── applications/
 │   │   ├── pages/applications-list.ts
-│   │   └── services/applications.service.ts
+│   │   └── services/applications.service.ts  # list() for admins; listAccessible() for all roles (uses /accessible-applications)
 │   ├── archived-notifications/
 │   │   ├── pages/archived-list.ts
 │   │   └── services/archived-notifications.service.ts
+│   ├── filtered-notifications/
+│   │   └── pages/filtered-list/filtered-list.ts  # NOTIFICATION_VIEWER search page (requires property filter)
 │   ├── notifications/
 │   │   ├── pages/notifications-list.ts
 │   │   └── services/notifications.service.ts
@@ -293,7 +295,6 @@ There is no `environment.ts` file — those were removed and `fileReplacements` 
    ```bash
    cd apps/portal
    cp .env.example .env
-   mkdir -p runtime-config
    cp runtime-config.example.json runtime-config/config.json
    docker compose up -d --build
    ```
@@ -398,11 +399,12 @@ export type Notification = Omit<
 
 ### Roles
 
-| Role        | Value | Access                                       |
-| ----------- | ----- | -------------------------------------------- |
-| ORG_USER    | 0     | Read notifications within own org            |
-| ORG_ADMIN   | 1     | Full CRUD within own org                     |
-| SUPER_ADMIN | 2     | Platform-wide access, can switch org context |
+| Role                | Value | Access                                                                              |
+| ------------------- | ----- | ----------------------------------------------------------------------------------- |
+| ORG_USER            | 0     | Read notifications within own org                                                   |
+| ORG_ADMIN           | 1     | Full CRUD within own org                                                            |
+| SUPER_ADMIN         | 2     | Platform-wide access, can switch org context                                        |
+| NOTIFICATION_VIEWER | 3     | Notification Search page only; must enter at least one filter before data loads     |
 
 ### Org Context (SUPER_ADMIN)
 
@@ -416,6 +418,9 @@ export type Notification = Omit<
 - `authGuard` — requires authentication for all main routes
 - `orgAdminGuard` — requires ORG_ADMIN or higher (config routes)
 - `superAdminGuard` — requires SUPER_ADMIN (organizations route)
+- `blockNotificationViewerGuard` — redirects NOTIFICATION_VIEWER away from dashboard, notifications, and archived-notifications to `/filtered-notifications`
+
+`hasMinimumRole()` in `AuthService` always returns `false` for NOTIFICATION_VIEWER regardless of numeric value, mirroring the backend `RolesGuard` short-circuit.
 
 ---
 

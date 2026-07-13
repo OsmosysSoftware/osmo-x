@@ -235,6 +235,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/accessible-applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List applications accessible to the current user
+         * @description Returns all org applications for ORG_ADMIN+. For NOTIFICATION_VIEWER, returns only their permitted applications.
+         */
+        get: operations["AccessibleApplicationsController_getAccessible"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/provider-chains": {
         parameters: {
             query?: never;
@@ -888,10 +908,19 @@ export interface components {
              */
             last_name?: string;
             /**
-             * @description User role: 0=OrgUser, 1=OrgAdmin, 2=SuperAdmin
+             * @description User role: 0=OrgUser, 1=OrgAdmin, 2=SuperAdmin, 3=NotificationViewer
              * @example 0
              */
             user_role: number;
+            /**
+             * @description Application IDs this user is permitted to access (NOTIFICATION_VIEWER only)
+             * @example [
+             *       1,
+             *       2,
+             *       3
+             *     ]
+             */
+            permitted_application_ids?: number[] | null;
             /**
              * @description Organization ID
              * @example 1
@@ -969,11 +998,20 @@ export interface components {
              */
             last_name?: string;
             /**
-             * @description User role: 0=OrgUser, 1=OrgAdmin
+             * @description User role: 0=OrgUser, 1=OrgAdmin, 3=NotificationViewer
              * @example 0
              * @enum {number}
              */
-            user_role: 0 | 1;
+            user_role: 0 | 1 | 3;
+            /**
+             * @description Application IDs this user is permitted to access (for NOTIFICATION_VIEWER)
+             * @example [
+             *       1,
+             *       2,
+             *       3
+             *     ]
+             */
+            permitted_application_ids?: number[];
             /**
              * @description Target organization ID (SUPER_ADMIN only, defaults to own org)
              * @example 1
@@ -1007,11 +1045,20 @@ export interface components {
              */
             password?: string;
             /**
-             * @description User role: 0=OrgUser, 1=OrgAdmin
+             * @description Application IDs this user is permitted to access (for NOTIFICATION_VIEWER)
+             * @example [
+             *       1,
+             *       2,
+             *       3
+             *     ]
+             */
+            permitted_application_ids?: number[];
+            /**
+             * @description User role: 0=OrgUser, 1=OrgAdmin, 3=NotificationViewer
              * @example 0
              * @enum {number}
              */
-            user_role?: 0 | 1;
+            user_role?: 0 | 1 | 3;
         };
         ApplicationResponseDto: {
             /**
@@ -2742,6 +2789,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AccessibleApplicationsController_getAccessible: {
+        parameters: {
+            query?: {
+                organization_id?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationResponseDto"][];
+                };
             };
         };
     };

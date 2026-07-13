@@ -50,6 +50,12 @@ export class RolesGuard implements CanActivate {
       const decodedToken = this.jwtService.verify(token, { secret });
       const userRoleId = decodedToken.role;
 
+      // NOTIFICATION_VIEWER (3) sits outside the numeric hierarchy.
+      // It only passes when explicitly listed in @Roles() — never via the >= check.
+      if (userRoleId === UserRoles.NOTIFICATION_VIEWER) {
+        return (requiredRoles as unknown as number[]).includes(UserRoles.NOTIFICATION_VIEWER);
+      }
+
       // Hierarchical check: user's role must be >= the minimum required role
       // Roles are ordered: ORG_USER(0) < ORG_ADMIN(1) < SUPER_ADMIN(2)
       const minimumRequiredRole = Math.min(...(requiredRoles as unknown as number[]));

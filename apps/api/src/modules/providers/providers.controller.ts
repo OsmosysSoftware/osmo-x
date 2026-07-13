@@ -48,7 +48,7 @@ export class ProvidersController {
   constructor(private readonly providersService: ProvidersService) {}
 
   @Get()
-  @Roles(UserRoles.ORG_USER)
+  @Roles(UserRoles.ORG_USER, UserRoles.NOTIFICATION_VIEWER)
   @ApiOperation({ summary: 'List providers' })
   @ApiQuery({
     name: 'organization_id',
@@ -88,6 +88,8 @@ export class ProvidersController {
     const { items, meta } = await this.providersService.getAllProvidersAsDto(
       query,
       targetOrgId,
+      user.userId,
+      user.role,
       filters,
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
