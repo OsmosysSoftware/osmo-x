@@ -50,6 +50,7 @@ export class UsersService {
       firstName: user.firstName,
       lastName: user.lastName,
       userRole: user.userRole,
+      permittedApplicationIds: user.permittedApplicationIds ?? null,
       organizationId: user.organizationId,
       status: user.status,
       createdBy: user.createdBy,
@@ -89,6 +90,7 @@ export class UsersService {
       firstName: input.firstName,
       lastName: input.lastName,
       userRole: input.userRole,
+      permittedApplicationIds: input.permittedApplicationIds ?? null,
       organizationId,
       createdBy: createdByUserId,
       updatedBy: createdByUserId,
@@ -141,6 +143,10 @@ export class UsersService {
 
     if (input.userRole !== undefined) {
       user.userRole = input.userRole;
+    }
+
+    if (input.permittedApplicationIds !== undefined) {
+      user.permittedApplicationIds = input.permittedApplicationIds;
     }
 
     user.updatedBy = updatedByUserId;

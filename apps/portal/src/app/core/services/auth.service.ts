@@ -48,12 +48,19 @@ export class AuthService {
   }
 
   /**
+   * Check if current user has the NOTIFICATION_VIEWER role.
+   * This role is outside the numeric hierarchy and only grants access to the
+   * filtered notification search page.
+   */
+  isNotificationViewer(): boolean {
+    return this.userRole() === UserRoles.NOTIFICATION_VIEWER;
+  }
+
+  /**
    * Check if current user has ORG_ADMIN role or higher
    */
   isOrgAdmin(): boolean {
-    const role = this.userRole();
-
-    return role !== null && role >= UserRoles.ORG_ADMIN;
+    return this.hasMinimumRole(UserRoles.ORG_ADMIN);
   }
 
   /**
@@ -64,10 +71,13 @@ export class AuthService {
   }
 
   /**
-   * Check if user has at least the specified minimum role
+   * Check if user has at least the specified minimum role.
+   * NOTIFICATION_VIEWER (3) is outside the numeric hierarchy and always returns false.
    */
   hasMinimumRole(minimumRole: UserRole): boolean {
     const role = this.userRole();
+
+    if (role === UserRoles.NOTIFICATION_VIEWER) return false;
 
     return role !== null && role >= minimumRole;
   }

@@ -18,7 +18,7 @@ The database schema consists of the following tables:
 - **notify_notifications:** Contains details about all the notifications created
 - **notify_providers:** Contains details about all the different providers, along with their configurations
 - **notify_server_api_keys:** Contains details about different API keys for the different applications
-- **notify_users:** Contains details about all the users
+- **notify_users:** Contains details about all the users, including role (0–3) and optional `permitted_application_ids` JSON array
 - **notify_webhooks:** Contains webhook urls for providers
 - **notify_provider_types:** Contains provider type catalog (e.g., SMS, Email, WhatsApp)
 - **notify_provider_chains:** Contains per‑application provider chains by provider type
@@ -177,15 +177,22 @@ Consider a pattern like this:
 
 ### notify_users
 
-| Attribute  | Data Type    | Not Null | Default             | Description                                                                    |
-| ---------- | ------------ | -------- | ------------------- | ------------------------------------------------------------------------------ |
-| user_id    | integer      | True     |                     | Primary key, unique identifier for the user                                    |
-| username   | varchar(255) | True     |                     | Username of the user                                                           |
-| password   | varchar(255) | True     |                     | Hashed password of the user                                                    |
-| role       | smallint     | True     | 0                   | Role of the user: BASIC (0) or ADMIN (1)                                       |
-| created_on | timestamp    | True     | current_timestamp() | Stores the timestamp for the creation of the notification                      |
-| updated_on | timestamp    | True     | current_timestamp() | Stores the timestamp for the last update to the notification                   |
-| status     | smallint     | True     | 1                   | Stores whether the notification must be considered as active(1) or inactive(0) |
+| Attribute                  | Data Type    | Not Null | Default             | Description                                                                                                          |
+| -------------------------- | ------------ | -------- | ------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| user_id                    | integer      | True     |                     | Primary key, unique identifier for the user                                                                          |
+| username                   | varchar(255) | True     |                     | Username of the user (kept for GraphQL backward compat, set to email)                                               |
+| email                      | varchar(255) | True     |                     | Unique login identifier (normalized lowercase)                                                                       |
+| password                   | varchar(255) | True     |                     | Bcrypt hashed password                                                                                               |
+| first_name                 | varchar(255) | False    | NULL                | User first name                                                                                                      |
+| last_name                  | varchar(255) | False    | NULL                | User last name                                                                                                       |
+| role                       | smallint     | True     | 0                   | Role of the user: ORG_USER (0), ORG_ADMIN (1), SUPER_ADMIN (2), NOTIFICATION_VIEWER (3)                            |
+| permitted_application_ids  | text         | False    | NULL                | JSON array of application IDs this user can access. If set, `/accessible-applications` filters by this list        |
+| organization_id            | integer      | False    | NULL                | Foreign key to notify_organizations                                                                                  |
+| created_on                 | timestamp    | True     | current_timestamp() | Stores the timestamp for the creation of the user record                                                             |
+| updated_on                 | timestamp    | True     | current_timestamp() | Stores the timestamp for the last update to the user record                                                          |
+| created_by                 | integer      | False    | NULL                | ID of user who created this record                                                                                   |
+| updated_by                 | integer      | False    | NULL                | ID of user who last updated this record                                                                              |
+| status                     | smallint     | True     | 1                   | Stores whether the user must be considered as active (1) or inactive (0)                                            |
 
 ### notify_webhooks
 

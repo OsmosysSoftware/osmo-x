@@ -55,14 +55,15 @@ The `features` folder separates different application features into distinct mod
 3. **`pages`**: Feature-specific pages
 4. **`services`**: Services tailored to the feature
 
-Planned features:
+Implemented features:
 - `dashboard/` — Overview stats and charts
 - `applications/` — Application CRUD and management
 - `providers/` — Provider configuration
 - `provider-chains/` — Provider chain management with member ordering
 - `notifications/` — Notification list and detail views
 - `archived-notifications/` — Archived notification views
-- `users/` — User management (Org Admin)
+- `filtered-notifications/` — Notification search page (NOTIFICATION_VIEWER role); requires at least one property filter (recipient, sender, subject, message body, or template name) before results load
+- `users/` — User management (Org Admin); supports `permitted_application_ids` for all roles
 - `api-keys/` — API key generation and management
 - `webhooks/` — Webhook CRUD
 - `super-admin/` — Organization management (Super Admin)

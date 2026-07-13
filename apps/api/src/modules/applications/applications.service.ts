@@ -6,11 +6,11 @@ import {
 } from 'src/common/exceptions/app.exception';
 import { ErrorCodes } from 'src/common/constants/error-codes';
 import { Application } from './entities/application.entity';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { DataSource, In, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateApplicationInput } from './dto/create-application.input';
 import { UsersService } from '../users/users.service';
-import { Status } from 'src/common/constants/database';
+import { Status, UserRoles } from 'src/common/constants/database';
 import { ApplicationListResponse } from './dto/application-list.dto';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { CoreService } from 'src/common/graphql/services/core.service';
@@ -267,6 +267,46 @@ export class ApplicationsService extends CoreService<Application> {
     const app = await this.updateApplication(updateApplicationInput);
 
     return this.mapToDto(app);
+  }
+
+  async getAccessibleApplicationsAsDto(
+    userId: number,
+    userRole: number,
+    organizationId: number,
+  ): Promise<ApplicationResponseDto[]> {
+    if (userRole === UserRoles.SUPER_ADMIN) {
+      const apps = await this.applicationsRepository.find({
+        where: { organizationId, status: Status.ACTIVE },
+      });
+
+      return apps.map((app) => this.mapToDto(app));
+    }
+
+    const user = await this.usersService.findByUserId(userId);
+
+    if (!user) {
+      return [];
+    }
+
+    const permittedIds = user.permittedApplicationIds;
+
+    if (permittedIds?.length) {
+      const apps = await this.applicationsRepository.find({
+        where: { applicationId: In(permittedIds), organizationId, status: Status.ACTIVE },
+      });
+
+      return apps.map((app) => this.mapToDto(app));
+    }
+
+    if (userRole === UserRoles.NOTIFICATION_VIEWER) {
+      return [];
+    }
+
+    const apps = await this.applicationsRepository.find({
+      where: { organizationId, status: Status.ACTIVE },
+    });
+
+    return apps.map((app) => this.mapToDto(app));
   }
 
   async softDeleteApplicationAsDto(
