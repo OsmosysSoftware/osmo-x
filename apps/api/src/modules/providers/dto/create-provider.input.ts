@@ -1,6 +1,15 @@
-import { InputType, Field } from '@nestjs/graphql';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { InputType, Field, Int } from '@nestjs/graphql';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  ValidateIf,
+} from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
 
 @InputType()
@@ -44,6 +53,19 @@ export class CreateProviderInput {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Max retry attempts for this provider. Omit or null to use global MAX_RETRY_COUNT env config',
+    example: 3,
+  })
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @ValidateIf((o) => o.maxRetryCount !== null)
+  @IsInt()
+  @Min(0)
+  @Max(10)
+  maxRetryCount?: number | null;
 
   @ApiProperty({
     description: 'ID of the user creating this provider (derived from JWT in REST endpoints)',

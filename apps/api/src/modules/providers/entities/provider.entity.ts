@@ -1,4 +1,4 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { IsEnum, IsObject } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
@@ -77,6 +77,15 @@ export class Provider {
   @Column({ name: 'updated_by', nullable: true })
   @Field({ nullable: true })
   updatedBy: number;
+
+  @Column({
+    name: 'max_retry_count',
+    type: 'int',
+    nullable: true,
+    comment: 'Max retry attempts for this provider. Null = use global MAX_RETRY_COUNT env config',
+  })
+  @Field(() => Int, { nullable: true })
+  maxRetryCount: number | null;
 
   @Column({
     name: 'status',

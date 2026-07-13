@@ -53,6 +53,8 @@ export abstract class NotificationConsumer {
     sendNotification: () => Promise<unknown>,
   ): Promise<void> {
     const notification = (await this.notificationsService.getNotificationById(id))[0];
+    const currentProvider = await this.providersService.getById(notification.providerId);
+    const effectiveMaxRetryCount = currentProvider?.maxRetryCount ?? this.maxRetryCount;
 
     try {
       this.logger.log(`Sending notification with id: ${id}`);
@@ -89,9 +91,9 @@ export abstract class NotificationConsumer {
       this.logger.debug(`Updating result of notification with id ${notification.id}`);
       notification.result = { result };
     } catch (error) {
-      if (notification.retryCount < this.maxRetryCount) {
+      if (notification.retryCount < effectiveMaxRetryCount) {
         this.logger.debug(
-          `Some error occurred while sending Notification with ID ${notification.id}. Retry Count ${notification.retryCount}/${this.maxRetryCount}. Sending notification again`,
+          `Some error occurred while sending Notification with ID ${notification.id}. Retry Count ${notification.retryCount}/${effectiveMaxRetryCount}. Sending notification again`,
         );
         notification.deliveryStatus = DeliveryStatus.PENDING;
         notification.retryCount++;
@@ -190,6 +192,8 @@ export abstract class NotificationConsumer {
     }>,
   ): Promise<void> {
     const notification = (await this.notificationsService.getNotificationById(id))[0];
+    const currentProvider = await this.providersService.getById(notification.providerId);
+    const effectiveMaxRetryCount = currentProvider?.maxRetryCount ?? this.maxRetryCount;
 
     try {
       this.logger.log(`Checking delivery status from provider for notification with id: ${id}`);
@@ -208,7 +212,7 @@ export abstract class NotificationConsumer {
         this.logger.log('Provider response: ' + JSON.stringify(response.result));
 
         // Check to prevent program from constantly re-checking for confirmation status
-        if (notification.retryCount >= this.maxRetryCount) {
+        if (notification.retryCount >= effectiveMaxRetryCount) {
           throw new Error(
             `Max retry count threshold reached by Notification ID: ${notification.id}`,
           );
@@ -225,7 +229,7 @@ export abstract class NotificationConsumer {
         );
       }
     } catch (error) {
-      if (notification.retryCount < this.maxRetryCount) {
+      if (notification.retryCount < effectiveMaxRetryCount) {
         notification.deliveryStatus = DeliveryStatus.AWAITING_CONFIRMATION;
         notification.retryCount++;
       } else {

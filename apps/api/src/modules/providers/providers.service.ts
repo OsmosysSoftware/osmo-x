@@ -133,6 +133,7 @@ export class ProvidersService extends CoreService<Provider> {
       applicationId: provider.applicationId,
       userId: provider.userId,
       status: provider.status,
+      maxRetryCount: provider.maxRetryCount,
       createdBy: provider.createdBy,
       updatedBy: provider.updatedBy,
       createdOn: provider.createdOn,
@@ -255,6 +256,10 @@ export class ProvidersService extends CoreService<Provider> {
 
     if (input.isEnabled !== undefined) {
       provider.isEnabled = input.isEnabled;
+    }
+
+    if (input.maxRetryCount !== undefined) {
+      provider.maxRetryCount = input.maxRetryCount;
     }
 
     if (userId !== undefined) {

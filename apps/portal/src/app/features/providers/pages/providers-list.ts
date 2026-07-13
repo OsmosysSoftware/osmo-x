@@ -14,6 +14,7 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
@@ -53,6 +54,7 @@ interface ChannelOption {
     SkeletonModule,
     DialogModule,
     InputTextModule,
+    InputNumberModule,
     SelectModule,
     ToggleSwitchModule,
     TooltipModule,
@@ -105,6 +107,7 @@ export class ProvidersListComponent implements OnInit {
   readonly formChannelType = signal<number | null>(null);
   readonly formApplicationId = signal<number | null>(null);
   readonly formIsEnabled = signal(false);
+  readonly formMaxRetryCount = signal<number | null>(null);
   readonly configFields = signal<{ key: string; label: string; type: string }[]>([]);
   readonly configValues = signal<Record<string, string>>({});
 
@@ -213,6 +216,7 @@ export class ProvidersListComponent implements OnInit {
     this.formChannelType.set(null);
     this.formApplicationId.set(null);
     this.formIsEnabled.set(true);
+    this.formMaxRetryCount.set(null);
     this.configFields.set([]);
     this.configValues.set({});
     this.dialogVisible.set(true);
@@ -224,6 +228,7 @@ export class ProvidersListComponent implements OnInit {
     this.formChannelType.set(provider.channel_type);
     this.formApplicationId.set(provider.application_id);
     this.formIsEnabled.set(provider.is_enabled === 1);
+    this.formMaxRetryCount.set(provider.max_retry_count ?? null);
     this.onChannelTypeChange(provider.channel_type);
     this.dialogVisible.set(true);
   }
@@ -292,6 +297,7 @@ export class ProvidersListComponent implements OnInit {
         provider_id: editing.provider_id,
         name,
         is_enabled: this.formIsEnabled() ? 1 : 0,
+        max_retry_count: this.formMaxRetryCount() ?? undefined,
       };
 
       const config = this.buildConfigurationPayload();
@@ -324,6 +330,7 @@ export class ProvidersListComponent implements OnInit {
           channel_type: this.formChannelType()! as CreateProviderInput['channel_type'],
           application_id: this.formApplicationId()!,
           is_enabled: this.formIsEnabled() ? 1 : 0,
+          max_retry_count: this.formMaxRetryCount() ?? undefined,
           configuration: config,
         })
         .subscribe({
