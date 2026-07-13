@@ -295,7 +295,6 @@ There is no `environment.ts` file — those were removed and `fileReplacements` 
    ```bash
    cd apps/portal
    cp .env.example .env
-   mkdir -p runtime-config
    cp runtime-config.example.json runtime-config/config.json
    docker compose up -d --build
    ```

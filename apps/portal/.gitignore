@@ -45,4 +45,7 @@ Thumbs.db
 
 # Host-managed runtime config (only used when SKIP_RUNTIME_CONFIG_GENERATION=true
 # in docker-compose.yml). See runtime-config.example.json for the template.
-runtime-config/
+# The directory is tracked via .gitkeep so Docker doesn't auto-create it as root
+# when the bind mount initializes.
+runtime-config/*
+!runtime-config/.gitkeep
