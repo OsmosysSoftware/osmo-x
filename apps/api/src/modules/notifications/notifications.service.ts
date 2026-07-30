@@ -14,7 +14,7 @@ import {
   QueueAction,
   RecipientKeyForChannelType,
   AllRecipientsWhitelistedExpression,
-  ChannelTypesThatUseEmailProviderType,
+  ChannelType,
 } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
@@ -339,19 +339,17 @@ export class NotificationsService extends CoreService<Notification> {
     }
   }
 
+  /**
+   * Filters recipients in notification data based on channelType and application whitelist configuration.
+   */
   async keepOnlyWhitelistedRecipients(
     notificationEntry: Notification,
     applicationEntry: Application,
   ): Promise<Record<string, unknown>> {
     try {
-      const { channelType, providerId, data } = notificationEntry;
+      const { channelType: inputChannelType, providerId, data } = notificationEntry;
 
-      // 1. Only process if the channelType uses email provider logic
-      if (!ChannelTypesThatUseEmailProviderType.includes(channelType)) {
-        return data;
-      }
-
-      // 2. Extract and normalize whitelist values for the current provider
+      // 1. Extract whitelist values for current providerId
       const whitelistRecipientValues =
         applicationEntry.whitelistRecipients?.[providerId.toString()] || [];
 
@@ -359,7 +357,7 @@ export class NotificationsService extends CoreService<Notification> {
         (val) => (typeof val === 'string' ? val.toLowerCase().trim() : val),
       );
 
-      // 3. Bypass check: If wildcard rule exists, return object as-is
+      // 2. Wildcard check: If wildcard rule exists, return payload unmodified
       if (
         normalizedWhitelistRecipientValues.length === 1 &&
         normalizedWhitelistRecipientValues[0] === AllRecipientsWhitelistedExpression
@@ -367,20 +365,40 @@ export class NotificationsService extends CoreService<Notification> {
         return data;
       }
 
-      // Build a Set for O(1) lowercase lookups
+      // Build Set for O(1) case-insensitive lookups
       const whitelistSet = new Set<string>(
         normalizedWhitelistRecipientValues
           .filter((val): val is string => typeof val === 'string')
           .map((val) => val.toLowerCase().trim()),
       );
 
-      const updatedData: Record<string, unknown> = { ...data };
-      const emailFields = [RecipientKeyForChannelType[notificationEntry.channelType], 'cc', 'bcc'];
+      // 3. Directly assign target recipient fields based on channelType
+      let recipientKeys: string[] = [];
 
-      // 4. Process each email field if present in payload
-      for (const field of emailFields) {
-        if (field in updatedData && updatedData[field] != null) {
-          updatedData[field] = this.filterRecipients(updatedData[field], whitelistSet);
+      switch (inputChannelType) {
+        // Channel types that process email
+        case ChannelType.SMTP:
+        case ChannelType.MAILGUN:
+        case ChannelType.AWS_SES:
+          recipientKeys = [RecipientKeyForChannelType[inputChannelType], 'cc', 'bcc'];
+          break;
+
+        // Add future channel type mappings here as needed
+
+        default:
+          // Passthrough for unhandled channel types
+          this.logger.debug(
+            `Unhandled channelType [${inputChannelType}]. Passthrough mode activated.`,
+          );
+          return data;
+      }
+
+      // 4. Update payload fields with whitelisted recipients
+      const updatedData: Record<string, unknown> = { ...data };
+
+      for (const key of recipientKeys) {
+        if (key in updatedData && updatedData[key] != null) {
+          updatedData[key] = this.filterRecipients(updatedData[key], whitelistSet);
         }
       }
 

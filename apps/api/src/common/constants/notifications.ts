@@ -82,9 +82,3 @@ export const RecipientKeyForChannelType = {
 };
 
 export const AllRecipientsWhitelistedExpression = '*';
-
-export const ChannelTypesThatUseEmailProviderType = [
-  ChannelType.SMTP,
-  ChannelType.MAILGUN,
-  ChannelType.AWS_SES,
-];
