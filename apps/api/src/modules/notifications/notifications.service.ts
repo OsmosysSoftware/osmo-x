@@ -14,6 +14,7 @@ import {
   QueueAction,
   RecipientKeyForChannelType,
   AllRecipientsWhitelistedExpression,
+  ChannelTypesThatUseEmailProviderType,
 } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
@@ -168,6 +169,11 @@ export class NotificationsService extends CoreService<Notification> {
         notification.result = TEST_MODE_RESULT_JSON;
       } else {
         this.logger.log('Recipient is whitelisted. Notification will be prepared for processing.');
+        const cleanedNotificationData = await this.keepOnlyWhitelistedRecipients(
+          notification,
+          applicationEntry,
+        );
+        notification.data = cleanedNotificationData;
       }
     }
 
@@ -331,6 +337,96 @@ export class NotificationsService extends CoreService<Notification> {
       this.logger.log(`Error checking if recipient is whitelisted: ${error.message}`);
       throw error;
     }
+  }
+
+  async keepOnlyWhitelistedRecipients(
+    notificationEntry: Notification,
+    applicationEntry: Application,
+  ): Promise<Record<string, unknown>> {
+    try {
+      const { channelType, providerId, data } = notificationEntry;
+
+      // 1. Only process if the channelType uses email provider logic
+      if (!ChannelTypesThatUseEmailProviderType.includes(channelType)) {
+        return data;
+      }
+
+      // 2. Extract and normalize whitelist values for the current provider
+      const whitelistRecipientValues =
+        applicationEntry.whitelistRecipients?.[providerId.toString()] || [];
+
+      const normalizedWhitelistRecipientValues = (whitelistRecipientValues as unknown[]).map(
+        (val) => (typeof val === 'string' ? val.toLowerCase().trim() : val),
+      );
+
+      // 3. Bypass check: If wildcard rule exists, return object as-is
+      if (
+        normalizedWhitelistRecipientValues.length === 1 &&
+        normalizedWhitelistRecipientValues[0] === AllRecipientsWhitelistedExpression
+      ) {
+        return data;
+      }
+
+      // Build a Set for O(1) lowercase lookups
+      const whitelistSet = new Set<string>(
+        normalizedWhitelistRecipientValues
+          .filter((val): val is string => typeof val === 'string')
+          .map((val) => val.toLowerCase().trim()),
+      );
+
+      const updatedData: Record<string, unknown> = { ...data };
+      const emailFields = [RecipientKeyForChannelType[notificationEntry.channelType], 'cc', 'bcc'];
+
+      // 4. Process each email field if present in payload
+      for (const field of emailFields) {
+        if (field in updatedData && updatedData[field] != null) {
+          updatedData[field] = this.filterRecipients(updatedData[field], whitelistSet);
+        }
+      }
+
+      this.logger.log(
+        `Updated notification data. Removed all non-whitelisted recipients from the request.`,
+      );
+
+      return updatedData;
+    } catch (error) {
+      this.logger.log(
+        `Error while keeping only whitelisted recipients in notification: ${(error as Error).message}`,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Filters recipient inputs against a whitelist set.
+   * Handles:
+   *  - Simple string: "user@domain.com"
+   *  - Comma-separated string: "user1@domain.com, user2@domain.com"
+   *  - Array of strings: ["user1@domain.com", "user2@domain.com"] (including mixed comma-separated items)
+   */
+  private filterRecipients(rawRecipients: unknown, whitelistSet: Set<string>): string | string[] {
+    const isStringInput = typeof rawRecipients === 'string';
+    let parsedRecipients: string[] = [];
+
+    if (typeof rawRecipients === 'string') {
+      // Handles single string and comma-separated string
+      parsedRecipients = rawRecipients.split(',').map((r) => r.trim());
+    } else if (Array.isArray(rawRecipients)) {
+      // Handles array of strings (and flattens any comma-separated strings inside array elements)
+      parsedRecipients = rawRecipients.flatMap((item) =>
+        typeof item === 'string' ? item.split(',').map((r) => r.trim()) : [String(item).trim()],
+      );
+    } else if (rawRecipients != null) {
+      parsedRecipients = [String(rawRecipients).trim()];
+    }
+
+    // Filter out empty strings and non-whitelisted recipients
+    const filtered = parsedRecipients.filter(
+      (recipient) => recipient.length > 0 && whitelistSet.has(recipient.toLowerCase()),
+    );
+
+    // Maintain original type structure
+    return isStringInput ? filtered.join(', ') : filtered;
   }
 
   async addNotificationsToQueue(): Promise<void> {
