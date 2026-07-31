@@ -303,7 +303,7 @@ export class NotificationsService extends CoreService<Notification> {
 
           // Confirm if a whitelisted recipient is in request body (Case insensitive)
           const normalizedWhitelistRecipientValues = (whitelistRecipientValues as unknown[]).map(
-            (val) => (typeof val === 'string' ? val.toLowerCase() : val),
+            (val) => (typeof val === 'string' ? val.toLowerCase().trim() : val),
           );
 
           this.logger.debug(
@@ -311,7 +311,7 @@ export class NotificationsService extends CoreService<Notification> {
           );
 
           const normalizeNotificationRecipientsArray = notificationRecipientsArray.map((val) =>
-            typeof val === 'string' ? val.toLowerCase() : val,
+            typeof val === 'string' ? val.toLowerCase().trim() : val,
           );
 
           this.logger.debug(
