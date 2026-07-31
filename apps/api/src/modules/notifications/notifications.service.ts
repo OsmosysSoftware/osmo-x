@@ -287,18 +287,7 @@ export class NotificationsService extends CoreService<Notification> {
 
           // Create a list of recipient(s) added in request body
           const notificationRecipientRaw = notificationEntry.data[ChannelTypeRecipientKey];
-          const notificationRecipientsArray =
-            typeof notificationRecipientRaw === 'string'
-              ? notificationRecipientRaw.split(',').map((recipient) => recipient.trim())
-              : Array.isArray(notificationRecipientRaw)
-                ? notificationRecipientRaw.flatMap((item) =>
-                    typeof item === 'string'
-                      ? item.split(',').map((recipient) => recipient.trim())
-                      : [String(item).trim()],
-                  )
-                : notificationRecipientRaw != null
-                  ? [String(notificationRecipientRaw).trim()]
-                  : [];
+          const notificationRecipientsArray = this.parseRawRecipients(notificationRecipientRaw);
           this.logger.debug(`Notification recipient list: ${notificationRecipientsArray}`);
 
           // Confirm if a whitelisted recipient is in request body (Case insensitive)
@@ -344,6 +333,34 @@ export class NotificationsService extends CoreService<Notification> {
       this.logger.log(`Error checking if recipient is whitelisted: ${(error as Error).message}`);
       throw error;
     }
+  }
+
+  /**
+   * Recursively parses and flattens recipient inputs (strings, arrays, scalars) into clean string arrays.
+   * Safely drops nullish entries (null, undefined) BEFORE string coercion.
+   */
+  private parseRawRecipients(raw: unknown): string[] {
+    // 1. Drop null & undefined values strictly before any processing
+    if (raw === null || raw === undefined) {
+      return [];
+    }
+
+    // 2. Handle string & comma-separated string inputs
+    if (typeof raw === 'string') {
+      return raw
+        .split(',')
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+    }
+
+    // 3. Handle arrays recursively (flattens nested arrays & comma-separated entries)
+    if (Array.isArray(raw)) {
+      return raw.flatMap((item) => this.parseRawRecipients(item));
+    }
+
+    // 4. Handle remaining non-nullish scalar values (e.g. numbers)
+    const trimmed = String(raw).trim();
+    return trimmed.length > 0 ? [trimmed] : [];
   }
 
   /**
