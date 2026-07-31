@@ -264,15 +264,12 @@ export class NotificationsService extends CoreService<Notification> {
     applicationEntry: Application,
   ): Promise<boolean> {
     try {
-      if (
-        applicationEntry.whitelistRecipients &&
-        applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()]
-      ) {
-        this.logger.debug(`Whitelist exists for provider ${notificationEntry.providerId}`);
+      const providerIdStr = notificationEntry.providerId.toString();
+      // Fetch whitelist whitelist recipients from db
+      const whitelistRecipientValues = applicationEntry.whitelistRecipients?.[providerIdStr];
 
-        // Fetch whitelist whitelist recipients from db
-        const whitelistRecipientValues =
-          applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()];
+      if (whitelistRecipientValues) {
+        this.logger.debug(`Whitelist exists for provider ${notificationEntry.providerId}`);
         this.logger.debug(
           `Whitelist recipient values: ${JSON.stringify(whitelistRecipientValues)}`,
         );
@@ -291,16 +288,16 @@ export class NotificationsService extends CoreService<Notification> {
           this.logger.debug(`Notification recipient list: ${notificationRecipientsArray}`);
 
           // Confirm if a whitelisted recipient is in request body (Case insensitive)
-          const normalizedWhitelistRecipientValues = (whitelistRecipientValues as unknown[]).map(
-            (val) => (typeof val === 'string' ? val.toLowerCase().trim() : val),
-          );
+          const normalizedWhitelistRecipientValues = this.parseRawRecipients(
+            whitelistRecipientValues,
+          ).map((val) => val.toLowerCase());
 
           this.logger.debug(
             `Normalized whitelist recipient values: ${JSON.stringify(normalizedWhitelistRecipientValues)}`,
           );
 
           const normalizeNotificationRecipientsArray = notificationRecipientsArray.map((val) =>
-            typeof val === 'string' ? val.toLowerCase().trim() : val,
+            val.toLowerCase(),
           );
 
           this.logger.debug(
@@ -319,11 +316,9 @@ export class NotificationsService extends CoreService<Notification> {
             return true;
           }
 
-          const exists = normalizedWhitelistRecipientValues.some(
-            (item) =>
-              typeof item === 'string' && normalizeNotificationRecipientsArray.includes(item),
+          return normalizedWhitelistRecipientValues.some((item) =>
+            normalizeNotificationRecipientsArray.includes(item),
           );
-          return exists;
         }
       }
 
@@ -373,13 +368,13 @@ export class NotificationsService extends CoreService<Notification> {
     try {
       const { channelType: inputChannelType, providerId, data } = notificationEntry;
 
-      // 1. Extract whitelist values for current providerId
+      // 1. Extract & normalize whitelist values using parseRawRecipients
       const whitelistRecipientValues =
-        applicationEntry.whitelistRecipients?.[providerId.toString()] || [];
+        applicationEntry.whitelistRecipients?.[providerId.toString()];
 
-      const normalizedWhitelistRecipientValues = (whitelistRecipientValues as unknown[]).map(
-        (val) => (typeof val === 'string' ? val.toLowerCase().trim() : val),
-      );
+      const normalizedWhitelistRecipientValues = this.parseRawRecipients(
+        whitelistRecipientValues,
+      ).map((val) => val.toLowerCase());
 
       // 2. Wildcard check: If wildcard rule exists, return payload unmodified
       if (
@@ -389,12 +384,8 @@ export class NotificationsService extends CoreService<Notification> {
         return data;
       }
 
-      // Build Set for O(1) case-insensitive lookups
-      const whitelistSet = new Set<string>(
-        normalizedWhitelistRecipientValues
-          .filter((val): val is string => typeof val === 'string')
-          .map((val) => val.toLowerCase().trim()),
-      );
+      // Build Set for O(1) case-insensitive lookups directly from normalized string[]
+      const whitelistSet = new Set<string>(normalizedWhitelistRecipientValues);
 
       // 3. Directly assign target recipient fields based on channelType
       let recipientKeys: string[] = [];
@@ -448,23 +439,12 @@ export class NotificationsService extends CoreService<Notification> {
    */
   private filterRecipients(rawRecipients: unknown, whitelistSet: Set<string>): string | string[] {
     const isStringInput = typeof rawRecipients === 'string';
-    let parsedRecipients: string[] = [];
 
-    if (typeof rawRecipients === 'string') {
-      // Handles single string and comma-separated string
-      parsedRecipients = rawRecipients.split(',').map((r) => r.trim());
-    } else if (Array.isArray(rawRecipients)) {
-      // Handles array of strings (and flattens any comma-separated strings inside array elements)
-      parsedRecipients = rawRecipients.flatMap((item) =>
-        typeof item === 'string' ? item.split(',').map((r) => r.trim()) : [String(item).trim()],
-      );
-    } else if (rawRecipients != null) {
-      parsedRecipients = [String(rawRecipients).trim()];
-    }
+    const parsedRecipients = this.parseRawRecipients(rawRecipients);
 
-    // Filter out empty strings and non-whitelisted recipients
-    const filtered = parsedRecipients.filter(
-      (recipient) => recipient.length > 0 && whitelistSet.has(recipient.toLowerCase()),
+    // Filter out non-whitelisted recipients
+    const filtered = parsedRecipients.filter((recipient) =>
+      whitelistSet.has(recipient.toLowerCase()),
     );
 
     // Maintain original type structure
