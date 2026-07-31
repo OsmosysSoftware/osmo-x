@@ -291,8 +291,14 @@ export class NotificationsService extends CoreService<Notification> {
             typeof notificationRecipientRaw === 'string'
               ? notificationRecipientRaw.split(',').map((recipient) => recipient.trim())
               : Array.isArray(notificationRecipientRaw)
-                ? notificationRecipientRaw
-                : [notificationRecipientRaw];
+                ? notificationRecipientRaw.flatMap((item) =>
+                    typeof item === 'string'
+                      ? item.split(',').map((recipient) => recipient.trim())
+                      : [String(item).trim()],
+                  )
+                : notificationRecipientRaw != null
+                  ? [String(notificationRecipientRaw).trim()]
+                  : [];
           this.logger.debug(`Notification recipient list: ${notificationRecipientsArray}`);
 
           // Confirm if a whitelisted recipient is in request body (Case insensitive)
@@ -324,8 +330,9 @@ export class NotificationsService extends CoreService<Notification> {
             return true;
           }
 
-          const exists = normalizedWhitelistRecipientValues.some((item) =>
-            normalizeNotificationRecipientsArray.includes(item),
+          const exists = normalizedWhitelistRecipientValues.some(
+            (item) =>
+              typeof item === 'string' && normalizeNotificationRecipientsArray.includes(item),
           );
           return exists;
         }
@@ -334,7 +341,7 @@ export class NotificationsService extends CoreService<Notification> {
       this.logger.debug('Notification provider does not have whitelisted recipient(s)');
       return false;
     } catch (error) {
-      this.logger.log(`Error checking if recipient is whitelisted: ${error.message}`);
+      this.logger.log(`Error checking if recipient is whitelisted: ${(error as Error).message}`);
       throw error;
     }
   }
