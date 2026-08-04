@@ -14,6 +14,7 @@ import {
   QueueAction,
   RecipientKeyForChannelType,
   AllRecipientsWhitelistedExpression,
+  ChannelType,
 } from 'src/common/constants/notifications';
 import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 import { IsEnabledStatus, Status } from 'src/common/constants/database';
@@ -168,6 +169,11 @@ export class NotificationsService extends CoreService<Notification> {
         notification.result = TEST_MODE_RESULT_JSON;
       } else {
         this.logger.log('Recipient is whitelisted. Notification will be prepared for processing.');
+        const cleanedNotificationData = await this.keepOnlyWhitelistedRecipients(
+          notification,
+          applicationEntry,
+        );
+        notification.data = cleanedNotificationData;
       }
     }
 
@@ -258,15 +264,12 @@ export class NotificationsService extends CoreService<Notification> {
     applicationEntry: Application,
   ): Promise<boolean> {
     try {
-      if (
-        applicationEntry.whitelistRecipients &&
-        applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()]
-      ) {
-        this.logger.debug(`Whitelist exists for provider ${notificationEntry.providerId}`);
+      const providerIdStr = notificationEntry.providerId.toString();
+      // Fetch whitelist whitelist recipients from db
+      const whitelistRecipientValues = applicationEntry.whitelistRecipients?.[providerIdStr];
 
-        // Fetch whitelist whitelist recipients from db
-        const whitelistRecipientValues =
-          applicationEntry.whitelistRecipients[notificationEntry.providerId.toString()];
+      if (whitelistRecipientValues) {
+        this.logger.debug(`Whitelist exists for provider ${notificationEntry.providerId}`);
         this.logger.debug(
           `Whitelist recipient values: ${JSON.stringify(whitelistRecipientValues)}`,
         );
@@ -281,25 +284,20 @@ export class NotificationsService extends CoreService<Notification> {
 
           // Create a list of recipient(s) added in request body
           const notificationRecipientRaw = notificationEntry.data[ChannelTypeRecipientKey];
-          const notificationRecipientsArray =
-            typeof notificationRecipientRaw === 'string'
-              ? notificationRecipientRaw.split(',').map((recipient) => recipient.trim())
-              : Array.isArray(notificationRecipientRaw)
-                ? notificationRecipientRaw
-                : [notificationRecipientRaw];
+          const notificationRecipientsArray = this.parseRawRecipients(notificationRecipientRaw);
           this.logger.debug(`Notification recipient list: ${notificationRecipientsArray}`);
 
           // Confirm if a whitelisted recipient is in request body (Case insensitive)
-          const normalizedWhitelistRecipientValues = (whitelistRecipientValues as unknown[]).map(
-            (val) => (typeof val === 'string' ? val.toLowerCase() : val),
-          );
+          const normalizedWhitelistRecipientValues = this.parseRawRecipients(
+            whitelistRecipientValues,
+          ).map((val) => val.toLowerCase());
 
           this.logger.debug(
             `Normalized whitelist recipient values: ${JSON.stringify(normalizedWhitelistRecipientValues)}`,
           );
 
           const normalizeNotificationRecipientsArray = notificationRecipientsArray.map((val) =>
-            typeof val === 'string' ? val.toLowerCase() : val,
+            val.toLowerCase(),
           );
 
           this.logger.debug(
@@ -318,19 +316,139 @@ export class NotificationsService extends CoreService<Notification> {
             return true;
           }
 
-          const exists = normalizedWhitelistRecipientValues.some((item) =>
+          return normalizedWhitelistRecipientValues.some((item) =>
             normalizeNotificationRecipientsArray.includes(item),
           );
-          return exists;
         }
       }
 
       this.logger.debug('Notification provider does not have whitelisted recipient(s)');
       return false;
     } catch (error) {
-      this.logger.log(`Error checking if recipient is whitelisted: ${error.message}`);
+      this.logger.log(`Error checking if recipient is whitelisted: ${(error as Error).message}`);
       throw error;
     }
+  }
+
+  /**
+   * Recursively parses and flattens recipient inputs (strings, arrays, scalars) into clean string arrays.
+   * Safely drops nullish entries (null, undefined) BEFORE string coercion.
+   */
+  private parseRawRecipients(raw: unknown): string[] {
+    // 1. Drop null & undefined values strictly before any processing
+    if (raw === null || raw === undefined) {
+      return [];
+    }
+
+    // 2. Handle string & comma-separated string inputs
+    if (typeof raw === 'string') {
+      return raw
+        .split(',')
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+    }
+
+    // 3. Handle arrays recursively (flattens nested arrays & comma-separated entries)
+    if (Array.isArray(raw)) {
+      return raw.flatMap((item) => this.parseRawRecipients(item));
+    }
+
+    // 4. Handle remaining non-nullish scalar values (e.g. numbers)
+    const trimmed = String(raw).trim();
+    return trimmed.length > 0 ? [trimmed] : [];
+  }
+
+  /**
+   * Filters recipients in notification data based on channelType and application whitelist configuration.
+   */
+  async keepOnlyWhitelistedRecipients(
+    notificationEntry: Notification,
+    applicationEntry: Application,
+  ): Promise<Record<string, unknown>> {
+    try {
+      const { channelType: inputChannelType, providerId, data } = notificationEntry;
+
+      // 1. Extract & normalize whitelist values using parseRawRecipients
+      const whitelistRecipientValues =
+        applicationEntry.whitelistRecipients?.[providerId.toString()];
+
+      const normalizedWhitelistRecipientValues = this.parseRawRecipients(
+        whitelistRecipientValues,
+      ).map((val) => val.toLowerCase());
+
+      // 2. Wildcard check: If wildcard rule exists, return payload unmodified
+      if (
+        normalizedWhitelistRecipientValues.length === 1 &&
+        normalizedWhitelistRecipientValues[0] === AllRecipientsWhitelistedExpression
+      ) {
+        return data;
+      }
+
+      // Build Set for O(1) case-insensitive lookups directly from normalized string[]
+      const whitelistSet = new Set<string>(normalizedWhitelistRecipientValues);
+
+      // 3. Directly assign target recipient fields based on channelType
+      let recipientKeys: string[] = [];
+
+      switch (inputChannelType) {
+        // Channel types that process email
+        case ChannelType.SMTP:
+        case ChannelType.MAILGUN:
+        case ChannelType.AWS_SES:
+          recipientKeys = [RecipientKeyForChannelType[inputChannelType], 'cc', 'bcc'];
+          break;
+
+        // Add future channel type mappings here as needed
+
+        default:
+          // Passthrough for unhandled channel types
+          this.logger.debug(
+            `Unhandled channelType [${inputChannelType}]. Passthrough mode activated.`,
+          );
+          return data;
+      }
+
+      // 4. Update payload fields with whitelisted recipients
+      const updatedData: Record<string, unknown> = { ...data };
+
+      for (const key of recipientKeys) {
+        if (key in updatedData && updatedData[key] != null) {
+          updatedData[key] = this.filterRecipients(updatedData[key], whitelistSet);
+        }
+      }
+
+      this.logger.log(
+        `Updated notification data. Removed all non-whitelisted recipients from the request.`,
+      );
+
+      return updatedData;
+    } catch (error) {
+      this.logger.log(
+        `Error while keeping only whitelisted recipients in notification: ${(error as Error).message}`,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Filters recipient inputs against a whitelist set.
+   * Handles:
+   *  - Simple string: "user@domain.com"
+   *  - Comma-separated string: "user1@domain.com, user2@domain.com"
+   *  - Array of strings: ["user1@domain.com", "user2@domain.com"] (including mixed comma-separated items)
+   */
+  private filterRecipients(rawRecipients: unknown, whitelistSet: Set<string>): string | string[] {
+    const isStringInput = typeof rawRecipients === 'string';
+
+    const parsedRecipients = this.parseRawRecipients(rawRecipients);
+
+    // Filter out non-whitelisted recipients
+    const filtered = parsedRecipients.filter((recipient) =>
+      whitelistSet.has(recipient.toLowerCase()),
+    );
+
+    // Maintain original type structure
+    return isStringInput ? filtered.join(', ') : filtered;
   }
 
   async addNotificationsToQueue(): Promise<void> {
