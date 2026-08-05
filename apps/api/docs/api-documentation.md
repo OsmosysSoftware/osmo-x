@@ -187,7 +187,7 @@ Allows fetching a paginated, filterable list of notifications. Accepts **either*
 - **Bearer token:** Results are scoped to the caller's organization (or a target org via `organization_id`, `SUPER_ADMIN` only).
 - **`x-api-key`:** Results are scoped strictly to the application the key belongs to — `application_id` is ignored in this mode.
 
-**Endpoint:** `http://localhost:3000/notifications`
+**Endpoint:** `http://localhost:3000/api/notifications`
 
 **Method:** `GET`
 
@@ -205,14 +205,14 @@ Allows fetching a paginated, filterable list of notifications. Accepts **either*
 **cURL (Bearer token)**
 
 ```sh
-curl --location 'http://localhost:3000/notifications?limit=5&application_id=1' \
+curl --location 'http://localhost:3000/api/notifications?limit=5&application_id=1' \
 --header 'Authorization: Bearer mysecuretoken'
 ```
 
 **cURL (x-api-key)**
 
 ```sh
-curl --location 'http://localhost:3000/notifications?limit=5' \
+curl --location 'http://localhost:3000/api/notifications?limit=5' \
 --header 'x-api-key: mysecureserverapikey'
 ```
 
@@ -236,11 +236,11 @@ curl --location 'http://localhost:3000/notifications?limit=5' \
       "updated_on": "2024-02-12T07:24:21.000Z"
     }
   ],
-  "self": "http://localhost:3000/notifications?page=1&limit=5",
-  "first": "http://localhost:3000/notifications?page=1&limit=5",
+  "self": "http://localhost:3000/api/notifications?page=1&limit=5",
+  "first": "http://localhost:3000/api/notifications?page=1&limit=5",
   "next": null,
   "prev": null,
-  "last": "http://localhost:3000/notifications?page=1&limit=5",
+  "last": "http://localhost:3000/api/notifications?page=1&limit=5",
   "page_info": {
     "page": 1,
     "limit": 5,
@@ -256,7 +256,7 @@ curl --location 'http://localhost:3000/notifications?limit=5' \
 
 Allows fetching a single notification by its `id`. Accepts **either** a Bearer token **or** an `x-api-key` header for authorization, with the same scoping rules as [Fetch All Notifications (REST)](#fetch-all-notifications-rest). Returns `404` if the notification doesn't exist, or isn't visible to the caller's org/application.
 
-**Endpoint:** `http://localhost:3000/notifications/:id`
+**Endpoint:** `http://localhost:3000/api/notifications/:id`
 
 **Method:** `GET`
 
@@ -267,14 +267,14 @@ Allows fetching a single notification by its `id`. Accepts **either** a Bearer t
 **cURL (Bearer token)**
 
 ```sh
-curl --location 'http://localhost:3000/notifications/92' \
+curl --location 'http://localhost:3000/api/notifications/92' \
 --header 'Authorization: Bearer mysecuretoken'
 ```
 
 **cURL (x-api-key)**
 
 ```sh
-curl --location 'http://localhost:3000/notifications/92' \
+curl --location 'http://localhost:3000/api/notifications/92' \
 --header 'x-api-key: mysecureserverapikey'
 ```
 

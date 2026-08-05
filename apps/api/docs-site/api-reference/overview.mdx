@@ -188,7 +188,7 @@ Retrieve a paginated, filterable list of notifications.
   Accepts **either** a Bearer token **or** an `x-api-key` header for authorization. With a Bearer token, results are scoped to the caller's organization (or a target org via `organization_id`, `SUPER_ADMIN` only). With `x-api-key`, results are scoped strictly to the application the key belongs to — `application_id` is ignored in this mode.
 </Note>
 
-**Endpoint:** `GET /notifications`
+**Endpoint:** `GET /api/notifications`
 
 **Query Parameters:**
 
@@ -205,12 +205,12 @@ Retrieve a paginated, filterable list of notifications.
 
 <CodeGroup>
 ```bash Bearer token
-curl --location 'http://localhost:3000/notifications?limit=5&application_id=1' \
+curl --location 'http://localhost:3000/api/notifications?limit=5&application_id=1' \
 --header 'Authorization: Bearer mysecuretoken'
 ```
 
 ```bash x-api-key
-curl --location 'http://localhost:3000/notifications?limit=5' \
+curl --location 'http://localhost:3000/api/notifications?limit=5' \
 --header 'x-api-key: mysecureserverapikey'
 ```
 </CodeGroup>
@@ -234,11 +234,11 @@ curl --location 'http://localhost:3000/notifications?limit=5' \
       "updated_on": "2024-02-12T07:24:21.000Z"
     }
   ],
-  "self": "http://localhost:3000/notifications?page=1&limit=5",
-  "first": "http://localhost:3000/notifications?page=1&limit=5",
+  "self": "http://localhost:3000/api/notifications?page=1&limit=5",
+  "first": "http://localhost:3000/api/notifications?page=1&limit=5",
   "next": null,
   "prev": null,
-  "last": "http://localhost:3000/notifications?page=1&limit=5",
+  "last": "http://localhost:3000/api/notifications?page=1&limit=5",
   "page_info": {
     "page": 1,
     "limit": 5,
@@ -254,7 +254,7 @@ curl --location 'http://localhost:3000/notifications?limit=5' \
 
 Retrieve a single notification by its `id`. Accepts the same Bearer token / `x-api-key` authorization and scoping rules as [Fetch All Notifications (REST)](#fetch-all-notifications-rest). Returns `404` if the notification doesn't exist, or isn't visible to the caller's org/application.
 
-**Endpoint:** `GET /notifications/:id`
+**Endpoint:** `GET /api/notifications/:id`
 
 **Query Parameters:**
 
@@ -264,12 +264,12 @@ Retrieve a single notification by its `id`. Accepts the same Bearer token / `x-a
 
 <CodeGroup>
 ```bash Bearer token
-curl --location 'http://localhost:3000/notifications/92' \
+curl --location 'http://localhost:3000/api/notifications/92' \
 --header 'Authorization: Bearer mysecuretoken'
 ```
 
 ```bash x-api-key
-curl --location 'http://localhost:3000/notifications/92' \
+curl --location 'http://localhost:3000/api/notifications/92' \
 --header 'x-api-key: mysecureserverapikey'
 ```
 </CodeGroup>
