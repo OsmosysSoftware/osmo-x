@@ -692,6 +692,31 @@ export class NotificationsService extends CoreService<Notification> {
     }
   }
 
+  async findActiveOrArchivedNotificationByIdForApplication(
+    notificationId: number,
+    applicationId: number,
+  ): Promise<SingleNotificationResponse> {
+    const activeEntry = await this.findById(notificationId);
+
+    if (activeEntry && activeEntry.applicationId === applicationId) {
+      return new SingleNotificationResponse(activeEntry);
+    }
+
+    const archivedEntry =
+      await this.archivedNotificationsService.getArchivedNotificationFromNotificationId(
+        notificationId,
+      );
+
+    if (archivedEntry && archivedEntry.applicationId === applicationId) {
+      return new SingleNotificationResponse(archivedEntry);
+    }
+
+    throw new NotFoundException(
+      ErrorCodes.NOTIFICATION_NOT_FOUND,
+      `Notification with ID ${notificationId} not found in any table`,
+    );
+  }
+
   private mapNotificationToDto(n: Notification): NotificationResponseDto {
     return {
       id: n.id,
@@ -837,6 +862,27 @@ export class NotificationsService extends CoreService<Notification> {
     this.logger.log('Getting all notifications with options.');
 
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
+    const searchableFields = ['createdBy', 'data', 'result'];
+
+    const { items, total } = await super.findAll(
+      options,
+      'notification',
+      searchableFields,
+      baseConditions,
+    );
+    return new NotificationResponse(items, total, options.offset, options.limit);
+  }
+
+  async getAllNotificationsForApplication(
+    options: QueryOptionsDto,
+    applicationId: number,
+  ): Promise<NotificationResponse> {
+    this.logger.log(`Getting all notifications for applicationId: ${applicationId}`);
+
+    const baseConditions = [
+      { field: 'status', value: Status.ACTIVE },
+      { field: 'applicationId', value: applicationId },
+    ];
     const searchableFields = ['createdBy', 'data', 'result'];
 
     const { items, total } = await super.findAll(

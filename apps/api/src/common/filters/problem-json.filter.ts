@@ -4,6 +4,11 @@
  *
  * This filter is applied ONLY to v1 endpoints (via controller-level @UseFilters).
  * Existing endpoints continue to use HttpExceptionFilter + JSend format.
+ *
+ * Registered globally in main.ts, so it also receives exceptions thrown from
+ * GraphQL resolvers/guards. Those aren't HTTP requests (no request.protocol,
+ * no response to write to), so they're passed through unchanged for Nest's
+ * GraphQL layer to format instead of being forced into Problem+JSON here.
  */
 
 import {
@@ -15,16 +20,21 @@ import {
   BadRequestException,
   Logger,
 } from '@nestjs/common';
+import { GqlExceptionFilter } from '@nestjs/graphql';
 import { Request, Response } from 'express';
 import { ErrorCode, ErrorCodes } from '../constants/error-codes';
 import { ProblemJsonBuilder } from '../exceptions/problem-json.builder';
 import { ValidationError } from 'class-validator';
 
 @Catch()
-export class ProblemJsonFilter implements ExceptionFilter {
+export class ProblemJsonFilter implements ExceptionFilter, GqlExceptionFilter {
   private readonly logger = new Logger(ProblemJsonFilter.name);
 
-  catch(exception: unknown, host: ArgumentsHost): void {
+  catch(exception: unknown, host: ArgumentsHost): unknown {
+    if (host.getType<'graphql' | 'http'>() === 'graphql') {
+      return exception;
+    }
+
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();

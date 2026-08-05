@@ -299,7 +299,10 @@ curl --location 'http://localhost:3000/api/notifications/92' \
 
 ### Fetch All Notifications (GraphQL)
 
-Allows the user to fetch all notifications based on the passed query parameters. Requires passing bearer token for authorization.
+Allows the user to fetch all notifications based on the passed query parameters. Accepts **either** a Bearer token **or** an `x-api-key` header for authorization.
+
+- **Bearer token:** No org/application scoping is applied — any authenticated user can query notifications across all organizations.
+- **`x-api-key`:** Results are restricted to the application the key belongs to.
 
 The different options that can be used while fetching notifications are as follows:
 
@@ -358,13 +361,22 @@ query {
 }
 ```
 
-**cURL**
+**cURL (Bearer token)**
 
 ```sh
 curl --location 'YOUR_BASE_URL/graphql' \
 --header 'Authorization: Bearer mysecuretoken' \
 --header 'Content-Type: application/json' \
 --data-raw '{"query":"query {\r\n  notifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    notifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
+```
+
+**cURL (x-api-key)**
+
+```sh
+curl --location 'YOUR_BASE_URL/graphql' \
+--header 'x-api-key: mysecureserverapikey' \
+--header 'Content-Type: application/json' \
+--data-raw '{"query":"query { notifications(options: { limit: 5 }) { notifications { id applicationId channelType deliveryStatus } total offset limit } }","variables":{}}'
 ```
 
 **Sample response**
@@ -429,7 +441,10 @@ curl --location 'YOUR_BASE_URL/graphql' \
 
 ### Fetch active or archived Notification by Id (GraphQL)
 
-Allows the user to fetch a single notification present in either `notify_notifications` or `notify_archived_notifications` table by passing notificationId. Requires passing bearer token for authorization.
+Allows the user to fetch a single notification present in either `notify_notifications` or `notify_archived_notifications` table by passing notificationId. Accepts **either** a Bearer token **or** an `x-api-key` header for authorization.
+
+- **Bearer token:** No org/application scoping is applied — any authenticated user can fetch any notification.
+- **`x-api-key`:** Only notifications belonging to the key's own application are returned; others come back as not found.
 
 The required parameter for fetching a single active or archived notification is as follows:
 
@@ -463,13 +478,22 @@ query {
 }
 ```
 
-**cURL**
+**cURL (Bearer token)**
 
 ```sh
 curl --location 'localhost:3000/graphql' \
 --header 'Authorization: Bearer mysecuretoken' \
 --header 'Content-Type: application/json' \
 --data '{"query":"query {\r\n  notification(\r\n    notificationId: 150\r\n  ) {\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n}","variables":{}}'
+```
+
+**cURL (x-api-key)**
+
+```sh
+curl --location 'localhost:3000/graphql' \
+--header 'x-api-key: mysecureserverapikey' \
+--header 'Content-Type: application/json' \
+--data '{"query":"query { notification(notificationId: 150) { id applicationId channelType deliveryStatus } }","variables":{}}'
 ```
 
 **Sample response**
@@ -508,9 +532,131 @@ curl --location 'localhost:3000/graphql' \
 
 This sections lists notification related requests such as fetching all archived notifications.
 
-### Fetch All Archived Notifications
+### Fetch All Archived Notifications (REST)
 
-Allows the user to fetch all archived notifications based on the passed query parameters. Requires passing bearer token for authorization.
+Allows fetching a paginated, filterable list of archived notifications. Accepts **either** a Bearer token **or** an `x-api-key` header for authorization:
+
+- **Bearer token:** Results are scoped to the caller's organization (or a target org via `organization_id`, `SUPER_ADMIN` only).
+- **`x-api-key`:** Results are scoped strictly to the application the key belongs to — `application_id` is ignored in this mode.
+
+**Endpoint:** `http://localhost:3000/api/archived-notifications`
+
+**Method:** `GET`
+
+**Query Parameters:**
+
+- `page` / `limit:` Pagination controls (`limit` max `1000`, default `20`)
+- `sort` / `order:` Sort field (snake_case, e.g. `created_on`) and direction (`asc`/`desc`)
+- `organization_id:` Target org — Bearer auth only, `SUPER_ADMIN` only
+- `application_id:` Filter by application — Bearer auth only (ignored for `x-api-key` auth, which is already application-scoped)
+- `channel_type`, `delivery_status`, `provider_id:` Filter by the respective numeric fields
+- `date_from` / `date_to:` Filter by `created_on` range (ISO 8601)
+- `recipient`, `sender`, `subject`, `message_body`, `template_name:` Free-text filters matched against `data` fields (3+ characters recommended)
+- `data_filter[key]=value:` Match top-level `data` JSON key/value pairs (repeatable, AND-combined)
+
+**cURL (Bearer token)**
+
+```sh
+curl --location 'http://localhost:3000/api/archived-notifications?limit=5&application_id=1' \
+--header 'Authorization: Bearer mysecuretoken'
+```
+
+**cURL (x-api-key)**
+
+```sh
+curl --location 'http://localhost:3000/api/archived-notifications?limit=5' \
+--header 'x-api-key: mysecureserverapikey'
+```
+
+**Sample response**
+
+```json
+{
+  "items": [
+    {
+      "id": 7,
+      "notification_id": 9,
+      "provider_id": 1,
+      "channel_type": 1,
+      "data": {
+        "from": "sender@email.com",
+        "to": "receiver@email.com",
+        "subject": "Test subject"
+      },
+      "delivery_status": 6,
+      "application_id": 1,
+      "created_on": "2024-05-07T06:44:39.000Z",
+      "updated_on": "2024-07-03T06:18:08.000Z"
+    }
+  ],
+  "self": "http://localhost:3000/api/archived-notifications?page=1&limit=5",
+  "first": "http://localhost:3000/api/archived-notifications?page=1&limit=5",
+  "next": null,
+  "prev": null,
+  "last": "http://localhost:3000/api/archived-notifications?page=1&limit=5",
+  "page_info": {
+    "page": 1,
+    "limit": 5,
+    "total_items": 1,
+    "total_pages": 1,
+    "has_next": false,
+    "has_prev": false
+  }
+}
+```
+
+### Get Archived Notification by ID (REST)
+
+Allows fetching a single archived notification by its `id`. Accepts **either** a Bearer token **or** an `x-api-key` header for authorization, with the same scoping rules as [Fetch All Archived Notifications (REST)](#fetch-all-archived-notifications-rest). Returns `400` if the archived notification doesn't exist, or isn't visible to the caller's org/application.
+
+**Endpoint:** `http://localhost:3000/api/archived-notifications/:id`
+
+**Method:** `GET`
+
+**Query Parameters:**
+
+- `organization_id:` Target org — Bearer auth only, `SUPER_ADMIN` only
+
+**cURL (Bearer token)**
+
+```sh
+curl --location 'http://localhost:3000/api/archived-notifications/7' \
+--header 'Authorization: Bearer mysecuretoken'
+```
+
+**cURL (x-api-key)**
+
+```sh
+curl --location 'http://localhost:3000/api/archived-notifications/7' \
+--header 'x-api-key: mysecureserverapikey'
+```
+
+**Sample response**
+
+```json
+{
+  "id": 7,
+  "notification_id": 9,
+  "provider_id": 1,
+  "channel_type": 1,
+  "data": {
+    "from": "sender@email.com",
+    "to": "receiver@email.com",
+    "subject": "Test subject"
+  },
+  "delivery_status": 6,
+  "application_id": 1,
+  "created_on": "2024-05-07T06:44:39.000Z",
+  "updated_on": "2024-07-03T06:18:08.000Z"
+}
+```
+
+### Fetch All Archived Notifications (GraphQL)
+
+Allows the user to fetch all archived notifications based on the passed query parameters. Accepts **either** a Bearer token **or** an `x-api-key` header for authorization.
+
+- **Bearer token:** No org/application scoping is applied — any authenticated user can query archived notifications across all organizations.
+- **`x-api-key`:** Results are restricted to the application the key belongs to.
 
 The different options that can be used while fetching notifications are as follows:
 
@@ -570,13 +716,22 @@ query {
 }
 ```
 
-**cURL**
+**cURL (Bearer token)**
 
 ```sh
 curl --location 'YOUR_BASE_URL/graphql' \
 --header 'Authorization: Bearer YOUR_AUTH_TOKEN' \
 --header 'Content-Type: application/json' \
 --data-raw '{"query":"query {\r\n  archivedNotifications(\r\n    options: {\r\n      limit: 5\r\n      offset: 0\r\n      sortBy: \"createdOn\"\r\n      sortOrder: DESC\r\n      search: \"sender@email.com\"\r\n      filters: [{ field: \"applicationId\", operator: \"eq\", value: \"1\" }]\r\n    }\r\n  ) {\r\n    archivedNotifications {\r\n      applicationDetails {\r\n        applicationId\r\n        name\r\n        userId\r\n        status\r\n        createdOn\r\n        updatedOn\r\n      }\r\n      applicationId\r\n      channelType\r\n      createdBy\r\n      createdOn\r\n      data\r\n      deliveryStatus\r\n      id\r\n      notificationId\r\n      notificationSentOn\r\n      providerId\r\n      result\r\n      status\r\n      updatedBy\r\n      updatedOn\r\n    }\r\n    total,\r\n    offset,\r\n    limit\r\n  }\r\n}","variables":{}}'
+```
+
+**cURL (x-api-key)**
+
+```sh
+curl --location 'YOUR_BASE_URL/graphql' \
+--header 'x-api-key: mysecureserverapikey' \
+--header 'Content-Type: application/json' \
+--data-raw '{"query":"query { archivedNotifications(options: { limit: 5 }) { archivedNotifications { id applicationId channelType deliveryStatus } total offset limit } }","variables":{}}'
 ```
 
 **Sample response**

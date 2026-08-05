@@ -28,6 +28,7 @@ import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import {
+  API_KEY_HEADER_DOC,
   JwtOrApiKeyGuard,
   RequestWithApiKeyAuth,
 } from 'src/common/guards/jwt-or-api-key/jwt-or-api-key.guard';
@@ -45,12 +46,6 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
-
-const API_KEY_HEADER_DOC = {
-  name: 'x-api-key',
-  required: false,
-  description: 'Server API key, scoped to a single application (alternative to Bearer JWT)',
-};
 
 @ApiTags('Notifications')
 @ApiBearerAuth()
