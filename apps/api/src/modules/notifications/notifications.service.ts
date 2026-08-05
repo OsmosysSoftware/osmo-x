@@ -650,6 +650,19 @@ export class NotificationsService extends CoreService<Notification> {
     return this.mapNotificationToDto(notification);
   }
 
+  async findByIdForApplication(
+    notificationId: number,
+    applicationId: number,
+  ): Promise<NotificationResponseDto> {
+    const notification = await this.findById(notificationId);
+
+    if (!notification || notification.applicationId !== applicationId) {
+      throw new NotFoundException(ErrorCodes.NOTIFICATION_NOT_FOUND, 'Notification not found');
+    }
+
+    return this.mapNotificationToDto(notification);
+  }
+
   async findActiveOrArchivedNotificationById(
     notificationId: number,
   ): Promise<SingleNotificationResponse> {
@@ -787,6 +800,37 @@ export class NotificationsService extends CoreService<Notification> {
       items: items.map((n) => this.mapNotificationToDto(n)),
       meta,
     };
+  }
+
+  async getAllNotificationsForApplicationAsDto(
+    query: PaginationQueryDto,
+    applicationId: number,
+    filters?: {
+      channelType?: number;
+      deliveryStatus?: number;
+      providerId?: number;
+      dateFrom?: string;
+      dateTo?: string;
+      recipient?: string;
+      sender?: string;
+      subject?: string;
+      messageBody?: string;
+      templateName?: string;
+      dataFilter?: Record<string, string>;
+    },
+  ): Promise<{ items: NotificationResponseDto[]; meta: PaginationMeta }> {
+    const app = await this.applicationsService.findById(applicationId);
+
+    if (!app) {
+      const { page, limit } = PaginationHelper.normalizePaginationParams(query);
+
+      return { items: [], meta: PaginationHelper.buildPaginationMeta(page, limit, 0) };
+    }
+
+    return this.getAllNotificationsAsDto(query, app.organizationId, {
+      ...filters,
+      applicationId,
+    });
   }
 
   async getAllNotifications(options: QueryOptionsDto): Promise<NotificationResponse> {

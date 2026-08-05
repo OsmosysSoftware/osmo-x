@@ -18,6 +18,7 @@ import { ErrorCodes } from 'src/common/constants/error-codes';
 import {
   ApiBearerAuth,
   ApiExtraModels,
+  ApiHeader,
   ApiOperation,
   ApiQuery,
   ApiResponse,
@@ -26,7 +27,10 @@ import {
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
-import { Request } from 'express';
+import {
+  JwtOrApiKeyGuard,
+  RequestWithApiKeyAuth,
+} from 'src/common/guards/jwt-or-api-key/jwt-or-api-key.guard';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { PaginatedResponse } from 'src/common/dto/paginated-response.dto';
 import { LinkBuilder } from 'src/common/utils/link-builder.helper';
@@ -42,6 +46,12 @@ import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
 import { resolveOrgId } from 'src/common/utils/org-resolver.helper';
 
+const API_KEY_HEADER_DOC = {
+  name: 'x-api-key',
+  required: false,
+  description: 'Server API key, scoped to a single application (alternative to Bearer JWT)',
+};
+
 @ApiTags('Notifications')
 @ApiBearerAuth()
 @ApiExtraModels(NotificationResponseDto)
@@ -56,7 +66,8 @@ export class NotificationsController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtOrApiKeyGuard)
+  @ApiHeader(API_KEY_HEADER_DOC)
   @ApiOperation({ summary: 'List notifications' })
   @ApiQuery({
     name: 'organization_id',
@@ -158,13 +169,11 @@ export class NotificationsController {
     @Query('date_to') dateTo: string,
     @Query('provider_id') providerId: number,
     @CurrentUser() user: JwtPayload,
-    @Req() req: Request,
+    @Req() req: RequestWithApiKeyAuth,
   ): Promise<PaginatedResponse<NotificationResponseDto>> {
-    const targetOrgId = resolveOrgId(user, queryOrgId);
     const filters = {
       channelType: channelType ? Number(channelType) : undefined,
       deliveryStatus: deliveryStatus ? Number(deliveryStatus) : undefined,
-      applicationId: applicationId ? Number(applicationId) : undefined,
       providerId: providerId ? Number(providerId) : undefined,
       dateFrom: dateFrom || undefined,
       dateTo: dateTo || undefined,
@@ -175,11 +184,19 @@ export class NotificationsController {
       templateName: query.template_name,
       dataFilter: query.data_filter,
     };
-    const { items, meta } = await this.notificationsService.getAllNotificationsAsDto(
-      query,
-      targetOrgId,
-      filters,
-    );
+    const { apiKeyApplicationId } = req;
+    const { items, meta } =
+      apiKeyApplicationId !== undefined
+        ? await this.notificationsService.getAllNotificationsForApplicationAsDto(
+            query,
+            apiKeyApplicationId,
+            filters,
+          )
+        : await this.notificationsService.getAllNotificationsAsDto(
+            query,
+            resolveOrgId(user, queryOrgId),
+            { ...filters, applicationId: applicationId ? Number(applicationId) : undefined },
+          );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
 
@@ -187,8 +204,9 @@ export class NotificationsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtOrApiKeyGuard)
   @Roles(UserRoles.ORG_USER)
+  @ApiHeader(API_KEY_HEADER_DOC)
   @ApiOperation({ summary: 'Get notification by ID' })
   @ApiQuery({
     name: 'organization_id',
@@ -203,10 +221,13 @@ export class NotificationsController {
     @Param('id') id: number,
     @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
+    @Req() req: RequestWithApiKeyAuth,
   ): Promise<NotificationResponseDto> {
-    const targetOrgId = resolveOrgId(user, queryOrgId);
+    if (req.apiKeyApplicationId !== undefined) {
+      return this.notificationsService.findByIdForApplication(id, req.apiKeyApplicationId);
+    }
 
-    return this.notificationsService.findByIdAsDto(id, targetOrgId);
+    return this.notificationsService.findByIdAsDto(id, resolveOrgId(user, queryOrgId));
   }
 
   @Post('queue')
