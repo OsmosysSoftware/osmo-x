@@ -173,6 +173,19 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     return this.mapToDto(notification);
   }
 
+  async findByIdForApplication(
+    archivedNotificationId: number,
+    applicationId: number,
+  ): Promise<ArchivedNotificationResponseDto> {
+    const notification = await this.findById(archivedNotificationId);
+
+    if (!notification || notification.applicationId !== applicationId) {
+      throw new BadRequestException('Archived notification not found');
+    }
+
+    return this.mapToDto(notification);
+  }
+
   async getAllArchivedNotificationsAsDto(
     query: PaginationQueryDto,
     organizationId: number,
@@ -264,12 +277,64 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     };
   }
 
+  async getAllArchivedNotificationsForApplicationAsDto(
+    query: PaginationQueryDto,
+    applicationId: number,
+    filters?: {
+      channelType?: number;
+      deliveryStatus?: number;
+      providerId?: number;
+      dateFrom?: string;
+      dateTo?: string;
+      recipient?: string;
+      sender?: string;
+      subject?: string;
+      messageBody?: string;
+      templateName?: string;
+      dataFilter?: Record<string, string>;
+    },
+  ): Promise<{ items: ArchivedNotificationResponseDto[]; meta: PaginationMeta }> {
+    const app = await this.applicationsService.findById(applicationId);
+
+    if (!app) {
+      const { page, limit } = PaginationHelper.normalizePaginationParams(query);
+
+      return { items: [], meta: PaginationHelper.buildPaginationMeta(page, limit, 0) };
+    }
+
+    return this.getAllArchivedNotificationsAsDto(query, app.organizationId, {
+      ...filters,
+      applicationId,
+    });
+  }
+
   async getAllArchivedNotifications(
     options: QueryOptionsDto,
   ): Promise<ArchivedNotificationResponse> {
     this.logger.log('Getting all archived notifications with options.');
 
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
+    const searchableFields = ['createdBy', 'data', 'result'];
+
+    const { items, total } = await super.findAll(
+      options,
+      'archivedNotification',
+      searchableFields,
+      baseConditions,
+    );
+    return new ArchivedNotificationResponse(items, total, options.offset, options.limit);
+  }
+
+  async getAllArchivedNotificationsForApplication(
+    options: QueryOptionsDto,
+    applicationId: number,
+  ): Promise<ArchivedNotificationResponse> {
+    this.logger.log(`Getting all archived notifications for applicationId: ${applicationId}`);
+
+    const baseConditions = [
+      { field: 'status', value: Status.ACTIVE },
+      { field: 'applicationId', value: applicationId },
+    ];
     const searchableFields = ['createdBy', 'data', 'result'];
 
     const { items, total } = await super.findAll(

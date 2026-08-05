@@ -50,6 +50,7 @@ import { NotificationDataFilterHelper } from './helpers/notification-data-filter
 import { JwtOrApiKeyGuard } from 'src/common/guards/jwt-or-api-key/jwt-or-api-key.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 
 const providerModules = [
   MailgunModule,
@@ -111,6 +112,7 @@ const consumers = [
     JwtOrApiKeyGuard,
     RolesGuard,
     JwtAuthGuard,
+    GqlAuthGuard,
     ...consumers,
   ],
   exports: [

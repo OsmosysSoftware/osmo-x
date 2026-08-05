@@ -8,6 +8,10 @@ import { ConfigService } from '@nestjs/config';
 import { ArchivedNotificationsController } from './archived-notifications.controller';
 import { ArchivedNotificationsResolver } from './archived-notifications.resolver';
 import { ApplicationsModule } from '../applications/applications.module';
+import { JwtOrApiKeyGuard } from 'src/common/guards/jwt-or-api-key/jwt-or-api-key.guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 
 @Module({
   imports: [
@@ -15,7 +19,16 @@ import { ApplicationsModule } from '../applications/applications.module';
     forwardRef(() => NotificationsModule),
     ApplicationsModule,
   ],
-  providers: [ArchivedNotificationsService, ArchivedNotificationsResolver, Logger, ConfigService],
+  providers: [
+    ArchivedNotificationsService,
+    ArchivedNotificationsResolver,
+    Logger,
+    ConfigService,
+    JwtOrApiKeyGuard,
+    RolesGuard,
+    JwtAuthGuard,
+    GqlAuthGuard,
+  ],
   exports: [TypeOrmModule, ArchivedNotificationsService],
   controllers: [ArchivedNotificationsController],
 })

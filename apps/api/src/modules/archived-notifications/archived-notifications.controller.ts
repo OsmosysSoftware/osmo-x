@@ -14,17 +14,20 @@ import {
 import {
   ApiBearerAuth,
   ApiExtraModels,
+  ApiHeader,
   ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { ArchivedNotificationsService } from './archived-notifications.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guards/role.guard';
+import {
+  API_KEY_HEADER_DOC,
+  JwtOrApiKeyGuard,
+  RequestWithApiKeyAuth,
+} from 'src/common/guards/jwt-or-api-key/jwt-or-api-key.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
-import { Request } from 'express';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { PaginatedResponse } from 'src/common/dto/paginated-response.dto';
 import { LinkBuilder } from 'src/common/utils/link-builder.helper';
@@ -45,7 +48,8 @@ export class ArchivedNotificationsController {
   constructor(private readonly archivedNotificationsService: ArchivedNotificationsService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtOrApiKeyGuard)
+  @ApiHeader(API_KEY_HEADER_DOC)
   @ApiOperation({ summary: 'List archived notifications' })
   @ApiQuery({
     name: 'organization_id',
@@ -147,13 +151,11 @@ export class ArchivedNotificationsController {
     @Query('date_to') dateTo: string,
     @Query('provider_id') providerId: number,
     @CurrentUser() user: JwtPayload,
-    @Req() req: Request,
+    @Req() req: RequestWithApiKeyAuth,
   ): Promise<PaginatedResponse<ArchivedNotificationResponseDto>> {
-    const targetOrgId = resolveOrgId(user, queryOrgId);
     const filters = {
       channelType: channelType ? Number(channelType) : undefined,
       deliveryStatus: deliveryStatus ? Number(deliveryStatus) : undefined,
-      applicationId: applicationId ? Number(applicationId) : undefined,
       dateFrom: dateFrom || undefined,
       providerId: providerId ? Number(providerId) : undefined,
       dateTo: dateTo || undefined,
@@ -164,12 +166,19 @@ export class ArchivedNotificationsController {
       templateName: query.template_name,
       dataFilter: query.data_filter,
     };
+    const { apiKeyApplicationId } = req;
     const { items, meta } =
-      await this.archivedNotificationsService.getAllArchivedNotificationsAsDto(
-        query,
-        targetOrgId,
-        filters,
-      );
+      apiKeyApplicationId !== undefined
+        ? await this.archivedNotificationsService.getAllArchivedNotificationsForApplicationAsDto(
+            query,
+            apiKeyApplicationId,
+            filters,
+          )
+        : await this.archivedNotificationsService.getAllArchivedNotificationsAsDto(
+            query,
+            resolveOrgId(user, queryOrgId),
+            { ...filters, applicationId: applicationId ? Number(applicationId) : undefined },
+          );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
 
@@ -177,8 +186,9 @@ export class ArchivedNotificationsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtOrApiKeyGuard)
   @Roles(UserRoles.ORG_USER)
+  @ApiHeader(API_KEY_HEADER_DOC)
   @ApiOperation({ summary: 'Get archived notification by ID' })
   @ApiQuery({
     name: 'organization_id',
@@ -197,10 +207,13 @@ export class ArchivedNotificationsController {
     @Param('id') id: number,
     @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
+    @Req() req: RequestWithApiKeyAuth,
   ): Promise<ArchivedNotificationResponseDto> {
-    const targetOrgId = resolveOrgId(user, queryOrgId);
+    if (req.apiKeyApplicationId !== undefined) {
+      return this.archivedNotificationsService.findByIdForApplication(id, req.apiKeyApplicationId);
+    }
 
-    return this.archivedNotificationsService.findByIdAsDto(id, targetOrgId);
+    return this.archivedNotificationsService.findByIdAsDto(id, resolveOrgId(user, queryOrgId));
   }
 
   @Post('archive')
