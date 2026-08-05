@@ -180,7 +180,124 @@ curl --location 'http://localhost:3000/notifications' \
 }
 ```
 
-### Fetch All Notifications
+### Fetch All Notifications (REST)
+
+Allows fetching a paginated, filterable list of notifications. Accepts **either** a Bearer token **or** an `x-api-key` header for authorization:
+
+- **Bearer token:** Results are scoped to the caller's organization (or a target org via `organization_id`, `SUPER_ADMIN` only).
+- **`x-api-key`:** Results are scoped strictly to the application the key belongs to — `application_id` is ignored in this mode.
+
+**Endpoint:** `http://localhost:3000/notifications`
+
+**Method:** `GET`
+
+**Query Parameters:**
+
+- `page` / `limit:` Pagination controls (`limit` max `1000`, default `20`)
+- `sort` / `order:` Sort field (snake_case, e.g. `created_on`) and direction (`asc`/`desc`)
+- `organization_id:` Target org — Bearer auth only, `SUPER_ADMIN` only
+- `application_id:` Filter by application — Bearer auth only (ignored for `x-api-key` auth, which is already application-scoped)
+- `channel_type`, `delivery_status`, `provider_id:` Filter by the respective numeric fields
+- `date_from` / `date_to:` Filter by `created_on` range (ISO 8601)
+- `recipient`, `sender`, `subject`, `message_body`, `template_name:` Free-text filters matched against `data` fields (3+ characters recommended)
+- `data_filter[key]=value:` Match top-level `data` JSON key/value pairs (repeatable, AND-combined)
+
+**cURL (Bearer token)**
+
+```sh
+curl --location 'http://localhost:3000/notifications?limit=5&application_id=1' \
+--header 'Authorization: Bearer mysecuretoken'
+```
+
+**cURL (x-api-key)**
+
+```sh
+curl --location 'http://localhost:3000/notifications?limit=5' \
+--header 'x-api-key: mysecureserverapikey'
+```
+
+**Sample response**
+
+```json
+{
+  "items": [
+    {
+      "id": 92,
+      "provider_id": 1,
+      "channel_type": 1,
+      "data": {
+        "from": "sender@email.com",
+        "to": "receiver@email.com",
+        "subject": "Test subject"
+      },
+      "delivery_status": 5,
+      "application_id": 2,
+      "created_on": "2024-02-12T07:24:21.000Z",
+      "updated_on": "2024-02-12T07:24:21.000Z"
+    }
+  ],
+  "self": "http://localhost:3000/notifications?page=1&limit=5",
+  "first": "http://localhost:3000/notifications?page=1&limit=5",
+  "next": null,
+  "prev": null,
+  "last": "http://localhost:3000/notifications?page=1&limit=5",
+  "page_info": {
+    "page": 1,
+    "limit": 5,
+    "total_items": 1,
+    "total_pages": 1,
+    "has_next": false,
+    "has_prev": false
+  }
+}
+```
+
+### Get Notification by ID (REST)
+
+Allows fetching a single notification by its `id`. Accepts **either** a Bearer token **or** an `x-api-key` header for authorization, with the same scoping rules as [Fetch All Notifications (REST)](#fetch-all-notifications-rest). Returns `404` if the notification doesn't exist, or isn't visible to the caller's org/application.
+
+**Endpoint:** `http://localhost:3000/notifications/:id`
+
+**Method:** `GET`
+
+**Query Parameters:**
+
+- `organization_id:` Target org — Bearer auth only, `SUPER_ADMIN` only
+
+**cURL (Bearer token)**
+
+```sh
+curl --location 'http://localhost:3000/notifications/92' \
+--header 'Authorization: Bearer mysecuretoken'
+```
+
+**cURL (x-api-key)**
+
+```sh
+curl --location 'http://localhost:3000/notifications/92' \
+--header 'x-api-key: mysecureserverapikey'
+```
+
+**Sample response**
+
+```json
+{
+  "id": 92,
+  "provider_id": 1,
+  "channel_type": 1,
+  "data": {
+    "from": "sender@email.com",
+    "to": "receiver@email.com",
+    "subject": "Test subject"
+  },
+  "delivery_status": 5,
+  "application_id": 2,
+  "created_on": "2024-02-12T07:24:21.000Z",
+  "updated_on": "2024-02-12T07:24:21.000Z"
+}
+```
+
+### Fetch All Notifications (GraphQL)
 
 Allows the user to fetch all notifications based on the passed query parameters. Requires passing bearer token for authorization.
 
@@ -310,7 +427,7 @@ curl --location 'YOUR_BASE_URL/graphql' \
 }
 ```
 
-### Fetch active or archived Notification by Id
+### Fetch active or archived Notification by Id (GraphQL)
 
 Allows the user to fetch a single notification present in either `notify_notifications` or `notify_archived_notifications` table by passing notificationId. Requires passing bearer token for authorization.
 
