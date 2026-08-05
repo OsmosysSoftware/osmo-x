@@ -6,7 +6,7 @@ import { Repository } from 'typeorm/repository/Repository';
 import { In } from 'typeorm';
 import { ServerApiKey } from './entities/server-api-key.entity';
 import { Status } from 'src/common/constants/database';
-import { hashApiKey } from 'src/common/utils/bcrypt';
+import { compareApiKeys, hashApiKey } from 'src/common/utils/bcrypt';
 import * as crypto from 'crypto';
 import { ServerApiKeyResponseDto } from './dto/server-api-key-response.dto';
 import { ApplicationsService } from '../applications/applications.service';
@@ -32,6 +32,24 @@ export class ServerApiKeysService {
         status: Status.ACTIVE,
       },
     });
+  }
+
+  // Keys are bcrypt-hashed (salted), so they aren't equality-indexable in SQL — the
+  // application isn't known upfront here (unlike the providerId/providerChain-scoped
+  // lookup used for notification creation), so every active key must be compared in turn.
+  async findApplicationIdByRawApiKey(rawApiKey: string): Promise<number | undefined> {
+    const activeKeys = await this.serverApiKeyRepository.find({
+      where: { status: Status.ACTIVE },
+    });
+
+    for (const key of activeKeys) {
+      // eslint-disable-next-line no-await-in-loop -- must short-circuit on first match
+      if (await compareApiKeys(rawApiKey, key.apiKey)) {
+        return key.applicationId;
+      }
+    }
+
+    return undefined;
   }
 
   async generateApiKey(applicationId: number): Promise<string> {

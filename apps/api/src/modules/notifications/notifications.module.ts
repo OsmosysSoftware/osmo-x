@@ -47,6 +47,9 @@ import { ProviderChainsModule } from '../provider-chains/provider-chains.module'
 import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
 import { MasterProvidersModule } from '../master-providers/master-providers.module';
 import { NotificationDataFilterHelper } from './helpers/notification-data-filter.helper';
+import { JwtOrApiKeyGuard } from 'src/common/guards/jwt-or-api-key/jwt-or-api-key.guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 const providerModules = [
   MailgunModule,
@@ -105,6 +108,9 @@ const consumers = [
     ArchivedNotificationsService,
     RequestLoggerMiddleware,
     NotificationDataFilterHelper,
+    JwtOrApiKeyGuard,
+    RolesGuard,
+    JwtAuthGuard,
     ...consumers,
   ],
   exports: [
