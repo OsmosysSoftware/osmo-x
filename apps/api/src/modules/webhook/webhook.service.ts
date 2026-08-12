@@ -26,6 +26,7 @@ export class WebhookService {
   protected readonly logger = new Logger(WebhookService.name);
   private readonly maxRetryCount: number;
   private readonly retryIntervalMs: number;
+  private readonly requestTimeoutMs: number;
 
   constructor(
     @InjectRepository(Webhook)
@@ -41,8 +42,36 @@ export class WebhookService {
     private readonly notificationQueueProducer: NotificationQueueProducer,
     private readonly configService: ConfigService,
   ) {
-    this.maxRetryCount = +this.configService.get('WEBHOOK_MAX_RETRY_COUNT', 5);
-    this.retryIntervalMs = ms(this.configService.get<string>('WEBHOOK_RETRY_INTERVAL', '30m'));
+    const maxRetryCountRaw = +this.configService.get('WEBHOOK_MAX_RETRY_COUNT', 5);
+
+    if (Number.isInteger(maxRetryCountRaw) && maxRetryCountRaw >= 1) {
+      this.maxRetryCount = maxRetryCountRaw;
+    } else {
+      this.logger.warn(
+        `Invalid WEBHOOK_MAX_RETRY_COUNT value: ${maxRetryCountRaw}, falling back to default of 5`,
+      );
+      this.maxRetryCount = 5;
+    }
+
+    const retryIntervalRaw = ms(this.configService.get<string>('WEBHOOK_RETRY_INTERVAL', '30m'));
+
+    if (Number.isFinite(retryIntervalRaw) && retryIntervalRaw > 0) {
+      this.retryIntervalMs = retryIntervalRaw;
+    } else {
+      this.logger.warn(`Invalid WEBHOOK_RETRY_INTERVAL value, falling back to default of 30m`);
+      this.retryIntervalMs = ms('30m');
+    }
+
+    const requestTimeoutRaw = +this.configService.get('WEBHOOK_REQUEST_TIMEOUT_MS', 10000);
+
+    if (Number.isInteger(requestTimeoutRaw) && requestTimeoutRaw > 0) {
+      this.requestTimeoutMs = requestTimeoutRaw;
+    } else {
+      this.logger.warn(
+        `Invalid WEBHOOK_REQUEST_TIMEOUT_MS value: ${requestTimeoutRaw}, falling back to default of 10000`,
+      );
+      this.requestTimeoutMs = 10000;
+    }
   }
 
   async findByProviderId(providerId: number): Promise<Webhook[]> {
@@ -94,6 +123,7 @@ export class WebhookService {
         headers: {
           'Content-Type': 'application/json',
         },
+        timeout: this.requestTimeoutMs,
       });
 
       this.logger.log(`Webhook delivered successfully for notification ${id}`);
@@ -188,9 +218,18 @@ export class WebhookService {
     status: number,
     attemptedAt: Date,
   ): Promise<void> {
-    webhook.lastDeliveryStatus = status;
-    webhook.lastAttemptedAt = attemptedAt;
-    await this.webhookRepository.save(webhook);
+    // Only overwrite if this attempt is newer than what's stored, so a slower older attempt
+    // can't clobber a faster, more recent one when webhook calls for the same provider
+    // complete out of order.
+    await this.webhookRepository
+      .createQueryBuilder()
+      .update(Webhook)
+      .set({ lastDeliveryStatus: status, lastAttemptedAt: attemptedAt })
+      .where('id = :id AND (last_attempted_at IS NULL OR last_attempted_at < :attemptedAt)', {
+        id: webhook.id,
+        attemptedAt,
+      })
+      .execute();
   }
 
   async deleteOldWebhookLogsCron(): Promise<void> {

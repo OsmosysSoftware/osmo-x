@@ -6,4 +6,5 @@ COPY server.js .
 ENV PORT=4000
 EXPOSE 4000
 
+USER node
 CMD ["node", "server.js"]

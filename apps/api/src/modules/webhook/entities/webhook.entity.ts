@@ -56,10 +56,8 @@ export class Webhook {
   status: number;
 
   @Column({ name: 'last_delivery_status', type: 'smallint', nullable: true })
-  @Field({ nullable: true })
   lastDeliveryStatus: number | null;
 
   @Column({ name: 'last_attempted_at', type: 'timestamptz', nullable: true })
-  @Field({ nullable: true })
   lastAttemptedAt: Date | null;
 }

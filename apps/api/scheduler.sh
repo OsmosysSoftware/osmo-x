@@ -29,7 +29,7 @@ delete_archived_notifications() {
 }
 
 cleanup_webhook_logs() {
-  curl -X DELETE "${WEBHOOK_URL}/logs/cleanup"
+  curl -f -X DELETE "${WEBHOOK_URL}/logs/cleanup"
 }
 
 last_archive_run=$(date +%s)
@@ -56,8 +56,9 @@ while true; do
 
   # Check if it's time to run the webhook log cleanup function
   if (( (current_time - last_webhook_log_cleanup_run) >= WEBHOOK_LOG_CLEANUP_INTERVAL_IN_SECONDS )); then
-    cleanup_webhook_logs
-    last_webhook_log_cleanup_run=$current_time
+    if cleanup_webhook_logs; then
+      last_webhook_log_cleanup_run=$current_time
+    fi
   fi
 
   sleep $SCHEDULE_TIME_IN_SECONDS

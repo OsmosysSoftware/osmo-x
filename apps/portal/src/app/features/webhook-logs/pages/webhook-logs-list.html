@@ -54,7 +54,7 @@
             />
           </td>
           <td>
-            @if (log.response_body) {
+            @if (log.response_body !== null && log.response_body !== undefined) {
               <p-button
                 icon="pi pi-eye"
                 [rounded]="true"

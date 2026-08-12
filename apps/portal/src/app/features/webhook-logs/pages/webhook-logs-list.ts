@@ -49,8 +49,8 @@ export class WebhookLogsListComponent implements OnInit {
   readonly logs = signal<WebhookLog[]>([]);
   readonly loading = signal(true);
   readonly pageInfo = signal<PageInfo | null>(null);
-  private currentPage = 1;
-  private currentLimit = 20;
+  private readonly currentPage = signal(1);
+  private readonly currentLimit = signal(20);
 
   readonly jsonDialogVisible = signal(false);
   readonly jsonDialogData = signal<Record<string, unknown> | null>(null);
@@ -63,19 +63,21 @@ export class WebhookLogsListComponent implements OnInit {
   loadLogs(): void {
     this.loading.set(true);
 
-    this.webhookLogsService.list(this.webhookId, this.currentPage, this.currentLimit).subscribe({
-      next: (res) => {
-        this.logs.set(res.items ?? []);
-        this.pageInfo.set(res.page_info ?? null);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.webhookLogsService
+      .list(this.webhookId, this.currentPage(), this.currentLimit())
+      .subscribe({
+        next: (res) => {
+          this.logs.set(res.items ?? []);
+          this.pageInfo.set(res.page_info ?? null);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 
   onPageChange(event: { page: number; limit: number }): void {
-    this.currentPage = event.page;
-    this.currentLimit = event.limit;
+    this.currentPage.set(event.page);
+    this.currentLimit.set(event.limit);
     this.loadLogs();
   }
 
