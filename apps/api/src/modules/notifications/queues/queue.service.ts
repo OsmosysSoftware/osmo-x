@@ -15,9 +15,10 @@ import { Wa360dialogNotificationsConsumer } from 'src/jobs/consumers/notificatio
 import { WaTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilio-notifications.job.consumer';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
+import { IQueueService } from './queue.tokens';
 
 @Injectable()
-export class QueueService {
+export class QueueService implements IQueueService {
   private readonly logger = new Logger(QueueService.name);
   private readonly queues: Map<string, Queue> = new Map();
   private workers: Map<string, Worker> = new Map();

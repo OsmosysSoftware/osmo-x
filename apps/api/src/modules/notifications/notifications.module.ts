@@ -36,6 +36,7 @@ import { SmsPlivoModule } from '../providers/sms-plivo/sms-plivo.module';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
 import { WaTwilioBusinessModule } from '../providers/wa-twilio-business/wa-twilio-business.module';
 import { QueueService } from './queues/queue.service';
+import { QUEUE_SERVICE } from './queues/queue.tokens';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
 import { PushSnsModule } from '../providers/push-sns/push-sns.module';
@@ -113,6 +114,7 @@ const consumers = [
     ApplicationsService,
     UsersService,
     QueueService,
+    { provide: QUEUE_SERVICE, useExisting: QueueService },
     ArchivedNotificationsService,
     RequestLoggerMiddleware,
     NotificationDataFilterHelper,

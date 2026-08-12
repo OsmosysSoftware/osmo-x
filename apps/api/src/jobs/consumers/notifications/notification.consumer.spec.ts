@@ -1,13 +1,4 @@
 import { Repository } from 'typeorm';
-// Side-effect-only import, must run before NotificationConsumer is loaded: NotificationConsumer
-// sits behind a pre-existing circular import chain (NotificationConsumer -> NotificationsService
-// -> NotificationQueueProducer -> QueueService -> every *.job.consumer.ts, each of which
-// `extends NotificationConsumer`). Node resolves this fine when the entry point is elsewhere in
-// the graph (as it is at app boot, via notifications.module.ts -> ... -> QueueService -> the
-// consumers), but if NotificationConsumer itself is the first module loaded, the cycle closes on
-// a partially-loaded (undefined) NotificationConsumer and `class X extends NotificationConsumer`
-// throws. Loading QueueService first here reproduces the app's real load order.
-import 'src/modules/notifications/queues/queue.service';
 import { NotificationConsumer } from './notification.consumer';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';

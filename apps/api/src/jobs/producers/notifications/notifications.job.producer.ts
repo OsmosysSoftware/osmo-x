@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
-import { QueueService } from 'src/modules/notifications/queues/queue.service';
+import { IQueueService, QUEUE_SERVICE } from 'src/modules/notifications/queues/queue.tokens';
 import { ProvidersService } from 'src/modules/providers/providers.service';
 import { QueueAction } from 'src/common/constants/notifications';
 
@@ -9,7 +9,7 @@ export class NotificationQueueProducer {
   private readonly logger = new Logger(NotificationQueueProducer.name);
 
   constructor(
-    private readonly queueService: QueueService,
+    @Inject(QUEUE_SERVICE) private readonly queueService: IQueueService,
     private readonly providersService: ProvidersService,
   ) {}
 

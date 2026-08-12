@@ -29,7 +29,7 @@ delete_archived_notifications() {
 }
 
 cleanup_webhook_logs() {
-  curl -f -X DELETE "${WEBHOOK_URL}/logs/cleanup"
+  curl -f -X DELETE "${WEBHOOK_URL}/logs/cleanup" -H "x-scheduler-key: ${SCHEDULER_INTERNAL_KEY}"
 }
 
 last_archive_run=$(date +%s)

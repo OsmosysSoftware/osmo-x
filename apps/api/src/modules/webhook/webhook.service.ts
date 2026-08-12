@@ -151,11 +151,30 @@ export class WebhookService {
           requestedAt,
         });
         await this.updateLastDelivery(webhook, WebhookDeliveryStatus.RETRYING, requestedAt);
-        await this.notificationQueueProducer.enqueueDelayedWebhookRetry(
-          notification,
-          attempt + 1,
-          this.retryIntervalMs,
-        );
+
+        try {
+          await this.notificationQueueProducer.enqueueDelayedWebhookRetry(
+            notification,
+            attempt + 1,
+            this.retryIntervalMs,
+          );
+        } catch (enqueueError) {
+          // The RETRYING log/state above is now stale: no future attempt is coming. Record a
+          // compensating FAILED entry so delivery state reflects reality instead of getting
+          // stuck at "will retry" forever, and log loudly since this needs manual follow-up.
+          this.logger.error(
+            `Failed to schedule webhook retry for notification ${id}, attempt ${attempt + 1}: ${enqueueError.message}. Marking delivery permanently failed.`,
+            enqueueError.stack,
+          );
+          await this.saveWebhookLog(webhook.id, id, attempt, WebhookDeliveryStatus.FAILED, {
+            requestBody: notification,
+            httpStatusCode,
+            responseBody,
+            errorMessage: `Retry scheduling failed: ${enqueueError.message}`,
+            requestedAt,
+          });
+          await this.updateLastDelivery(webhook, WebhookDeliveryStatus.FAILED, requestedAt);
+        }
       } else {
         this.logger.error(
           `Webhook delivery permanently failed for notification ${id} after ${attempt} attempts: ${errorMessage}`,

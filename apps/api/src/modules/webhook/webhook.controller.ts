@@ -22,6 +22,7 @@ import { Request } from 'express';
 import { WebhookService } from './webhook.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
+import { SchedulerAuthGuard } from 'src/common/guards/scheduler-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { CreateWebhookInput } from './dto/create-webhook.input';
@@ -112,8 +113,10 @@ export class WebhookController {
   }
 
   @Delete('logs/cleanup')
+  @UseGuards(SchedulerAuthGuard)
   @ApiOperation({ summary: 'Delete webhook logs past the retention window (scheduler endpoint)' })
   @ApiResponse({ status: 200, description: 'Old webhook logs deleted' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid x-scheduler-key header' })
   async cleanupLogs(): Promise<void> {
     await this.webhookService.deleteOldWebhookLogsCron();
   }
