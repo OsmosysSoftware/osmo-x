@@ -2,6 +2,7 @@ const http = require('http');
 
 const PORT = process.env.PORT || 4000;
 const MAX_BODY_BYTES = 1024 * 1024; // 1mb
+const MAX_DELAY_MS = 5 * 60 * 1000; // 5m safety cap
 
 function parseFailCount(value, fallback) {
   const n = Number(value);
@@ -13,11 +14,28 @@ function parseFailStatus(value, fallback) {
   return Number.isInteger(n) && n >= 100 && n <= 599 ? n : fallback;
 }
 
+function parseDelayMs(value, fallback) {
+  const n = Number(value);
+  return Number.isInteger(n) && n >= 0 && n <= MAX_DELAY_MS ? n : fallback;
+}
+
 // Number of times to fail (per notification id) before returning success.
 let FAIL_COUNT = parseFailCount(process.env.FAIL_COUNT, 0);
 let FAIL_STATUS = parseFailStatus(process.env.FAIL_STATUS, 500);
+// Artificial delay (ms) before responding to a delivery call. Used to test
+// WEBHOOK_REQUEST_TIMEOUT_MS and out-of-order last-delivery-state handling.
+let DELAY_MS = parseDelayMs(process.env.DELAY_MS, 0);
+// Literal value to send as the JSON body on a successful delivery response, in place of the
+// default { ok: true, attempt }. Explicitly supports falsy JSON values (false, 0, "", null) so
+// the portal's response-body viewer can be tested against them. undefined = use the default.
+let RESPONSE_BODY;
+let RESPONSE_BODY_SET = false;
 
 const attempts = new Map();
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -46,7 +64,13 @@ function json(res, status, body) {
 const server = http.createServer(async (req, res) => {
   try {
     if (req.method === 'GET' && req.url === '/status') {
-      return json(res, 200, { failCount: FAIL_COUNT, failStatus: FAIL_STATUS, attempts: Object.fromEntries(attempts) });
+      return json(res, 200, {
+        failCount: FAIL_COUNT,
+        failStatus: FAIL_STATUS,
+        delayMs: DELAY_MS,
+        responseBody: RESPONSE_BODY_SET ? RESPONSE_BODY : undefined,
+        attempts: Object.fromEntries(attempts),
+      });
     }
 
     if (req.method === 'POST' && req.url === '/reset') {
@@ -63,10 +87,23 @@ const server = http.createServer(async (req, res) => {
         return json(res, 400, { error: 'invalid JSON body' });
       }
       if (body.failCount !== undefined) FAIL_COUNT = parseFailCount(body.failCount, FAIL_COUNT);
-      if (body.failStatus !== undefined) FAIL_STATUS = parseFailStatus(body.failStatus, FAIL_STATUS);
+      if (body.failStatus !== undefined)
+        FAIL_STATUS = parseFailStatus(body.failStatus, FAIL_STATUS);
+      if (body.delayMs !== undefined) DELAY_MS = parseDelayMs(body.delayMs, DELAY_MS);
+      if (Object.prototype.hasOwnProperty.call(body, 'responseBody')) {
+        RESPONSE_BODY = body.responseBody;
+        RESPONSE_BODY_SET = true;
+      }
       attempts.clear();
-      console.log(`  -> reconfigured: FAIL_COUNT=${FAIL_COUNT} FAIL_STATUS=${FAIL_STATUS}`);
-      return json(res, 200, { failCount: FAIL_COUNT, failStatus: FAIL_STATUS });
+      console.log(
+        `  -> reconfigured: FAIL_COUNT=${FAIL_COUNT} FAIL_STATUS=${FAIL_STATUS} DELAY_MS=${DELAY_MS} RESPONSE_BODY_SET=${RESPONSE_BODY_SET}`,
+      );
+      return json(res, 200, {
+        failCount: FAIL_COUNT,
+        failStatus: FAIL_STATUS,
+        delayMs: DELAY_MS,
+        responseBody: RESPONSE_BODY_SET ? RESPONSE_BODY : undefined,
+      });
     }
 
     const raw = await readBody(req);
@@ -83,13 +120,18 @@ const server = http.createServer(async (req, res) => {
 
     console.log(`[${new Date().toISOString()}] notification ${id} attempt ${count}`, payload);
 
+    if (DELAY_MS > 0) {
+      console.log(`  -> delaying response by ${DELAY_MS}ms`);
+      await sleep(DELAY_MS);
+    }
+
     if (count <= FAIL_COUNT) {
       console.log(`  -> failing (attempt ${count}/${FAIL_COUNT}), status ${FAIL_STATUS}`);
       return json(res, FAIL_STATUS, { ok: false, attempt: count });
     }
 
     console.log(`  -> succeeding (attempt ${count})`);
-    return json(res, 200, { ok: true, attempt: count });
+    return json(res, 200, RESPONSE_BODY_SET ? RESPONSE_BODY : { ok: true, attempt: count });
   } catch (error) {
     if (error.statusCode === 413) {
       return json(res, 413, { error: 'payload too large' });
@@ -101,6 +143,6 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`webhook-test-receiver listening on :${PORT}`);
-  console.log(`FAIL_COUNT=${FAIL_COUNT} FAIL_STATUS=${FAIL_STATUS}`);
+  console.log(`FAIL_COUNT=${FAIL_COUNT} FAIL_STATUS=${FAIL_STATUS} DELAY_MS=${DELAY_MS}`);
   console.log('GET /status to inspect attempts, POST /reset to clear');
 });
