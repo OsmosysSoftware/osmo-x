@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { QueueService } from 'src/modules/notifications/queues/queue.service';
 import { ProvidersService } from 'src/modules/providers/providers.service';
+import { QueueAction } from 'src/common/constants/notifications';
 
 @Injectable()
 export class NotificationQueueProducer {
@@ -33,5 +34,33 @@ export class NotificationQueueProducer {
       id: notification.id,
       providerId: notification.providerId,
     });
+  }
+
+  async enqueueDelayedWebhookRetry(
+    notification: Notification,
+    attempt: number,
+    delayMs: number,
+  ): Promise<void> {
+    const provider = await this.providersService.getById(notification.providerId);
+
+    if (!provider) {
+      throw new Error(`Provider with ID ${notification.providerId} not found.`);
+    }
+
+    const queue = this.queueService.getOrCreateQueue(
+      QueueAction.WEBHOOK,
+      provider.channelType.toString(),
+      notification.providerId.toString(),
+    );
+    const jobId = `${notification.id}-attempt-${attempt}`;
+
+    this.logger.debug(
+      `Scheduling delayed webhook retry for notification ${notification.id}, attempt ${attempt}, delay ${delayMs}ms`,
+    );
+    await queue.add(
+      jobId,
+      { id: notification.id, providerId: notification.providerId, attempt },
+      { delay: delayMs, jobId },
+    );
   }
 }

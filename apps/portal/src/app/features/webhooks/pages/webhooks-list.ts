@@ -7,6 +7,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -56,6 +57,7 @@ export class WebhooksListComponent implements OnInit {
   private readonly providersService = inject(ProvidersService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly router = inject(Router);
   readonly orgContext = inject(OrgContextService);
 
   readonly dt = viewChild<Table>('dt');
@@ -112,6 +114,36 @@ export class WebhooksListComponent implements OnInit {
     const provider = this.providers().find((p) => p.provider_id === providerId);
 
     return provider ? provider.name : `#${providerId}`;
+  }
+
+  deliveryStatusLabel(status: number | null): string {
+    switch (status) {
+      case 1:
+        return 'Retrying';
+      case 2:
+        return 'Success';
+      case 3:
+        return 'Failed';
+      default:
+        return 'No attempts yet';
+    }
+  }
+
+  deliveryStatusSeverity(status: number | null): 'success' | 'warn' | 'danger' | 'secondary' {
+    switch (status) {
+      case 1:
+        return 'warn';
+      case 2:
+        return 'success';
+      case 3:
+        return 'danger';
+      default:
+        return 'secondary';
+    }
+  }
+
+  viewLogs(webhook: Webhook): void {
+    this.router.navigate(['/webhooks', webhook.id, 'logs']);
   }
 
   openCreate(): void {

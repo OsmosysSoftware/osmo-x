@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Queue, Worker, QueueEvents } from 'bullmq';
 import ms = require('ms');
@@ -42,6 +42,7 @@ export class QueueService {
     private readonly vcTwilioNotificationsConsumer: VcTwilioNotificationsConsumer,
     private readonly awsSesNotificationConsumer: AwsSesNotificationConsumer,
     private readonly smsSnsNotificationConsumer: SmsSnsNotificationConsumer,
+    @Inject(forwardRef(() => WebhookService))
     protected readonly webhookService: WebhookService,
   ) {
     this.redisConfig = {
@@ -238,7 +239,7 @@ export class QueueService {
         case `${QueueAction.WEBHOOK}-${ChannelType.VC_TWILIO}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.AWS_SES}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.SMS_SNS}`:
-          await this.webhookService.triggerWebhook(job.data.id);
+          await this.webhookService.triggerWebhook(job.data.id, job.data.attempt ?? 1);
           break;
         default:
           this.logger.error(

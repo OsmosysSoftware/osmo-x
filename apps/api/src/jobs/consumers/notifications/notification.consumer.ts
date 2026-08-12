@@ -55,6 +55,7 @@ export abstract class NotificationConsumer {
     const notification = (await this.notificationsService.getNotificationById(id))[0];
     const currentProvider = await this.providersService.getById(notification.providerId);
     const effectiveMaxRetryCount = currentProvider?.maxRetryCount ?? this.maxRetryCount;
+    let shouldTriggerWebhook = false;
 
     try {
       this.logger.log(`Sending notification with id: ${id}`);
@@ -76,11 +77,7 @@ export abstract class NotificationConsumer {
           `Channel type: ${notification.channelType} is included in skip queue. Provider confirmation skipped for notification id ${notification.id}`,
         );
         notification.deliveryStatus = DeliveryStatus.SUCCESS;
-        await this.notificationRepository.save(notification);
-        await this.notificationQueueService.addNotificationToQueue(
-          QueueAction.WEBHOOK,
-          notification,
-        );
+        shouldTriggerWebhook = true;
       } else {
         this.logger.debug(
           `Notification id ${notification.id} is awaiting confirmation from provider`,
@@ -142,12 +139,8 @@ export abstract class NotificationConsumer {
           }
         }
 
-        await this.notificationRepository.save(notification);
         // Call webhook for all providers (skip and non skip) when delivery status is FAILED
-        await this.notificationQueueService.addNotificationToQueue(
-          QueueAction.WEBHOOK,
-          notification,
-        );
+        shouldTriggerWebhook = true;
       }
 
       this.logger.debug(`Updating result of notification with id ${notification.id}`);
@@ -181,6 +174,15 @@ export abstract class NotificationConsumer {
       if (notification.retryCount > 0) {
         await this.saveRetryAttempt(notification, notification.result);
       }
+
+      // Enqueue webhook only after the notification's final state (including result) is persisted,
+      // so triggerWebhook's fresh re-fetch never races ahead of this save.
+      if (shouldTriggerWebhook) {
+        await this.notificationQueueService.addNotificationToQueue(
+          QueueAction.WEBHOOK,
+          notification,
+        );
+      }
     }
   }
 
@@ -194,6 +196,7 @@ export abstract class NotificationConsumer {
     const notification = (await this.notificationsService.getNotificationById(id))[0];
     const currentProvider = await this.providersService.getById(notification.providerId);
     const effectiveMaxRetryCount = currentProvider?.maxRetryCount ?? this.maxRetryCount;
+    let shouldTriggerWebhook = false;
 
     try {
       this.logger.log(`Checking delivery status from provider for notification with id: ${id}`);
@@ -222,11 +225,7 @@ export abstract class NotificationConsumer {
       }
 
       if (notification.deliveryStatus === DeliveryStatus.SUCCESS) {
-        await this.notificationRepository.save(notification);
-        await this.notificationQueueService.addNotificationToQueue(
-          QueueAction.WEBHOOK,
-          notification,
-        );
+        shouldTriggerWebhook = true;
       }
     } catch (error) {
       if (notification.retryCount < effectiveMaxRetryCount) {
@@ -277,11 +276,7 @@ export abstract class NotificationConsumer {
           }
         }
 
-        await this.notificationRepository.save(notification);
-        await this.notificationQueueService.addNotificationToQueue(
-          QueueAction.WEBHOOK,
-          notification,
-        );
+        shouldTriggerWebhook = true;
       }
 
       this.logger.log(
@@ -300,6 +295,15 @@ export abstract class NotificationConsumer {
       // Save retry attempt record if retry count > 0
       if (notification.retryCount > 0) {
         await this.saveRetryAttempt(notification, notification.result);
+      }
+
+      // Enqueue webhook only after the notification's final state (including result) is persisted,
+      // so triggerWebhook's fresh re-fetch never races ahead of this save.
+      if (shouldTriggerWebhook) {
+        await this.notificationQueueService.addNotificationToQueue(
+          QueueAction.WEBHOOK,
+          notification,
+        );
       }
     }
   }

@@ -29,7 +29,28 @@ export type MasterProvider = Omit<
   configuration: Record<string, ConfigFieldDescriptor>;
 };
 export type ServerApiKey = components['schemas']['ServerApiKeyResponseDto'];
-export type Webhook = components['schemas']['WebhookResponseDto'];
+// Webhook: last_delivery_status/last_attempted_at were added to the backend DTO alongside
+// notify_webhook_logs but aren't in the generated types yet. Manual addition pending the next
+// `npm run generate:api` run against a live backend.
+export type Webhook = components['schemas']['WebhookResponseDto'] & {
+  last_delivery_status: number | null;
+  last_attempted_at: string | null;
+};
+// WebhookLog: new backend DTO (GET /webhooks/logs), not yet present in generated types.
+// Manual addition pending the next `npm run generate:api` run against a live backend.
+export interface WebhookLog {
+  id: number;
+  webhook_id: number;
+  notification_id: number;
+  attempt_number: number;
+  status: number;
+  http_status_code: number | null;
+  request_body: unknown;
+  response_body: unknown;
+  error_message: string | null;
+  requested_at: string;
+  created_on: string;
+}
 export type Organization = components['schemas']['OrganizationResponseDto'];
 export type UserResponse = components['schemas']['UserResponseDto'];
 export type DashboardStats = components['schemas']['DashboardStatsResponseDto'];

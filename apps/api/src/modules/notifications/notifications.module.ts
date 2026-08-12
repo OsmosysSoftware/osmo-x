@@ -1,4 +1,11 @@
-import { Logger, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  forwardRef,
+  Logger,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Notification } from './entities/notification.entity';
 import { RetryNotification } from './entities/retry-notification.entity';
@@ -91,7 +98,7 @@ const consumers = [
   imports: [
     TypeOrmModule.forFeature([Notification, RetryNotification]),
     ...providerModules,
-    WebhookModule,
+    forwardRef(() => WebhookModule),
     ArchivedNotificationsModule,
   ],
   providers: [
@@ -117,6 +124,7 @@ const consumers = [
   ],
   exports: [
     NotificationsService,
+    NotificationQueueProducer,
     ServerApiKeysService,
     JwtService,
     ApplicationsService,

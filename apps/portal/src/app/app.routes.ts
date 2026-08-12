@@ -71,6 +71,14 @@ export const routes: Routes = [
           import('./features/webhooks/pages/webhooks-list').then((m) => m.WebhooksListComponent),
       },
       {
+        path: 'webhooks/:id/logs',
+        canActivate: [orgAdminGuard],
+        loadComponent: () =>
+          import('./features/webhook-logs/pages/webhook-logs-list').then(
+            (m) => m.WebhookLogsListComponent,
+          ),
+      },
+      {
         path: 'api-keys',
         canActivate: [orgAdminGuard],
         loadComponent: () =>
