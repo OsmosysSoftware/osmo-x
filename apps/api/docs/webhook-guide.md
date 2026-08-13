@@ -67,20 +67,22 @@ curl --location 'http://localhost:3000/api/webhooks' \
 }
 ```
 
-Related endpoints (all require a `Bearer` token with the `ORG_ADMIN` role or above, and are scoped to the caller's organization):
+Related endpoints:
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/webhooks?page=&limit=` | Paginated list of the organization's webhooks. |
-| `POST` | `/api/webhooks` | Register a webhook. |
-| `PUT` | `/api/webhooks` | Update a webhook URL (body: `id`, `webhook_url`). |
-| `DELETE` | `/api/webhooks` | Soft-delete a webhook (body: `id`). |
-| `GET` | `/api/webhooks/logs?webhook_id=&page=&limit=` | Paginated delivery attempt logs for one webhook. |
-| `DELETE` | `/api/webhooks/logs/cleanup` | Deletes logs past the retention window. Scheduler-only — requires the `x-scheduler-key` header. |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/api/webhooks?page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated list of the organization's webhooks. |
+| `POST` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Register a webhook. |
+| `PUT` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Update a webhook URL (body: `id`, `webhook_url`). |
+| `DELETE` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Soft-delete a webhook (body: `id`). |
+| `GET` | `/api/webhooks/logs?webhook_id=&page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated delivery attempt logs for one webhook. |
+| `DELETE` | `/api/webhooks/logs/cleanup` | `x-scheduler-key` | Deletes logs past the retention window. Scheduler-only, no user session. |
+
+The four `Bearer`-authenticated endpoints are scoped to the caller's own organization by default. A `SUPER_ADMIN` can target a different org by passing `?organization_id=<id>`; any other role passing an `organization_id` other than their own gets a `400 Bad Request`.
 
 ### GraphQL (legacy)
 
-The GraphQL API is frozen — it still works, but new fields such as `lastDeliveryStatus` are only exposed over REST.
+The GraphQL API is frozen — it still works, but new fields such as `last_delivery_status` are only exposed over REST.
 
 ```graphql
 mutation RegisterWebhook {
@@ -163,7 +165,7 @@ The webhook fires only after the notification's final outcome has been persisted
 
 ### Processing the Payload
 
-Your webhook handler should able to extract the required information from the payload and perform action on your application : like updating the database for the status etc.
+Your webhook handler should extract the required information from the payload and act on it in your application — e.g. updating the notification's status in your own database.
 Note: We are sending the complete notification object from our end
 
 Because a failed delivery is retried, your endpoint may receive the same notification `id` more than once. Handle the payload idempotently — key off `id` rather than assuming exactly one call.

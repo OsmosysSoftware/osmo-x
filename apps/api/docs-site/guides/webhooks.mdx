@@ -93,16 +93,18 @@ Only one active webhook can exist per provider — registering a second one for 
 
 ### Endpoints
 
-All endpoints below require a `Bearer` token with the `ORG_ADMIN` role or above, and are scoped to the caller's organization.
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/api/webhooks?page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated list of the organization's webhooks. |
+| `POST` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Register a webhook. |
+| `PUT` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Update a webhook URL (body: `id`, `webhook_url`). |
+| `DELETE` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Soft-delete a webhook (body: `id`). |
+| `GET` | `/api/webhooks/logs?webhook_id=&page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated delivery attempt logs for one webhook. |
+| `DELETE` | `/api/webhooks/logs/cleanup` | `x-scheduler-key` | Deletes logs past the retention window. Scheduler-only, no user session. |
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/webhooks?page=&limit=` | Paginated list of the organization's webhooks. |
-| `POST` | `/api/webhooks` | Register a webhook. |
-| `PUT` | `/api/webhooks` | Update a webhook URL (body: `id`, `webhook_url`). |
-| `DELETE` | `/api/webhooks` | Soft-delete a webhook (body: `id`). |
-| `GET` | `/api/webhooks/logs?webhook_id=&page=&limit=` | Paginated delivery attempt logs for one webhook. |
-| `DELETE` | `/api/webhooks/logs/cleanup` | Deletes logs past the retention window. Scheduler-only — requires the `x-scheduler-key` header. |
+<Note>
+  The `Bearer`-authenticated endpoints are scoped to the caller's own organization by default. A `SUPER_ADMIN` can target a different org via `?organization_id=<id>`; any other role passing an `organization_id` other than their own gets a `400 Bad Request`.
+</Note>
 
 ## Handling Webhook Events
 
