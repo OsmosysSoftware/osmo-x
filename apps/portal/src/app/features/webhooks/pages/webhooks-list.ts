@@ -119,23 +119,19 @@ export class WebhooksListComponent implements OnInit {
   deliveryStatusLabel(status: number | null): string {
     switch (status) {
       case 1:
-        return 'Retrying';
-      case 2:
         return 'Success';
-      case 3:
+      case 2:
         return 'Failed';
       default:
         return 'No attempts yet';
     }
   }
 
-  deliveryStatusSeverity(status: number | null): 'success' | 'warn' | 'danger' | 'secondary' {
+  deliveryStatusSeverity(status: number | null): 'success' | 'danger' | 'secondary' {
     switch (status) {
       case 1:
-        return 'warn';
-      case 2:
         return 'success';
-      case 3:
+      case 2:
         return 'danger';
       default:
         return 'secondary';

@@ -205,10 +205,10 @@ OsmoX retries with a **fixed interval**, not exponential backoff:
     Happens as soon as the notification reaches its final status.
   </Step>
   <Step title="Retry on failure">
-    A failed attempt is logged as `Failed` — a factual record of that attempt. If attempts remain, a next one is re-queued with a delay of `WEBHOOK_RETRY_INTERVAL`, and the webhook's `last_delivery_status` (not the attempt log) shows `Retrying` in the meantime.
+    A failed attempt is logged as `Failed` — every attempt row and the webhook's rolled-up `last_delivery_status` always reflect the actual outcome, never a "pending" state. If attempts remain, a next one is re-queued with a delay of `WEBHOOK_RETRY_INTERVAL`.
   </Step>
   <Step title="Give up after max attempts">
-    Once `WEBHOOK_MAX_RETRY_COUNT` attempts have been made, `last_delivery_status` moves to `Failed` too and no further attempts are made.
+    Once `WEBHOOK_MAX_RETRY_COUNT` attempts have been made with no success, no further attempts are made.
   </Step>
 </Steps>
 
@@ -226,7 +226,7 @@ Every attempt inserts a row into `notify_webhook_logs`:
 |-------|-------------|
 | `webhook_id` / `notification_id` | Which webhook and notification the attempt belongs to. |
 | `attempt_number` | `1` for the first attempt, incrementing per retry. |
-| `status` | `2` Success · `3` Failed — a per-attempt row is never `1` (Retrying); that value only appears on the webhook's rolled-up `last_delivery_status` while a next attempt is pending. |
+| `status` | `1` Success · `2` Failed |
 | `http_status_code` | Status returned by your endpoint, or `null` if no response was received (timeout, connection refused). |
 | `request_body` | The payload OsmoX sent. |
 | `response_body` | The body your endpoint returned. |

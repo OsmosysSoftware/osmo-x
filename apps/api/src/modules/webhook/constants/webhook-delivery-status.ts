@@ -1,5 +1,4 @@
 export const WebhookDeliveryStatus = {
-  RETRYING: 1,
-  SUCCESS: 2,
-  FAILED: 3,
+  SUCCESS: 1,
+  FAILED: 2,
 };

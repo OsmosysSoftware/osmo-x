@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { switchMap, tap } from 'rxjs';
@@ -20,15 +27,13 @@ import { ApplicationsService } from '../../applications/services/applications.se
 import { WebhookLog, Webhook, PageInfo } from '../../../core/models/api.model';
 
 const WEBHOOK_DELIVERY_STATUS_LABEL: Record<number, string> = {
-  1: 'Retrying',
-  2: 'Success',
-  3: 'Failed',
+  1: 'Success',
+  2: 'Failed',
 };
 
 const WEBHOOK_DELIVERY_STATUS_SEVERITY: Record<number, 'success' | 'warn' | 'danger'> = {
-  1: 'warn',
-  2: 'success',
-  3: 'danger',
+  1: 'success',
+  2: 'danger',
 };
 
 @Component({
@@ -52,7 +57,7 @@ const WEBHOOK_DELIVERY_STATUS_SEVERITY: Record<number, 'success' | 'warn' | 'dan
   templateUrl: './webhook-logs-list.html',
   styleUrl: './webhook-logs-list.scss',
 })
-export class WebhookLogsListComponent implements OnInit {
+export class WebhookLogsListComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly webhookLogsService = inject(WebhookLogsService);
   private readonly webhooksService = inject(WebhooksService);
@@ -80,6 +85,10 @@ export class WebhookLogsListComponent implements OnInit {
   ngOnInit(): void {
     this.loadLogs();
     this.loadContext();
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.searchDebounce);
   }
 
   private loadContext(): void {

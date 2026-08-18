@@ -32,8 +32,8 @@ export class WebhookResponseDto {
   updatedOn: Date;
 
   @ApiPropertyOptional({
-    description: 'Delivery status of the most recent attempt: 1=Retrying, 2=Success, 3=Failed',
-    example: 2,
+    description: 'Delivery status of the most recent attempt: 1=Success, 2=Failed',
+    example: 1,
   })
   lastDeliveryStatus: number | null;
 

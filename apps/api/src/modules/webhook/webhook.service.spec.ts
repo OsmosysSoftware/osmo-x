@@ -150,7 +150,7 @@ describe('WebhookService', () => {
         expect.objectContaining({ status: WebhookDeliveryStatus.FAILED, attemptNumber: 1 }),
       );
       expect(queryBuilder.set).toHaveBeenCalledWith(
-        expect.objectContaining({ lastDeliveryStatus: WebhookDeliveryStatus.RETRYING }),
+        expect.objectContaining({ lastDeliveryStatus: WebhookDeliveryStatus.FAILED }),
       );
       expect(notificationQueueProducer.enqueueDelayedWebhookRetry).toHaveBeenCalledWith(
         notification,

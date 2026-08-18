@@ -166,7 +166,6 @@ export class WebhookService {
         this.logger.log(
           `Webhook delivery failed for notification ${id}, attempt ${attempt}/${this.maxRetryCount}: ${errorMessage}. Retrying in ${this.retryIntervalMs}ms`,
         );
-        // Per-attempt status is factual (this attempt failed); RETRYING is only for the rollup.
         await this.saveWebhookLog(webhook.id, id, attempt, WebhookDeliveryStatus.FAILED, {
           requestBody: notification,
           httpStatusCode,
@@ -174,7 +173,7 @@ export class WebhookService {
           errorMessage,
           requestedAt,
         });
-        await this.updateLastDelivery(webhook, WebhookDeliveryStatus.RETRYING, requestedAt);
+        await this.updateLastDelivery(webhook, WebhookDeliveryStatus.FAILED, requestedAt);
 
         try {
           await this.notificationQueueProducer.enqueueDelayedWebhookRetry(
@@ -183,7 +182,7 @@ export class WebhookService {
             this.retryIntervalMs,
           );
         } catch (enqueueError) {
-          // No future attempt is coming — record it as FAILED instead of stuck "will retry".
+          // Rollup is already FAILED from above; just record why no retry is coming.
           this.logger.error(
             `Failed to schedule webhook retry for notification ${id}, attempt ${attempt + 1}: ${enqueueError.message}. Marking delivery permanently failed.`,
             enqueueError.stack,
@@ -195,7 +194,6 @@ export class WebhookService {
             errorMessage: `Retry scheduling failed: ${enqueueError.message}`,
             requestedAt,
           });
-          await this.updateLastDelivery(webhook, WebhookDeliveryStatus.FAILED, requestedAt);
         }
       } else {
         this.logger.error(

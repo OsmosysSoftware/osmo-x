@@ -13,7 +13,7 @@ export class WebhookLogResponseDto {
   @ApiProperty({ description: 'Attempt number for this delivery', example: 1 })
   attemptNumber: number;
 
-  @ApiProperty({ description: 'Delivery status: 1=Retrying, 2=Success, 3=Failed', example: 2 })
+  @ApiProperty({ description: 'Delivery status: 1=Success, 2=Failed', example: 1 })
   status: number;
 
   @ApiPropertyOptional({ description: 'HTTP status code returned by the partner', example: 200 })

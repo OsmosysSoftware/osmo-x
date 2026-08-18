@@ -176,8 +176,8 @@ This is not yet incorporated but will be happening in the future
 Osmox retries with a **fixed interval**, not exponential backoff:
 
 1. The first attempt happens as soon as the notification reaches its final status.
-2. If the attempt fails, it's logged as `Failed` — that's a factual record of what happened at that attempt. If attempts remain, a next attempt is re-queued with a delay of `WEBHOOK_RETRY_INTERVAL`, and the webhook's `last_delivery_status` (not the attempt log) shows `Retrying` in the meantime.
-3. Once `WEBHOOK_MAX_RETRY_COUNT` attempts have been made, `last_delivery_status` moves to `Failed` too and no further attempts are made.
+2. If the attempt fails, it's logged as `Failed` — every attempt row and the webhook's rolled-up `last_delivery_status` always reflect the actual outcome, `Success` or `Failed`, never a "pending" state. If attempts remain, a next attempt is re-queued with a delay of `WEBHOOK_RETRY_INTERVAL`.
+3. Once `WEBHOOK_MAX_RETRY_COUNT` attempts have been made with no success, no further attempts are made.
 
 Retries are queued through Redis rather than held in memory, so a worker restart does not lose a pending retry, and waiting for the next attempt does not block other notifications from being processed. With the defaults (`5` attempts, `30m` apart) a permanently unreachable endpoint is given up on after roughly two hours.
 
@@ -189,7 +189,7 @@ Every attempt inserts a row into `notify_webhook_logs`:
 |-------|-------------|
 | `webhook_id` / `notification_id` | Which webhook and notification the attempt belongs to. |
 | `attempt_number` | `1` for the first attempt, incrementing per retry. |
-| `status` | `2` Success · `3` Failed — a per-attempt row is never `1` (Retrying); that value only appears on the webhook's rolled-up `last_delivery_status` while a next attempt is pending. |
+| `status` | `1` Success · `2` Failed |
 | `http_status_code` | Status returned by your endpoint, or `null` if no response was received (timeout, connection refused). |
 | `request_body` | The payload Osmox sent. |
 | `response_body` | The body your endpoint returned. |
