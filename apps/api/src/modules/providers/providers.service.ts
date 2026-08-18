@@ -17,6 +17,7 @@ import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.helper';
 import { ChannelType } from 'src/common/constants/notifications';
 import { ProviderResponseDto } from './dto/provider-response.dto';
+import { WebhookService } from '../webhook/webhook.service';
 
 @Injectable()
 export class ProvidersService extends CoreService<Provider> {
@@ -28,6 +29,8 @@ export class ProvidersService extends CoreService<Provider> {
     private readonly applicationsService: ApplicationsService,
     private readonly usersService: UsersService,
     private readonly masterProvidersService: MasterProvidersService,
+    @Inject(forwardRef(() => WebhookService))
+    private readonly webhookService: WebhookService,
   ) {
     super(providerRepository);
   }
@@ -286,6 +289,7 @@ export class ProvidersService extends CoreService<Provider> {
 
     provider.status = Status.INACTIVE;
     await this.providerRepository.save(provider);
+    await this.webhookService.deactivateWebhooksForProvider(providerId);
 
     return true;
   }

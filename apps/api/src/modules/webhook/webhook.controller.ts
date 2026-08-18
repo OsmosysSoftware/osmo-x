@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -19,10 +20,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { ValidationException } from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { WebhookService } from './webhook.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
-import { SchedulerAuthGuard } from 'src/common/guards/scheduler-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRoles } from 'src/common/constants/database';
 import { CreateWebhookInput } from './dto/create-webhook.input';
@@ -81,6 +83,12 @@ export class WebhookController {
   @ApiOperation({ summary: 'List delivery attempt logs for a webhook' })
   @ApiQuery({ name: 'webhook_id', required: true, type: Number })
   @ApiQuery({
+    name: 'notification_id',
+    required: false,
+    type: Number,
+    description: 'Filter to delivery attempts for a single notification',
+  })
+  @ApiQuery({
     name: 'organization_id',
     required: false,
     type: Number,
@@ -91,20 +99,27 @@ export class WebhookController {
     description: 'Paginated list of webhook delivery logs',
     type: PaginatedResponse,
   })
+  @ApiResponse({ status: 400, description: 'webhook_id is required' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Webhook not found' })
   async findLogs(
     @Query('webhook_id') webhookId: number,
     @Query() query: PaginationQueryDto,
+    @Query('notification_id') notificationId: number,
     @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
   ): Promise<PaginatedResponse<WebhookLogResponseDto>> {
+    if (!webhookId) {
+      throw new ValidationException(ErrorCodes.VALIDATION_FAILED, 'webhook_id is required');
+    }
+
     const targetOrgId = resolveOrgId(user, queryOrgId);
     const { items, meta } = await this.webhookService.getWebhookLogsAsDto(
       webhookId,
       query,
       targetOrgId,
+      { notificationId },
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
@@ -112,13 +127,25 @@ export class WebhookController {
     return new PaginatedResponse(items, links, meta);
   }
 
-  @Delete('logs/cleanup')
-  @UseGuards(SchedulerAuthGuard)
-  @ApiOperation({ summary: 'Delete webhook logs past the retention window (scheduler endpoint)' })
-  @ApiResponse({ status: 200, description: 'Old webhook logs deleted' })
-  @ApiResponse({ status: 401, description: 'Missing or invalid x-scheduler-key header' })
-  async cleanupLogs(): Promise<void> {
-    await this.webhookService.deleteOldWebhookLogsCron();
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ORG_ADMIN)
+  @ApiOperation({ summary: 'Get a webhook by ID' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
+  @ApiResponse({ status: 200, description: 'Webhook details', type: WebhookResponseDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Webhook not found' })
+  async findOne(
+    @Param('id') id: number,
+    @Query('organization_id') queryOrgId: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<WebhookResponseDto> {
+    return this.webhookService.findByIdAsDto(id, resolveOrgId(user, queryOrgId));
   }
 
   @Post()

@@ -2,6 +2,7 @@ import { forwardRef, Logger, Module } from '@nestjs/common';
 import { ArchivedNotificationsService } from './archived-notifications.service';
 import { ArchivedNotification } from './entities/archived-notification.entity';
 import { RetryNotification } from '../notifications/entities/retry-notification.entity';
+import { WebhookLog } from '../webhook/entities/webhook-log.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { ConfigService } from '@nestjs/config';
@@ -15,7 +16,7 @@ import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ArchivedNotification, RetryNotification]),
+    TypeOrmModule.forFeature([ArchivedNotification, RetryNotification, WebhookLog]),
     forwardRef(() => NotificationsModule),
     ApplicationsModule,
   ],

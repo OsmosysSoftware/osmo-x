@@ -23,9 +23,6 @@ Webhook behavior is controlled by the following environment variables (see `.env
 | `WEBHOOK_MAX_RETRY_COUNT` | `5` | Maximum delivery attempts (the first attempt included) before the delivery is marked permanently `Failed`. |
 | `WEBHOOK_RETRY_INTERVAL` | `30m` | Fixed delay between attempts. Uses [ms](https://github.com/vercel/ms) formats (`10s`, `5m`, `1h`). |
 | `WEBHOOK_REQUEST_TIMEOUT_MS` | `10000` | Time to wait for your endpoint's response before treating the attempt as failed. |
-| `WEBHOOK_LOG_RETENTION_DAYS` | `60` | Days to keep delivery attempt logs. **Leave empty to disable cleanup entirely** — the log table then grows unbounded. |
-| `WEBHOOK_LOG_CLEANUP_INTERVAL_IN_SECONDS` | `86400` | How often `scheduler.sh` calls the log cleanup endpoint. |
-| `SCHEDULER_INTERNAL_KEY` | — | **Required.** Shared secret `scheduler.sh` sends as the `x-scheduler-key` header to call internal endpoints such as log cleanup. Minimum 32 characters recommended. |
 
 Invalid values for the retry/timeout variables are ignored with a warning at startup and the default is used instead — the application still boots.
 
@@ -72,13 +69,13 @@ Related endpoints:
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
 | `GET` | `/api/webhooks?page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated list of the organization's webhooks. |
+| `GET` | `/api/webhooks/:id` | `Bearer` (`ORG_ADMIN`+) | Get a single webhook by ID. |
 | `POST` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Register a webhook. |
 | `PUT` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Update a webhook URL (body: `id`, `webhook_url`). |
 | `DELETE` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Soft-delete a webhook (body: `id`). |
-| `GET` | `/api/webhooks/logs?webhook_id=&page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated delivery attempt logs for one webhook. |
-| `DELETE` | `/api/webhooks/logs/cleanup` | `x-scheduler-key` | Deletes logs past the retention window. Scheduler-only, no user session. |
+| `GET` | `/api/webhooks/logs?webhook_id=&notification_id=&page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated delivery attempt logs for one webhook. `notification_id` optionally filters to attempts for a single notification. |
 
-The four `Bearer`-authenticated endpoints are scoped to the caller's own organization by default. A `SUPER_ADMIN` can target a different org by passing `?organization_id=<id>`; any other role passing an `organization_id` other than their own gets a `400 Bad Request`.
+All endpoints above are scoped to the caller's own organization by default. A `SUPER_ADMIN` can target a different org by passing `?organization_id=<id>`; any other role passing an `organization_id` other than their own gets a `400 Bad Request`.
 
 ### GraphQL (legacy)
 
@@ -240,12 +237,7 @@ curl --location 'http://localhost:3000/api/webhooks/logs?webhook_id=3&page=1&lim
 
 ### Log retention
 
-`scheduler.sh` calls `DELETE /api/webhooks/logs/cleanup` every `WEBHOOK_LOG_CLEANUP_INTERVAL_IN_SECONDS`, which deletes rows older than `WEBHOOK_LOG_RETENTION_DAYS`. The endpoint is not user-facing: it requires the `x-scheduler-key` header to match `SCHEDULER_INTERNAL_KEY` and returns `401` otherwise, including when the secret is not configured at all.
-
-```sh
-curl -X DELETE 'http://localhost:3000/api/webhooks/logs/cleanup' \
---header 'x-scheduler-key: <SCHEDULER_INTERNAL_KEY>'
-```
+`notify_webhook_logs` has no independent retention of its own — a delivery log lives exactly as long as the notification it documents. When a notification is permanently deleted (the archived-notification deletion cron, gated by `ENABLE_ARCHIVED_NOTIFICATION_DELETION` and `DELETE_ARCHIVED_NOTIFICATIONS_OLDER_THAN` — see `.env.example`), its webhook logs are deleted in the same transaction. `ENABLE_ARCHIVED_NOTIFICATION_DELETION` defaults to `false`, so on a default configuration neither notifications nor their webhook logs are ever deleted — enable it if you need bounded retention.
 
 ## Troubleshooting
 

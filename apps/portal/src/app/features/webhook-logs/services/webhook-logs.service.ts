@@ -12,11 +12,17 @@ export class WebhookLogsService {
     return `${this.config.apiUrl}/webhooks/logs`;
   }
 
-  list(webhookId: number, page = 1, limit = 20): Observable<PaginatedResponse<WebhookLog>> {
-    const params = new HttpParams()
-      .set('webhook_id', webhookId)
-      .set('page', page)
-      .set('limit', limit);
+  list(
+    webhookId: number,
+    page = 1,
+    limit = 20,
+    notificationId?: number,
+  ): Observable<PaginatedResponse<WebhookLog>> {
+    let params = new HttpParams().set('webhook_id', webhookId).set('page', page).set('limit', limit);
+
+    if (notificationId) {
+      params = params.set('notification_id', notificationId);
+    }
 
     return this.http.get<PaginatedResponse<WebhookLog>>(this.apiUrl, { params });
   }

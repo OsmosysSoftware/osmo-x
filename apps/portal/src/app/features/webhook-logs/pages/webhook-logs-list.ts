@@ -1,15 +1,22 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { switchMap, tap } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TooltipModule } from 'primeng/tooltip';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { JsonViewerDialog } from '../../../shared/components/json-viewer-dialog/json-viewer-dialog';
 import { WebhookLogsService } from '../services/webhook-logs.service';
-import { WebhookLog, PageInfo } from '../../../core/models/api.model';
+import { WebhooksService } from '../../webhooks/services/webhooks.service';
+import { ProvidersService } from '../../providers/services/providers.service';
+import { ApplicationsService } from '../../applications/services/applications.service';
+import { WebhookLog, Webhook, PageInfo } from '../../../core/models/api.model';
 
 const WEBHOOK_DELIVERY_STATUS_LABEL: Record<number, string> = {
   1: 'Retrying',
@@ -33,6 +40,9 @@ const WEBHOOK_DELIVERY_STATUS_SEVERITY: Record<number, 'success' | 'warn' | 'dan
     ButtonModule,
     SkeletonModule,
     TooltipModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
     PaginationComponent,
     JsonViewerDialog,
   ],
@@ -43,6 +53,9 @@ const WEBHOOK_DELIVERY_STATUS_SEVERITY: Record<number, 'success' | 'warn' | 'dan
 export class WebhookLogsListComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly webhookLogsService = inject(WebhookLogsService);
+  private readonly webhooksService = inject(WebhooksService);
+  private readonly providersService = inject(ProvidersService);
+  private readonly applicationsService = inject(ApplicationsService);
 
   private readonly webhookId = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -51,6 +64,11 @@ export class WebhookLogsListComponent implements OnInit {
   readonly pageInfo = signal<PageInfo | null>(null);
   private readonly currentPage = signal(1);
   private readonly currentLimit = signal(20);
+  readonly notificationIdFilter = signal<string>('');
+
+  readonly webhook = signal<Webhook | null>(null);
+  readonly providerName = signal<string | null>(null);
+  readonly applicationName = signal<string | null>(null);
 
   readonly jsonDialogVisible = signal(false);
   readonly jsonDialogData = signal<Record<string, unknown> | null>(null);
@@ -58,13 +76,30 @@ export class WebhookLogsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadLogs();
+    this.loadContext();
+  }
+
+  private loadContext(): void {
+    this.webhooksService
+      .getById(this.webhookId)
+      .pipe(
+        tap((webhook) => this.webhook.set(webhook)),
+        switchMap((webhook) => this.providersService.getById(webhook.provider_id)),
+        tap((provider) => this.providerName.set(provider.name)),
+        switchMap((provider) => this.applicationsService.getById(provider.application_id)),
+      )
+      .subscribe({
+        next: (application) => this.applicationName.set(application.name),
+      });
   }
 
   loadLogs(): void {
     this.loading.set(true);
 
+    const notificationId = this.parseNotificationIdFilter();
+
     this.webhookLogsService
-      .list(this.webhookId, this.currentPage(), this.currentLimit())
+      .list(this.webhookId, this.currentPage(), this.currentLimit(), notificationId)
       .subscribe({
         next: (res) => {
           this.logs.set(res.items ?? []);
@@ -73,6 +108,33 @@ export class WebhookLogsListComponent implements OnInit {
         },
         error: () => this.loading.set(false),
       });
+  }
+
+  private parseNotificationIdFilter(): number | undefined {
+    const raw = this.notificationIdFilter().trim();
+
+    if (!raw) {
+      return undefined;
+    }
+
+    const parsed = Number(raw);
+
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+  }
+
+  onNotificationIdInput(event: Event): void {
+    this.notificationIdFilter.set((event.target as HTMLInputElement).value);
+  }
+
+  applyNotificationIdFilter(): void {
+    this.currentPage.set(1);
+    this.loadLogs();
+  }
+
+  clearNotificationIdFilter(): void {
+    this.notificationIdFilter.set('');
+    this.currentPage.set(1);
+    this.loadLogs();
   }
 
   onPageChange(event: { page: number; limit: number }): void {

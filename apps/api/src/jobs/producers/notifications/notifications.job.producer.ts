@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { IQueueService, QUEUE_SERVICE } from 'src/modules/notifications/queues/queue.tokens';
 import { ProvidersService } from 'src/modules/providers/providers.service';
@@ -10,6 +10,7 @@ export class NotificationQueueProducer {
 
   constructor(
     @Inject(QUEUE_SERVICE) private readonly queueService: IQueueService,
+    @Inject(forwardRef(() => ProvidersService))
     private readonly providersService: ProvidersService,
   ) {}
 

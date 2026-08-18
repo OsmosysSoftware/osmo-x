@@ -7,6 +7,26 @@
         <i class="pi pi-list text-primary"></i> Webhook Delivery Logs
       </h1>
       <p class="text-muted-color mt-2">Delivery attempt history for this webhook</p>
+
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-3 text-sm">
+        <span class="text-muted-color">Application</span>
+        <span class="font-medium text-surface-900 dark:text-surface-0">
+          {{ applicationName() ?? '—' }}
+        </span>
+        <i class="pi pi-angle-right text-muted-color text-xs"></i>
+        <span class="text-muted-color">Provider</span>
+        <span class="font-medium text-surface-900 dark:text-surface-0">
+          {{ providerName() ?? '—' }}
+        </span>
+      </div>
+
+      @if (webhook(); as wh) {
+        <div class="flex flex-wrap items-center gap-2 mt-2 text-sm">
+          <span class="text-muted-color">Endpoint</span>
+          <code class="text-surface-900 dark:text-surface-0 break-all">{{ wh.webhook_url }}</code>
+          <span class="text-muted-color">· Webhook #{{ wh.id }}</span>
+        </div>
+      }
     </div>
     <p-button
       label="Back to Webhooks"
@@ -17,12 +37,46 @@
     />
   </div>
 
+  <div class="flex items-center gap-2 mb-4">
+    <p-iconfield iconPosition="left">
+      <p-inputicon class="pi pi-search" />
+      <input
+        pInputText
+        type="number"
+        min="1"
+        placeholder="Search by notification ID"
+        [value]="notificationIdFilter()"
+        (input)="onNotificationIdInput($event)"
+        (keyup.enter)="applyNotificationIdFilter()"
+      />
+    </p-iconfield>
+    <p-button
+      label="Search"
+      icon="pi pi-search"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="applyNotificationIdFilter()"
+    />
+    @if (notificationIdFilter()) {
+      <p-button
+        icon="pi pi-times"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        pTooltip="Clear filter"
+        aria-label="Clear notification ID filter"
+        (onClick)="clearNotificationIdFilter()"
+      />
+    }
+  </div>
+
   @if (loading()) {
     <p-skeleton height="200px" />
   } @else {
     <p-table [value]="logs()" [rowHover]="true" [stripedRows]="true" [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template #header>
         <tr>
+          <th style="min-width: 9rem">Notification</th>
           <th style="min-width: 6rem">Attempt</th>
           <th style="min-width: 8rem">Status</th>
           <th style="min-width: 6rem">HTTP</th>
@@ -34,6 +88,7 @@
       </ng-template>
       <ng-template #body let-log>
         <tr>
+          <td class="font-medium">{{ log.notification_id }}</td>
           <td>{{ log.attempt_number }}</td>
           <td>
             <p-tag [value]="statusLabel(log.status)" [severity]="statusSeverity(log.status)" [rounded]="true" />
@@ -71,7 +126,7 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="7" class="text-center! py-8 text-muted-color">No delivery attempts yet</td>
+          <td colspan="8" class="text-center! py-8 text-muted-color">No delivery attempts yet</td>
         </tr>
       </ng-template>
     </p-table>
