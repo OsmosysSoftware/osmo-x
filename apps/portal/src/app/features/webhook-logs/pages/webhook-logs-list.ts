@@ -130,6 +130,13 @@ export class WebhookLogsListComponent implements OnInit, OnDestroy {
     }, 400);
   }
 
+  clearSearch(): void {
+    clearTimeout(this.searchDebounce);
+    this.searchTerm.set('');
+    this.currentPage.set(1);
+    this.loadLogs();
+  }
+
   onPageChange(event: { page: number; limit: number }): void {
     this.currentPage.set(event.page);
     this.currentLimit.set(event.limit);

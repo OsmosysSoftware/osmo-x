@@ -51,6 +51,26 @@
             (input)="onSearchInput($event)"
           />
         </p-iconfield>
+        <p-button
+          icon="pi pi-filter-slash"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Clear filters"
+          tooltipPosition="top"
+          aria-label="Clear filters"
+          (onClick)="clearSearch()"
+        />
+        <p-button
+          icon="pi pi-refresh"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Refresh"
+          tooltipPosition="top"
+          aria-label="Refresh"
+          (onClick)="loadLogs()"
+        />
       </div>
     </ng-template>
   </p-toolbar>
