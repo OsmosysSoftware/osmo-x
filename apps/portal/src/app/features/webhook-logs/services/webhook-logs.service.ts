@@ -16,12 +16,12 @@ export class WebhookLogsService {
     webhookId: number,
     page = 1,
     limit = 20,
-    notificationId?: number,
+    search?: string,
   ): Observable<PaginatedResponse<WebhookLog>> {
     let params = new HttpParams().set('webhook_id', webhookId).set('page', page).set('limit', limit);
 
-    if (notificationId) {
-      params = params.set('notification_id', notificationId);
+    if (search) {
+      params = params.set('search', search);
     }
 
     return this.http.get<PaginatedResponse<WebhookLog>>(this.apiUrl, { params });

@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConflictException, NotFoundException } from 'src/common/exceptions/app.exception';
 import { ErrorCodes } from 'src/common/constants/error-codes';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Brackets, EntityManager, In, Repository } from 'typeorm';
 import { Webhook } from './entities/webhook.entity';
 import { WebhookLog } from './entities/webhook-log.entity';
 import axios, { AxiosResponse } from 'axios';
@@ -81,13 +81,12 @@ export class WebhookService {
   }
 
   /**
-   * Soft-deletes any active webhook(s) for a provider. Called when the provider itself is
-   * soft-deleted, so a stale webhook registration doesn't stay ACTIVE and orphaned once its
-   * provider no longer exists. Caller (ProvidersService) has already verified org access to the
-   * provider, so this trusts providerId and does not re-check org ownership itself.
+   * Deactivates a provider's active webhook(s). Pass the caller's transaction manager to keep
+   * this atomic with the provider's own status update.
    */
-  async deactivateWebhooksForProvider(providerId: number): Promise<void> {
-    const webhooks = await this.findByProviderId(providerId);
+  async deactivateWebhooksForProvider(providerId: number, manager?: EntityManager): Promise<void> {
+    const repository = manager ? manager.getRepository(Webhook) : this.webhookRepository;
+    const webhooks = await repository.find({ where: { providerId, status: Status.ACTIVE } });
 
     if (webhooks.length === 0) {
       return;
@@ -97,7 +96,7 @@ export class WebhookService {
       webhook.status = Status.INACTIVE;
     }
 
-    await this.webhookRepository.save(webhooks);
+    await repository.save(webhooks);
     this.logger.log(
       `Deactivated ${webhooks.length} webhook(s) for deleted providerId: ${providerId}`,
     );
@@ -127,11 +126,7 @@ export class WebhookService {
     const notification = (await this.notificationsService.getNotificationById(id))[0];
 
     if (!notification) {
-      // Notification was archived (moved out of notify_notifications) between when this
-      // attempt was scheduled and when it fired — archival can run within the hour while
-      // webhook retries span up to WEBHOOK_MAX_RETRY_COUNT * WEBHOOK_RETRY_INTERVAL. There's
-      // no providerId to look up a webhook by at this point, so there's nothing to log this
-      // against; just stop instead of throwing and silently killing the BullMQ job.
+      // Notification was archived before this retry fired — nothing to log against, just stop.
       this.logger.warn(
         `Skipping webhook attempt ${attempt} for notification ${id}: notification no longer exists (likely archived).`,
       );
@@ -171,7 +166,8 @@ export class WebhookService {
         this.logger.log(
           `Webhook delivery failed for notification ${id}, attempt ${attempt}/${this.maxRetryCount}: ${errorMessage}. Retrying in ${this.retryIntervalMs}ms`,
         );
-        await this.saveWebhookLog(webhook.id, id, attempt, WebhookDeliveryStatus.RETRYING, {
+        // Per-attempt status is factual (this attempt failed); RETRYING is only for the rollup.
+        await this.saveWebhookLog(webhook.id, id, attempt, WebhookDeliveryStatus.FAILED, {
           requestBody: notification,
           httpStatusCode,
           responseBody,
@@ -187,9 +183,7 @@ export class WebhookService {
             this.retryIntervalMs,
           );
         } catch (enqueueError) {
-          // The RETRYING log/state above is now stale: no future attempt is coming. Record a
-          // compensating FAILED entry so delivery state reflects reality instead of getting
-          // stuck at "will retry" forever, and log loudly since this needs manual follow-up.
+          // No future attempt is coming — record it as FAILED instead of stuck "will retry".
           this.logger.error(
             `Failed to schedule webhook retry for notification ${id}, attempt ${attempt + 1}: ${enqueueError.message}. Marking delivery permanently failed.`,
             enqueueError.stack,
@@ -220,9 +214,7 @@ export class WebhookService {
       return;
     }
 
-    // Delivery succeeded — the partner already has the payload. A failure below is purely our
-    // own bookkeeping and must not trigger a retry: retrying here would re-deliver to a partner
-    // that already received and acknowledged this notification.
+    // Delivery already succeeded — a bookkeeping failure below must not trigger a re-send.
     try {
       this.logger.log(`Webhook delivered successfully for notification ${id}`);
       await this.saveWebhookLog(webhook.id, id, attempt, WebhookDeliveryStatus.SUCCESS, {
@@ -286,9 +278,7 @@ export class WebhookService {
     status: number,
     attemptedAt: Date,
   ): Promise<void> {
-    // Only overwrite if this attempt is newer than what's stored, so a slower older attempt
-    // can't clobber a faster, more recent one when webhook calls for the same provider
-    // complete out of order.
+    // Only overwrite if newer, so a slow older attempt can't clobber a more recent one.
     await this.webhookRepository
       .createQueryBuilder()
       .update(Webhook)
@@ -370,20 +360,35 @@ export class WebhookService {
     webhookId: number,
     query: PaginationQueryDto,
     organizationId: number,
-    filters?: { notificationId?: number },
   ): Promise<{ items: WebhookLogResponseDto[]; meta: PaginationMeta }> {
     await this.verifyWebhookOrgAccess(webhookId, organizationId);
 
     const { page, limit, offset, sort } = PaginationHelper.normalizePaginationParams(query);
-    const [logs, total] = await this.webhookLogRepository.findAndCount({
-      where: {
-        webhookId,
-        ...(filters?.notificationId ? { notificationId: filters.notificationId } : {}),
-      },
-      order: sort ? { [sort.field]: sort.order } : { id: 'DESC' },
-      skip: offset,
-      take: limit,
-    });
+    const qb = this.webhookLogRepository
+      .createQueryBuilder('log')
+      .where('log.webhookId = :webhookId', { webhookId });
+
+    if (query.search) {
+      qb.andWhere(
+        new Brackets((sub) => {
+          sub
+            .where('CAST(log.notificationId AS text) LIKE :search', { search: `%${query.search}%` })
+            .orWhere('log.errorMessage LIKE :search', { search: `%${query.search}%` })
+            .orWhere('CAST(log.requestBody AS text) LIKE :search', { search: `%${query.search}%` })
+            .orWhere('CAST(log.responseBody AS text) LIKE :search', {
+              search: `%${query.search}%`,
+            });
+        }),
+      );
+    }
+
+    if (sort) {
+      qb.orderBy(`log.${sort.field}`, sort.order.toUpperCase() as 'ASC' | 'DESC');
+    } else {
+      qb.orderBy('log.id', 'DESC');
+    }
+
+    const [logs, total] = await qb.skip(offset).take(limit).getManyAndCount();
 
     return {
       items: logs.map((log) => this.mapLogToDto(log)),

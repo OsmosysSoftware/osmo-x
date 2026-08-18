@@ -288,8 +288,12 @@ export class ProvidersService extends CoreService<Provider> {
     }
 
     provider.status = Status.INACTIVE;
-    await this.providerRepository.save(provider);
-    await this.webhookService.deactivateWebhooksForProvider(providerId);
+
+    // Same transaction so a failure can't leave the provider inactive but its webhook active.
+    await this.providerRepository.manager.transaction(async (manager) => {
+      await manager.save(provider);
+      await this.webhookService.deactivateWebhooksForProvider(providerId, manager);
+    });
 
     return true;
   }

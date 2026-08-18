@@ -7,6 +7,7 @@ import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TooltipModule } from 'primeng/tooltip';
+import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -40,6 +41,7 @@ const WEBHOOK_DELIVERY_STATUS_SEVERITY: Record<number, 'success' | 'warn' | 'dan
     ButtonModule,
     SkeletonModule,
     TooltipModule,
+    ToolbarModule,
     InputTextModule,
     IconFieldModule,
     InputIconModule,
@@ -64,7 +66,8 @@ export class WebhookLogsListComponent implements OnInit {
   readonly pageInfo = signal<PageInfo | null>(null);
   private readonly currentPage = signal(1);
   private readonly currentLimit = signal(20);
-  readonly notificationIdFilter = signal<string>('');
+  readonly searchTerm = signal<string>('');
+  private searchDebounce?: ReturnType<typeof setTimeout>;
 
   readonly webhook = signal<Webhook | null>(null);
   readonly providerName = signal<string | null>(null);
@@ -96,10 +99,8 @@ export class WebhookLogsListComponent implements OnInit {
   loadLogs(): void {
     this.loading.set(true);
 
-    const notificationId = this.parseNotificationIdFilter();
-
     this.webhookLogsService
-      .list(this.webhookId, this.currentPage(), this.currentLimit(), notificationId)
+      .list(this.webhookId, this.currentPage(), this.currentLimit(), this.searchTerm().trim())
       .subscribe({
         next: (res) => {
           this.logs.set(res.items ?? []);
@@ -110,31 +111,14 @@ export class WebhookLogsListComponent implements OnInit {
       });
   }
 
-  private parseNotificationIdFilter(): number | undefined {
-    const raw = this.notificationIdFilter().trim();
+  onSearchInput(event: Event): void {
+    this.searchTerm.set((event.target as HTMLInputElement).value);
 
-    if (!raw) {
-      return undefined;
-    }
-
-    const parsed = Number(raw);
-
-    return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
-  }
-
-  onNotificationIdInput(event: Event): void {
-    this.notificationIdFilter.set((event.target as HTMLInputElement).value);
-  }
-
-  applyNotificationIdFilter(): void {
-    this.currentPage.set(1);
-    this.loadLogs();
-  }
-
-  clearNotificationIdFilter(): void {
-    this.notificationIdFilter.set('');
-    this.currentPage.set(1);
-    this.loadLogs();
+    clearTimeout(this.searchDebounce);
+    this.searchDebounce = setTimeout(() => {
+      this.currentPage.set(1);
+      this.loadLogs();
+    }, 400);
   }
 
   onPageChange(event: { page: number; limit: number }): void {

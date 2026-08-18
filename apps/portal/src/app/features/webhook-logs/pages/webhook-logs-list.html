@@ -37,38 +37,22 @@
     />
   </div>
 
-  <div class="flex items-center gap-2 mb-4">
-    <p-iconfield iconPosition="left">
-      <p-inputicon class="pi pi-search" />
-      <input
-        pInputText
-        type="number"
-        min="1"
-        placeholder="Search by notification ID"
-        [value]="notificationIdFilter()"
-        (input)="onNotificationIdInput($event)"
-        (keyup.enter)="applyNotificationIdFilter()"
-      />
-    </p-iconfield>
-    <p-button
-      label="Search"
-      icon="pi pi-search"
-      severity="secondary"
-      [outlined]="true"
-      (onClick)="applyNotificationIdFilter()"
-    />
-    @if (notificationIdFilter()) {
-      <p-button
-        icon="pi pi-times"
-        [rounded]="true"
-        [text]="true"
-        severity="secondary"
-        pTooltip="Clear filter"
-        aria-label="Clear notification ID filter"
-        (onClick)="clearNotificationIdFilter()"
-      />
-    }
-  </div>
+  <p-toolbar class="mb-4">
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon class="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            placeholder="Search..."
+            [value]="searchTerm()"
+            (input)="onSearchInput($event)"
+          />
+        </p-iconfield>
+      </div>
+    </ng-template>
+  </p-toolbar>
 
   @if (loading()) {
     <p-skeleton height="200px" />

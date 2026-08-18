@@ -10,7 +10,11 @@ import { Status } from 'src/common/constants/database';
 
 describe('ProvidersService', () => {
   let service: ProvidersService;
-  let providerRepository: { findOne: jest.Mock; save: jest.Mock };
+  let providerRepository: {
+    findOne: jest.Mock;
+    save: jest.Mock;
+    manager: { transaction: jest.Mock; save: jest.Mock };
+  };
   let applicationsService: { findById: jest.Mock };
   let webhookService: { deactivateWebhooksForProvider: jest.Mock };
 
@@ -21,9 +25,19 @@ describe('ProvidersService', () => {
   };
 
   beforeEach(async () => {
+    const managerSave = jest.fn().mockImplementation((entity) => Promise.resolve(entity));
+
     providerRepository = {
       findOne: jest.fn().mockResolvedValue({ ...provider }),
       save: jest.fn().mockImplementation((entity) => Promise.resolve(entity)),
+      manager: {
+        save: managerSave,
+        transaction: jest
+          .fn()
+          .mockImplementation((cb: (manager: unknown) => Promise<unknown>) =>
+            cb({ save: managerSave, getRepository: jest.fn() }),
+          ),
+      },
     };
     applicationsService = {
       findById: jest.fn().mockResolvedValue({ applicationId: 1, organizationId: 5 }),
@@ -59,10 +73,14 @@ describe('ProvidersService', () => {
       const result = await service.softDeleteProviderAsDto(10, 5);
 
       expect(result).toBe(true);
-      expect(providerRepository.save).toHaveBeenCalledWith(
+      expect(providerRepository.manager.transaction).toHaveBeenCalledTimes(1);
+      expect(providerRepository.manager.save).toHaveBeenCalledWith(
         expect.objectContaining({ providerId: 10, status: Status.INACTIVE }),
       );
-      expect(webhookService.deactivateWebhooksForProvider).toHaveBeenCalledWith(10);
+      expect(webhookService.deactivateWebhooksForProvider).toHaveBeenCalledWith(
+        10,
+        expect.anything(),
+      );
     });
 
     it('throws and does not touch the webhook when the provider belongs to a different org', async () => {
@@ -70,7 +88,7 @@ describe('ProvidersService', () => {
 
       await expect(service.softDeleteProviderAsDto(10, 5)).rejects.toThrow();
 
-      expect(providerRepository.save).not.toHaveBeenCalled();
+      expect(providerRepository.manager.transaction).not.toHaveBeenCalled();
       expect(webhookService.deactivateWebhooksForProvider).not.toHaveBeenCalled();
     });
 
@@ -80,6 +98,17 @@ describe('ProvidersService', () => {
       await expect(service.softDeleteProviderAsDto(999, 5)).rejects.toThrow();
 
       expect(webhookService.deactivateWebhooksForProvider).not.toHaveBeenCalled();
+    });
+
+    it('propagates a failure from the webhook deactivation, so the transaction rolls back the provider save too', async () => {
+      webhookService.deactivateWebhooksForProvider.mockRejectedValueOnce(new Error('db error'));
+
+      await expect(service.softDeleteProviderAsDto(10, 5)).rejects.toThrow('db error');
+
+      // Both writes happened inside the same transaction() callback, so a real DataSource
+      // rolls the provider save back too when the callback rejects.
+      expect(providerRepository.manager.save).toHaveBeenCalled();
+      expect(providerRepository.manager.transaction).toHaveBeenCalledTimes(1);
     });
   });
 });

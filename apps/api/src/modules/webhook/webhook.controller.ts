@@ -83,10 +83,11 @@ export class WebhookController {
   @ApiOperation({ summary: 'List delivery attempt logs for a webhook' })
   @ApiQuery({ name: 'webhook_id', required: true, type: Number })
   @ApiQuery({
-    name: 'notification_id',
+    name: 'search',
     required: false,
-    type: Number,
-    description: 'Filter to delivery attempts for a single notification',
+    type: String,
+    description:
+      'Free-text search across notification ID, error message, and request/response payloads',
   })
   @ApiQuery({
     name: 'organization_id',
@@ -105,7 +106,6 @@ export class WebhookController {
   async findLogs(
     @Query('webhook_id') webhookId: number,
     @Query() query: PaginationQueryDto,
-    @Query('notification_id') notificationId: number,
     @Query('organization_id') queryOrgId: number,
     @CurrentUser() user: JwtPayload,
     @Req() req: Request,
@@ -119,7 +119,6 @@ export class WebhookController {
       webhookId,
       query,
       targetOrgId,
-      { notificationId },
     );
     const { protocol, host } = LinkBuilder.extractBaseUrl(req);
     const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);

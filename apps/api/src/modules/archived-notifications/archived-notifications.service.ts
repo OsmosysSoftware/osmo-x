@@ -469,8 +469,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
               typeof retryDeleteResult.affected === 'number' ? retryDeleteResult.affected : 0;
             totalDeletedRetries += retryAffected;
 
-            // Delete webhook delivery logs for these notifications too, so they don't outlive
-            // the notification they document once it's permanently gone.
+            // Delete webhook logs for these notifications too, so they don't outlive them.
             const webhookLogDeleteResult = await queryRunner.manager.delete(WebhookLog, {
               notificationId: In(notificationIds),
             });

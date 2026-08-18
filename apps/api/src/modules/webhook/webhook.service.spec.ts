@@ -25,12 +25,20 @@ describe('WebhookService', () => {
     findOne: jest.Mock;
     createQueryBuilder: jest.Mock;
   };
-  let webhookLogRepository: { save: jest.Mock; findAndCount: jest.Mock };
+  let webhookLogRepository: { save: jest.Mock; createQueryBuilder: jest.Mock };
   let queryBuilder: {
     update: jest.Mock;
     set: jest.Mock;
     where: jest.Mock;
     execute: jest.Mock;
+  };
+  let logQueryBuilder: {
+    where: jest.Mock;
+    andWhere: jest.Mock;
+    orderBy: jest.Mock;
+    skip: jest.Mock;
+    take: jest.Mock;
+    getManyAndCount: jest.Mock;
   };
   let notificationsService: { getNotificationById: jest.Mock };
   let notificationQueueProducer: { enqueueDelayedWebhookRetry: jest.Mock };
@@ -61,9 +69,17 @@ describe('WebhookService', () => {
       findOne: jest.fn().mockResolvedValue(null),
       createQueryBuilder: jest.fn().mockReturnValue(queryBuilder),
     };
+    logQueryBuilder = {
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      take: jest.fn().mockReturnThis(),
+      getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+    };
     webhookLogRepository = {
       save: jest.fn().mockResolvedValue(undefined),
-      findAndCount: jest.fn().mockResolvedValue([[], 0]),
+      createQueryBuilder: jest.fn().mockReturnValue(logQueryBuilder),
     };
     notificationsService = {
       getNotificationById: jest.fn().mockResolvedValue([notification]),
@@ -125,13 +141,16 @@ describe('WebhookService', () => {
       expect(notificationQueueProducer.enqueueDelayedWebhookRetry).not.toHaveBeenCalled();
     });
 
-    it('logs RETRYING and schedules a delayed re-enqueue when attempts remain', async () => {
+    it('logs this attempt as FAILED and schedules a delayed re-enqueue when attempts remain', async () => {
       mockedAxios.post.mockRejectedValueOnce(new Error('ECONNREFUSED'));
 
       await service.triggerWebhook(notification.id, 1);
 
       expect(webhookLogRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining({ status: WebhookDeliveryStatus.RETRYING, attemptNumber: 1 }),
+        expect.objectContaining({ status: WebhookDeliveryStatus.FAILED, attemptNumber: 1 }),
+      );
+      expect(queryBuilder.set).toHaveBeenCalledWith(
+        expect.objectContaining({ lastDeliveryStatus: WebhookDeliveryStatus.RETRYING }),
       );
       expect(notificationQueueProducer.enqueueDelayedWebhookRetry).toHaveBeenCalledWith(
         notification,
@@ -181,10 +200,13 @@ describe('WebhookService', () => {
 
       await service.triggerWebhook(notification.id, 1);
 
+      // Two FAILED rows for attempt 1: the HTTP failure itself, then a second one recording
+      // that the retry couldn't even be scheduled.
       expect(webhookLogRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: WebhookDeliveryStatus.RETRYING,
+          status: WebhookDeliveryStatus.FAILED,
           attemptNumber: 1,
+          errorMessage: 'ECONNREFUSED',
         }),
       );
       expect(webhookLogRepository.save).toHaveBeenCalledWith(
@@ -249,22 +271,24 @@ describe('WebhookService', () => {
         .mockResolvedValue({ applicationId: 1, organizationId: 5 });
     });
 
-    it('filters by notification_id when provided', async () => {
-      await service.getWebhookLogsAsDto(100, { page: 1, limit: 20 }, 5, { notificationId: 42 });
-
-      expect(webhookLogRepository.findAndCount).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({ webhookId: 100, notificationId: 42 }),
-        }),
-      );
-    });
-
-    it('omits the notification_id filter when not provided', async () => {
+    it('scopes results to the webhook', async () => {
       await service.getWebhookLogsAsDto(100, { page: 1, limit: 20 }, 5);
 
-      const call = webhookLogRepository.findAndCount.mock.calls[0][0];
+      expect(logQueryBuilder.where).toHaveBeenCalledWith('log.webhookId = :webhookId', {
+        webhookId: 100,
+      });
+    });
 
-      expect(call.where).not.toHaveProperty('notificationId');
+    it('applies a free-text search filter across notification ID, error, and payloads when provided', async () => {
+      await service.getWebhookLogsAsDto(100, { page: 1, limit: 20, search: 'partner' }, 5);
+
+      expect(logQueryBuilder.andWhere).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not apply a search filter when none is provided', async () => {
+      await service.getWebhookLogsAsDto(100, { page: 1, limit: 20 }, 5);
+
+      expect(logQueryBuilder.andWhere).not.toHaveBeenCalled();
     });
   });
 });

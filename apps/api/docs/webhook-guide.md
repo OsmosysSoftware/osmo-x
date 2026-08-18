@@ -70,12 +70,12 @@ Related endpoints:
 |--------|----------|------|-------------|
 | `GET` | `/api/webhooks?page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated list of the organization's webhooks. |
 | `GET` | `/api/webhooks/:id` | `Bearer` (`ORG_ADMIN`+) | Get a single webhook by ID. |
-| `POST` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Register a webhook. |
-| `PUT` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Update a webhook URL (body: `id`, `webhook_url`). |
-| `DELETE` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Soft-delete a webhook (body: `id`). |
-| `GET` | `/api/webhooks/logs?webhook_id=&notification_id=&page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated delivery attempt logs for one webhook. `notification_id` optionally filters to attempts for a single notification. |
+| `POST` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Register a webhook (body: `providerId`, `webhookUrl`, optional `organizationId`). |
+| `PUT` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Update a webhook URL (body: `id`, `webhookUrl`, optional `organizationId`). |
+| `DELETE` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Soft-delete a webhook (body: `id`, optional `organizationId`). |
+| `GET` | `/api/webhooks/logs?webhook_id=&search=&page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated delivery attempt logs for one webhook. `search` optionally free-text filters across notification ID, error message, and request/response payloads. |
 
-All endpoints above are scoped to the caller's own organization by default. A `SUPER_ADMIN` can target a different org by passing `?organization_id=<id>`; any other role passing an `organization_id` other than their own gets a `400 Bad Request`.
+All endpoints above are scoped to the caller's own organization by default; a `SUPER_ADMIN` can target a different org. The **`GET`** endpoints take the override as a query parameter, `?organization_id=<id>`. The **`POST`/`PUT`/`DELETE`** endpoints take it as a body field instead, `organizationId` (no query param equivalent). Either way, any role other than `SUPER_ADMIN` passing an org that isn't their own gets a `400 Bad Request`.
 
 ### GraphQL (legacy)
 
@@ -176,8 +176,8 @@ This is not yet incorporated but will be happening in the future
 Osmox retries with a **fixed interval**, not exponential backoff:
 
 1. The first attempt happens as soon as the notification reaches its final status.
-2. If the attempt fails and attempts remain, it is logged with status `Retrying` and re-queued with a delay of `WEBHOOK_RETRY_INTERVAL`.
-3. Once `WEBHOOK_MAX_RETRY_COUNT` attempts have been made, the delivery is logged as `Failed` and no further attempts are made.
+2. If the attempt fails, it's logged as `Failed` — that's a factual record of what happened at that attempt. If attempts remain, a next attempt is re-queued with a delay of `WEBHOOK_RETRY_INTERVAL`, and the webhook's `last_delivery_status` (not the attempt log) shows `Retrying` in the meantime.
+3. Once `WEBHOOK_MAX_RETRY_COUNT` attempts have been made, `last_delivery_status` moves to `Failed` too and no further attempts are made.
 
 Retries are queued through Redis rather than held in memory, so a worker restart does not lose a pending retry, and waiting for the next attempt does not block other notifications from being processed. With the defaults (`5` attempts, `30m` apart) a permanently unreachable endpoint is given up on after roughly two hours.
 
@@ -189,7 +189,7 @@ Every attempt inserts a row into `notify_webhook_logs`:
 |-------|-------------|
 | `webhook_id` / `notification_id` | Which webhook and notification the attempt belongs to. |
 | `attempt_number` | `1` for the first attempt, incrementing per retry. |
-| `status` | `1` Retrying · `2` Success · `3` Failed |
+| `status` | `2` Success · `3` Failed — a per-attempt row is never `1` (Retrying); that value only appears on the webhook's rolled-up `last_delivery_status` while a next attempt is pending. |
 | `http_status_code` | Status returned by your endpoint, or `null` if no response was received (timeout, connection refused). |
 | `request_body` | The payload Osmox sent. |
 | `response_body` | The body your endpoint returned. |
