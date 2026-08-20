@@ -59,6 +59,7 @@ import { JwtOrApiKeyGuard } from 'src/common/guards/jwt-or-api-key/jwt-or-api-ke
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
+import { QueueBootstrapService } from './queues/queue-bootstrap.service';
 
 const providerModules = [
   MailgunModule,
@@ -123,6 +124,7 @@ const consumers = [
     JwtAuthGuard,
     GqlAuthGuard,
     ...consumers,
+    QueueBootstrapService,
   ],
   exports: [
     NotificationsService,

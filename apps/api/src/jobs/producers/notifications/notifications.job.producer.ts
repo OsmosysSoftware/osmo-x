@@ -53,11 +53,27 @@ export class NotificationQueueProducer {
       provider.channelType.toString(),
       notification.providerId.toString(),
     );
-    const jobId = `${notification.id}-attempt-${attempt}`;
+    // Discriminate by updatedOn so ids stay stable across the retries of one delivery run (the
+    // notification isn't re-saved while retries run) but differ across a re-triggered run.
+    // Without it, BullMQ silently ignores an add whose jobId is still in Redis from a prior run.
+    const updatedOnMs = notification.updatedOn
+      ? new Date(notification.updatedOn).getTime()
+      : Number.NaN;
+    const runId = Number.isNaN(updatedOnMs) ? Date.now() : updatedOnMs;
+    const jobId = `${notification.id}-${runId}-attempt-${attempt}`;
 
     this.logger.debug(
       `Scheduling delayed webhook retry for notification ${notification.id}, attempt ${attempt}, delay ${delayMs}ms`,
     );
+
+    const existing = await queue.getJob(jobId);
+
+    if (existing) {
+      this.logger.warn(
+        `Webhook retry job ${jobId} already exists in Redis; BullMQ will ignore this add and the retry may be swallowed.`,
+      );
+    }
+
     await queue.add(
       jobId,
       { id: notification.id, providerId: notification.providerId, attempt },

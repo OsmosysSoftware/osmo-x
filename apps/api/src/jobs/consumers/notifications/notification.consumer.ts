@@ -139,8 +139,10 @@ export abstract class NotificationConsumer {
           }
         }
 
-        // Call webhook for all providers (skip and non skip) when delivery status is FAILED
-        shouldTriggerWebhook = true;
+        // Call webhook for all providers (skip and non skip) when delivery status is FAILED.
+        // Failover above resets the status to PENDING for the next provider in the chain — not a
+        // terminal state, and providerId now points at the fallback provider, so suppress it there.
+        shouldTriggerWebhook = notification.deliveryStatus === DeliveryStatus.FAILED;
       }
 
       this.logger.debug(`Updating result of notification with id ${notification.id}`);
@@ -276,7 +278,9 @@ export abstract class NotificationConsumer {
           }
         }
 
-        shouldTriggerWebhook = true;
+        // Failover above resets the status to PENDING for the next provider in the chain — not a
+        // terminal state, and providerId now points at the fallback provider, so suppress it there.
+        shouldTriggerWebhook = notification.deliveryStatus === DeliveryStatus.FAILED;
       }
 
       this.logger.log(

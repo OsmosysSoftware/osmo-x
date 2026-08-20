@@ -160,4 +160,103 @@ describe('NotificationConsumer (webhook enqueue ordering)', () => {
     expect(callOrder).toEqual(['save', 'enqueue']);
     expect(enqueuedNotification?.result).toEqual(notification.result);
   });
+
+  it('processNotificationQueue: suppresses the webhook when failover hands off to the next provider in the chain', async () => {
+    const notification = {
+      id: 5,
+      providerId: 5,
+      channelType: ChannelType.WA_TWILIO,
+      retryCount: 3,
+      providerChainId: 7,
+    } as Notification;
+
+    notificationsService = { getNotificationById: jest.fn().mockResolvedValue([notification]) };
+    providerChainMembersService = { getNextPriorityProvider: jest.fn().mockResolvedValue(9) };
+    providersService = {
+      getById: jest
+        .fn()
+        .mockImplementation((providerId: number) =>
+          Promise.resolve(
+            providerId === 9
+              ? { providerId: 9, channelType: ChannelType.SMTP, maxRetryCount: null }
+              : { providerId: 5, channelType: ChannelType.WA_TWILIO, maxRetryCount: null },
+          ),
+        ),
+    };
+
+    const consumer = buildConsumer();
+
+    await consumer.processNotificationQueue(5, async () => {
+      throw new Error('provider unreachable');
+    });
+
+    expect(notificationRepository.save).toHaveBeenCalledTimes(1);
+    expect(notificationQueueService.addNotificationToQueue).not.toHaveBeenCalled();
+    expect(notification.deliveryStatus).toBe(DeliveryStatus.PENDING);
+    expect(notification.providerId).toBe(9);
+    expect(notification.channelType).toBe(ChannelType.SMTP);
+    expect(notification.retryCount).toBe(0);
+  });
+
+  it('processAwaitingConfirmationNotificationQueue: suppresses the webhook when failover hands off to the next provider in the chain', async () => {
+    const notification = {
+      id: 6,
+      providerId: 5,
+      channelType: ChannelType.WA_TWILIO,
+      retryCount: 3,
+      providerChainId: 7,
+    } as Notification;
+
+    notificationsService = { getNotificationById: jest.fn().mockResolvedValue([notification]) };
+    providerChainMembersService = { getNextPriorityProvider: jest.fn().mockResolvedValue(9) };
+    providersService = {
+      getById: jest
+        .fn()
+        .mockImplementation((providerId: number) =>
+          Promise.resolve(
+            providerId === 9
+              ? { providerId: 9, channelType: ChannelType.SMTP, maxRetryCount: null }
+              : { providerId: 5, channelType: ChannelType.WA_TWILIO, maxRetryCount: null },
+          ),
+        ),
+    };
+
+    const consumer = buildConsumer();
+
+    await consumer.processAwaitingConfirmationNotificationQueue(6, async () => {
+      throw new Error('provider status check failed');
+    });
+
+    expect(notificationRepository.save).toHaveBeenCalledTimes(1);
+    expect(notificationQueueService.addNotificationToQueue).not.toHaveBeenCalled();
+    expect(notification.deliveryStatus).toBe(DeliveryStatus.PENDING);
+    expect(notification.providerId).toBe(9);
+    expect(notification.channelType).toBe(ChannelType.SMTP);
+    expect(notification.retryCount).toBe(0);
+  });
+
+  it('processNotificationQueue: still enqueues the webhook when a chain exists but has no next provider', async () => {
+    const notification = {
+      id: 7,
+      providerId: 5,
+      channelType: ChannelType.WA_TWILIO,
+      retryCount: 3,
+      providerChainId: 7,
+    } as Notification;
+
+    notificationsService = { getNotificationById: jest.fn().mockResolvedValue([notification]) };
+    providerChainMembersService = { getNextPriorityProvider: jest.fn().mockResolvedValue(null) };
+
+    const consumer = buildConsumer();
+
+    await consumer.processNotificationQueue(7, async () => {
+      throw new Error('provider unreachable');
+    });
+
+    expect(notificationQueueService.addNotificationToQueue).toHaveBeenCalledWith(
+      QueueAction.WEBHOOK,
+      expect.objectContaining({ deliveryStatus: DeliveryStatus.FAILED }),
+    );
+    expect(callOrder).toEqual(['save', 'enqueue']);
+  });
 });

@@ -54,6 +54,13 @@ export class ProvidersService extends CoreService<Provider> {
     });
   }
 
+  async findAllActive(): Promise<Provider[]> {
+    return this.providerRepository.find({
+      where: { status: Status.ACTIVE },
+      select: ['providerId', 'channelType'],
+    });
+  }
+
   private async validateConfiguration(
     channelType: number,
     configuration: Record<string, unknown>,
