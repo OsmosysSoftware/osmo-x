@@ -1,6 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Queue, Worker, QueueEvents } from 'bullmq';
+import IORedis from 'ioredis';
 import ms = require('ms');
 import { ChannelType, QueueAction } from 'src/common/constants/notifications';
 import { AwsSesNotificationConsumer } from 'src/jobs/consumers/notifications/awsSes-notifications.job.consumer';
@@ -15,9 +16,21 @@ import { Wa360dialogNotificationsConsumer } from 'src/jobs/consumers/notificatio
 import { WaTwilioNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilio-notifications.job.consumer';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 import { WebhookService } from 'src/modules/webhook/webhook.service';
+import { IQueueService } from './queue.tokens';
+
+// BullMQ's default key prefix. Queues are created without a custom `prefix`, so keys live at
+// `bull:<queueName>:<state>`. Kept next to the queue-name template so the coupling stays visible.
+const BULL_KEY_PREFIX = 'bull';
+const PENDING_JOB_STATES = ['delayed', 'wait', 'paused', 'active'];
+const PROBE_CONNECT_TIMEOUT_MS = 5000;
+const PROBE_MAX_CONNECT_ATTEMPTS = 3;
+const PROBE_BATCH_SIZE = 250;
+
+const buildQueueName = (action: string, providerType: string, providerId: string): string =>
+  `${action}-${providerType}-${providerId}`;
 
 @Injectable()
-export class QueueService {
+export class QueueService implements IQueueService {
   private readonly logger = new Logger(QueueService.name);
   private readonly queues: Map<string, Queue> = new Map();
   private workers: Map<string, Worker> = new Map();
@@ -42,6 +55,7 @@ export class QueueService {
     private readonly vcTwilioNotificationsConsumer: VcTwilioNotificationsConsumer,
     private readonly awsSesNotificationConsumer: AwsSesNotificationConsumer,
     private readonly smsSnsNotificationConsumer: SmsSnsNotificationConsumer,
+    @Inject(forwardRef(() => WebhookService))
     protected readonly webhookService: WebhookService,
   ) {
     this.redisConfig = {
@@ -126,8 +140,91 @@ export class QueueService {
     return queue;
   }
 
+  /**
+   * Queues and their workers are created lazily on enqueue, so after a restart a delayed webhook
+   * retry sitting in Redis has no Worker attached and would never fire. Re-attach a worker for
+   * every webhook queue that still holds pending work.
+   *
+   * The EXISTS probe is deliberate: creating a queue + worker + QueueEvents for every active
+   * provider costs ~3 Redis connections each, and most providers have nothing pending.
+   */
+  async restoreWebhookWorkers(
+    providers: Array<{ providerId: number; channelType: number }>,
+  ): Promise<number> {
+    if (providers.length === 0) {
+      return 0;
+    }
+
+    // Bounded retries and a hard connect timeout: this runs on the boot path, so an unreachable
+    // Redis must surface as a rejected command rather than hanging startup forever.
+    const probeClient = new IORedis({
+      ...this.redisConfig,
+      maxRetriesPerRequest: 1,
+      connectTimeout: PROBE_CONNECT_TIMEOUT_MS,
+      retryStrategy: (times) => (times > PROBE_MAX_CONNECT_ATTEMPTS ? null : times * 200),
+    });
+    // Without a listener, ioredis' 'error' event is an unhandled error event and takes the process down.
+    probeClient.on('error', (error) => {
+      this.logger.error(`Redis error while probing webhook queues: ${error.message}`);
+    });
+    let restored = 0;
+
+    try {
+      // Chunked so a large provider catalogue doesn't build one enormous pipeline.
+      for (let start = 0; start < providers.length; start += PROBE_BATCH_SIZE) {
+        const batch = providers.slice(start, start + PROBE_BATCH_SIZE);
+        const pipeline = probeClient.pipeline();
+
+        for (const provider of batch) {
+          const queueName = buildQueueName(
+            QueueAction.WEBHOOK,
+            provider.channelType.toString(),
+            provider.providerId.toString(),
+          );
+
+          for (const state of PENDING_JOB_STATES) {
+            pipeline.exists(`${BULL_KEY_PREFIX}:${queueName}:${state}`);
+          }
+        }
+
+        const results = await pipeline.exec();
+
+        batch.forEach((provider, index) => {
+          const offset = index * PENDING_JOB_STATES.length;
+          const hasPendingWork = PENDING_JOB_STATES.some((_state, stateIndex) => {
+            const entry = results?.[offset + stateIndex];
+
+            return Boolean(entry) && !entry[0] && entry[1] === 1;
+          });
+
+          if (hasPendingWork) {
+            this.getOrCreateQueue(
+              QueueAction.WEBHOOK,
+              provider.channelType.toString(),
+              provider.providerId.toString(),
+            );
+            restored++;
+          }
+        });
+      }
+
+      this.logger.log(
+        `Restored ${restored} webhook worker(s) out of ${providers.length} active provider(s)`,
+      );
+    } finally {
+      // quit() rejects if the client never connected — must not mask the real failure above.
+      try {
+        await probeClient.quit();
+      } catch {
+        probeClient.disconnect();
+      }
+    }
+
+    return restored;
+  }
+
   getOrCreateQueue(action: string, providerType: string, providerId: string): Queue {
-    const queueName = `${action}-${providerType}-${providerId}`;
+    const queueName = buildQueueName(action, providerType, providerId);
     this.logger.debug(
       `Started process getOrCreateQueue for (action-providerType-providerId): ${queueName}`,
     );
@@ -238,7 +335,7 @@ export class QueueService {
         case `${QueueAction.WEBHOOK}-${ChannelType.VC_TWILIO}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.AWS_SES}`:
         case `${QueueAction.WEBHOOK}-${ChannelType.SMS_SNS}`:
-          await this.webhookService.triggerWebhook(job.data.id);
+          await this.webhookService.triggerWebhook(job.data.id, job.data.attempt ?? 1);
           break;
         default:
           this.logger.error(

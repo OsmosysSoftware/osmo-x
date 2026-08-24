@@ -30,4 +30,16 @@ export class WebhookResponseDto {
 
   @ApiProperty({ description: 'Last update timestamp', format: 'date-time' })
   updatedOn: Date;
+
+  @ApiPropertyOptional({
+    description: 'Delivery status of the most recent attempt: 1=Success, 2=Failed',
+    example: 1,
+  })
+  lastDeliveryStatus: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Timestamp of the most recent delivery attempt',
+    format: 'date-time',
+  })
+  lastAttemptedAt: Date | null;
 }

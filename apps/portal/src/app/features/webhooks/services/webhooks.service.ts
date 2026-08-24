@@ -28,6 +28,10 @@ export class WebhooksService {
       .pipe(tap((res) => this._webhooks.set(res.items)));
   }
 
+  getById(id: number): Observable<Webhook> {
+    return this.http.get<Webhook>(`${this.apiUrl}/${id}`);
+  }
+
   create(data: CreateWebhookInput): Observable<Webhook> {
     return this.http.post<Webhook>(this.apiUrl, data);
   }

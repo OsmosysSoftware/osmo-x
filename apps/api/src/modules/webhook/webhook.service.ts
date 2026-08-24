@@ -2,37 +2,104 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConflictException, NotFoundException } from 'src/common/exceptions/app.exception';
 import { ErrorCodes } from 'src/common/constants/error-codes';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Brackets, EntityManager, In, Repository } from 'typeorm';
 import { Webhook } from './entities/webhook.entity';
-import axios from 'axios';
+import { WebhookLog } from './entities/webhook-log.entity';
+import axios, { AxiosResponse } from 'axios';
+import ms = require('ms');
+import { ConfigService } from '@nestjs/config';
 import { CreateWebhookInput } from './dto/create-webhook.input';
 import { UpdateWebhookInput } from './dto/update-webhook.input';
 import { Status } from 'src/common/constants/database';
+import { WebhookDeliveryStatus } from './constants/webhook-delivery-status';
 import { NotificationsService } from '../notifications/notifications.service';
 import { WebhookResponseDto } from './dto/webhook-response.dto';
+import { WebhookLogResponseDto } from './dto/webhook-log-response.dto';
 import { ProvidersService } from '../providers/providers.service';
 import { ApplicationsService } from '../applications/applications.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { PaginationHelper, PaginationMeta } from 'src/common/utils/pagination.helper';
+import { NotificationQueueProducer } from 'src/jobs/producers/notifications/notifications.job.producer';
 
 @Injectable()
 export class WebhookService {
   protected readonly logger = new Logger(WebhookService.name);
+  private readonly maxRetryCount: number;
+  private readonly retryIntervalMs: number;
+  private readonly requestTimeoutMs: number;
 
   constructor(
     @InjectRepository(Webhook)
     private readonly webhookRepository: Repository<Webhook>,
+    @InjectRepository(WebhookLog)
+    private readonly webhookLogRepository: Repository<WebhookLog>,
     @Inject(forwardRef(() => NotificationsService))
     protected readonly notificationsService: NotificationsService,
     @Inject(forwardRef(() => ProvidersService))
     private readonly providersService: ProvidersService,
     private readonly applicationsService: ApplicationsService,
-  ) {}
+    @Inject(forwardRef(() => NotificationQueueProducer))
+    private readonly notificationQueueProducer: NotificationQueueProducer,
+    private readonly configService: ConfigService,
+  ) {
+    const maxRetryCountRaw = +this.configService.get('WEBHOOK_MAX_RETRY_COUNT', 5);
+
+    if (Number.isInteger(maxRetryCountRaw) && maxRetryCountRaw >= 1) {
+      this.maxRetryCount = maxRetryCountRaw;
+    } else {
+      this.logger.warn(
+        `Invalid WEBHOOK_MAX_RETRY_COUNT value: ${maxRetryCountRaw}, falling back to default of 5`,
+      );
+      this.maxRetryCount = 5;
+    }
+
+    const retryIntervalRaw = ms(this.configService.get<string>('WEBHOOK_RETRY_INTERVAL', '30m'));
+
+    if (Number.isFinite(retryIntervalRaw) && retryIntervalRaw > 0) {
+      this.retryIntervalMs = retryIntervalRaw;
+    } else {
+      this.logger.warn(`Invalid WEBHOOK_RETRY_INTERVAL value, falling back to default of 30m`);
+      this.retryIntervalMs = ms('30m');
+    }
+
+    const requestTimeoutRaw = +this.configService.get('WEBHOOK_REQUEST_TIMEOUT_MS', 10000);
+
+    if (Number.isInteger(requestTimeoutRaw) && requestTimeoutRaw > 0) {
+      this.requestTimeoutMs = requestTimeoutRaw;
+    } else {
+      this.logger.warn(
+        `Invalid WEBHOOK_REQUEST_TIMEOUT_MS value: ${requestTimeoutRaw}, falling back to default of 10000`,
+      );
+      this.requestTimeoutMs = 10000;
+    }
+  }
 
   async findByProviderId(providerId: number): Promise<Webhook[]> {
     return this.webhookRepository.find({
       where: { providerId, status: Status.ACTIVE },
     });
+  }
+
+  /**
+   * Deactivates a provider's active webhook(s). Pass the caller's transaction manager to keep
+   * this atomic with the provider's own status update.
+   */
+  async deactivateWebhooksForProvider(providerId: number, manager?: EntityManager): Promise<void> {
+    const repository = manager ? manager.getRepository(Webhook) : this.webhookRepository;
+    const webhooks = await repository.find({ where: { providerId, status: Status.ACTIVE } });
+
+    if (webhooks.length === 0) {
+      return;
+    }
+
+    for (const webhook of webhooks) {
+      webhook.status = Status.INACTIVE;
+    }
+
+    await repository.save(webhooks);
+    this.logger.log(
+      `Deactivated ${webhooks.length} webhook(s) for deleted providerId: ${providerId}`,
+    );
   }
 
   async registerWebhook(webhookInput: CreateWebhookInput): Promise<Webhook> {
@@ -55,51 +122,170 @@ export class WebhookService {
     return await this.webhookRepository.save(webhook);
   }
 
-  async triggerWebhook(id: number): Promise<void> {
-    const maxRetries = 5;
-    let attempts = 0;
+  async triggerWebhook(id: number, attempt: number = 1): Promise<void> {
     const notification = (await this.notificationsService.getNotificationById(id))[0];
+
+    if (!notification) {
+      // Notification was archived before this retry fired — nothing to log against, just stop.
+      this.logger.warn(
+        `Skipping webhook attempt ${attempt} for notification ${id}: notification no longer exists (likely archived).`,
+      );
+      return;
+    }
+
     this.logger.log(
-      `Triggering webhook for notification with providerId: ${notification.providerId}`,
+      `Triggering webhook for notification with providerId: ${notification.providerId}, attempt ${attempt}/${this.maxRetryCount}`,
     );
 
-    while (attempts < maxRetries) {
-      try {
-        const webhook = await this.webhookRepository.findOneBy({
-          providerId: notification.providerId,
-          status: Status.ACTIVE,
+    const webhook = await this.webhookRepository.findOneBy({
+      providerId: notification.providerId,
+      status: Status.ACTIVE,
+    });
+
+    if (!webhook) {
+      this.logger.log(`Webhook not found for providerId: ${notification.providerId}`);
+      return;
+    }
+
+    const requestedAt = new Date();
+    let response: AxiosResponse;
+
+    try {
+      response = await axios.post(webhook.webhookUrl, notification, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        timeout: this.requestTimeoutMs,
+      });
+    } catch (error) {
+      const httpStatusCode: number | null = error.response?.status ?? null;
+      const responseBody: unknown = error.response?.data ?? null;
+      const errorMessage: string = error.message;
+
+      if (attempt < this.maxRetryCount) {
+        this.logger.log(
+          `Webhook delivery failed for notification ${id}, attempt ${attempt}/${this.maxRetryCount}: ${errorMessage}. Retrying in ${this.retryIntervalMs}ms`,
+        );
+        await this.saveWebhookLog(webhook.id, id, attempt, WebhookDeliveryStatus.FAILED, {
+          requestBody: notification,
+          httpStatusCode,
+          responseBody,
+          errorMessage,
+          requestedAt,
         });
+        await this.updateLastDelivery(webhook, WebhookDeliveryStatus.FAILED, requestedAt);
 
-        if (!webhook) {
-          this.logger.log(`Webhook not found for providerId: ${notification.providerId}`);
-          break;
+        try {
+          await this.notificationQueueProducer.enqueueDelayedWebhookRetry(
+            notification,
+            attempt + 1,
+            this.retryIntervalMs,
+          );
+        } catch (enqueueError) {
+          // Rollup is already FAILED from above; just record why no retry is coming.
+          this.logger.error(
+            `Failed to schedule webhook retry for notification ${id}, attempt ${attempt + 1}: ${enqueueError.message}. Marking delivery permanently failed.`,
+            enqueueError.stack,
+          );
+          await this.saveWebhookLog(webhook.id, id, attempt, WebhookDeliveryStatus.FAILED, {
+            requestBody: notification,
+            httpStatusCode,
+            responseBody,
+            errorMessage: `Retry scheduling failed: ${enqueueError.message}`,
+            requestedAt,
+          });
         }
-
-        const response = await axios.post(webhook.webhookUrl, notification, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      } else {
+        this.logger.error(
+          `Webhook delivery permanently failed for notification ${id} after ${attempt} attempts: ${errorMessage}`,
+        );
+        await this.saveWebhookLog(webhook.id, id, attempt, WebhookDeliveryStatus.FAILED, {
+          requestBody: notification,
+          httpStatusCode,
+          responseBody,
+          errorMessage,
+          requestedAt,
         });
-        this.logger.log('Webhook sent successfully:', response.data);
-        return;
-      } catch (error) {
-        attempts++;
-        this.logger.log(`Attempt ${attempts}: Webhook request failed: ${error.message}`);
-
-        if (attempts >= maxRetries) {
-          this.logger.log(`Failed to deliver webhook after multiple attempts`);
-        }
-
-        this.logger.log(`Exponential backoff: Waiting for ${attempts * 1000} milliseconds`);
-        const waitTime = Math.pow(2, attempts) * 1000; // Exponential backoff
-
-        await this.sleep(waitTime);
+        await this.updateLastDelivery(webhook, WebhookDeliveryStatus.FAILED, requestedAt);
       }
+
+      return;
+    }
+
+    // Delivery already succeeded — a bookkeeping failure below must not trigger a re-send.
+    try {
+      this.logger.log(`Webhook delivered successfully for notification ${id}`);
+      await this.saveWebhookLog(webhook.id, id, attempt, WebhookDeliveryStatus.SUCCESS, {
+        requestBody: notification,
+        httpStatusCode: response.status,
+        responseBody: response.data,
+        requestedAt,
+      });
+      await this.updateLastDelivery(webhook, WebhookDeliveryStatus.SUCCESS, requestedAt);
+    } catch (bookkeepingError) {
+      this.logger.error(
+        `Webhook delivered successfully for notification ${id} but failed to persist the delivery record: ${bookkeepingError.message}. Not retrying — the partner already received and acknowledged the payload.`,
+        bookkeepingError.stack,
+      );
     }
   }
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  private truncateForStorage(data: unknown): unknown {
+    if (data === undefined || data === null) {
+      return null;
+    }
+
+    const maxLength = 10000;
+    const serialized = JSON.stringify(data);
+
+    if (serialized.length <= maxLength) {
+      return data;
+    }
+
+    return { truncated: true, preview: serialized.slice(0, maxLength) };
+  }
+
+  private async saveWebhookLog(
+    webhookId: number,
+    notificationId: number,
+    attemptNumber: number,
+    status: number,
+    details: {
+      requestBody?: unknown;
+      httpStatusCode?: number | null;
+      responseBody?: unknown;
+      errorMessage?: string | null;
+      requestedAt: Date;
+    },
+  ): Promise<void> {
+    await this.webhookLogRepository.save({
+      webhookId,
+      notificationId,
+      attemptNumber,
+      status,
+      requestBody: this.truncateForStorage(details.requestBody),
+      httpStatusCode: details.httpStatusCode ?? null,
+      responseBody: this.truncateForStorage(details.responseBody),
+      errorMessage: details.errorMessage ?? null,
+      requestedAt: details.requestedAt,
+    });
+  }
+
+  private async updateLastDelivery(
+    webhook: Webhook,
+    status: number,
+    attemptedAt: Date,
+  ): Promise<void> {
+    // Only overwrite if newer, so a slow older attempt can't clobber a more recent one.
+    await this.webhookRepository
+      .createQueryBuilder()
+      .update(Webhook)
+      .set({ lastDeliveryStatus: status, lastAttemptedAt: attemptedAt })
+      .where('id = :id AND (last_attempted_at IS NULL OR last_attempted_at < :attemptedAt)', {
+        id: webhook.id,
+        attemptedAt,
+      })
+      .execute();
   }
 
   private mapToDto(webhook: Webhook): WebhookResponseDto {
@@ -113,6 +299,24 @@ export class WebhookService {
       updatedBy: webhook.updatedBy,
       createdOn: webhook.createdOn,
       updatedOn: webhook.updatedOn,
+      lastDeliveryStatus: webhook.lastDeliveryStatus,
+      lastAttemptedAt: webhook.lastAttemptedAt,
+    };
+  }
+
+  private mapLogToDto(log: WebhookLog): WebhookLogResponseDto {
+    return {
+      id: log.id,
+      webhookId: log.webhookId,
+      notificationId: log.notificationId,
+      attemptNumber: log.attemptNumber,
+      status: log.status,
+      httpStatusCode: log.httpStatusCode,
+      requestBody: log.requestBody,
+      responseBody: log.responseBody,
+      errorMessage: log.errorMessage,
+      requestedAt: log.requestedAt,
+      createdOn: log.createdOn,
     };
   }
 
@@ -146,6 +350,46 @@ export class WebhookService {
 
     return {
       items: webhooks.map((w) => this.mapToDto(w)),
+      meta: PaginationHelper.buildPaginationMeta(page, limit, total),
+    };
+  }
+
+  async getWebhookLogsAsDto(
+    webhookId: number,
+    query: PaginationQueryDto,
+    organizationId: number,
+  ): Promise<{ items: WebhookLogResponseDto[]; meta: PaginationMeta }> {
+    await this.verifyWebhookOrgAccess(webhookId, organizationId);
+
+    const { page, limit, offset, sort } = PaginationHelper.normalizePaginationParams(query);
+    const qb = this.webhookLogRepository
+      .createQueryBuilder('log')
+      .where('log.webhookId = :webhookId', { webhookId });
+
+    if (query.search) {
+      qb.andWhere(
+        new Brackets((sub) => {
+          sub
+            .where('CAST(log.notificationId AS text) LIKE :search', { search: `%${query.search}%` })
+            .orWhere('log.errorMessage LIKE :search', { search: `%${query.search}%` })
+            .orWhere('CAST(log.requestBody AS text) LIKE :search', { search: `%${query.search}%` })
+            .orWhere('CAST(log.responseBody AS text) LIKE :search', {
+              search: `%${query.search}%`,
+            });
+        }),
+      );
+    }
+
+    if (sort) {
+      qb.orderBy(`log.${sort.field}`, sort.order.toUpperCase() as 'ASC' | 'DESC');
+    } else {
+      qb.orderBy('log.id', 'DESC');
+    }
+
+    const [logs, total] = await qb.skip(offset).take(limit).getManyAndCount();
+
+    return {
+      items: logs.map((log) => this.mapLogToDto(log)),
       meta: PaginationHelper.buildPaginationMeta(page, limit, total),
     };
   }
@@ -202,6 +446,12 @@ export class WebhookService {
     }
 
     return webhook;
+  }
+
+  async findByIdAsDto(webhookId: number, organizationId: number): Promise<WebhookResponseDto> {
+    const webhook = await this.verifyWebhookOrgAccess(webhookId, organizationId);
+
+    return this.mapToDto(webhook);
   }
 
   async updateWebhookAsDto(

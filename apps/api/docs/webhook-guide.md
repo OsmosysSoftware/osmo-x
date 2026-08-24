@@ -4,6 +4,8 @@
 
 Webhooks are a powerful way to receive real-time updates and notifications from various services. Osmox supports webhook integration to streamline notifications through services like Mailgun and Twilio. This guide will help you configure and use webhooks in Osmox effectively.
 
+Once a notification reaches a terminal state (`Success` or `Failed`), Osmox POSTs the complete notification object to the webhook URL registered for that notification's provider. Delivery is retried on failure, and every attempt is recorded so it can be inspected later from the API or the portal.
+
 ## Prerequisites
 
 Before you start, ensure you have the following:
@@ -12,13 +14,72 @@ Before you start, ensure you have the following:
 - A webhookUrl that your application will listen for webhook data
 - A providerID on which you want to add webhook.
 
+## Configuration
+
+Webhook behavior is controlled by the following environment variables (see `.env.example`):
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `WEBHOOK_MAX_RETRY_COUNT` | `5` | Maximum delivery attempts (the first attempt included) before the delivery is marked permanently `Failed`. |
+| `WEBHOOK_RETRY_INTERVAL` | `30m` | Fixed delay between attempts. Uses [ms](https://github.com/vercel/ms) formats (`10s`, `5m`, `1h`). |
+| `WEBHOOK_REQUEST_TIMEOUT_MS` | `10000` | Time to wait for your endpoint's response before treating the attempt as failed. |
+
+Invalid values for the retry/timeout variables are ignored with a warning at startup and the default is used instead — the application still boots.
+
+> **Note:** All examples below assume `GLOBAL_API_PREFIX=api`. Drop the `/api` segment from the URLs if your deployment leaves the prefix empty.
+
 ## Setting Up Webhooks in Osmox
 
 To start using webhooks in Osmox, follow these steps:
 
 ## Webhook Registration
 
-To register a webhook programmatically, you can use the following GraphQL mutation:
+Only one active webhook can exist per provider — registering a second one for the same provider returns a `409 Conflict`.
+
+### REST (recommended)
+
+```sh
+curl --location 'http://localhost:3000/api/webhooks' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <jwt>' \
+--data '{
+    "provider_id": 10,
+    "webhook_url": "http://localhost:4200/webhook"
+}'
+```
+
+#### Example Response
+
+```json
+{
+  "id": 3,
+  "provider_id": 10,
+  "webhook_url": "http://localhost:4200/webhook",
+  "is_verified": 0,
+  "status": 1,
+  "last_delivery_status": null,
+  "last_attempted_at": null,
+  "created_on": "2024-07-15T05:04:00.000Z",
+  "updated_on": "2024-07-15T05:04:00.000Z"
+}
+```
+
+Related endpoints:
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/api/webhooks?page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated list of the organization's webhooks. |
+| `GET` | `/api/webhooks/:id` | `Bearer` (`ORG_ADMIN`+) | Get a single webhook by ID. |
+| `POST` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Register a webhook (body: `providerId`, `webhookUrl`, optional `organizationId`). |
+| `PUT` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Update a webhook URL (body: `id`, `webhookUrl`, optional `organizationId`). |
+| `DELETE` | `/api/webhooks` | `Bearer` (`ORG_ADMIN`+) | Soft-delete a webhook (body: `id`, optional `organizationId`). |
+| `GET` | `/api/webhooks/logs?webhook_id=&search=&page=&limit=` | `Bearer` (`ORG_ADMIN`+) | Paginated delivery attempt logs for one webhook. `search` optionally free-text filters across notification ID, error message, and request/response payloads. |
+
+All endpoints above are scoped to the caller's own organization by default; a `SUPER_ADMIN` can target a different org. The **`GET`** endpoints take the override as a query parameter, `?organization_id=<id>`. The **`POST`/`PUT`/`DELETE`** endpoints take it as a body field instead, `organizationId` (no query param equivalent). Either way, any role other than `SUPER_ADMIN` passing an org that isn't their own gets a `400 Bad Request`.
+
+### GraphQL (legacy)
+
+The GraphQL API is frozen — it still works, but new fields such as `last_delivery_status` are only exposed over REST.
 
 ```graphql
 mutation RegisterWebhook {
@@ -44,7 +105,7 @@ curl --location 'http://localhost:3000/graphql' \
 
 ```
 
-### Example Response
+#### Example Response
 
 ```json
 {
@@ -63,6 +124,8 @@ curl --location 'http://localhost:3000/graphql' \
 ## Handling Webhook Events
 
 Once a webhook is registered, Osmox will start sending notifications to the specified URL. Your endpoint should be able to handle the incoming POST requests.
+
+The call is a `POST` with `Content-Type: application/json`. Respond with any `2xx` status within `WEBHOOK_REQUEST_TIMEOUT_MS` to have the attempt counted as successful — any other status, a connection error, or a slower response is treated as a failure and retried.
 
 ### Example Payload
 
@@ -95,15 +158,90 @@ Osmox will send a payload containing the event details. Here's an example:
 }
 ```
 
+The webhook fires only after the notification's final outcome has been persisted, so `result` always reflects the real provider response — including the error details when `deliveryStatus` is `6` (Failed).
+
 ### Processing the Payload
 
-Your webhook handler should able to extract the required information from the payload and perform action on your application : like updating the database for the status etc.
+Your webhook handler should extract the required information from the payload and act on it in your application — e.g. updating the notification's status in your own database.
 Note: We are sending the complete notification object from our end
+
+Because a failed delivery is retried, your endpoint may receive the same notification `id` more than once. Handle the payload idempotently — key off `id` rather than assuming exactly one call.
 
 ## Webhook Verification
 
 This is not yet incorporated but will be happening in the future
 
-### Retry Strategy
+## Retry Strategy
 
-Osmox uses an exponential backoff strategy for retries. If a request fails, it will retry after increasing intervals.
+Osmox retries with a **fixed interval**, not exponential backoff:
+
+1. The first attempt happens as soon as the notification reaches its final status.
+2. If the attempt fails, it's logged as `Failed` — every attempt row and the webhook's rolled-up `last_delivery_status` always reflect the actual outcome, `Success` or `Failed`, never a "pending" state. If attempts remain, a next attempt is re-queued with a delay of `WEBHOOK_RETRY_INTERVAL`.
+3. Once `WEBHOOK_MAX_RETRY_COUNT` attempts have been made with no success, no further attempts are made.
+
+Retries are queued through Redis rather than held in memory, so a worker restart does not lose a pending retry, and waiting for the next attempt does not block other notifications from being processed. With the defaults (`5` attempts, `30m` apart) a permanently unreachable endpoint is given up on after roughly two hours.
+
+## Delivery Logs
+
+Every attempt inserts a row into `notify_webhook_logs`:
+
+| Field | Description |
+|-------|-------------|
+| `webhook_id` / `notification_id` | Which webhook and notification the attempt belongs to. |
+| `attempt_number` | `1` for the first attempt, incrementing per retry. |
+| `status` | `1` Success · `2` Failed |
+| `http_status_code` | Status returned by your endpoint, or `null` if no response was received (timeout, connection refused). |
+| `request_body` | The payload Osmox sent. |
+| `response_body` | The body your endpoint returned. |
+| `error_message` | Failure reason, e.g. `timeout of 10000ms exceeded`. |
+| `requested_at` | When the attempt was made. |
+
+Request and response bodies larger than 10 KB are stored truncated as `{ "truncated": true, "preview": "..." }`.
+
+For a quick roll-up, `notify_webhooks` also carries `last_delivery_status` and `last_attempted_at` for the most recent attempt — these are what the portal's webhooks list shows as the "Last Delivery" badge, with a "View Logs" action for the full per-attempt history.
+
+### Reading logs over the API
+
+```sh
+curl --location 'http://localhost:3000/api/webhooks/logs?webhook_id=3&page=1&limit=20' \
+--header 'Authorization: Bearer <jwt>'
+```
+
+```json
+{
+  "items": [
+    {
+      "id": 412,
+      "webhook_id": 3,
+      "notification_id": 820167,
+      "attempt_number": 2,
+      "status": 2,
+      "http_status_code": 200,
+      "request_body": { "id": 820167, "deliveryStatus": 5, "result": { "...": "..." } },
+      "response_body": { "ok": true },
+      "error_message": null,
+      "requested_at": "2026-08-10T19:49:11.204Z",
+      "created_on": "2026-08-10T19:49:11.230Z"
+    }
+  ],
+  "page_info": {
+    "page": 1,
+    "limit": 20,
+    "total_items": 2,
+    "total_pages": 1,
+    "has_next": false,
+    "has_prev": false
+  }
+}
+```
+
+### Log retention
+
+`notify_webhook_logs` has no independent retention of its own — a delivery log lives exactly as long as the notification it documents. When a notification is permanently deleted (the archived-notification deletion cron, gated by `ENABLE_ARCHIVED_NOTIFICATION_DELETION` and `DELETE_ARCHIVED_NOTIFICATIONS_OLDER_THAN` — see `.env.example`), its webhook logs are deleted in the same transaction. `ENABLE_ARCHIVED_NOTIFICATION_DELETION` defaults to `false`, so on a default configuration neither notifications nor their webhook logs are ever deleted — enable it if you need bounded retention.
+
+## Troubleshooting
+
+- **No log rows at all** — the notification has not reached a terminal status yet (`5`/`6`), or no active webhook exists for its provider. In the latter case the API logs `Webhook not found for providerId: <id>`.
+- **`http_status_code: null` with a connection error** — Osmox could not reach the URL. Check that `webhook_url` is reachable from the API host; `localhost` inside a container means the container itself.
+- **Attempts stop before `WEBHOOK_MAX_RETRY_COUNT`** — check the API log for `Failed to schedule webhook retry ...`, which means the retry could not be queued (e.g. Redis unavailable) and the delivery was marked `Failed` with `error_message` starting `Retry scheduling failed:`.
+- **Deliveries time out under load** — your endpoint should acknowledge quickly and do its own work asynchronously, or raise `WEBHOOK_REQUEST_TIMEOUT_MS`.

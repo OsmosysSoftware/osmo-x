@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -19,6 +20,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { ValidationException } from 'src/common/exceptions/app.exception';
+import { ErrorCodes } from 'src/common/constants/error-codes';
 import { WebhookService } from './webhook.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
@@ -27,6 +30,7 @@ import { UserRoles } from 'src/common/constants/database';
 import { CreateWebhookInput } from './dto/create-webhook.input';
 import { UpdateWebhookInput } from './dto/update-webhook.input';
 import { WebhookResponseDto } from './dto/webhook-response.dto';
+import { WebhookLogResponseDto } from './dto/webhook-log-response.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/common/constants/jwtInterface';
 import { SnakeCaseInterceptor } from 'src/common/interceptors/snake-case.interceptor';
@@ -37,15 +41,15 @@ import { LinkBuilder } from 'src/common/utils/link-builder.helper';
 
 @ApiTags('Webhooks')
 @ApiBearerAuth()
-@ApiExtraModels(WebhookResponseDto)
+@ApiExtraModels(WebhookResponseDto, WebhookLogResponseDto)
 @Controller('webhooks')
-@UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(SnakeCaseInterceptor)
-@Roles(UserRoles.ORG_ADMIN)
 export class WebhookController {
   constructor(private readonly webhookService: WebhookService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ORG_ADMIN)
   @ApiOperation({ summary: 'List all webhooks for the organization' })
   @ApiQuery({
     name: 'organization_id',
@@ -73,7 +77,79 @@ export class WebhookController {
     return new PaginatedResponse(items, links, meta);
   }
 
+  @Get('logs')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ORG_ADMIN)
+  @ApiOperation({ summary: 'List delivery attempt logs for a webhook' })
+  @ApiQuery({ name: 'webhook_id', required: true, type: Number })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description:
+      'Free-text search across notification ID, error message, and request/response payloads',
+  })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of webhook delivery logs',
+    type: PaginatedResponse,
+  })
+  @ApiResponse({ status: 400, description: 'webhook_id is required' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Webhook not found' })
+  async findLogs(
+    @Query('webhook_id') webhookId: number,
+    @Query() query: PaginationQueryDto,
+    @Query('organization_id') queryOrgId: number,
+    @CurrentUser() user: JwtPayload,
+    @Req() req: Request,
+  ): Promise<PaginatedResponse<WebhookLogResponseDto>> {
+    if (!webhookId) {
+      throw new ValidationException(ErrorCodes.VALIDATION_FAILED, 'webhook_id is required');
+    }
+
+    const targetOrgId = resolveOrgId(user, queryOrgId);
+    const { items, meta } = await this.webhookService.getWebhookLogsAsDto(
+      webhookId,
+      query,
+      targetOrgId,
+    );
+    const { protocol, host } = LinkBuilder.extractBaseUrl(req);
+    const links = LinkBuilder.buildCollectionLinks(protocol, host, req.path, meta);
+
+    return new PaginatedResponse(items, links, meta);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ORG_ADMIN)
+  @ApiOperation({ summary: 'Get a webhook by ID' })
+  @ApiQuery({
+    name: 'organization_id',
+    required: false,
+    type: Number,
+    description: 'Target org (SUPER_ADMIN only)',
+  })
+  @ApiResponse({ status: 200, description: 'Webhook details', type: WebhookResponseDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Webhook not found' })
+  async findOne(
+    @Param('id') id: number,
+    @Query('organization_id') queryOrgId: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<WebhookResponseDto> {
+    return this.webhookService.findByIdAsDto(id, resolveOrgId(user, queryOrgId));
+  }
+
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ORG_ADMIN)
   @ApiOperation({ summary: 'Register a new webhook' })
   @ApiResponse({
     status: 201,
@@ -93,6 +169,8 @@ export class WebhookController {
   }
 
   @Put()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ORG_ADMIN)
   @ApiOperation({ summary: 'Update a webhook URL' })
   @ApiResponse({ status: 200, description: 'Webhook updated', type: WebhookResponseDto })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -108,6 +186,8 @@ export class WebhookController {
   }
 
   @Delete()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ORG_ADMIN)
   @ApiOperation({ summary: 'Delete a webhook' })
   @ApiResponse({ status: 200, description: 'Webhook deleted' })
   @ApiResponse({ status: 400, description: 'Bad request' })

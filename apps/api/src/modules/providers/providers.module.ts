@@ -15,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
 import { ProviderChainsModule } from '../provider-chains/provider-chains.module';
 import { ProviderChainMembersModule } from '../provider-chain-members/provider-chain-members.module';
 import { MasterProvidersModule } from '../master-providers/master-providers.module';
+import { WebhookModule } from '../webhook/webhook.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MasterProvidersModule } from '../master-providers/master-providers.modu
     forwardRef(() => ProviderChainsModule),
     forwardRef(() => ProviderChainMembersModule),
     MasterProvidersModule,
+    forwardRef(() => WebhookModule),
   ],
   providers: [
     UsersService,

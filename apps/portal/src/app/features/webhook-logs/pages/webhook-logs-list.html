@@ -1,0 +1,150 @@
+<div class="card">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1
+        class="text-3xl font-semibold text-surface-900 dark:text-surface-0 m-0 flex items-center gap-3"
+      >
+        <i class="pi pi-list text-primary"></i> Webhook Delivery Logs
+      </h1>
+      <p class="text-muted-color mt-2">Delivery attempt history for this webhook</p>
+
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-3 text-sm">
+        <span class="text-muted-color">Application</span>
+        <span class="font-medium text-surface-900 dark:text-surface-0">
+          {{ applicationName() ?? '—' }}
+        </span>
+        <i class="pi pi-angle-right text-muted-color text-xs"></i>
+        <span class="text-muted-color">Provider</span>
+        <span class="font-medium text-surface-900 dark:text-surface-0">
+          {{ providerName() ?? '—' }}
+        </span>
+      </div>
+
+      @if (webhook(); as wh) {
+        <div class="flex flex-wrap items-center gap-2 mt-2 text-sm">
+          <span class="text-muted-color">Endpoint</span>
+          <code class="text-surface-900 dark:text-surface-0 break-all">{{ wh.webhook_url }}</code>
+          <span class="text-muted-color">· Webhook #{{ wh.id }}</span>
+        </div>
+      }
+    </div>
+    <p-button
+      label="Back to Webhooks"
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      [outlined]="true"
+      routerLink="/webhooks"
+    />
+  </div>
+
+  <p-toolbar class="mb-4">
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon class="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            placeholder="Search..."
+            aria-label="Search webhook logs"
+            [value]="searchTerm()"
+            (input)="onSearchInput($event)"
+          />
+        </p-iconfield>
+        <p-button
+          icon="pi pi-filter-slash"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Clear filters"
+          tooltipPosition="top"
+          aria-label="Clear filters"
+          (onClick)="clearSearch()"
+        />
+        <p-button
+          icon="pi pi-refresh"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Refresh"
+          tooltipPosition="top"
+          aria-label="Refresh"
+          (onClick)="loadLogs()"
+        />
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  @if (loading()) {
+    <p-skeleton height="200px" />
+  } @else {
+    <p-table [value]="logs()" [rowHover]="true" [stripedRows]="true" [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template #header>
+        <tr>
+          <th style="min-width: 9rem">Notification</th>
+          <th style="min-width: 6rem">Attempt</th>
+          <th style="min-width: 8rem">Status</th>
+          <th style="min-width: 6rem">HTTP</th>
+          <th style="min-width: 16rem">Error</th>
+          <th style="min-width: 10rem">Requested At</th>
+          <th style="width: 5rem">Request</th>
+          <th style="width: 5rem">Response</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-log>
+        <tr>
+          <td class="font-medium">{{ log.notification_id }}</td>
+          <td>{{ log.attempt_number }}</td>
+          <td>
+            <p-tag [value]="statusLabel(log.status)" [severity]="statusSeverity(log.status)" [rounded]="true" />
+          </td>
+          <td>{{ log.http_status_code ?? '—' }}</td>
+          <td class="max-w-xs truncate">{{ log.error_message ?? '—' }}</td>
+          <td>{{ log.requested_at | date: 'short' }}</td>
+          <td>
+            <p-button
+              icon="pi pi-eye"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              pTooltip="View request payload"
+              tooltipPosition="top"
+              aria-label="View request payload"
+              (onClick)="viewJson(log.request_body, 'Webhook Request Payload')"
+            />
+          </td>
+          <td>
+            @if (log.response_body !== null && log.response_body !== undefined) {
+              <p-button
+                icon="pi pi-eye"
+                [rounded]="true"
+                [text]="true"
+                severity="info"
+                pTooltip="View response body"
+                tooltipPosition="top"
+                aria-label="View response body"
+                (onClick)="viewJson(log.response_body, 'Webhook Response Body')"
+              />
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="8" class="text-center! py-8 text-muted-color">No delivery attempts yet</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    @if (pageInfo(); as pi) {
+      <app-pagination [pageInfo]="pi" (paginationChange)="onPageChange($event)" />
+    }
+  }
+</div>
+
+<app-json-viewer-dialog
+  [visible]="jsonDialogVisible()"
+  [data]="jsonDialogData()"
+  [header]="jsonDialogHeader()"
+  (visibleChange)="jsonDialogVisible.set($event)"
+/>

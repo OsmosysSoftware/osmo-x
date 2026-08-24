@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { WebhookService } from './webhook.service';
 import { WebhookController } from './webhook.controller';
 import { Webhook } from './entities/webhook.entity';
+import { WebhookLog } from './entities/webhook-log.entity';
 import { HttpModule } from '@nestjs/axios';
 import { WebhookResolver } from './webhook.resolver';
 import { ServerApiKeysService } from '../server-api-keys/server-api-keys.service';
@@ -14,7 +15,7 @@ import { ApplicationsModule } from '../applications/applications.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Webhook]),
+    TypeOrmModule.forFeature([Webhook, WebhookLog]),
     ServerApiKeysModule,
     HttpModule,
     JwtModule,

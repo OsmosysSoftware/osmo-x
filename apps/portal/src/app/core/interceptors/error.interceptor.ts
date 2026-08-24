@@ -30,7 +30,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             errorMessage = apiMessage || 'Resource not found';
             break;
           case 500:
-            errorMessage = 'Server error. Please try again later';
+            errorMessage = apiMessage || 'Server error. Please try again later';
             break;
           case 503:
             errorMessage = 'Service unavailable';

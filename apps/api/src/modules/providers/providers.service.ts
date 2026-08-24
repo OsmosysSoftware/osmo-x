@@ -17,6 +17,7 @@ import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.helper';
 import { ChannelType } from 'src/common/constants/notifications';
 import { ProviderResponseDto } from './dto/provider-response.dto';
+import { WebhookService } from '../webhook/webhook.service';
 
 @Injectable()
 export class ProvidersService extends CoreService<Provider> {
@@ -28,6 +29,8 @@ export class ProvidersService extends CoreService<Provider> {
     private readonly applicationsService: ApplicationsService,
     private readonly usersService: UsersService,
     private readonly masterProvidersService: MasterProvidersService,
+    @Inject(forwardRef(() => WebhookService))
+    private readonly webhookService: WebhookService,
   ) {
     super(providerRepository);
   }
@@ -48,6 +51,13 @@ export class ProvidersService extends CoreService<Provider> {
     return this.providerRepository.find({
       where: { applicationId: In(appIds), status: Status.ACTIVE },
       select: ['providerId'],
+    });
+  }
+
+  async findAllActive(): Promise<Provider[]> {
+    return this.providerRepository.find({
+      where: { status: Status.ACTIVE },
+      select: ['providerId', 'channelType'],
     });
   }
 
@@ -285,7 +295,12 @@ export class ProvidersService extends CoreService<Provider> {
     }
 
     provider.status = Status.INACTIVE;
-    await this.providerRepository.save(provider);
+
+    // Same transaction so a failure can't leave the provider inactive but its webhook active.
+    await this.providerRepository.manager.transaction(async (manager) => {
+      await manager.save(provider);
+      await this.webhookService.deactivateWebhooksForProvider(providerId, manager);
+    });
 
     return true;
   }

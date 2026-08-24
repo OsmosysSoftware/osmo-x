@@ -1,4 +1,11 @@
-import { Logger, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  forwardRef,
+  Logger,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Notification } from './entities/notification.entity';
 import { RetryNotification } from './entities/retry-notification.entity';
@@ -29,6 +36,7 @@ import { SmsPlivoModule } from '../providers/sms-plivo/sms-plivo.module';
 import { SmsPlivoNotificationsConsumer } from 'src/jobs/consumers/notifications/smsPlivo-notifications.job.consumer';
 import { WaTwilioBusinessModule } from '../providers/wa-twilio-business/wa-twilio-business.module';
 import { QueueService } from './queues/queue.service';
+import { QUEUE_SERVICE } from './queues/queue.tokens';
 import { WaTwilioBusinessNotificationsConsumer } from 'src/jobs/consumers/notifications/waTwilioBusiness-notifications.job.consumer';
 import { PushSnsNotificationConsumer } from 'src/jobs/consumers/notifications/pushSns-notifications.job.consumer';
 import { PushSnsModule } from '../providers/push-sns/push-sns.module';
@@ -51,6 +59,7 @@ import { JwtOrApiKeyGuard } from 'src/common/guards/jwt-or-api-key/jwt-or-api-ke
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GqlAuthGuard } from 'src/common/guards/gql-auth.guard';
+import { QueueBootstrapService } from './queues/queue-bootstrap.service';
 
 const providerModules = [
   MailgunModule,
@@ -91,7 +100,7 @@ const consumers = [
   imports: [
     TypeOrmModule.forFeature([Notification, RetryNotification]),
     ...providerModules,
-    WebhookModule,
+    forwardRef(() => WebhookModule),
     ArchivedNotificationsModule,
   ],
   providers: [
@@ -106,6 +115,7 @@ const consumers = [
     ApplicationsService,
     UsersService,
     QueueService,
+    { provide: QUEUE_SERVICE, useExisting: QueueService },
     ArchivedNotificationsService,
     RequestLoggerMiddleware,
     NotificationDataFilterHelper,
@@ -114,9 +124,11 @@ const consumers = [
     JwtAuthGuard,
     GqlAuthGuard,
     ...consumers,
+    QueueBootstrapService,
   ],
   exports: [
     NotificationsService,
+    NotificationQueueProducer,
     ServerApiKeysService,
     JwtService,
     ApplicationsService,

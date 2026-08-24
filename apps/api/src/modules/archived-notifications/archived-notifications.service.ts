@@ -3,6 +3,7 @@ import { ArchivedNotification } from './entities/archived-notification.entity';
 import { DataSource, In, LessThan, QueryRunner, Repository } from 'typeorm';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { RetryNotification } from 'src/modules/notifications/entities/retry-notification.entity';
+import { WebhookLog } from 'src/modules/webhook/entities/webhook-log.entity';
 import { ConfigService } from '@nestjs/config';
 import { DeliveryStatus } from 'src/common/constants/notifications';
 import { Status } from 'src/common/constants/database';
@@ -404,6 +405,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       const batchSize = 1000;
       let totalDeletedArchived = 0;
       let totalDeletedRetries = 0;
+      let totalDeletedWebhookLogs = 0;
 
       this.logger.log(
         `Starting deletion of archived notifications and retries older than ${cutoffTimestamp.toISOString()}`,
@@ -467,6 +469,16 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
               typeof retryDeleteResult.affected === 'number' ? retryDeleteResult.affected : 0;
             totalDeletedRetries += retryAffected;
 
+            // Delete webhook logs for these notifications too, so they don't outlive them.
+            const webhookLogDeleteResult = await queryRunner.manager.delete(WebhookLog, {
+              notificationId: In(notificationIds),
+            });
+            const webhookLogsAffected =
+              typeof webhookLogDeleteResult.affected === 'number'
+                ? webhookLogDeleteResult.affected
+                : 0;
+            totalDeletedWebhookLogs += webhookLogsAffected;
+
             // Delete archived notifications
             const archivedIds = archivedEntriesBatch.map((entry) => entry.id);
             await queryRunner.manager.delete(ArchivedNotification, archivedIds);
@@ -474,7 +486,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
 
             this.logger.debug(
               `Batch processed: ${archivedEntriesBatch.length} archived notifications, ` +
-                `${retryAffected} retry records deleted`,
+                `${retryAffected} retry records deleted, ${webhookLogsAffected} webhook log records deleted`,
             );
           } while (archivedEntriesBatch.length === batchSize);
 
@@ -542,7 +554,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
         } while (orphanBatchCount === batchSize);
 
         this.logger.log(
-          `Successfully deleted ${totalDeletedArchived} archived notifications and ${totalDeletedRetries} retry records older than ${cutoffTimestamp.toISOString()}`,
+          `Successfully deleted ${totalDeletedArchived} archived notifications, ${totalDeletedRetries} retry records, and ${totalDeletedWebhookLogs} webhook log records older than ${cutoffTimestamp.toISOString()}`,
         );
       } finally {
         await queryRunner.release();
