@@ -26,7 +26,8 @@ OsmoX Portal is an Angular 20 application for managing the OsmoX multi-tenant no
 ```bash
 npm start              # Dev server at localhost:4200
 npm run build:prod     # Production build
-npm test               # Unit tests (Karma/Jasmine)
+npm test               # Unit tests (Karma/Jasmine) — watch mode, does not exit
+npm run test:ci        # Unit tests once, headless Chrome — use this in CI and for gates
 npm run lint           # ESLint (--max-warnings=0)
 npm run lint:fix       # Auto-fix
 npm run lint-fix-format # Combined: format + lint + format
