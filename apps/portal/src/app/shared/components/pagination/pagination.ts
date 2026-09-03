@@ -1,5 +1,5 @@
 import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { PaginatorModule } from 'primeng/paginator';
 export interface PageInfo {
   page: number;
@@ -15,7 +15,7 @@ export interface PageEvent {
 
 @Component({
   selector: 'app-pagination',
-  imports: [CommonModule, PaginatorModule],
+  imports: [PaginatorModule],
   templateUrl: './pagination.html',
   styleUrls: ['./pagination.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
