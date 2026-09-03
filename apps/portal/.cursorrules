@@ -1,4 +1,4 @@
-# Angular 20 with PrimeNG - Cursor AI Rules
+# Angular 21 with Optimus UI - Cursor AI Rules
 
 ## Core Angular 20 Rules
 
@@ -35,19 +35,22 @@
 - Use functional guards (NOT class-based)
 - Example: `const authGuard = (): boolean => inject(AuthService).isAuthenticated();`
 
-## PrimeNG Components
+## Optimus UI Components
+
+Optimus UI (`@openng/optimus-ui`) is the MIT community fork of PrimeNG v21. Selectors keep the
+`p-` prefix and icons keep `pi-`, so templates read the same as they did under PrimeNG.
 
 ### Usage
-- Import PrimeNG components as standalone
-- Example: `import { ButtonModule } from 'primeng/button';`
+- Import Optimus UI components as standalone
+- Example: `import { ButtonModule } from '@openng/optimus-ui/button';`
 - Add to component imports: `imports: [ButtonModule, InputTextModule]`
-- Refer to https://primeng.org for component API
+- Refer to https://optimus.openng.org for component API
 - Common components: Button, InputText, Table, Dialog, Card, Dropdown, Calendar
 
-### Styling PrimeNG
-- PrimeNG components work seamlessly with Tailwind utility classes
+### Styling Optimus UI
+- Optimus UI components work seamlessly with Tailwind utility classes
 - Use `class` attribute for Tailwind utilities
-- Use `styleClass` for PrimeNG component-specific styling
+- Use `styleClass` for Optimus UI component-specific styling
 - Example: `<p-button label="Click" styleClass="w-full" class="mb-4" />`
 
 ## Tailwind CSS (if enabled)
@@ -56,7 +59,7 @@
 - Use Tailwind utility classes for layout and spacing
 - Responsive design: `md:grid-cols-2`, `lg:flex-row`
 - Dark mode (if configured): `dark:bg-gray-900`, `dark:text-white`
-- With tailwindcss-primeui: Use design tokens like `bg-primary`, `text-primary`
+- With @openng/optimus-ui-tailwindcss: Use design tokens like `bg-primary`, `text-primary`
 
 ### Best Practices
 - Prefer utilities over custom CSS
@@ -88,7 +91,7 @@
 ```typescript
 import { Component, signal, computed, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 
 @Component({
   selector: 'app-example',
@@ -221,7 +224,7 @@ describe('ExampleComponent', () => {
 
 - Angular: https://angular.dev
 - Angular AI: https://angular.dev/ai
-- PrimeNG: https://primeng.org
+- Optimus UI: https://optimus.openng.org
 - Tailwind CSS: https://tailwindcss.com
 - RxJS: https://rxjs.dev
 

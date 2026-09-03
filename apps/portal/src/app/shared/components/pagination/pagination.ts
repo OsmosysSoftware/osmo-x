@@ -1,6 +1,6 @@
 import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 
-import { PaginatorModule } from 'primeng/paginator';
+import { PaginatorModule } from '@openng/optimus-ui/paginator';
 export interface PageInfo {
   page: number;
   limit: number;
@@ -40,7 +40,7 @@ export class PaginationComponent {
   readonly totalRecords = computed(() => this.pageInfo().total_items);
 
   onPageChange(event: { page?: number; first?: number; rows?: number }): void {
-    // PrimeNG paginator is 0-indexed, but our API is 1-indexed
+    // Optimus paginator is 0-indexed, but our API is 1-indexed
     const newPage = (event.page ?? 0) + 1;
     const newLimit = event.rows ?? this.pageInfo().limit;
 

@@ -7,12 +7,12 @@ import {
   computed,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { DialogModule } from 'primeng/dialog';
-import { PasswordModule } from 'primeng/password';
-import { SkeletonModule } from 'primeng/skeleton';
-import { MessageService } from 'primeng/api';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
+import { DialogModule } from '@openng/optimus-ui/dialog';
+import { PasswordModule } from '@openng/optimus-ui/password';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { MessageService } from '@openng/optimus-ui/api';
 import { AuthService } from '../../../core/services/auth.service';
 import { ProfileService } from '../services/profile';
 

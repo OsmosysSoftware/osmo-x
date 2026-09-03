@@ -1,14 +1,14 @@
 import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { CheckboxModule } from 'primeng/checkbox';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
-import { MessageModule } from 'primeng/message';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { CheckboxModule } from '@openng/optimus-ui/checkbox';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
+import { PasswordModule } from '@openng/optimus-ui/password';
+import { MessageModule } from '@openng/optimus-ui/message';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginDto } from '../../../core/models/auth.model';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '@openng/optimus-ui/api';
 import { AppLogo } from '../../../shared/components/logo/logo';
 import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 

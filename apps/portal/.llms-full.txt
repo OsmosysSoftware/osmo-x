@@ -1,191 +1,196 @@
-# PrimeNG v20 Component Documentation Index
+# Optimus UI Component Documentation Index
 
-This file contains a complete index of PrimeNG v20 components and documentation.
+This file contains an index of Optimus UI components and documentation.
+Optimus UI is the MIT community fork of PrimeNG v21, maintained by OpenNG.
 
 ## Official Website
-https://primeng.org
+https://optimus.openng.org
 
 ## Getting Started
-- Installation: https://primeng.org/installation
-- Configuration: https://primeng.org/configuration
-- Playground: https://primeng.org/playground
-- Theming: https://primeng.org/theming
+- Installation: https://optimus.openng.org/installation
+- Configuration: https://optimus.openng.org/configuration
+- Playground: https://optimus.openng.org/playground
+- Theming: https://optimus.openng.org/theming
 
 ## Form Components
-- AutoComplete: https://primeng.org/autocomplete
-- CascadeSelect: https://primeng.org/cascadeselect
-- Checkbox: https://primeng.org/checkbox
-- ColorPicker: https://primeng.org/colorpicker
-- DatePicker: https://primeng.org/datepicker
-- Editor: https://primeng.org/editor
-- FloatLabel: https://primeng.org/floatlabel
-- IconField: https://primeng.org/iconfield
-- IftaLabel: https://primeng.org/iftalabel
-- InputGroup: https://primeng.org/inputgroup
-- InputMask: https://primeng.org/inputmask
-- InputNumber: https://primeng.org/inputnumber
-- InputOtp: https://primeng.org/inputotp
-- InputText: https://primeng.org/inputtext
-- KeyFilter: https://primeng.org/keyfilter
-- Knob: https://primeng.org/knob
-- Listbox: https://primeng.org/listbox
-- MultiSelect: https://primeng.org/multiselect
-- Password: https://primeng.org/password
-- RadioButton: https://primeng.org/radiobutton
-- Rating: https://primeng.org/rating
-- Select: https://primeng.org/select
-- SelectButton: https://primeng.org/selectbutton
-- Slider: https://primeng.org/slider
-- Textarea: https://primeng.org/textarea
-- ToggleButton: https://primeng.org/togglebutton
-- ToggleSwitch: https://primeng.org/toggleswitch
-- TreeSelect: https://primeng.org/treeselect
+- AutoComplete: https://optimus.openng.org/autocomplete
+- CascadeSelect: https://optimus.openng.org/cascadeselect
+- Checkbox: https://optimus.openng.org/checkbox
+- ColorPicker: https://optimus.openng.org/colorpicker
+- DatePicker: https://optimus.openng.org/datepicker
+- Editor: https://optimus.openng.org/editor
+- FloatLabel: https://optimus.openng.org/floatlabel
+- IconField: https://optimus.openng.org/iconfield
+- IftaLabel: https://optimus.openng.org/iftalabel
+- InputGroup: https://optimus.openng.org/inputgroup
+- InputMask: https://optimus.openng.org/inputmask
+- InputNumber: https://optimus.openng.org/inputnumber
+- InputOtp: https://optimus.openng.org/inputotp
+- InputText: https://optimus.openng.org/inputtext
+- KeyFilter: https://optimus.openng.org/keyfilter
+- Knob: https://optimus.openng.org/knob
+- Listbox: https://optimus.openng.org/listbox
+- MultiSelect: https://optimus.openng.org/multiselect
+- Password: https://optimus.openng.org/password
+- RadioButton: https://optimus.openng.org/radiobutton
+- Rating: https://optimus.openng.org/rating
+- Select: https://optimus.openng.org/select
+- SelectButton: https://optimus.openng.org/selectbutton
+- Slider: https://optimus.openng.org/slider
+- Textarea: https://optimus.openng.org/textarea
+- ToggleButton: https://optimus.openng.org/togglebutton
+- ToggleSwitch: https://optimus.openng.org/toggleswitch
+- TreeSelect: https://optimus.openng.org/treeselect
 
 ## Button Components
-- Button: https://primeng.org/button
-- SpeedDial: https://primeng.org/speeddial
-- SplitButton: https://primeng.org/splitbutton
+- Button: https://optimus.openng.org/button
+- SpeedDial: https://optimus.openng.org/speeddial
+- SplitButton: https://optimus.openng.org/splitbutton
 
 ## Data Components
-- DataView: https://primeng.org/dataview
-- OrderList: https://primeng.org/orderlist
-- OrgChart: https://primeng.org/organizationchart
-- Paginator: https://primeng.org/paginator
-- PickList: https://primeng.org/picklist
-- Table: https://primeng.org/table
-- Timeline: https://primeng.org/timeline
-- Tree: https://primeng.org/tree
-- TreeTable: https://primeng.org/treetable
-- VirtualScroller: https://primeng.org/virtualscroller
+- DataView: https://optimus.openng.org/dataview
+- OrderList: https://optimus.openng.org/orderlist
+- OrgChart: https://optimus.openng.org/organizationchart
+- Paginator: https://optimus.openng.org/paginator
+- PickList: https://optimus.openng.org/picklist
+- Table: https://optimus.openng.org/table
+- Timeline: https://optimus.openng.org/timeline
+- Tree: https://optimus.openng.org/tree
+- TreeTable: https://optimus.openng.org/treetable
+- VirtualScroller: https://optimus.openng.org/virtualscroller
 
 ## Panel Components
-- Accordion: https://primeng.org/accordion
-- Card: https://primeng.org/card
-- Divider: https://primeng.org/divider
-- Fieldset: https://primeng.org/fieldset
-- Panel: https://primeng.org/panel
-- ScrollPanel: https://primeng.org/scrollpanel
-- Splitter: https://primeng.org/splitter
-- Stepper: https://primeng.org/stepper
-- Tabs: https://primeng.org/tabs
-- Toolbar: https://primeng.org/toolbar
+- Accordion: https://optimus.openng.org/accordion
+- Card: https://optimus.openng.org/card
+- Divider: https://optimus.openng.org/divider
+- Fieldset: https://optimus.openng.org/fieldset
+- Panel: https://optimus.openng.org/panel
+- ScrollPanel: https://optimus.openng.org/scrollpanel
+- Splitter: https://optimus.openng.org/splitter
+- Stepper: https://optimus.openng.org/stepper
+- Tabs: https://optimus.openng.org/tabs
+- Toolbar: https://optimus.openng.org/toolbar
 
 ## Overlay Components
-- ConfirmDialog: https://primeng.org/confirmdialog
-- ConfirmPopup: https://primeng.org/confirmpopup
-- Dialog: https://primeng.org/dialog
-- Drawer: https://primeng.org/drawer
-- DynamicDialog: https://primeng.org/dynamicdialog
-- Popover: https://primeng.org/popover
-- Tooltip: https://primeng.org/tooltip
+- ConfirmDialog: https://optimus.openng.org/confirmdialog
+- ConfirmPopup: https://optimus.openng.org/confirmpopup
+- Dialog: https://optimus.openng.org/dialog
+- Drawer: https://optimus.openng.org/drawer
+- DynamicDialog: https://optimus.openng.org/dynamicdialog
+- Popover: https://optimus.openng.org/popover
+- Tooltip: https://optimus.openng.org/tooltip
 
 ## File Components
-- Upload: https://primeng.org/fileupload
+- Upload: https://optimus.openng.org/fileupload
 
 ## Menu Components
-- Breadcrumb: https://primeng.org/breadcrumb
-- ContextMenu: https://primeng.org/contextmenu
-- Dock: https://primeng.org/dock
-- Menu: https://primeng.org/menu
-- Menubar: https://primeng.org/menubar
-- MegaMenu: https://primeng.org/megamenu
-- PanelMenu: https://primeng.org/panelmenu
-- TieredMenu: https://primeng.org/tieredmenu
+- Breadcrumb: https://optimus.openng.org/breadcrumb
+- ContextMenu: https://optimus.openng.org/contextmenu
+- Dock: https://optimus.openng.org/dock
+- Menu: https://optimus.openng.org/menu
+- Menubar: https://optimus.openng.org/menubar
+- MegaMenu: https://optimus.openng.org/megamenu
+- PanelMenu: https://optimus.openng.org/panelmenu
+- TieredMenu: https://optimus.openng.org/tieredmenu
 
 ## Chart Components
-- Chart.js: https://primeng.org/chart
+- Chart.js: https://optimus.openng.org/chart
 
 ## Message Components
-- Message: https://primeng.org/message
-- Toast: https://primeng.org/toast
+- Message: https://optimus.openng.org/message
+- Toast: https://optimus.openng.org/toast
 
 ## Media Components
-- Carousel: https://primeng.org/carousel
-- Galleria: https://primeng.org/galleria
-- Image: https://primeng.org/image
-- ImageCompare: https://primeng.org/imagecompare
+- Carousel: https://optimus.openng.org/carousel
+- Galleria: https://optimus.openng.org/galleria
+- Image: https://optimus.openng.org/image
+- ImageCompare: https://optimus.openng.org/imagecompare
 
 ## Misc Components
-- AnimateOnScroll: https://primeng.org/animateonscroll
-- AutoFocus: https://primeng.org/autofocus
-- Avatar: https://primeng.org/avatar
-- Badge: https://primeng.org/badge
-- Bind: https://primeng.org/bind
-- BlockUI: https://primeng.org/blockui
-- Chip: https://primeng.org/chip
-- ClassNames: https://primeng.org/classnames
-- FocusTrap: https://primeng.org/focustrap
-- Fluid: https://primeng.org/fluid
-- Inplace: https://primeng.org/inplace
-- MeterGroup: https://primeng.org/metergroup
-- ProgressBar: https://primeng.org/progressbar
-- ProgressSpinner: https://primeng.org/progressspinner
-- Ripple: https://primeng.org/ripple
-- ScrollTop: https://primeng.org/scrolltop
-- Skeleton: https://primeng.org/skeleton
-- StyleClass: https://primeng.org/styleclass
-- Tag: https://primeng.org/tag
-- Terminal: https://primeng.org/terminal
+- AnimateOnScroll: https://optimus.openng.org/animateonscroll
+- AutoFocus: https://optimus.openng.org/autofocus
+- Avatar: https://optimus.openng.org/avatar
+- Badge: https://optimus.openng.org/badge
+- Bind: https://optimus.openng.org/bind
+- BlockUI: https://optimus.openng.org/blockui
+- Chip: https://optimus.openng.org/chip
+- ClassNames: https://optimus.openng.org/classnames
+- FocusTrap: https://optimus.openng.org/focustrap
+- Fluid: https://optimus.openng.org/fluid
+- Inplace: https://optimus.openng.org/inplace
+- MeterGroup: https://optimus.openng.org/metergroup
+- ProgressBar: https://optimus.openng.org/progressbar
+- ProgressSpinner: https://optimus.openng.org/progressspinner
+- Ripple: https://optimus.openng.org/ripple
+- ScrollTop: https://optimus.openng.org/scrolltop
+- Skeleton: https://optimus.openng.org/skeleton
+- StyleClass: https://optimus.openng.org/styleclass
+- Tag: https://optimus.openng.org/tag
+- Terminal: https://optimus.openng.org/terminal
 
 ## Utilities
-- FilterService: https://primeng.org/filterservice
+- FilterService: https://optimus.openng.org/filterservice
 
 ## Icons
-- Prime Icons: https://primeng.org/icons
-- Custom Icons: https://primeng.org/customicons
+- Openng Icons: https://optimus.openng.org/icons
+- Custom Icons: https://optimus.openng.org/customicons
 
 ## Advanced Features
-- Pass Through: https://primeng.org/passthrough
-- Tailwind CSS: https://primeng.org/tailwind
-
-## Templates & Design
-- Templates: https://primeng.org/templates
-- Figma UI Kit Overview: https://primeng.org/uikit
-- Figma UI Kit Guide: https://primeng.org/uikit/guide
-- Theme Designer Overview: https://primeng.org/designer
-- Theme Designer Guide: https://primeng.org/designer/guide
-- CI Pipeline: https://primeng.org/designer/ci
-
+- Pass Through: https://optimus.openng.org/passthrough
+- Tailwind CSS: https://optimus.openng.org/tailwind
 ## Guides
-- Accessibility: https://primeng.org/guides/accessibility
-- PrimeFlex: https://primeng.org/guides/primeflex
-- RTL: https://primeng.org/guides/rtl
+- Accessibility: https://optimus.openng.org/guides/accessibility
+- RTL: https://optimus.openng.org/guides/rtl
 
 ## Migration
-- Updating to v20: https://primeng.org/migration/v20
-- Updating to v19: https://primeng.org/migration/v19
-
-## Support & Community
-- Long Term Support: https://primeng.org/lts
-- PRO Support: https://primeng.org/support
-- About Us: https://primeng.org/team
-- Roadmap: https://primeng.org/roadmap
-- Contribution: https://primeng.org/contribution
+- PrimeNG to Optimus UI: https://v1.optimus.openng.org/migration/primeng
 
 ## Important Notes
 
-### Import Paths (PrimeNG v20)
-In PrimeNG v20, import paths have changed. Components are now imported from their lowercase module names:
+### Package Names
+Optimus UI v1 is API-compatible with PrimeNG v21; only the package names differ.
+
+| PrimeNG | Optimus UI |
+| --- | --- |
+| `primeng` | `@openng/optimus-ui` |
+| `primeicons` | `@openng/icons` |
+| `@primeuix/themes` | `@openng/optimus-ui-themes` |
+| `tailwindcss-primeui` | `@openng/optimus-ui-tailwindcss` |
+
+Subpath suffixes are preserved: `primeng/button` becomes `@openng/optimus-ui/button`.
+
+### Import Paths
 
 ```typescript
 // Form inputs
-import { Textarea } from 'primeng/textarea';  // NOT 'primeng/inputtextarea'
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';  // Previously 'dropdown'
-import { Checkbox } from 'primeng/checkbox';
+import { Textarea } from '@openng/optimus-ui/textarea';  // NOT '.../inputtextarea'
+import { InputText } from '@openng/optimus-ui/inputtext';
+import { Select } from '@openng/optimus-ui/select';  // Previously 'dropdown'
+import { Checkbox } from '@openng/optimus-ui/checkbox';
+
+// Config and theming
+import { provideOptimus, Optimus } from '@openng/optimus-ui/config';
+import Aura from '@openng/optimus-ui-themes/aura';
 
 // Always check the component documentation page for the correct import path
 ```
 
-### Key Changes in v20
-1. **Directives as Components**: Many directives are now standalone components
-2. **New Theming System**: Uses @primeuix/themes instead of old theme files
-3. **Pass Through Support**: All components support pass through attributes
-4. **Improved Accessibility**: Enhanced ARIA support across all components
-5. **Module Names**: Some module names have changed (e.g., Dropdown → Select)
+### Identifier Renames from PrimeNG
+- `providePrimeNG` becomes `provideOptimus`
+- `PrimeNG` (config class) becomes `Optimus`
+- `PrimeNGConfigType` becomes `OptimusConfigType`
+- `PrimeIcons` becomes `OpenngIcons` (the old name still compiles via a deprecated alias)
 
-### When Using PrimeNG Components
+### What Did Not Change
+- Component selectors keep the `p-` prefix (`p-button`, `p-table`)
+- Icon classes keep the `pi-` prefix (`pi pi-search`)
+- Design tokens keep the `--p-*` prefix
+- Pass through (`pt`) and the `dt()` design token function work as before
+
+### When Using Optimus UI Components
 1. Always refer to the official documentation for import paths
 2. Check the component's page for usage examples
 3. Use WebFetch or Context7 to get latest component documentation
-4. PrimeNG v20 requires Angular 18+
+4. Optimus UI v1 requires Angular 21+ and RxJS 7.8.1+
+5. There is no Optimus MCP server; fetch docs from https://optimus.openng.org
+6. Optimus UI v2 exists but diverges from PrimeNG v21 - this project is pinned to v1

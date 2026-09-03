@@ -4,7 +4,7 @@
 
 ### 1. ALWAYS Use MCP Servers for Latest Documentation
 
-- **Use PrimeNG MCP** (`@primeng/mcp`) for PrimeNG v20 component docs — props, events, templates, methods, theming, and pass through styling
+- **Use WebFetch on https://optimus.openng.org** for Optimus UI component docs — props, events, templates, methods, theming, and pass through styling. There is no Optimus MCP server; the old `@primeng/mcp` server documents a library this project no longer uses.
 - **Use Context7** to fetch the latest documentation for Angular, Tailwind CSS, and other libraries
 - **Never rely on outdated knowledge** — always fetch current docs before implementing
 
@@ -41,10 +41,10 @@ npm run generate:api   # Regenerate TypeScript types from backend OpenAPI spec
 
 ### Tech Stack
 
-- **Angular 20** — zoneless change detection (NO Zone.js), signals, standalone components
-- **PrimeNG v20** — UI component library (Aura theme)
-- **PrimeIcons** — icon library from PrimeNG
-- **Tailwind CSS v4** — utility-first CSS with tailwindcss-primeui plugin
+- **Angular 21** — zoneless change detection (NO Zone.js), signals, standalone components
+- **Optimus UI v1** (`@openng/optimus-ui`) — UI component library (Aura theme). MIT community fork of PrimeNG v21.
+- **Openng Icons** (`@openng/icons`) — icon library, `pi pi-*` classes unchanged
+- **Tailwind CSS v4** — utility-first CSS with the `@openng/optimus-ui-tailwindcss` plugin
 - **TypeScript** — strict mode, no explicit any
 - **ESLint + Prettier** — code quality and formatting
 
@@ -434,17 +434,35 @@ Registered in `app.config.ts` in this order:
 
 ---
 
-## PrimeNG Integration
+## Optimus UI Integration
 
-### PrimeNG v20 Key Changes
+Optimus UI is the MIT community fork of PrimeNG v21, maintained by OpenNG. PrimeTek archived
+`primefaces/primeng` and moved v22+ to a commercial licence. v1 is API-compatible with PrimeNG v21;
+**v2 diverges and this project is pinned to v1**.
 
-- Import paths: `primeng/textarea` (NOT `primeng/inputtextarea`)
-- Select component (previously Dropdown): `primeng/select`
-- New theming: `@primeuix/themes`
+### Package Names
+
+| Old (PrimeNG) | Current |
+| --- | --- |
+| `primeng` | `@openng/optimus-ui` |
+| `primeicons` | `@openng/icons` |
+| `@primeuix/themes` | `@openng/optimus-ui-themes` |
+| `tailwindcss-primeui` | `@openng/optimus-ui-tailwindcss` |
+
+Subpath suffixes are preserved: `primeng/button` became `@openng/optimus-ui/button`.
+Identifiers: `providePrimeNG` → `provideOptimus`, `PrimeNG` → `Optimus`.
+
+### Key Points
+
+- Import paths: `@openng/optimus-ui/textarea` (NOT `.../inputtextarea`)
+- Select component (previously Dropdown): `@openng/optimus-ui/select`
+- Theming: `@openng/optimus-ui-themes`
+- Component selectors keep the `p-` prefix and icons keep `pi-` — templates were unaffected by the migration
+- Design tokens keep the `--p-*` prefix
 - All components support **pass-through (pt) attributes** for deep DOM customization
 - Use `[pt]` prop to target internal component elements with classes, styles, or event handlers
 - Use `dt()` design token function to access theme CSS variables
-- **Always use PrimeNG MCP** (`@primeng/mcp`) to look up component props, events, and templates before implementing
+- **Always fetch current docs from https://optimus.openng.org** before implementing; see also `.llms-full.txt` for the component index
 
 ### Common Components
 
@@ -456,7 +474,7 @@ Registered in `app.config.ts` in this order:
 - **Menu**: Menubar, Menu, ContextMenu, Breadcrumb
 
 ```typescript
-// Example: PrimeNG table with template syntax
+// Example: Optimus UI table with template syntax
 @Component({
   imports: [TableModule, ButtonModule],
   template: `

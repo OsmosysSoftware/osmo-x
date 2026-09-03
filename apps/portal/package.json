@@ -53,12 +53,12 @@
     "@angular/forms": "21.2.22",
     "@angular/platform-browser": "21.2.22",
     "@angular/router": "21.2.22",
-    "@primeuix/themes": "^2.0.2",
+    "@openng/icons": "^1.0.0",
+    "@openng/optimus-ui": "^1.0.2",
+    "@openng/optimus-ui-themes": "^1.0.2",
     "chart.js": "^4.5.1",
     "openapi-fetch": "^0.17.0",
     "postcss": "^8.5.15",
-    "primeicons": "^7.0.0",
-    "primeng": "^21.0.2",
     "rxjs": "~7.8.2",
     "tslib": "^2.8.1"
   },
@@ -66,6 +66,7 @@
     "@angular/build": "21.2.23",
     "@angular/cli": "21.2.23",
     "@angular/compiler-cli": "21.2.22",
+    "@openng/optimus-ui-tailwindcss": "^1.0.2",
     "@tailwindcss/postcss": "^4.3.0",
     "@types/jasmine": "~5.1.15",
     "angular-eslint": "20.7.0",
@@ -83,7 +84,6 @@
     "openapi-typescript": "^7.13.0",
     "prettier": "^3.8.3",
     "tailwindcss": "^4.3.0",
-    "tailwindcss-primeui": "^0.6.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "8.60.0"
   }

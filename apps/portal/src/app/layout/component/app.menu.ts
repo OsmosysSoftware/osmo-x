@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { MenuItem } from 'primeng/api';
+import { MenuItem } from '@openng/optimus-ui/api';
 import { AppMenuitem } from './app.menuitem';
 import { AuthService } from '../../core/services/auth.service';
 import { UserRoles } from '../../core/constants/roles';

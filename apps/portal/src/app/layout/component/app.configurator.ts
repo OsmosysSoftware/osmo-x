@@ -11,12 +11,12 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { $t, updatePreset, updateSurfacePalette } from '@primeuix/themes';
-import Aura from '@primeuix/themes/aura';
-import Lara from '@primeuix/themes/lara';
-import Nora from '@primeuix/themes/nora';
-import { PrimeNG } from 'primeng/config';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { $t, updatePreset, updateSurfacePalette } from '@openng/optimus-ui-themes';
+import Aura from '@openng/optimus-ui-themes/aura';
+import Lara from '@openng/optimus-ui-themes/lara';
+import Nora from '@openng/optimus-ui-themes/nora';
+import { Optimus } from '@openng/optimus-ui/config';
+import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
 import { LayoutService } from '../service/layout.service';
 
 const presets = {
@@ -129,13 +129,11 @@ declare interface SurfacesType {
 export class AppConfigurator implements OnInit {
   router = inject(Router);
 
-  config: PrimeNG = inject(PrimeNG);
+  config: Optimus = inject(Optimus);
 
   layoutService: LayoutService = inject(LayoutService);
 
   platformId = inject(PLATFORM_ID);
-
-  primeng = inject(PrimeNG);
 
   presets = Object.keys(presets);
 

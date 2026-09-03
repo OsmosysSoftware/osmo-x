@@ -78,7 +78,7 @@ Reusable components, directives, and pipes shared across different features:
 
 #### `layout`
 
-Application shell components based on PrimeNG Sakai template:
+Application shell components based on the PrimeNG Sakai template (the portal now uses Optimus UI, the MIT fork of PrimeNG v21):
 
 1. **`component`**: Layout components (topbar, sidebar, menu, footer, configurator)
 2. **`service`**: Layout service for theme/menu state management

@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { MenuItem } from '@openng/optimus-ui/api';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { StyleClassModule } from 'primeng/styleclass';
-import { MenuModule } from 'primeng/menu';
-import { AvatarModule } from 'primeng/avatar';
+import { StyleClassModule } from '@openng/optimus-ui/styleclass';
+import { MenuModule } from '@openng/optimus-ui/menu';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { AuthService } from '../../core/services/auth.service';

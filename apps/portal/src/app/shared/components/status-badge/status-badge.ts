@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, computed, input } from '@angular/core';
-import { TagModule } from 'primeng/tag';
+import { TagModule } from '@openng/optimus-ui/tag';
 import { DeliveryStatus } from '../../../core/constants/notification';
 
 @Component({
