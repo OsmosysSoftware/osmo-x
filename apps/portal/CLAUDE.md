@@ -36,6 +36,16 @@ npm run generate:api   # Regenerate TypeScript types from backend OpenAPI spec
 
 `npm run generate:api` runs `openapi-typescript` against `http://localhost:3000/api/docs-json` and outputs to `src/app/core/types/api.types.ts`.
 
+### App version
+
+`scripts/generate-version.mjs` writes `src/app/core/constants/app-version.ts` from `package.json`'s
+`version`. It runs automatically from the `prestart`, `prebuild:prod` and `pretest:ci` hooks, so the
+constant cannot drift after a release bump. The generated file is committed so a fresh clone
+type-checks without running a script first. `layout/component/app.footer.ts` renders it.
+
+Do NOT import `package.json` directly for this — `resolveJsonModule` inlines the whole manifest into
+the bundle, publishing every dependency name and version in the served JavaScript.
+
 ---
 
 ## Architecture
