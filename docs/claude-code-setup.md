@@ -52,10 +52,10 @@ These are loaded into every Claude Code session. They define non-negotiable stan
 **What it covers:**
 - Critical instructions: Use Context7 MCP for Angular docs and WebFetch on https://optimus.openng.org for Optimus UI docs
 - Zoneless architecture requirements (NO Zone.js, signals mandatory)
-- Angular 21 component pattern (standalone, OnPush, inject(), input()/output())
+- Angular 22 component pattern (standalone, OnPush, inject(), input()/output())
 - Modern template syntax (@if, @for, @switch)
 - API type system (openapi-typescript, snake_case, NO conversion)
-- Optimus UI v1 integration patterns
+- Optimus UI v2 integration patterns
 - Auth implementation (signal-based)
 - Reference to interview-app frontend patterns
 

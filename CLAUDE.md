@@ -9,7 +9,7 @@ OsmoX is a centralized multi-channel notification management system being transf
 ```text
 apps/
 ├── api/          # NestJS backend (Node.js 24.x, NestJS 11)
-└── portal/       # Angular frontend (Angular 21, Optimus UI v1, Tailwind v4)
+└── portal/       # Angular frontend (Angular 22, Optimus UI v2, Tailwind v4)
 ```
 
 ### Reference Implementation
@@ -133,8 +133,8 @@ npm run generate:api          # Regenerate TypeScript types from backend OpenAPI
 
 ### Frontend (`apps/portal/src/app`)
 
-- **Angular 21** with zoneless change detection (NO Zone.js), signals, standalone components
-- **Optimus UI v1** (`@openng/optimus-ui`, the MIT community fork of PrimeNG v21) for UI components, **Tailwind CSS v4** for utilities
+- **Angular 22** with zoneless change detection (NO Zone.js), signals, standalone components
+- **Optimus UI v2** (`@openng/optimus-ui`, the MIT community fork of PrimeNG v21) for UI components, **Tailwind CSS v4** for utilities
 - **OpenAPI-generated types** (`openapi-typescript`) — snake_case fields used directly, NO conversion
 - `core/` — Singleton services, guards, interceptors, models, generated API types
 - `features/` — Feature modules (lazy-loaded): dashboard, applications, providers, notifications, users, etc.

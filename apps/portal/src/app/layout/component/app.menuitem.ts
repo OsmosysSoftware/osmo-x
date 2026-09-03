@@ -10,7 +10,6 @@ import {
   computed,
 } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
@@ -79,7 +78,7 @@ import { LayoutService } from '../service/layout.service';
     }
 
     @if (item().items && item().visible !== false) {
-      <ul [@children]="submenuAnimation()">
+      <ul class="layout-submenu" [class.layout-submenu-expanded]="submenuExpanded()">
         @for (child of item().items; track child.label; let i = $index) {
           <li
             app-menuitem
@@ -92,23 +91,6 @@ import { LayoutService } from '../service/layout.service';
       </ul>
     }
   `,
-  animations: [
-    trigger('children', [
-      state(
-        'collapsed',
-        style({
-          height: '0',
-        }),
-      ),
-      state(
-        'expanded',
-        style({
-          height: '*',
-        }),
-      ),
-      transition('collapsed <=> expanded', animate('400ms cubic-bezier(0.86, 0, 0.07, 1)')),
-    ]),
-  ],
 })
 export class AppMenuitem implements OnInit, OnDestroy {
   readonly item = input.required<MenuItem>();
@@ -135,9 +117,7 @@ export class AppMenuitem implements OnInit, OnDestroy {
   private menuResetSubscription!: Subscription;
   private routerSubscription!: Subscription;
 
-  readonly submenuAnimation = computed(() =>
-    this.root() ? 'expanded' : this.active() ? 'expanded' : 'collapsed',
-  );
+  readonly submenuExpanded = computed(() => this.root() || this.active());
 
   @HostBinding('class.active-menuitem')
   get activeClass(): boolean {
