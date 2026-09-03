@@ -8,21 +8,21 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { Table, TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { TooltipModule } from 'primeng/tooltip';
-import { PasswordModule } from 'primeng/password';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToolbarModule } from 'primeng/toolbar';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { Table, TableModule } from '@openng/optimus-ui/table';
+import { TagModule } from '@openng/optimus-ui/tag';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { DialogModule } from '@openng/optimus-ui/dialog';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
+import { SelectModule } from '@openng/optimus-ui/select';
+import { MultiSelectModule } from '@openng/optimus-ui/multiselect';
+import { TooltipModule } from '@openng/optimus-ui/tooltip';
+import { PasswordModule } from '@openng/optimus-ui/password';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
+import { ToolbarModule } from '@openng/optimus-ui/toolbar';
+import { IconFieldModule } from '@openng/optimus-ui/iconfield';
+import { InputIconModule } from '@openng/optimus-ui/inputicon';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { OrgContextService } from '../../../core/services/org-context.service';
 import { UsersService } from '../services/users.service';
 import { ApplicationsService } from '../../applications/services/applications.service';
@@ -158,9 +158,7 @@ export class UsersListComponent implements OnInit {
   }
 
   selectAllApplications(): void {
-    this.formPermittedApplicationIds.set(
-      this.availableApplicationOptions().map((a) => a.value),
-    );
+    this.formPermittedApplicationIds.set(this.availableApplicationOptions().map((a) => a.value));
   }
 
   isFormValid(): boolean {

@@ -10,17 +10,17 @@ import { Subscription, forkJoin } from 'rxjs';
 import { DatePipe, JsonPipe } from '@angular/common';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
-import { DialogModule } from 'primeng/dialog';
-import { SelectModule } from 'primeng/select';
-import { TooltipModule } from 'primeng/tooltip';
-import { ToolbarModule } from 'primeng/toolbar';
-import { InputTextModule } from 'primeng/inputtext';
-import { DatePickerModule } from 'primeng/datepicker';
-import { MessageService } from 'primeng/api';
+import { TableModule } from '@openng/optimus-ui/table';
+import { TagModule } from '@openng/optimus-ui/tag';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { DialogModule } from '@openng/optimus-ui/dialog';
+import { SelectModule } from '@openng/optimus-ui/select';
+import { TooltipModule } from '@openng/optimus-ui/tooltip';
+import { ToolbarModule } from '@openng/optimus-ui/toolbar';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
+import { DatePickerModule } from '@openng/optimus-ui/datepicker';
+import { MessageService } from '@openng/optimus-ui/api';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination';
 import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge';
 import { ChannelTypePipe } from '../../../../shared/pipes/channel-type.pipe';
@@ -225,21 +225,23 @@ export class FilteredList implements OnInit {
     }
 
     this.loadSubscription?.unsubscribe();
-    this.loadSubscription = this.service.list(this.currentPage, this.currentLimit, filters).subscribe({
-      next: (res) => {
-        this.notifications.set(res.items ?? []);
-        this.pageInfo.set(res.page_info ?? null);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load notifications',
-        });
-        this.loading.set(false);
-      },
-    });
+    this.loadSubscription = this.service
+      .list(this.currentPage, this.currentLimit, filters)
+      .subscribe({
+        next: (res) => {
+          this.notifications.set(res.items ?? []);
+          this.pageInfo.set(res.page_info ?? null);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load notifications',
+          });
+          this.loading.set(false);
+        },
+      });
   }
 
   onPageChange(event: { page: number; limit: number }): void {

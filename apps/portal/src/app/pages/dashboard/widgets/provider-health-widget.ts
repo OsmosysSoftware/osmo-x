@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
-import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from '@openng/optimus-ui/table';
+import { TagModule } from '@openng/optimus-ui/tag';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { ProviderStats } from '../../../core/models/api.model';
 import { ChannelType } from '../../../core/constants/notification';
 

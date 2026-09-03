@@ -50,12 +50,12 @@ These are loaded into every Claude Code session. They define non-negotiable stan
 ### Portal: `apps/portal/CLAUDE.md`
 
 **What it covers:**
-- Critical instructions: Use Context7 MCP for Angular/PrimeNG docs
+- Critical instructions: Use Context7 MCP for Angular docs and WebFetch on https://optimus.openng.org for Optimus UI docs
 - Zoneless architecture requirements (NO Zone.js, signals mandatory)
-- Angular 20 component pattern (standalone, OnPush, inject(), input()/output())
+- Angular 21 component pattern (standalone, OnPush, inject(), input()/output())
 - Modern template syntax (@if, @for, @switch)
 - API type system (openapi-typescript, snake_case, NO conversion)
-- PrimeNG v20 integration patterns
+- Optimus UI v1 integration patterns
 - Auth implementation (signal-based)
 - Reference to interview-app frontend patterns
 
@@ -226,7 +226,6 @@ MCP (Model Context Protocol) servers connect Claude to external tools and servic
 
 | Server | Purpose |
 |--------|---------|
-| **PrimeNG** | PrimeNG v20 component docs — props, events, templates, methods, theming, pass through |
 | **Context7** | Fetches latest documentation for libraries (Angular, NestJS, TypeORM, etc.) |
 | **Serena** | Semantic code navigation — symbol search, find references, overview of files |
 | **Playwright** | Browser automation for testing web UIs |
@@ -237,7 +236,7 @@ MCP (Model Context Protocol) servers connect Claude to external tools and servic
 
 MCP tools are loaded on demand when Claude determines they're needed. For example:
 
-- Before using a PrimeNG component, Claude uses the PrimeNG MCP to fetch props, events, and usage examples
+- Before using an Optimus UI component, Claude fetches props, events, and usage examples from https://optimus.openng.org (there is no Optimus MCP server)
 - Before implementing a NestJS pattern, Claude uses Context7 to fetch current docs
 - When exploring code structure, Claude uses Serena's `find_symbol` / `get_symbols_overview`
 - When testing the portal UI, Claude can use Playwright to take screenshots
@@ -258,10 +257,8 @@ claude mcp add <name> -- <command>
 
 **Current setup commands:**
 
-```bash
-# PrimeNG MCP (user level)
-claude mcp add primeng -s user -- npx -y @primeng/mcp
-```
+No portal-specific MCP server is configured. Optimus UI has no MCP server; fetch its docs
+from https://optimus.openng.org, and use Context7 for Angular, Tailwind and other libraries.
 
 ---
 

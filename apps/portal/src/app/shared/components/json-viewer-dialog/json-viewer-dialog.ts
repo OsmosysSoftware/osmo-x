@@ -1,9 +1,9 @@
 import { Component, ChangeDetectionStrategy, input, output, inject } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
-import { MessageService } from 'primeng/api';
+import { DialogModule } from '@openng/optimus-ui/dialog';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { MessageService } from '@openng/optimus-ui/api';
 
 @Component({
   selector: 'app-json-viewer-dialog',

@@ -11,9 +11,9 @@ import {
   withEnabledBlockingInitialNavigation,
   withInMemoryScrolling,
 } from '@angular/router';
-import Aura from '@primeuix/themes/aura';
-import { providePrimeNG } from 'primeng/config';
-import { MessageService } from 'primeng/api';
+import Aura from '@openng/optimus-ui-themes/aura';
+import { provideOptimus } from '@openng/optimus-ui/config';
+import { MessageService } from '@openng/optimus-ui/api';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { orgContextInterceptor } from './core/interceptors/org-context.interceptor';
@@ -34,7 +34,7 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([authInterceptor, orgContextInterceptor, errorInterceptor]),
     ),
-    providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } }),
+    provideOptimus({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } }),
     MessageService,
   ],
 };

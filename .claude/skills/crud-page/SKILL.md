@@ -24,7 +24,7 @@ Ask the user the following questions using `AskUserQuestion`. Batch related ques
 
 **Q3 — Menu group:**
 - Home / Notifications / Configuration / Administration
-- Also ask for a PrimeIcons icon name (e.g., `pi-sitemap`, `pi-link`, `pi-users`)
+- Also ask for an Openng Icons name (e.g., `pi-sitemap`, `pi-link`, `pi-users`) — the `pi-` prefix is unchanged from PrimeIcons
 
 **Q4 — API integration:**
 - **Types exist** — type alias already in `core/models/api.model.ts` derived from generated OpenAPI types (ask which type name)
@@ -214,7 +214,7 @@ For **server-side** lazy mode, sorting is handled via the `onLazyLoad` event —
 
 Component method for server-side:
 ```typescript
-import { TableLazyLoadEvent } from 'primeng/table';
+import { TableLazyLoadEvent } from '@openng/optimus-ui/table';
 
 readonly totalRecords = signal(0);
 

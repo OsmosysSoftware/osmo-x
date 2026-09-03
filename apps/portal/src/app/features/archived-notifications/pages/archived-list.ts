@@ -9,17 +9,17 @@ import {
 import { DatePipe, JsonPipe } from '@angular/common';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
-import { DialogModule } from 'primeng/dialog';
-import { SelectModule } from 'primeng/select';
-import { TooltipModule } from 'primeng/tooltip';
-import { ToolbarModule } from 'primeng/toolbar';
-import { InputTextModule } from 'primeng/inputtext';
-import { DatePickerModule } from 'primeng/datepicker';
-import { MessageService } from 'primeng/api';
+import { TableModule } from '@openng/optimus-ui/table';
+import { TagModule } from '@openng/optimus-ui/tag';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { DialogModule } from '@openng/optimus-ui/dialog';
+import { SelectModule } from '@openng/optimus-ui/select';
+import { TooltipModule } from '@openng/optimus-ui/tooltip';
+import { ToolbarModule } from '@openng/optimus-ui/toolbar';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
+import { DatePickerModule } from '@openng/optimus-ui/datepicker';
+import { MessageService } from '@openng/optimus-ui/api';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
 import { ChannelTypePipe } from '../../../shared/pipes/channel-type.pipe';
@@ -112,7 +112,6 @@ export class ArchivedListComponent implements OnInit {
   readonly selectedDateFrom = signal<Date | null>(null);
   readonly selectedDateTo = signal<Date | null>(null);
 
-
   // Property-specific filters from the shared notification-filters drawer.
   readonly propertyFilters = signal<NotificationFilters>({});
 
@@ -122,7 +121,7 @@ export class ArchivedListComponent implements OnInit {
     ...this.propertyFilters(),
   }));
 
-  // Sort state (signals keep PrimeNG table in sync to prevent re-sort on data change)
+  // Sort state (signals keep the Optimus table in sync to prevent re-sort on data change)
   readonly tableSortField = signal('created_on');
   readonly tableSortOrder = signal<number>(-1);
   private currentSort = 'created_on';
@@ -132,8 +131,6 @@ export class ArchivedListComponent implements OnInit {
   readonly jsonDialogVisible = signal(false);
   readonly jsonDialogData = signal<Record<string, unknown> | null>(null);
   readonly jsonDialogHeader = signal('JSON Data');
-
-
 
   ngOnInit(): void {
     this.loadNotifications();

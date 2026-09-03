@@ -7,8 +7,8 @@ import {
   signal,
   afterNextRender,
 } from '@angular/core';
-import { ChartModule } from 'primeng/chart';
-import { SkeletonModule } from 'primeng/skeleton';
+import { ChartModule } from '@openng/optimus-ui/chart';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { TrendDataPoint } from '../../../core/models/api.model';
 

@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SkeletonModule } from 'primeng/skeleton';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
 import { DashboardService, DashboardSource } from '../../features/dashboard/dashboard.service';
 import { NotificationTrendsWidget } from './widgets/notification-trends-widget';
 import { ChannelBreakdownWidget } from './widgets/channel-breakdown-widget';

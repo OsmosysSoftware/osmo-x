@@ -9,11 +9,11 @@
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { MessageModule } from 'primeng/message';
-import { PopoverModule } from 'primeng/popover';
-import { TooltipModule } from 'primeng/tooltip';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
+import { MessageModule } from '@openng/optimus-ui/message';
+import { PopoverModule } from '@openng/optimus-ui/popover';
+import { TooltipModule } from '@openng/optimus-ui/tooltip';
 import {
   AdvancedFilterRow,
   NotificationFilters,
@@ -46,7 +46,14 @@ const FILTER_TOKENS: FilterToken[] = [
 @Component({
   selector: 'app-notification-filters',
   standalone: true,
-  imports: [FormsModule, ButtonModule, InputTextModule, MessageModule, PopoverModule, TooltipModule],
+  imports: [
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    MessageModule,
+    PopoverModule,
+    TooltipModule,
+  ],
   templateUrl: './notification-filters.html',
   styleUrl: './notification-filters.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,12 +86,10 @@ export class NotificationFiltersComponent {
 
     return FILTER_TOKENS.filter((t) => {
       if (t.namedKey) {
-
         return !f[t.namedKey];
       }
 
       if (t.dataFilterKey) {
-
         return !advKeys.has(t.dataFilterKey);
       }
 
@@ -160,7 +165,7 @@ export class NotificationFiltersComponent {
   onInputBlur(): void {
     // mousedown preventDefault on the dropdown div keeps focus in the input when
     // clicking dropdown items, so this only fires when clicking truly outside
-    // (e.g. a PrimeNG dropdown that stops click propagation).
+    // (e.g. an Optimus dropdown that stops click propagation).
     this.dropdownVisible.set(false);
   }
 
@@ -174,21 +179,17 @@ export class NotificationFiltersComponent {
 
     if (event.key === 'Enter') {
       if (!val) {
-
         return;
       }
 
       if (token) {
         this.commitToken(token, val);
-      }
-      else {
+      } else {
         this.commitSearch(val);
       }
-    }
-    else if (event.key === 'Escape') {
+    } else if (event.key === 'Escape') {
       this.closeDropdown();
-    }
-    else if (event.key === 'Backspace' && !this.inputValue()) {
+    } else if (event.key === 'Backspace' && !this.inputValue()) {
       if (token) {
         this.selectedToken.set(null);
       } else {
@@ -212,7 +213,6 @@ export class NotificationFiltersComponent {
     const val = this.inputValue().trim();
 
     if (!val) {
-
       return;
     }
 
@@ -220,8 +220,7 @@ export class NotificationFiltersComponent {
 
     if (token) {
       this.commitToken(token, val);
-    }
-    else {
+    } else {
       this.commitSearch(val);
     }
   }
@@ -239,8 +238,7 @@ export class NotificationFiltersComponent {
   private commitToken(token: FilterToken, value: string): void {
     if (token.namedKey) {
       this.filtersChange.emit({ ...this.filters(), [token.namedKey]: value });
-    }
-    else if (token.dataFilterKey) {
+    } else if (token.dataFilterKey) {
       const row: AdvancedFilterRow = { id: this.makeId(), key: token.dataFilterKey, value };
       const existing = this.filters().advancedFilters ?? [];
 
@@ -300,7 +298,6 @@ export class NotificationFiltersComponent {
 
   applyAdvanced(popover: { hide: () => void }): void {
     if (!this.advCanApply()) {
-
       return;
     }
 
