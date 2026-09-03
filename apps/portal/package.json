@@ -9,6 +9,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:ci": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "eslint . --max-warnings=0 --ignore-pattern '.angular/**'",
     "build:prod": "ng build --configuration production",
     "lint:fix": "eslint . --fix --ignore-pattern '.angular/**'",
