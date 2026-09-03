@@ -5,9 +5,10 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install -g @angular/cli
-
-RUN npm install
+# npm ci installs exactly what package-lock.json pins, so the image gets the
+# same Angular 22 / Optimus v2 tree that was tested locally. npm install would
+# be free to re-resolve and drift.
+RUN npm ci
 
 COPY . .
 
