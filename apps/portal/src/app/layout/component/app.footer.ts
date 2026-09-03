@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { APP_VERSION } from '../../core/constants/app-version';
 
 @Component({
   standalone: true,
@@ -12,9 +13,11 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
       class="text-primary font-bold hover:underline"
       >Copyright &copy; {{ currentYear() }} Osmosys Software Solutions</a
     >
-    | All Rights Reserved
+    | All Rights Reserved | <span class="text-muted-color">v{{ appVersion }}</span>
   </div>`,
 })
 export class AppFooter {
   readonly currentYear = signal(new Date().getFullYear());
+
+  readonly appVersion = APP_VERSION;
 }
