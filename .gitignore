@@ -26,3 +26,6 @@
 !.claude/hookify.*.local.md
 !.claude/skills/
 .playwright-mcp/
+
+# Lavish Editor artifacts
+.lavish/
