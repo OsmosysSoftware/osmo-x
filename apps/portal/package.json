@@ -1,6 +1,6 @@
 {
   "name": "osmox-portal",
-  "version": "8.8.1",
+  "version": "9.0.0",
   "description": "OsmoX notification management portal",
   "author": "Osmosys",
   "scripts": {
