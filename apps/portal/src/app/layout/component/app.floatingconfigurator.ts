@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { StyleClassModule } from '@openng/optimus-ui/styleclass';
 import { AppConfigurator } from './app.configurator';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-floating-configurator',
   imports: [CommonModule, ButtonModule, StyleClassModule, AppConfigurator],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex gap-4 top-8 right-8" [ngClass]="{ fixed: float() }">
       <p-button

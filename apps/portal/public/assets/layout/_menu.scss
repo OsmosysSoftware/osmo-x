@@ -139,22 +139,22 @@
   }
 }
 
-.layout-submenu-enter-from,
-.layout-submenu-leave-to {
+// Submenu expand/collapse. Replaces the former @angular/animations `children`
+// trigger (height 0 <-> *) with a pure CSS transition, so the sidebar needs no
+// animations provider. The 1000px cap is well above the tallest submenu, which
+// is 8 items deep.
+.layout-submenu {
+  overflow: hidden;
   max-height: 0;
+  transition: max-height 400ms cubic-bezier(0.86, 0, 0.07, 1);
+
+  &.layout-submenu-expanded {
+    max-height: 1000px;
+  }
 }
 
-.layout-submenu-enter-to,
-.layout-submenu-leave-from {
-  max-height: 1000px;
-}
-
-.layout-submenu-leave-active {
-  overflow: hidden;
-  transition: max-height 0.45s cubic-bezier(0, 1, 0, 1);
-}
-
-.layout-submenu-enter-active {
-  overflow: hidden;
-  transition: max-height 1s ease-in-out;
+@media (prefers-reduced-motion: reduce) {
+  .layout-submenu {
+    transition: none;
+  }
 }

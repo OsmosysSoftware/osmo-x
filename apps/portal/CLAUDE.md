@@ -42,8 +42,8 @@ npm run generate:api   # Regenerate TypeScript types from backend OpenAPI spec
 
 ### Tech Stack
 
-- **Angular 21** — zoneless change detection (NO Zone.js), signals, standalone components
-- **Optimus UI v1** (`@openng/optimus-ui`) — UI component library (Aura theme). MIT community fork of PrimeNG v21.
+- **Angular 22** — zoneless change detection (NO Zone.js), signals, standalone components
+- **Optimus UI v2** (`@openng/optimus-ui`) — UI component library (Aura theme). MIT community fork of PrimeNG v21.
 - **Openng Icons** (`@openng/icons`) — icon library, `pi pi-*` classes unchanged
 - **Tailwind CSS v4** — utility-first CSS with the `@openng/optimus-ui-tailwindcss` plugin
 - **TypeScript** — strict mode, no explicit any

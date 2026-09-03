@@ -148,7 +148,9 @@ https://optimus.openng.org
 ## Important Notes
 
 ### Package Names
-Optimus UI v1 is API-compatible with PrimeNG v21; only the package names differ.
+Optimus UI v2 keeps the same public entry points and component APIs as v1, which was itself
+API-compatible with PrimeNG v21. v2.0.0 exists because it moved to Angular 22, not because the
+component API changed.
 
 | PrimeNG | Optimus UI |
 | --- | --- |
@@ -191,6 +193,6 @@ import Aura from '@openng/optimus-ui-themes/aura';
 1. Always refer to the official documentation for import paths
 2. Check the component's page for usage examples
 3. Use WebFetch or Context7 to get latest component documentation
-4. Optimus UI v1 requires Angular 21+ and RxJS 7.8.1+
+4. Optimus UI v2 requires Angular 22+ and RxJS 7.8.1+
 5. There is no Optimus MCP server; fetch docs from https://optimus.openng.org
 6. Optimus UI v2 exists but diverges from PrimeNG v21 - this project is pinned to v1

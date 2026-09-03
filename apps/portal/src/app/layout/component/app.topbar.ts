@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MenuItem } from '@openng/optimus-ui/api';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -24,6 +24,7 @@ import { OrgSelectorComponent } from '../../shared/components/org-selector/org-s
     AppLogo,
     OrgSelectorComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ` <div class="layout-topbar">
     <div class="layout-topbar-logo-container">
       <button

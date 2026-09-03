@@ -1,5 +1,5 @@
 ### Stage 0: Build ###
-FROM node:20 AS builder
+FROM node:24 AS builder
 
 WORKDIR /usr/src/app
 
