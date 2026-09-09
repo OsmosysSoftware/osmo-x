@@ -138,17 +138,25 @@ export class NotificationDataFilterHelper {
     }
   }
 
+  /**
+   * Matches a recipient across to/cc/bcc/target using only `->>` + ILIKE, so each
+   * arm can be served by its pg_trgm GIN expression index and the planner can
+   * combine them with a BitmapOr.
+   *
+   * Array-valued recipients are covered without a dedicated branch: `->>` on a
+   * jsonb array returns the array's JSON text (`["a@b.com", "c@d.com"]`), which
+   * still satisfies an ILIKE '%a@b.com%' substring match. The previous
+   * jsonb_typeof/jsonb_array_elements_text form was therefore redundant, and it
+   * made the whole predicate unindexable — forcing a full scan of every row.
+   */
   private recipientPredicate(alias: string, param: string): string {
     const a = q(alias);
 
     return `(
-      (jsonb_typeof(${a}.data->'to')  = 'string' AND ${a}.data->>'to'  ILIKE :${param}) OR
-      (jsonb_typeof(${a}.data->'to')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'to')  AS x(v) WHERE x.v ILIKE :${param})) OR
-      (jsonb_typeof(${a}.data->'cc')  = 'string' AND ${a}.data->>'cc'  ILIKE :${param}) OR
-      (jsonb_typeof(${a}.data->'cc')  = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'cc')  AS x(v) WHERE x.v ILIKE :${param})) OR
-      (jsonb_typeof(${a}.data->'bcc') = 'string' AND ${a}.data->>'bcc' ILIKE :${param}) OR
-      (jsonb_typeof(${a}.data->'bcc') = 'array'  AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(${a}.data->'bcc') AS x(v) WHERE x.v ILIKE :${param})) OR
-      (${a}.data->>'target' ILIKE :${param})
+      ${a}.data->>'to'     ILIKE :${param} OR
+      ${a}.data->>'cc'     ILIKE :${param} OR
+      ${a}.data->>'bcc'    ILIKE :${param} OR
+      ${a}.data->>'target' ILIKE :${param}
     )`;
   }
 
