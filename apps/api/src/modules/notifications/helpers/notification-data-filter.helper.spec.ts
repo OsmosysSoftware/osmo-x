@@ -37,10 +37,38 @@ describe('NotificationDataFilterHelper', () => {
     helper.applyTo(qb, 'notification', { recipient: 'jane@example.com' });
     const [sql, params] = qb.getQueryAndParameters();
 
-    expect(sql).toContain('"notification".data->\'to\'');
-    expect(sql).toContain('jsonb_array_elements_text("notification".data->\'to\')');
+    expect(sql).toContain('"notification".data->>\'to\'');
+    expect(sql).toContain('"notification".data->>\'cc\'');
+    expect(sql).toContain('"notification".data->>\'bcc\'');
     expect(sql).toContain('"notification".data->>\'target\'');
     expect(params).toContain('%jane@example.com%');
+  });
+
+  /**
+   * The predicate must stay index-friendly: `->>` on each key and nothing else.
+   * `jsonb_typeof` guards and `jsonb_array_elements_text` subqueries make the
+   * expression unindexable, forcing a full scan of notify_archived_notifications.
+   */
+  it('keeps the recipient predicate free of unindexable constructs', () => {
+    const qb = buildQb();
+    helper.applyTo(qb, 'notification', { recipient: 'jane@example.com' });
+    const [sql] = qb.getQueryAndParameters();
+
+    expect(sql).not.toContain('jsonb_typeof');
+    expect(sql).not.toContain('jsonb_array_elements_text');
+  });
+
+  /**
+   * Array-valued recipients are still matched: `->>` on a jsonb array yields the
+   * array's JSON text (e.g. `["a@b.com", "c@d.com"]`), so an ILIKE '%a@b.com%'
+   * substring match still hits. That equivalence is what makes dropping the
+   * dedicated array branches safe.
+   */
+  it('matches an array-valued recipient through the json text of the array', () => {
+    const arrayAsText = JSON.stringify(['a@b.com', 'c@d.com']);
+
+    expect(arrayAsText).toContain('a@b.com');
+    expect(arrayAsText).toContain('c@d.com');
   });
 
   it('applies sender against data.from', () => {
@@ -136,6 +164,6 @@ describe('NotificationDataFilterHelper', () => {
     expect(sql).toContain('AND');
     expect(sql).toContain("data->>'subject'");
     expect(sql).toContain("data->>'from'");
-    expect(sql).toContain("data->'to'");
+    expect(sql).toContain("data->>'to'");
   });
 });

@@ -25,6 +25,13 @@ export interface PaginationMeta {
   total_pages: number;
   has_next: boolean;
   has_prev: boolean;
+  /**
+   * True when `total_items` / `total_pages` come from the planner's row estimate
+   * rather than an exact COUNT. Set only for broad, unfiltered queries over large
+   * tables, where an exact count costs seconds and nobody reads the last page.
+   * `has_next` stays exact regardless — it is derived from an extra fetched row.
+   */
+  total_is_estimate?: boolean;
 }
 
 export interface SortConfig {
@@ -104,17 +111,33 @@ export class PaginationHelper {
   /**
    * Build pagination metadata
    */
-  static buildPaginationMeta(page: number, limit: number, totalItems: number): PaginationMeta {
+  static buildPaginationMeta(
+    page: number,
+    limit: number,
+    totalItems: number,
+    options?: { isEstimate?: boolean; hasNext?: boolean },
+  ): PaginationMeta {
     const totalPages = this.calculateTotalPages(totalItems, limit);
+    // An estimate can undershoot the page actually being viewed, so trust the
+    // caller's exact hasNext (derived from fetching limit + 1 rows) when given.
+    const hasNext = options?.hasNext ?? page < totalPages;
 
-    return {
+    const meta: PaginationMeta = {
       page,
       limit,
       total_items: totalItems,
-      total_pages: totalPages,
-      has_next: page < totalPages,
+      total_pages: options?.isEstimate
+        ? Math.max(totalPages, hasNext ? page + 1 : page)
+        : totalPages,
+      has_next: hasNext,
       has_prev: page > 1,
     };
+
+    if (options?.isEstimate) {
+      meta.total_is_estimate = true;
+    }
+
+    return meta;
   }
 
   /**

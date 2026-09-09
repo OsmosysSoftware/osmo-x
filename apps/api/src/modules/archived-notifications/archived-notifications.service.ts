@@ -10,7 +10,10 @@ import { Status } from 'src/common/constants/database';
 import { QueryOptionsDto } from 'src/common/graphql/dtos/query-options.dto';
 import { ArchivedNotificationResponse } from './dtos/archived-notification-response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CoreService } from 'src/common/graphql/services/core.service';
+import {
+  CoreService,
+  NOTIFICATION_SEARCHABLE_FIELDS,
+} from 'src/common/graphql/services/core.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { PaginationMeta, PaginationHelper } from 'src/common/utils/pagination.helper';
 import ms = require('ms');
@@ -254,7 +257,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       });
     }
 
-    const searchableFields = ['createdBy', 'data', 'result'];
+    const searchableFields = NOTIFICATION_SEARCHABLE_FIELDS;
 
     const { items, meta } = await super.findAllPaginated(
       query,
@@ -315,7 +318,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
     this.logger.log('Getting all archived notifications with options.');
 
     const baseConditions = [{ field: 'status', value: Status.ACTIVE }];
-    const searchableFields = ['createdBy', 'data', 'result'];
+    const searchableFields = NOTIFICATION_SEARCHABLE_FIELDS;
 
     const { items, total } = await super.findAll(
       options,
@@ -336,7 +339,7 @@ export class ArchivedNotificationsService extends CoreService<ArchivedNotificati
       { field: 'status', value: Status.ACTIVE },
       { field: 'applicationId', value: applicationId },
     ];
-    const searchableFields = ['createdBy', 'data', 'result'];
+    const searchableFields = NOTIFICATION_SEARCHABLE_FIELDS;
 
     const { items, total } = await super.findAll(
       options,
