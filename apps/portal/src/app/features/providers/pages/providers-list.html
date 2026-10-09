@@ -37,7 +37,13 @@
       <div class="flex items-center gap-2">
         <p-iconfield iconPosition="left">
           <p-inputicon class="pi pi-search" />
-          <input pInputText type="text" [value]="searchText()" (input)="onGlobalFilter($event)" placeholder="Search..." />
+          <input
+            pInputText
+            type="text"
+            [value]="searchText()"
+            (input)="onGlobalFilter($event)"
+            placeholder="Search..."
+          />
         </p-iconfield>
         <p-button
           icon="pi pi-filter-slash"
@@ -76,6 +82,9 @@
     >
       <ng-template #header>
         <tr>
+          <th pSortableColumn="provider_id" style="min-width: 5rem">
+            ID <p-sortIcon field="provider_id" />
+          </th>
           <th pSortableColumn="name" style="min-width: 12rem">Name <p-sortIcon field="name" /></th>
           <th>Channel Type</th>
           <th>Enabled</th>
@@ -88,6 +97,7 @@
       </ng-template>
       <ng-template #body let-p>
         <tr>
+          <td>{{ p.provider_id }}</td>
           <td>{{ p.name }}</td>
           <td>{{ p.channel_type | channelType }}</td>
           <td>
@@ -124,7 +134,7 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="6" class="!text-center py-8 text-muted-color">No providers found</td>
+          <td colspan="7" class="!text-center py-8 text-muted-color">No providers found</td>
         </tr>
       </ng-template>
     </p-table>
@@ -211,7 +221,9 @@
           [showButtons]="true"
           placeholder="Global default"
         />
-        <small class="text-muted-color">Number of retry attempts before failing. Leave empty to use the server default.</small>
+        <small class="text-muted-color"
+          >Number of retry attempts before failing. Leave empty to use the server default.</small
+        >
       </div>
       @if (configFields().length > 0) {
         <div class="flex flex-col gap-3">
